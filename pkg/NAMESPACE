@@ -1,0 +1,6 @@
+
+## exported functions for status_db handling
+export("add_status_code_to_db",
+       "get_status_message_from_db",
+       "delete_status_code_from_db")
+

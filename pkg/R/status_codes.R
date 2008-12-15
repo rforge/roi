@@ -1,44 +1,34 @@
 ## ROI: status_codes.R
 ## overview of solver status codes and their canonicalization
 
-## FIXME: will be replaced by registry mechanism - lookup via hash key, etc.
-initialize_status_db <- function(){
-  assign("status_db", .make_status_db_entry(character(),
-                                            integer(),
-                                            character(),
-                                            character()),
-         env = .GlobalEnv)
-  invisible(get("status_db"))
-}
-initialize_status_db()
+## FIXME: add registry to depends in DESCRIPTION
+require("registry")
 
-.make_status_db_key <- function(solver, code)
-  paste(solver, code, sep = "_")
+## create registry object containing status codes
+status_db <- registry()
 
-.make_status_db_entry <- function(solver, code, symbol, message){
-  out <- data.frame(solver = solver,
-                    code = code,
-                    symbol = symbol,
-                    message = message)
-  rownames(out) <- .make_status_db_key(solver, code)
-  out
-}
+status_db$set_field("solver",  type = "character", is_key = TRUE)
+status_db$set_field("code",    type = "integer",   is_key = TRUE)
+status_db$set_field("symbol",  type = "character")
+status_db$set_field("message", type = "character")
+## FIXME: the last field in the db indicates the mapping on the generic
+##        (ROI) status codes.
+## status_db$set_field("roi_code", type = "integer", alternatives = 1:5)
 
 add_status_code_to_db <- function(solver, code, symbol, message){
-  db <- get("status_db", env = .GlobalEnv)
-  if(!(.make_status_db_key(solver, code) %in% rownames(db))){
-    db <- rbind(db,
-                .make_status_db_entry(solver, code, symbol, message))          
-  }
-  else
-    warning(gettextf("Status db for solver %s already exists.", solver))
-  assign("status_db", db, env = .GlobalEnv)
-  invisible(db)
+  status_db$set_entry(solver = solver,
+                      code = code,
+                      symbol = symbol,
+                      message = message)
 }
 
 get_status_message_from_db <- function(solver, code){
-  db <- get("status_db", env = .GlobalEnv)
-  db[.make_status_db_key(solver, code), "message"]
+  status_db[[solver, code]]
+}
+
+delete_status_code_from_db <- function(solver, code){
+  status_db$delete_entry(solver = solver,
+                         code = code)
 }
 
 ## CPLEX status codes
@@ -352,3 +342,6 @@ add_status_code_to_db("symphony",
                       "TM_ERROR__USER",
                       "TM_ERROR__USER"
                       )
+
+## seal entries
+status_db$seal_entries()
