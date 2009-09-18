@@ -1,0 +1,21 @@
+## constraints.R
+
+constraints <- function(L = NULL, Q = NULL, N = NULL, ...)
+ structure( list(list(L = L, Q = Q, N = N), dir, rhs), class = "constraints")
+
+terms <- function(x, ...){
+  UseMethod("terms")
+}
+
+terms.constraints <- function(x){
+
+}
+
+linear_constraints <- function(x){
+   structure( list(mat, dir, rhs), class = "linear_constraints")
+}
+
+constraints <- function(x){
+
+}
+

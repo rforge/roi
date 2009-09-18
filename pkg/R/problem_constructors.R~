@@ -1,0 +1,47 @@
+LP <- function(objective, constraints, bounds = NULL, maximum = FALSE){
+  structure(list(objective = L_objective(objective),
+                 constraints = L_constraints(constraints), 
+                 bounds = bounds,
+                 maximum = maximum),
+            class = "LP")
+}
+      
+MILP <-
+function( types = NULL,
+         )
+{
+    ## Currently, 'constraints' always is a (not necessarily named) list
+    ## with mat, dir and rhs, which really is the most general case of
+    ## linear constraints we can think of.  Let us add names for now;
+    ## eventually, there should be more sanity checking and maybe a
+    ## creator for linear constraint objects.
+
+    names(constraints) <- c("mat", "dir", "rhs")
+    structure(list(objective = make_objective(L = objective),
+                   constraints = make_constraints(L = constraints), 
+                   bounds = bounds,
+                   types = types,
+                   maximum = maximum),
+              class = "MILP")
+}
+
+
+
+
+## LP
+list(objective = list(L = numeric()),
+     constraints = list(L = list(mat = matrix(), dir = dir, rhs = numeric())),
+     bounds = list(upper = list(i = integer(), v = set()), lower = list(i = integer(), v = set())),
+     maximum = logical()
+     )
+
+## QP/QCP
+list(objective = list(L = numeric(),
+                      Q = matrix()),
+     constraints = list(L = list(mat, dir, rhs),
+                        Q = list(list(list(L = numeric(), Q = matrix())), dir, rhs)),
+     bounds = list(upper = list(i = integer(), v = set()), lower = list(i = integer(), v = set())),
+     maximum = logical()
+     )
+
+             
