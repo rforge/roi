@@ -3,7 +3,19 @@
 ###############################################################
 ## objective helper functions
 
+## get objective function from problem object
+## returns a function!
+## FIXME: use a super class 'optimization_problem'?
 objective.MILP <- function( x )
+  as.function( x$objective )
+
+objective.MIQP <- function( x )
+  as.function( x$objective )
+
+objective.MIQCP <- function( x )
+  as.function( x$objective )
+
+objective.MINLP <- function( x )
   as.function( x$objective )
 
 terms.L_objective <- function( x )
@@ -29,11 +41,14 @@ as.function.L_objective <- function( L ){
 as.L_objective.L_objective <- identity
 
 as.L_objective.numeric <- function( x )
-  L_objective(x)
+  L_objective( x )
 
 as.L_objective.Q_objective <- function( x )
-  L_objective(terms(x)$L)
+  L_objective( terms(x)$L )
 
+as.L_objective.function <- function( x )
+  L_objective( get("L", environment(x)) )
+  
 ###############################################################
 ## quadratic objectives
 

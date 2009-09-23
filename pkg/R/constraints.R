@@ -3,19 +3,55 @@
 ###############################################################
 ## constraint helper functions
 
-constraints.MILP <- function(x)
+constraints.MILP <- function( x )
   x$constraints
 
-as.rhs.numeric <- function(x)
+constraints.MIQP <- function( x )
+  x$constraints
+
+constraints.MINLP <- function( x )
+  x$constraints
+
+as.rhs.numeric <- function( x )
   x
 
 available_row_sense <- function() {
   c('<', '<=', "==", ">", ">=")
 }
 
-row_sense_is_feasible <- function(x) {
+row_sense_is_feasible <- function( x ) {
   all( x %in% available_row_sense() )
 }
+
+as.constraint.L_constraint <- identity
+
+as.constraint.Q_constraint <- identity
+
+as.constraint.F_constraint <- identity
+  
+
+##c.constraint <- function( ..., recursive = FALSE ) {
+##  constraints <- lapply(list(...), as.constraint)
+##  any(is.NCP
+##  constraints
+##}
+
+print.constraint <- function( x, ... ){
+  len <- length(x)
+  if( is.NCP(x) )
+    writeLines( c(sprintf("A set of %d constraints.", len),
+                  "Some constraints are of type nonlinear.") )
+  else
+    if( is.QCP(x) )
+      writeLines( c(sprintf("A set of %d constraints.", len),
+                  "Some constraints are of type quadratic.") )
+  
+    else
+      writeLines( sprintf("A set of %d linear constraints.", len) )
+  
+  invisible(x)
+}
+
 
 ###############################################################
 ## Linear constraints (class 'L_constraint')
@@ -35,6 +71,9 @@ L_constraint <- function( L, dir, rhs ) {
                   n_L_constraints = n_L_constraints),
             class = c("L_constraint", "constraint") )
 }
+
+length.L_constraint <- function(x)
+  x$n_L_constraints
 
 ## the linear term of the left hand side
 
@@ -70,21 +109,24 @@ Q_constraint <- function(Q, L, dir, rhs){
                   dir = dir,
                   rhs = rhs,
                   n_Q_constraints = n_Q_constraints),
-             class = c("Q_constraint", "constraint"))
+             class = c("Q_constraint", "constraint") )
 }
+
+length.Q_constraint <- function(x)
+  x$n_Q_constraints
 
 ## the quadratic term of the left hand side
 
-as.Q_term.numeric <- function(x)
-  list( as.simple_triplet_matrix(matrix(x)) )
+as.Q_term.numeric <- function( x )
+  list( as.simple_triplet_matrix( matrix(x)) )
   
-as.Q_term.matrix <- function(x)
+as.Q_term.matrix <- function( x )
   list( as.simple_triplet_matrix(x) )
 
-as.Q_term.simple_triplet_matrix <- function(x)
+as.Q_term.simple_triplet_matrix <- function( x )
   list( x )
 
-as.Q_term.list <- function(x)
+as.Q_term.list <- function( x )
   lapply( x, as.simple_triplet_matrix )
 
 ## combine, print, and summary methods
@@ -96,6 +138,9 @@ as.Q_term.list <- function(x)
 ##c.Q_constraint <- function( ... ){
 ##  Q_constraint()
 ##}
+
+is.QCP <- function(x)
+  inherits(x, "Q_constraint")
 
 ###############################################################
 ## Function constraints (class 'F_constraint')
@@ -117,10 +162,15 @@ F_constraint <- function(F, dir, rhs){
             class = c("F_constraint", "constraint"))
 }
 
+length.F_constraint <- function(x)
+  x$n_F_constraints
+
 as.F_term.function <- function(x)
   list( x )
 
 as.F_term.list <- function(x)
   lapply( x, as.function )
 
-
+## does the constraint object include nonlinear constraints
+is.NCP <- function(x)
+  inherits(x, "F_constraint")

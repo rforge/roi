@@ -1,3 +1,6 @@
+## Original mip.R currently in package 'relations'
+## functions are removed if ported to ROI 
+
 ## A simple framework for representing and solving mixed integer linear
 ## programs (MILPs) of the form
 ##   optimize obj' x
@@ -10,25 +13,20 @@
 ## (Default of course x >= 0).
 
 ### * MILPs
+## ported. moved to problem_constructor.R
 
-MILP <-
-function(objective, constraints, bounds = NULL, types = NULL,
-         maximum = FALSE)
-{
-    ## Currently, 'constraints' always is a (not necessarily named) list
-    ## with mat, dir and rhs, which really is the most general case of
-    ## linear constraints we can think of.  Let us add names for now;
-    ## eventually, there should be more sanity checking and maybe a
-    ## creator for linear constraint objects.
+## FIXED the following note by KH:
 
-    names(constraints) <- c("mat", "dir", "rhs")
-    structure(list(objective = objective, constraints = constraints,
-                   bounds = bounds, types = types, maximum = maximum),
-              class = "MILP")
-}
+## Currently, 'constraints' always is a (not necessarily named) list
+## with mat, dir and rhs, which really is the most general case of
+## linear constraints we can think of.  Let us add names for now;
+## eventually, there should be more sanity checking and maybe a
+## creator for linear constraint objects.
 
+## TODO: registry mechanism
 .MILP_solvers <-
     c("glpk", "lpsolve", "symphony", "cplex")
+
 
 solve_MILP <-
 function(x, solver = NULL, control = list())
@@ -74,20 +72,9 @@ function(x, solver = NULL, control = list())
 }
 
 ### * MIQPs
+## ported. moved to problem_constructor.R
 
-MIQP <-
-function(objective, constraints, bounds = NULL, types = NULL,
-         maximum = FALSE)
-{
-    ## See MILP() for the comments on constraint objects.
-    ## We also add names to the list of objective coefficients.
-    names(objective) <- c("Q", "L")
-    names(constraints) <- c("mat", "dir", "rhs")
-    structure(list(objective = objective, constraints = constraints,
-                   bounds = bounds, types = types, maximum = maximum),
-              class = "MIQP")
-}
-
+## TODO: registry mechanism
 .MIQP_solvers <-
     c("cplex")
 
@@ -163,236 +150,9 @@ function(x, solver, control)
 
 ### * Solver interfaces
 
-### ** CPLEX
-
-.solve_MILP_via_cplex <-
-function(x, control)
-{
-    ## Wrap into the common MIP CPLEX framework.
-    x$objective <- list(Q = NULL, L = x$objective)
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MIQP_via_cplex <-
-function(x, control)
-{
-    ## Ensure that the coefficient matrix of the quadratic term is
-    ## symmetric, as required by Rcplex.
-    Q <- x$objective$Q
-    ## <CHECK>
-    ## Does Rcplex really support simple triplet matrix Q coefficients?
-    ## If not, would need
-    ##   x$objective$Q <- as.matrix((Q + t(Q)) / 2)
-    ## instead:
-    x$objective$Q <- (Q + t(Q)) / 2
-    ## </CHECK>
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MIP_via_cplex <-
-function(x, control)
-{
-    ## Currently, no direct support for bounds.
-    ## <FIXME>
-    ## Should expand the given bounds and map into lb/ub arguments.
-    if(!is.null(x$bounds))
-        stop("Solver currently does not support variable bounds.")
-    ## </FIXME>
-
-    sense <- .as_Rcplex_sense(x$constraints$dir)
-
-    types <- .expand_types(x$types, length(x$objective$L))
-
-    mat <- x$constraints$mat
-    if(is.simple_triplet_matrix(mat)) {
-        ## Reorder indices as CPLEX needs a column major order
-        ## representation i.e., column indices j have to be in ascending
-        ## order.
-        column_major_order <- order(mat$j)
-        mat$i <- mat$i[column_major_order]
-        mat$j <- mat$j[column_major_order]
-        mat$v <- mat$v[column_major_order]
-    } else {
-        mat <- as.matrix(mat)
-    }
-
-    if(is.null(nos <- control$n)) nos <- 1L
-    value_is_list_of_solutions <- !identical(as.integer(nos), 1L)
-
-    out <-
-        tryCatch(Rcplex::Rcplex(Qmat = x$objective$Q,
-                                cvec = x$objective$L,
-                                Amat = mat,
-                                sense = sense,
-                                bvec = x$constraints$rhs,
-                                vtype = types,
-                                objsense = if(x$maximum) "max" else "min",
-                                control = list(trace = 0, round = 1),
-                                n = nos
-                                ),
-                 error = identity)
-    if(inherits(out, "error")) {
-        ## Explicitly catch and rethrow CPLEX unavailability errors.
-        msg <- conditionMessage(out)
-        if(regexpr("Could not open CPLEX environment\\.", msg) > -1L)
-           stop(msg, call. = FALSE)
-        ## Currently, Rcplex signals problems via error() rather than
-        ## returning a non-zero status.  Hence, we try catching these
-        ## errors.  (Of course, these could also be real errors ...).
-        solution <- rep(NA_real_, length(types))
-        objval <- NA_real_
-        status <- 2                     # or whatever ...
-        names(status) <- msg            # should be of length one ...
-        out <- .make_MIP_solution(solution, objval, status)
-        if(value_is_list_of_solutions) out <- list(out)
-    } else {
-        out <- if(value_is_list_of_solutions)
-            lapply(out, .canonicalize_solution_from_cplex, x)
-        else
-            .canonicalize_solution_from_cplex(out, x)
-    }
-    out
-}
-
-.canonicalize_solution_from_cplex <-
-function(out, x)
-{
-    solution <- out$xopt
-    ## For the time being ...
-    ## Since Rcplex 0.1-4 integers are rounded (via control argument
-    ## 'round' which we set accordingly when calling Rcplex()) but no
-    ## new optimal solution based on these values is calculated.  Hence,
-    ## we no longer round ourselves, but recompute objval.
-    objval <- sum(solution * x$objective$L)
-    if(!is.null(Q <- x$objective$Q))
-        objval <- objval + .xtQx(Q, solution) / 2
-    status <- out$status
-    ## Simple db for "ok" status results:
-    ok_status_db <-
-        c("CPX_STAT_OPTIMAL" = 1L,      # (Simplex or barrier): optimal
-                                        # solution is available
-          "CPXMIP_OPTIMAL" = 101L,      # (MIP): optimal integer solution
-                                        # has been found
-          "CPXMIP_OPTIMAL_TOL" = 102L,  # (MIP): Optimal soluton with
-                                        # the tolerance defined by epgap
-                                        # or epagap has been found
-          "CPXMIP_POPULATESOL_LIM" = 128L, # (MIP-MultSols): The limit on
-                                        # mixed integer solutions
-                                        # generated by populate has been
-                                        # reached
-          "CPXMIP_OPTIMAL_POPULATED" = 129L, # (MIP-MultSols): Populate
-                                        # has completed the enumeration of
-                                        # all solutions it could enumerate
-          "CPXMIP_OPTIMAL_POPULATED_TOL" = 130L # (MIP-MultSols): similar
-                                        # to 129L but additionally
-                                        # objective value fits the
-                                        # tolerance specified by paramaters
-          )
-    status <- ifelse(status %in% ok_status_db, 0, status)
-    .make_MIP_solution(solution, objval, status)
-}
-
-### ** GLPK
-
-.solve_MILP_via_glpk <-
-function(x)
-{
-    out <- Rglpk::Rglpk_solve_LP(x$objective,
-                                 x$constraints$mat,
-                                 x$constraints$dir,
-                                 x$constraints$rhs,
-                                 bounds = x$bounds,
-                                 types = x$types,
-                                 max = x$maximum)
-    .make_MIP_solution(out$solution, out$optimum, out$status)
-}
-
-### ** lp_solve
-
-.solve_MILP_via_lpsolve <-
-function(x)
-{
-    ## Currently, no direct support for bounds.
-    ## <FIXME>
-    ## Should rewrite the given bounds into additional constraints.
-    if(!is.null(x$bounds))
-        stop("Solver currently does not support variable bounds.")
-    ## </FIXME>
-
-    types <- .expand_types(x$types, length(x$objective))
-
-    ## Version 5.6.1 of lpSolve has added sparse matrix support via
-    ## formal 'dense.const' as well as binary variable types.
-    mat <- x$constraints$mat
-    out <- if(is.simple_triplet_matrix(mat)) {
-        ## In the sparse case, lpSolve currently (2008-11-22) checks
-        ## that every constraint is used in the sense that each row has
-        ## at least one entry.  So if for some reason this is not the
-        ## case, let us add one zero entry for such rows (note that we
-        ## cannot simply drop them as the corresponding constraint may
-        ## be violated).
-        ind <- which(tabulate(mat$i, mat$nrow) == 0)
-        if(len <- length(ind)) {
-            mat$i <- c(mat$i, ind)
-            mat$j <- c(mat$j, rep.int(1L, len))
-            mat$v <- c(mat$v, rep.int(0, len))
-        }
-        lpSolve::lp(if(x$maximum) "max" else "min",
-                    x$objective,
-                    const.dir = x$constraints$dir,
-                    const.rhs = x$constraints$rhs,
-                    int.vec = which(types == "I"),
-                    binary.vec = which(types == "B"),
-                    dense.const = cbind(mat$i, mat$j, mat$v))
-    } else {
-        lpSolve::lp(if(x$maximum) "max" else "min",
-                    x$objective,
-                    as.matrix(mat),
-                    x$constraints$dir,
-                    x$constraints$rhs,
-                    int.vec = which(types == "I"),
-                    binary.vec = which(types == "B"))
-    }
-    status_db <-
-        ## Solver status values from lp_lib.h:
-       c("UNKNOWNERROR" = -5L,
-         "DATAIGNORED" = -4L,
-         "NOBFP" = -3L,
-         "NOMEMORY" = -2L,
-         "NOTRUN" = -1L,
-         "OPTIMAL" = 0L,
-         "SUBOPTIMAL" = 1L,
-         "INFEASIBLE" = 2L,
-         "UNBOUNDED" = 3L,
-         "DEGENERATE" = 4L,
-         "NUMFAILURE" = 5L,
-         "USERABORT" = 6L,
-         "TIMEOUT" = 7L,
-         "RUNNING" = 8L,
-         "PRESOLVED" = 9L)
-    status <- status_db[match(out$status, status_db)]
-    solution <- out$solution
-    objval <- if(status == 0L)
-        sum(solution * out$objective)
-    else
-        out$objval
-    .make_MIP_solution(solution, objval, status)
-}
-
-### ** SYMPHONY
-
-.solve_MILP_via_symphony <-
-function(x)
-{
-    out <- Rsymphony::Rsymphony_solve_LP(x$objective,
-                                         x$constraints$mat,
-                                         x$constraints$dir,
-                                         x$constraints$rhs,
-                                         bounds = x$bounds,
-                                         types = x$types,
-                                         max = x$maximum)
-    .make_MIP_solution(out$solution, out$objval, out$status)
-}
+## solver interfaces are provided in separate files
+## naming convention: plugin_<solver> where <solver> is replaced by
+##                    the solver name in lower case 
 
 ### * Utilities
 

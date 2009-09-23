@@ -2,6 +2,9 @@
 ## function definitions of all generics
 ## listed alphabetically
 
+as.constraint <- function( x, ... )
+    UseMethod("as.constraint")
+
 as.F_objective <- function(x, ...)
   UseMethod("as.F_objective")
 
@@ -13,6 +16,12 @@ as.L_objective <- function(x, ...)
 
 as.L_term <- function( x, ... )
   UseMethod("as.L_term")
+
+as.LP <- function(x, ...)
+  UseMethod("as.LP")
+
+as.MILP <- function(x, ...)
+  UseMethod("as.MILP")
 
 as.Q_objective <- function(x, ...)
   UseMethod("as.Q_objective")
@@ -28,6 +37,3 @@ constraints <- function(x, ...)
 
 objective <- function(x, ...)
   UseMethod("objective")
-
-terms <- function(x, ...)
-  UseMethod("terms")
