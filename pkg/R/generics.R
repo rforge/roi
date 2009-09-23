@@ -5,11 +5,17 @@
 as.constraint <- function( x, ... )
     UseMethod("as.constraint")
 
+as.F_constraint <- function(x, ...)
+  UseMethod("as.F_constraint")
+
 as.F_objective <- function(x, ...)
   UseMethod("as.F_objective")
 
 as.F_term <- function(x, ...)
   UseMethod( "as.F_term" )
+
+as.L_constraint <- function(x, ...)
+  UseMethod("as.L_constraint")
 
 as.L_objective <- function(x, ...)
   UseMethod("as.L_objective")
@@ -22,6 +28,9 @@ as.LP <- function(x, ...)
 
 as.MILP <- function(x, ...)
   UseMethod("as.MILP")
+
+as.Q_constraint <- function(x, ...)
+  UseMethod("as.Q_constraint")
 
 as.Q_objective <- function(x, ...)
   UseMethod("as.Q_objective")

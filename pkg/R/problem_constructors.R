@@ -1,8 +1,9 @@
 ###############################################################
 ## Linear program (LP)
+
 LP <- function(objective, constraints, bounds = NULL, maximum = FALSE){
   structure(list(objective = as.L_objective(objective),
-                 constraints = as.L_constraints(constraints), 
+                 constraints = as.L_constraint(constraints), 
                  bounds = bounds,
                  maximum = maximum),
             class = "LP")
@@ -22,7 +23,7 @@ as.LP.MILP <- function(x){
 
 MILP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){
   structure(list(objective = as.L_objective(objective),
-                 constraints = as.L_constraints(constraints), 
+                 constraints = as.L_constraint(constraints), 
                  bounds = bounds,
                  types = types,
                  maximum = maximum),
@@ -35,7 +36,7 @@ as.MILP.MIQP <- function(x){
   MILP(objective = as.L_objective(objective(x)),
        constraints = constraints(x),
        bounds = x$bounds,
-       types = types,
+       types = x$types,
        maximum = x$maximum)
 }
 
@@ -44,7 +45,7 @@ as.MILP.MIQP <- function(x){
 
 MIQP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){
   structure(list(objective = as.Q_objective(objective),
-                 constraints = as.L_constraints(constraints), 
+                 constraints = as.L_constraint(constraints), 
                  bounds = bounds,
                  types = types,
                  maximum = maximum),

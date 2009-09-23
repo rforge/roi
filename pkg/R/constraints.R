@@ -3,32 +3,27 @@
 ###############################################################
 ## constraint helper functions
 
-constraints.MILP <- function( x )
+constraints.MILP <- function( x, ... )
   x$constraints
 
-constraints.MIQP <- function( x )
+constraints.MIQP <- function( x, ... )
   x$constraints
 
-constraints.MINLP <- function( x )
+constraints.MINLP <- function( x, ... )
   x$constraints
 
-as.rhs.numeric <- function( x )
+as.rhs.numeric <- function( x, ... )
   x
 
-available_row_sense <- function() {
-  c('<', '<=', "==", ">", ">=")
-}
+as.constraint.L_constraint <- function( x, ... )
+  identity(x)
 
-row_sense_is_feasible <- function( x ) {
-  all( x %in% available_row_sense() )
-}
+as.constraint.Q_constraint <- function( x, ... )
+  identity(x)
 
-as.constraint.L_constraint <- identity
+as.constraint.F_constraint <- function( x, ... )
+  identity(x)
 
-as.constraint.Q_constraint <- identity
-
-as.constraint.F_constraint <- identity
-  
 
 ##c.constraint <- function( ..., recursive = FALSE ) {
 ##  constraints <- lapply(list(...), as.constraint)
@@ -72,18 +67,29 @@ L_constraint <- function( L, dir, rhs ) {
             class = c("L_constraint", "constraint") )
 }
 
-length.L_constraint <- function(x)
+as.L_constraint.L_constraint <- function( x, ... )
+  identity(x)
+
+as.L_constraint.numeric <- function( x, ... )
+  L_constraint( L = x, dir = ">=", rhs = 0 )
+
+as.L_constraint.list <- function( x, ... ){
+  names(x) <- c("L", "dir", "rhs")
+  L_constraint( L = x$L, dir = x$dir, rhs = x$rhs )
+}
+
+length.L_constraint <- function( x )
   x$n_L_constraints
 
 ## the linear term of the left hand side
 
-as.L_term.numeric <- function(x)
+as.L_term.numeric <- function( x, ... )
   as.simple_triplet_matrix( matrix(x, nrow = 1L) )
 
-as.L_term.matrix <- function(x)
+as.L_term.matrix <- function( x, ... )
   as.simple_triplet_matrix(x)
 
-as.L_term.simple_triplet_matrix <- function(x)
+as.L_term.simple_triplet_matrix <- function( x, ... )
   x
 
 ###############################################################
@@ -112,10 +118,21 @@ Q_constraint <- function(Q, L, dir, rhs){
              class = c("Q_constraint", "constraint") )
 }
 
+as.Q_constraint.Q_constraint <- function( x, ... )
+  identity(x)
+
+as.Q_constraint.list <- function( x, ... ){
+  names(x) <- c("Q", "L", "dir", "rhs")
+  Q_constraint( Q = x$Q, L = x$L, dir = x$dir, rhs = x$rhs )
+}
+
 length.Q_constraint <- function(x)
   x$n_Q_constraints
 
 ## the quadratic term of the left hand side
+
+as.Q_term.list <- function( x )
+  lapply( x, as.simple_triplet_matrix )
 
 as.Q_term.numeric <- function( x )
   list( as.simple_triplet_matrix( matrix(x)) )
@@ -125,9 +142,6 @@ as.Q_term.matrix <- function( x )
 
 as.Q_term.simple_triplet_matrix <- function( x )
   list( x )
-
-as.Q_term.list <- function( x )
-  lapply( x, as.simple_triplet_matrix )
 
 ## combine, print, and summary methods
 

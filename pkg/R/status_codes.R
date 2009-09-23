@@ -1,9 +1,6 @@
 ## ROI: status_codes.R
 ## overview of solver status codes and their canonicalization
 
-## FIXME: add registry to depends in DESCRIPTION
-require("registry")
-
 ## create registry object containing status codes
 status_db <- registry()
 
@@ -54,7 +51,7 @@ add_status_code_to_db("cplex",
                       )
 add_status_code_to_db("cplex", 
                       4L,
-                      "CPX_STAT_INForUNBD"
+                      "CPX_STAT_INForUNBD",
                       "(Simplex or Barrier): Problem has been proven either infeasible or unbounded."
                       )
 add_status_code_to_db("cplex", 
@@ -80,7 +77,7 @@ add_status_code_to_db("cplex",
                       )
 add_status_code_to_db("cplex", 
                       103L,
-                      "CPXMIP_INFEASIBLE"
+                      "CPXMIP_INFEASIBLE",
                       "(MIP): Solution is integer infeasible."
                       )
 add_status_code_to_db("cplex", 

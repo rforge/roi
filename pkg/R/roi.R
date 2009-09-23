@@ -19,8 +19,8 @@ ROI_solve.MILP <- function( x, solver, control = NULL, ... )
 ROI_solve.MIQP <- function( x, solver, control = NULL, ... )
   solve_MIQP( x, solver, control )
 
-ROI_solve.MIQCP <- function(x, solver, control = NULL, ...)
-  solve_MIQCP( x, solver, control )
+##ROI_solve.MIQCP <- function(x, solver, control = NULL, ...)
+##  solve_MIQCP( x, solver, control )
 
-ROI_solve.MINLP <- function(x, solver, control = NULL, ...)
-  solve_MINLP( x, solver, control )
+##ROI_solve.MINLP <- function(x, solver, control = NULL, ...)
+##  solve_MINLP( x, solver, control )
