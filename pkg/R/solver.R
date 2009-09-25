@@ -1,46 +1,81 @@
-## create registry object containing status codes
-solver_db <- registry( )
+## solver.R
 
-solver_db$set_field( "solver", type = "character", is_key = TRUE )
-solver_db$set_field( "LP",     type = "logical" )
-solver_db$set_field( "QP",     type = "logical" )
-solver_db$set_field( "QCP",    type = "logical" )
-solver_db$set_field( "NLP",    type = "logical" )
-solver_db$set_field( "MILP",   type = "logical" )
-solver_db$set_field( "MIQP",   type = "logical" )
-solver_db$set_field( "MIQCP",  type = "logical" )
-solver_db$set_field( "MINLP",  type = "logical" )
-
+## Problem types which can be handled by 'ROI':
 available_problem_types <- function( )
-  c("LP", "QP", "QCP", "MILP", "MIQP") #, "NLP", "MIQCP", "MINLP")
+  c( "LP", "QP", "QCP", "MILP", "MIQP" ) #, "NLP", "MIQCP", "MINLP")
 
-## FIXME: the last field in the db indicates the mapping on the generic
-##        (ROI) status codes.
-## status_db$set_field("roi_code", type = "integer", alternatives = 1:5)
+## we have three necessary arguments in this function:
+##  * solver)  the name of the solver
+##  * package) package which provides the solver
+##  * types)   the problem types which can be handled by the solver
+## further arguments:
+##  * multiple_solutions) TRUE/FALSE depending on whether the solver is capable of
+##                        finding more than one solution (MIP case) or not
+##  * and many more via ...
+add_solver_to_db <- function( solver, package, types, dotargs ){
 
-add_solver_to_db <- function( solver, capabilities ){
-  stopifnot( all(capabilities %in% available_problem_types()) )
-  for( type in available_problem_types() )
-    eval( sprintf("solver_db$set_entry( solver = solver, %s = any(type == capabilities)",
-                  type) )
-}
+  ## check if status codes for the solver have been registered
+  if( !(solver %in% available_in_status_codes_db()) )
+    stop( sprintf("status codes for solver '%s' not in status_db.") )
 
-## searching for available solver plugins
-search_for_solver_plugins <- function(){
-  registered_solvers <- get_solvers_from_db()
-  pkgs_installed <- rownames(installed.packages())
-  if(!is.null(pkgs_installed))
-    avail <- pkgs_installed %in% registered_solvers
-  set_default_solver(registered_solvers[avail][1])
+  ## for each problem type there must be a corresponding S3 solver method
+  ## naming convention for methods: .solve_<type>.<solver>
+  for( type in types ){
+    status <- tryCatch(getS3method(sprintf(".solve_%s", type), solver), error = identity)
+    if( inherits(status, "error") )
+      stop( sprintf("no method for type '%s' solver '%s' found.", type, solver) )
+  }
   
+  ## each plugin must provide solution canonicalization S3 method
+  ## naming convention for this method: .canonicalize_solution.<solver>
+  status <- tryCatch(getS3method(".canonicalize_solution", solver), error = identity)
+  if( inherits(status, "error") )
+    stop( sprintf("no method to canonicalize '%s' solutions found.", solver) )
+
+  ## if everything is ok, add solver
+  solver_db$set_entry( solver = solver,
+                       package = package,
+                       types = types)
+
+  ## add further information about the solver to db
+  if( length(dotargs) )
+    for( entry in names(dotargs) )
+      eval(parse(text = sprintf("solver_db$modify_entry( solver = solver, %s = dotargs[[entry]] )", entry)))
+
+  invisible(TRUE)
 }
 
-set_default_solver <- function(x)
-  solver_db$default <- x
-
-
-.as_Rcplex_sense <- function(x) {
-  TABLE <- c("L", "L", "G", "G", "E")
-  names(TABLE) <- c("<", "<=", ">", ">=", "==")
-  TABLE[x]
+## returns available solvers from db
+get_solvers_from_db <- function( ) {
+  solver_db$get_entry_names()
 }
+
+## returns package names of available solvers from db
+get_solver_packages_from_db <- function ( ){
+  solver_db$get_field_entries( "package" )
+}
+
+## returns a list of available solvers with their capabilities
+get_solver_types_from_db <- function ( ){
+  solver_db$get_field_entries("types", unlist = FALSE)
+}
+
+## returns the contents of specific solver options
+get_solver_option_from_db <- function(solver, option) {
+  solver_db$get_entry(solver = solver)[[option]]
+}
+
+## searches for available solver plugins and returns the names of
+## the solvers found
+available_solver_plugins <- function(){
+  ## solvers registered
+  registered_solvers <- get_solvers_from_db()
+  names(registered_solvers) <-  get_solver_packages_from_db( )[registered_solvers]
+  ## solver packages installed
+  pkgs_installed <- rownames( utils::installed.packages() )
+  if( !is.null(pkgs_installed) )
+    registered_solvers[ pkgs_installed[ pkgs_installed %in% get_solver_packages_from_db() ] ]
+  else
+    NA
+}
+

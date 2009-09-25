@@ -23,21 +23,40 @@
 ## eventually, there should be more sanity checking and maybe a
 ## creator for linear constraint objects.
 
-## TODO: registry mechanism
-.MILP_solvers <-
-    c("glpk", "lpsolve", "symphony", "cplex")
+## get registered LP solvers
+.LP_solvers <- function()
+  names( sapply(get_solver_types_from_db(), function(x) "LP" %in% x) )
 
-solve_MILP <-
-function(x, solver = NULL, control = list())
-{
-    ## <NOTE>
-    ## Ideally, we would use some registration mechanism for solvers.
-    ## Currently, there is only little support for control arguments.
-    ## In particular, one cannot directly pass arguments to the solver.
-    ## </NOTE>
+solve_LP <- function( x, solver = NULL, control = list() ) {  
+  ## for more notes see solve_MILP
+  ## Handle the boundary case of no variables.
+    if( !length(terms(objective(x))) ) {
+        y <- .solve_empty_MIP(x)
+        return(y)
+    }
 
+    solver <- match.arg(solver, .LP_solvers())
+
+    class(x) <- c(solver, class(x))
+
+    .solve_LP(x, control)
+
+}
+
+
+## get registered MILP solvers
+.MILP_solvers <- function()
+  names( sapply(get_solver_types_from_db(), function(x) "MILP" %in% x) )
+
+solve_MILP <- function( x, solver = NULL, control = list() ) {
+  ## In ROI we now use the registry package for solvers.
+  ## <NOTE>
+  ## Currently, there is only little support for control arguments.
+  ## In particular, one cannot directly pass arguments to the solver.
+  ## </NOTE>
+  
     ## Handle the boundary case of no variables.
-    if(!length(x$objective)) {
+    if( !length(terms(objective(x))) ) {
         y <- .solve_empty_MIP(x)
         if(!is.null(nos <- control$n)
            && !identical(as.integer(nos), 1L))
@@ -45,11 +64,11 @@ function(x, solver = NULL, control = list())
         return(y)
     }
 
-    solver <- match.arg(solver, .MILP_solvers)
+    solver <- match.arg(solver, .MILP_solvers())
 
     ## If more than one (binary) solution is sought and the solver does
     ## not provide direct support, use poor person's branch and cut:
-    if(!is.null(nos <- control$n) && (solver != "cplex")) {
+    if( !is.null(nos <- control$n) && (!get_solver_option_from_db(solver, "multiple_solutions")) ) {
         control$n <- NULL
         ## Mimic the mechanism currently employed by Rcplex(): return a
         ## list of solutions only if nos > 1 (or NA).
@@ -63,19 +82,18 @@ function(x, solver = NULL, control = list())
     ## Note that lpSolve could find all binary solutions for all-binary
     ## programs.
 
-    switch(solver,
-           "cplex" = .solve_MILP_via_cplex(x, control),
-           "glpk" = .solve_MILP_via_glpk(x),
-           "lpsolve" = .solve_MILP_via_lpsolve(x),
-           "symphony" = .solve_MILP_via_symphony(x))
+    class(x) <- c(solver, class(x))
+
+    .solve_MILP(x, control)
+
 }
 
 ### * MIQPs
 ## ported. moved to problem_constructor.R
 
-## TODO: registry mechanism
-.MIQP_solvers <-
-    c("cplex")
+## get registered MILP solvers
+.MIQP_solvers <- function()
+  names( sapply(get_solver_types_from_db(), function(x) "MIQP" %in% x) )
 
 solve_MIQP <-
 function(x, solver = NULL, control = list())

@@ -18,6 +18,9 @@ objective.MIQCP <- function( x, ... )
 objective.MINLP <- function( x, ... )
   as.function( x$objective )
 
+terms.function <- function( x, ... )
+  terms(as.L_objective(x))
+
 terms.L_objective <- function( x, ... )
   x$L
 
@@ -49,7 +52,7 @@ as.L_objective.Q_objective <- function( x, ... )
 
 as.L_objective.function <- function( x, ... )
   L_objective( get("L", environment(x)) )
-  
+
 ###############################################################
 ## quadratic objectives
 
@@ -64,7 +67,7 @@ as.function.Q_objective <- function( x, ... ){
   L <- terms(x)$L
   Q <- terms(x)$Q
   function(x)
-    crossprod(L, x) + t(x) %*% Q %*% x  
+    crossprod(L, x) + .xtQx(Q, x)
 }
 
 as.Q_objective.function <- function( x, ... )

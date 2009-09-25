@@ -449,13 +449,6 @@ function(x)
          x$maximum)
 }
 
-.make_MIP_solution <-
-function(solution, objval, status, ...)
-    structure(list(solution = solution,
-                   objval = objval,
-                   status = status, ...),
-              class = "MIP_solution")
-
 .make_types <-
 function(n, I = NULL, B = NULL)
 {
@@ -502,19 +495,6 @@ function(x)
     }
     x$types <- rep.int("C", n_of_variables)
     x
-}
-
-.solve_empty_MIP <-
-function(x)
-{
-    ## Check whether constraints are satisfied (interpreting each lhs as
-    ## empty sum with value 0):
-    constraints <- split(x$constraints$rhs, x$constraints$dir)
-    if(all(unlist(Map(function(dir, rhs) get(dir)(0, rhs),
-                      names(constraints), constraints))))
-        .make_MIP_solution(double(), 0, 0L)
-    else
-        .make_MIP_solution(double(), NA_real_, 2L)
 }
 
 .xtQx <-

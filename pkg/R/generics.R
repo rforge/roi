@@ -2,8 +2,23 @@
 ## function definitions of all generics
 ## listed alphabetically
 
+.canonicalize_solution <- function( out, x )
+  UseMethod(".canonicalize_solution")
+
+.solve_LP <- function( x, control )
+  UseMethod(".solve_LP")
+
+.solve_MILP <- function( x, control )
+  UseMethod(".solve_MILP")
+
+.solve_MIQP <- function( x, control )
+  UseMethod(".solve_MIQP")
+
+.solve_QP <- function( x, control )
+  UseMethod(".solve_QP")
+
 as.constraint <- function( x, ... )
-    UseMethod("as.constraint")
+  UseMethod("as.constraint")
 
 as.F_constraint <- function(x, ...)
   UseMethod("as.F_constraint")
