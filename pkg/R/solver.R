@@ -9,9 +9,9 @@ available_problem_types <- function( )
 ##  * package) package which provides the solver
 ##  * types)   the problem types which can be handled by the solver
 ## further arguments:
-##  * multiple_solutions) TRUE/FALSE depending on whether the solver is capable of
-##                        finding more than one solution (MIP case) or not
-##  * and many more via ...
+##  * multiple_solutions) TRUE/FALSE depending on whether the solver is capable
+##                        of finding more than one solution (MIP case) or not
+##  * and many more via '...'
 add_solver_to_db <- function( solver, package, types, dotargs ){
 
   ## check if status codes for the solver have been registered
@@ -21,18 +21,21 @@ add_solver_to_db <- function( solver, package, types, dotargs ){
   ## for each problem type there must be a corresponding S3 solver method
   ## naming convention for methods: .solve_<type>.<solver>
   for( type in types ){
-    status <- tryCatch(getS3method(sprintf(".solve_%s", type), solver), error = identity)
+    status <- tryCatch(utils::getS3method(sprintf(".solve_%s", type), solver),
+                       error = identity)
     if( inherits(status, "error") )
-      stop( sprintf("no method for type '%s' solver '%s' found.", type, solver) )
+      stop( sprintf("method for type '%s' and solver '%s' not found.",
+                    type, solver) )
   }
   
   ## each plugin must provide solution canonicalization S3 method
   ## naming convention for this method: .canonicalize_solution.<solver>
-  status <- tryCatch(getS3method(".canonicalize_solution", solver), error = identity)
+  status <- tryCatch(utils::getS3method(".canonicalize_solution", solver),
+                     error = identity)
   if( inherits(status, "error") )
-    stop( sprintf("no method to canonicalize '%s' solutions found.", solver) )
+    stop( sprintf("method to canonicalize solutions from solver '%s' not found.", solver) )
 
-  ## if everything is ok, add solver
+  ## if everything is ok, add solver to db
   solver_db$set_entry( solver = solver,
                        package = package,
                        types = types)

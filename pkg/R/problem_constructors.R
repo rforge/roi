@@ -18,6 +18,34 @@ as.LP.MILP <- function(x){
       maximum = x$maximum)
 }
 
+is.LP <- function( x ) {
+  inherits( x, "LP" )
+}
+
+###############################################################
+## Quadratic program (QP)
+
+QP <- function( objective, constraints, bounds = NULL, maximum = FALSE ) {
+  structure(list(objective = as.Q_objective(objective),
+                 constraints = as.L_constraint(constraints), 
+                 bounds = bounds,
+                 maximum = maximum),
+            class = "QP")
+}
+
+as.QP.QP <- identity
+
+as.QP.MIQP <- function(x){
+  LP( objective = as.Q_objective(objective(x)),
+      constraints = constraints(x),
+      bounds = x$bounds,
+      maximum = x$maximum)
+}
+
+is.QP <- function( x ) {
+  inherits( x, "QP" )
+}
+
 ###############################################################
 ## Mixed integer linear program (MILP)
 
@@ -40,6 +68,10 @@ as.MILP.MIQP <- function(x){
        maximum = x$maximum)
 }
 
+is.MILP <- function( x ) {
+  inherits( x, "MILP" )
+}
+
 ###############################################################
 ## Mixed integer quadratic program (MIQP)
 
@@ -50,6 +82,10 @@ MIQP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = 
                  types = types,
                  maximum = maximum),
             class = "MIQP")
+}
+
+is.MIQP <- function( x ) {
+  inherits( x, "MIQP" )
 }
 
 ###############################################################
@@ -64,6 +100,10 @@ MIQCP <- function(objective, constraints, bounds = NULL, types = NULL, maximum =
             class = "MIQCP")
 }
 
+is.MIQCP <- function( x ) {
+  inherits( x, "MIQCP" )
+}
+
 ###############################################################
 ## Mixed integer nonlinear program (MINLP)
 
@@ -76,6 +116,9 @@ MINLP <- function(objective, constraints, bounds = NULL, types = NULL, maximum =
             class = "MINLP")
 }
 
+is.MINLP <- function( x ) {
+  inherits( x, "MINLP" )
+}
 
 ## class structure:
 ## LP

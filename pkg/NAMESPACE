@@ -9,16 +9,39 @@ import("slam")
 
 export("ROI_solve")
 
+S3method("ROI_solve", "LP")
 S3method("ROI_solve", "MILP")
+S3method("ROI_solve", "QP")
 S3method("ROI_solve", "MIQP")
 
 ###############################################################
-## MILP (constructors.R)
+## LP and MILP (constructors.R)
+export("LP")
 export("MILP")
+export("QP")
+export("MIQP")
 
 ###############################################################
-## MIQP (constructors.R)
+## QP and MIQP (constructors.R)
 export("MIQP")
+
+###############################################################
+## solver methods (plugin_<solver>.R)
+
+S3method(".solve_LP", "cplex")
+S3method(".solve_LP", "lpsolve")
+S3method(".solve_LP", "glpk")
+S3method(".solve_LP", "symphony")
+
+S3method(".solve_MILP", "cplex")
+S3method(".solve_MILP", "lpsolve")
+S3method(".solve_MILP", "glpk")
+S3method(".solve_MILP", "symphony")
+
+S3method(".solve_QP", "cplex")
+S3method(".solve_QP", "quadprog")
+
+S3method(".solve_MIQP", "cplex")
 
 ###############################################################
 ## objective function (objective.R)
@@ -43,9 +66,12 @@ S3method("as.Q_objective", "numeric")
 S3method("as.Q_objective", "Q_objective")
 S3method("as.Q_objective", "simple_triplet_matrix")
 
+S3method("objective", "LP")
+S3method("objective", "QP")
 S3method("objective", "MILP")
 S3method("objective", "MIQP")
 
+S3method("terms", "function")
 S3method("terms", "L_objective")
 S3method("terms", "Q_objective")
 

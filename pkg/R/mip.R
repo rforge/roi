@@ -1,11 +1,11 @@
 ## Original mip.R currently in package 'relations'
 ## functions are removed if ported to ROI 
 
-## A simple framework for representing and solving mixed integer linear
-## programs (MILPs) of the form
+## A simple framework for representing and solving linear (LP),
+## mixed integer linear programs (MILPs) of the form
 ##   optimize obj' x
 ##   such that mat %*% x dir rhs
-## and mixed integer quadratic programs (MIQPs) of the form
+## and quadratic (QP), mixed integer quadratic programs (MIQPs) of the form
 ##   optimize x' Q x / 2 + c' x
 ##   such that mat %*% x dir rhs
 ## with possibly given types (C/I/B for continuous/integer/binary) and
@@ -24,13 +24,15 @@
 ## creator for linear constraint objects.
 
 ## get registered LP solvers
-.LP_solvers <- function()
-  names( sapply(get_solver_types_from_db(), function(x) "LP" %in% x) )
+.LP_solvers <- function(){
+  db <- sapply(get_solver_types_from_db(), function(x) "LP" %in% x)
+  names(db)[db]
+}
 
 solve_LP <- function( x, solver = NULL, control = list() ) {  
   ## for more notes see solve_MILP
   ## Handle the boundary case of no variables.
-    if( !length(terms(objective(x))) ) {
+    if( !length(terms(objective(x))$L) ) {
         y <- .solve_empty_MIP(x)
         return(y)
     }
@@ -43,10 +45,32 @@ solve_LP <- function( x, solver = NULL, control = list() ) {
 
 }
 
+.QP_solvers <- function(){
+  db <- sapply(get_solver_types_from_db(), function(x) "QP" %in% x)
+  names(db)[db]
+}
+
+solve_QP <- function( x, solver = NULL, control = list() ) {  
+  ## for more notes see solve_MILP
+  ## Handle the boundary case of no variables.
+    if( !length(terms(objective(x))$L) && !length(terms(objective(x))$Q) ) {
+        y <- .solve_empty_MIP(x)
+        return(y)
+    }
+
+    solver <- match.arg(solver, .QP_solvers())
+
+    class(x) <- c(solver, class(x))
+
+    .solve_QP(x, control)
+
+}
 
 ## get registered MILP solvers
-.MILP_solvers <- function()
-  names( sapply(get_solver_types_from_db(), function(x) "MILP" %in% x) )
+.MILP_solvers <- function(){
+  db <- sapply(get_solver_types_from_db(), function(x) "MILP" %in% x)
+  names(db)[db]
+}
 
 solve_MILP <- function( x, solver = NULL, control = list() ) {
   ## In ROI we now use the registry package for solvers.
@@ -56,7 +80,7 @@ solve_MILP <- function( x, solver = NULL, control = list() ) {
   ## </NOTE>
   
     ## Handle the boundary case of no variables.
-    if( !length(terms(objective(x))) ) {
+    if( !length(terms(objective(x))$L) ) {
         y <- .solve_empty_MIP(x)
         if(!is.null(nos <- control$n)
            && !identical(as.integer(nos), 1L))
@@ -92,8 +116,10 @@ solve_MILP <- function( x, solver = NULL, control = list() ) {
 ## ported. moved to problem_constructor.R
 
 ## get registered MILP solvers
-.MIQP_solvers <- function()
-  names( sapply(get_solver_types_from_db(), function(x) "MIQP" %in% x) )
+.MIQP_solvers <- function(){
+  db <- sapply(get_solver_types_from_db(), function(x) "MIQP" %in% x)
+  names(db)[db]
+}
 
 solve_MIQP <-
 function(x, solver = NULL, control = list())
@@ -107,7 +133,7 @@ function(x, solver = NULL, control = list())
     ## </NOTE>
 
     ## Handle the boundary case of no variables.
-    if(!length(x$objective)) {
+    if( !length(terms(objective(x))$L) && !length(terms(objective(x))$Q) ) {
         y <- .solve_empty_MIP(x)
         if(!is.null(nos <- control$n)
            && !identical(as.integer(nos), 1L))
@@ -120,10 +146,10 @@ function(x, solver = NULL, control = list())
         ## If this is an all-binary problem, we can linearize, so use
         ## non-commercial defaults (obviously, there should eventually
         ## be a way to specify the default MILP and MIQP solver).
-        match.arg(solver, .MILP_solvers)
+        match.arg( solver, .MILP_solvers() )
     } else {
         ## Use a MIQP solver by default.
-        match.arg(solver, c(.MIQP_solvers, .MILP_solvers))
+        match.arg( solver, c(.MIQP_solvers(), .MILP_solvers()) )
     }
     ## For real MIQP solvers (currently only CPLEX), do not linearize by
     ## default, but allow for doing so for debugging purposes.
@@ -131,8 +157,9 @@ function(x, solver = NULL, control = list())
         if(identical(control$linearize, TRUE))
             .solve_BQP_via_linearization(x, solver, control)
         else {
-            ## Add switch() when adding support for other MIQP solvers.
-            .solve_MIQP_via_cplex(x, control)
+            ## if not all-binary problem we use a quadratic solver
+            class(x) <- c(solver, class(x))
+            .solve_MIQP(x, control)
         }
     } else {
         ## If this is an all-binary problem, we can linearize.

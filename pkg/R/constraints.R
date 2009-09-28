@@ -3,6 +3,12 @@
 ###############################################################
 ## constraint helper functions
 
+constraints.LP <- function( x, ... )
+  x$constraints
+
+constraints.QP <- function( x, ... )
+  x$constraints
+
 constraints.MILP <- function( x, ... )
   x$constraints
 
@@ -26,7 +32,7 @@ as.constraint.F_constraint <- function( x, ... )
 
 
 ##c.constraint <- function( ..., recursive = FALSE ) {
-##  constraints <- lapply(list(...), as.constraint)
+##  
 ##  any(is.NCP
 ##  constraints
 ##}
@@ -76,6 +82,17 @@ as.L_constraint.numeric <- function( x, ... )
 as.L_constraint.list <- function( x, ... ){
   names(x) <- c("L", "dir", "rhs")
   L_constraint( L = x$L, dir = x$dir, rhs = x$rhs )
+}
+
+## combining matrices (see 'rbind' in matrix.R, package relation)
+rbind.L_constraint <- function( ..., recursive = FALSE ){
+  constraints <- lapply(list(...), ROI:::as.L_constraint)
+  L   <- lapply( constraints, function (x) as.simple_triplet_matrix(x$L) )
+  dir <- lapply( constraints, function (x) as.character(x$dir) )
+  rhs <- lapply( constraints, function (x) ROI:::as.rhs(x$rhs) )
+  L_constraint( L =   Reduce(function(x, y) rbind(x, y), L),
+                dir = Reduce(function(x, y) c(x, y), dir),
+                rhs = Reduce(function(x, y) c(x, y), rhs) )
 }
 
 length.L_constraint <- function( x )
@@ -188,3 +205,47 @@ as.F_term.list <- function(x)
 ## does the constraint object include nonlinear constraints
 is.NCP <- function(x)
   inherits(x, "F_constraint")
+
+## create box constraints, i.e. lower and upper bounds
+## when solver doesn't support this feature
+
+.add_box_constraints_to_MIP <- function(x, negative = TRUE){
+  upper <- bounds(x)$upper
+  lower <- bounds(x)$lower
+  n_obj <- length(terms(objective(x))$L)
+
+  if(negative) {
+    ## if negative == TRUE then defaults are upper bound Inf, lower bound -Inf
+    
+    ## create lhs upper bound 
+    lhs_upper <- simple_triplet_matrix( i = upper$ind,
+                                        j = upper$ind,
+                                        v = rep(1, length(upper$ind)),
+                                        nrow = n_obj,
+                                        ncol = n_obj)
+    ## create lhs lower bound 
+    lhs_lower <- simple_triplet_matrix( i = lower$ind,
+                                        j = lower$ind,
+                                        v = rep(1, length(lower$ind)),
+                                        nrow = n_obj,
+                                        ncol = n_obj)
+
+    ## FIXME: should be replaced with 'constraints<-' in the future
+    x$constraints <- rbind( constraints(x),
+                            L_constraint(L = lhs_upper[upper$ind, ],
+                                         dir = rep("<=", length(upper$ind)),
+                                         rhs = upper$val),
+                            L_constraint(L = lhs_lower[lower$ind, ],
+                                         dir = rep(">=", length(lower$ind)),
+                                         rhs = lower$val) )
+    ## just in case: be sure that solver uses (-oo, oo)
+    x$bounds <- list( lower = list(ind = 1:n_obj, val = rep(-Inf, n_obj)) )
+  } else {
+    ind_up_neg  <- which(upper$val < 0)
+    ind_low_neg <- which(lower$val < 0)
+
+    
+    
+  }
+  x
+}

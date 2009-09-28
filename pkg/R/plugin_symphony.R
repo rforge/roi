@@ -2,7 +2,7 @@
 
 ## SOLVER METHODS
 .solve_LP.symphony <- function(x, control) {
-    out <- Rsymphony::Rsymphony_solve_LP(terms(objective(x)),
+    out <- Rsymphony::Rsymphony_solve_LP(terms(objective(x))$L,
                                          constraints(x)$L,
                                          constraints(x)$dir,
                                          constraints(x)$rhs,
@@ -13,7 +13,7 @@
 }
 
 .solve_MILP.symphony <- function(x, control) {
-    out <- Rsymphony::Rsymphony_solve_LP(terms(objective(x)),
+    out <- Rsymphony::Rsymphony_solve_LP(terms(objective(x))$L,
                                          constraints(x)$L,
                                          constraints(x)$dir,
                                          constraints(x)$rhs,
@@ -27,7 +27,7 @@
 ## CANONICALIZER
 .canonicalize_solution.symphony <- function(out, x) {
     status <- .canonicalize_status(out$status, class(out)[1])
-    .make_MIP_solution(out$solution, out$opjval, status)
+    .make_MIP_solution(out$solution, out$objval, status)
 }
 
 ## STATUS CODES

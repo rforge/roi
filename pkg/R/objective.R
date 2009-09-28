@@ -6,6 +6,12 @@
 ## get objective function from problem object
 ## returns a function!
 ## FIXME: use a super class 'optimization_problem'?
+objective.LP <- function( x, ... )
+  as.function( x$objective )
+
+objective.QP <- function( x, ... )
+  as.function( x$objective )
+
 objective.MILP <- function( x, ... )
   as.function( x$objective )
 
@@ -18,14 +24,19 @@ objective.MIQCP <- function( x, ... )
 objective.MINLP <- function( x, ... )
   as.function( x$objective )
 
-terms.function <- function( x, ... )
-  terms(as.L_objective(x))
+terms.function <- function( x, ... ){
+  if(inherits(x, "L_objective"))
+    return( terms(as.L_objective(x)) )
+  if(inherits(x, "Q_objective"))
+    return( terms(as.Q_objective(x)) )
+  NA
+}
 
 terms.L_objective <- function( x, ... )
-  x$L
+  list( L = x$L )
 
 terms.Q_objective <- function( x, ... )
-  list( x$Q, x$L )
+  list( Q = x$Q, L = x$L )
 
 ###############################################################
 ## linear objectives
@@ -36,9 +47,11 @@ L_objective <- function( L ) {
 }
 
 as.function.L_objective <- function( x, ... ){
-  L <- terms(x)
-  function(x)
-    crossprod(L, x) 
+  L <- terms(x)[["L"]]
+  out <- function(x)
+    crossprod(L, x)
+  class(out) <- c(class(out), class(x))
+  out
 }
 
 as.L_objective.L_objective <- function( x, ... )
@@ -48,43 +61,52 @@ as.L_objective.numeric <- function( x, ... )
   L_objective( x )
 
 as.L_objective.Q_objective <- function( x, ... )
-  L_objective( terms(x)$L )
+  L_objective( terms(x)[["L"]])
 
-as.L_objective.function <- function( x, ... )
+as.L_objective.function <- function( x, ... ){
+  if( !inherits(x, "objective") )
+    stop("'x' must be a function which inherits from 'objective'")
   L_objective( get("L", environment(x)) )
+}
 
 ###############################################################
 ## quadratic objectives
 
 Q_objective <- function( Q, L = NULL ) {
   
-  structure ( list(L = as.numeric(L),
-                   Q = as.simple_triplet_matrix(Q)),
+  structure ( list(Q = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
+                   L = as.numeric(L)),
               class = c("Q_objective", "objective") )
 }
 
 as.function.Q_objective <- function( x, ... ){
-  L <- terms(x)$L
-  Q <- terms(x)$Q
-  function(x)
-    crossprod(L, x) + .xtQx(Q, x)
+  L <- terms(x)[["L"]]
+  Q <- terms(x)[["Q"]]
+  out <- function(x)
+    crossprod(L, x) + 0.5 * .xtQx(Q, x)
+  class(out) <- c(class(out), class(x))
+  out
 }
 
-as.Q_objective.function <- function( x, ... )
+as.Q_objective.function <- function( x, ... ){
+  if( !inherits(x, "objective") )
+    stop( "'x' must be a function which inherits from 'objective'" )
+  L_objective( get("L", environment(x)) )
   Q_objective( L = get("L", environment(x)),
                Q = get("Q", environment(x)) )
+}
 
 as.Q_objective.matrix <- function( x, ... )
-  Q_objective(x)
+  Q_objective( Q = x)
 
 as.Q_objective.numeric <- function( x, ... )
-  Q_objective(matrix(x))
+  Q_objective( Q = matrix(x))
 
 as.Q_objective.Q_objective <- function( x, ... )
   identity(x)
 
 as.Q_objective.simple_triplet_matrix <- function( x, ... )
-  Q_objective(x)
+  Q_objective(Q = x)
   
 ###############################################################
 ## general objectives

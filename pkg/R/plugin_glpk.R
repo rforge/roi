@@ -2,7 +2,7 @@
 
 ## SOLVER METHODS
 .solve_LP.glpk <- function( x, control ) {
-    out <- Rglpk::Rglpk_solve_LP(terms(objective(x)),
+    out <- Rglpk::Rglpk_solve_LP(terms(objective(x))[["L"]],
                                  constraints(x)$L,
                                  constraints(x)$dir,
                                  constraints(x)$rhs,
@@ -14,7 +14,7 @@
 
 
 .solve_MILP.glpk <- function( x, control ) {
-    out <- Rglpk::Rglpk_solve_LP(terms(objective(x)),
+    out <- Rglpk::Rglpk_solve_LP(terms(objective(x))[["L"]],
                                  constraints(x)$L,
                                  constraints(x)$dir,
                                  constraints(x)$rhs,

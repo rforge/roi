@@ -19,7 +19,7 @@ function(solution, objval, status, ...)
               class = "MIP_solution")
 
 
-.canonicalize_status <- function(solver, status){
+.canonicalize_status <- function(status, solver){
   msg <- get_status_message_from_db(solver, status)
   list(code = msg$roi_code, msg = msg)
 }

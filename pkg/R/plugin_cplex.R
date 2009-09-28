@@ -43,10 +43,14 @@ function(x, control)
     if(!is.null(x$bounds))
         stop("Solver currently does not support variable bounds.")
     ## </FIXME>
-
+    
     sense <- .as_Rcplex_sense(constraints(x)$dir)
 
-    types <- .expand_types(x$types, length(terms(objective(x))$L))
+    n_obj <- ifelse( !is.null(terms(objective(x))$Q),
+                     dim(terms(objective(x))$Q)[1],
+                     length(terms(objective(x))$L))
+    
+    types <- .expand_types(x$types, n_obj)
 
     mat <- constraints(x)$L
     ## FIXME: always simple triplet matrix with problem constructors
@@ -66,8 +70,8 @@ function(x, control)
     value_is_list_of_solutions <- !identical(as.integer(nos), 1L)
 
     out <-
-        tryCatch(Rcplex::Rcplex(Qmat = objective(x)$Q,
-                                cvec = objective(x)$L,
+        tryCatch(Rcplex::Rcplex(Qmat = terms(objective(x))$Q,
+                                cvec = terms(objective(x))$L,
                                 Amat = mat,
                                 sense = sense,
                                 bvec = constraints(x)$rhs,
@@ -92,10 +96,11 @@ function(x, control)
         out <- .make_MIP_solution(solution, objval, status)
         if(value_is_list_of_solutions) out <- list(out)
     } else {
+        class(out) <- c(class(x), class(out))
         out <- if(value_is_list_of_solutions)
-            lapply(out, .canonicalize_solution_from_cplex, x)
+            lapply( out, .canonicalize_solution(out, x) )
         else
-            .canonicalize_solution_from_cplex(out, x)
+            .canonicalize_solution(out, x)
     }
     out
 }

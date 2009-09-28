@@ -13,7 +13,7 @@
         stop("Solver currently does not support variable bounds.")
     ## </FIXME>
 
-    types <- .expand_types(x$types, length(terms(objective(x))))
+    types <- .expand_types(x$types, length(terms(objective(x))[["L"]]))
 
     ## Version 5.6.1 of lpSolve has added sparse matrix support via
     ## formal 'dense.const' as well as binary variable types.
@@ -33,7 +33,7 @@
             mat$v <- c(mat$v, rep.int(0, len))
         }
         lpSolve::lp(if(x$maximum) "max" else "min",
-                    terms(objective(x)),
+                    terms(objective(x))[["L"]],
                     const.dir = constraints(x)$dir,
                     const.rhs = constraints(x)$rhs,
                     int.vec = which(types == "I"),
@@ -41,7 +41,7 @@
                     dense.const = cbind(mat$i, mat$j, mat$v))
     } else {
         lpSolve::lp(if(x$maximum) "max" else "min",
-                    terms(objective(x)),
+                    terms(objective(x))[["L"]],
                     as.matrix(mat),
                     constraints(x)$dir,
                     constraints(x)$rhs,
