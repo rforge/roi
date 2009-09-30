@@ -47,6 +47,22 @@ is.QP <- function( x ) {
 }
 
 ###############################################################
+## Mixed integer quadratically constraint  program (MIQCP)
+
+QCP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){
+  structure(list(objective = as.Q_objective(objective),
+                 constraints = as.Q_constraint(constraints), 
+                 bounds = bounds,
+                 types = types,
+                 maximum = maximum),
+            class = "QCP")
+}
+
+is.QCP <- function( x ) {
+  inherits( x, "QCP" )
+}
+
+###############################################################
 ## Mixed integer linear program (MILP)
 
 MILP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){

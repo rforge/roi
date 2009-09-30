@@ -2,7 +2,7 @@
 
 ## Problem types which can be handled by 'ROI':
 available_problem_types <- function( )
-  c( "LP", "QP", "QCP", "MILP", "MIQP" ) #, "NLP", "MIQCP", "MINLP")
+  c( "LP", "QCP", "QP", "MILP", "MIQCP", "MIQP" ) #, "NLP", "MINLP")
 
 ## we have three necessary arguments in this function:
 ##  * solver)  the name of the solver
@@ -68,17 +68,17 @@ get_solver_option_from_db <- function(solver, option) {
   solver_db$get_entry(solver = solver)[[option]]
 }
 
-## searches for available solver plugins and returns the names of
+## search for available solver plugins and return the names of
 ## the solvers found
 available_solver_plugins <- function(){
   ## solvers registered
-  registered_solvers <- get_solvers_from_db()
-  names(registered_solvers) <-  get_solver_packages_from_db( )[registered_solvers]
+  registered_solvers <- get_solver_packages_from_db()
+
   ## solver packages installed
   pkgs_installed <- rownames( utils::installed.packages() )
+
   if( !is.null(pkgs_installed) )
-    registered_solvers[ pkgs_installed[ pkgs_installed %in% get_solver_packages_from_db() ] ]
+    names(registered_solvers[registered_solvers %in% pkgs_installed])
   else
     NA
 }
-

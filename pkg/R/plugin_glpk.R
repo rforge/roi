@@ -1,4 +1,5 @@
 ## ROI plugin: GLPK
+## based on Rglpk interface
 
 ## SOLVER METHODS
 .solve_LP.glpk <- function( x, control ) {

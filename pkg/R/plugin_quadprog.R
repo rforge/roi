@@ -1,5 +1,5 @@
-## ROI plugin: CPLEX
-## based on Rcplex interface
+## ROI plugin: quadprog
+## based on quadprog interface
 
 ## SOLVER METHODS
 .solve_LP.quadprog <- function( x, control ) {
@@ -7,9 +7,12 @@
 }
 
 .solve_QP.quadprog <- function( x, control ) {
-  ## FIXME: currently we have no support for variable bounds
-  if( length(x$bounds) )
-    warning( "no bounds support yet" )
+  ## add constraints made from variable bounds
+  if( length(bounds(x)) )
+    constraints(x) <- rbind(constraints(x),
+                            .make_box_constraints_from_bounds(bounds(x),
+                                        dim(terms(objective(x))$Q)[1]) )
+  ## solve the QP
   out <- .quadprog_solve_QP(Q = terms(objective(x))$Q,
                             L = terms(objective(x))$L,
                             mat = constraints(x)$L,
@@ -26,8 +29,8 @@
   ## Description:
   ##   Goldfarb and Idnani's quadprog solver function
   ## Note:
-  ##   Requires to load contributed R package quadprog from which we directly use
-  ##   the Fortran subroutine of the quadratic solver.
+  ##   Requires to load contributed R package quadprog from which we
+  ##   directly use the Fortran subroutine of the quadratic solver.
 
   ind_eq  <- which( dir == "==")
   ind_geq <- which( (dir == ">=") | (dir == ">") )
@@ -50,7 +53,10 @@
   }
   ## quadprog uses mat^T in the constraints
   Amat <- t(Amat)
-
+  ## replace Inf with .Machine$double.xmax
+  Amat[ is.infinite(Amat) & (Amat <= 0) ] <- -.Machine$double.xmax
+  Amat[ is.infinite(Amat) & (Amat >= 0) ] <-  .Machine$double.xmax
+  
   ## dvec in objective function according to direction of optimization
   dvec <- if( max )
     L
@@ -91,7 +97,7 @@
            nact = 0L,
            iter = rep(0L, 2L),
            work = as.double(work),
-           ierr = 0L,
+           ierr = 0L, NAOK = TRUE,
            PACKAGE = "quadprog")  
 }
 

@@ -36,7 +36,7 @@ solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
   ## CPLEX
   ROI_register_plugin( ROI_plugin(solver = "cplex",
                                   package = "Rcplex",
-                                  types = c("LP", "MILP", "QP", "MIQP"),
+                                  types = c("LP", "MILP", "QP", "MIQP", "QCP", "MIQCP"),
                                   status_codes = ROI:::.add_cplex_status_codes,
                                   multiple_solutions = TRUE
                                   ) )

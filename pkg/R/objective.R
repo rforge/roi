@@ -6,22 +6,25 @@
 ## get objective function from problem object
 ## returns a function!
 ## FIXME: use a super class 'optimization_problem'?
-objective.LP <- function( x, ... )
+objective.LP <- function( x )
   as.function( x$objective )
 
-objective.QP <- function( x, ... )
+objective.QCP <- function( x )
   as.function( x$objective )
 
-objective.MILP <- function( x, ... )
+objective.QP <- function( x )
   as.function( x$objective )
 
-objective.MIQP <- function( x, ... )
+objective.MILP <- function( x )
   as.function( x$objective )
 
-objective.MIQCP <- function( x, ... )
+objective.MIQP <- function( x )
   as.function( x$objective )
 
-objective.MINLP <- function( x, ... )
+objective.MIQCP <- function( x )
+  as.function( x$objective )
+
+objective.MINLP <- function( x )
   as.function( x$objective )
 
 terms.function <- function( x, ... ){

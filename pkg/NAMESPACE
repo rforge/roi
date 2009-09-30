@@ -1,29 +1,28 @@
 ###############################################################
 ## imports
-## we use several functions from package 'slam'
+## we use several functions of package 'slam'
 import("slam")
 
 ###############################################################
 ## ROI_solve (roi.R)
-## FIXME: for the time being we only export MILP and MIQP 
 
 export("ROI_solve")
 
 S3method("ROI_solve", "LP")
+S3method("ROI_solve", "MIQCP")
 S3method("ROI_solve", "MILP")
-S3method("ROI_solve", "QP")
 S3method("ROI_solve", "MIQP")
+S3method("ROI_solve", "QCP")
+S3method("ROI_solve", "QP")
 
 ###############################################################
-## LP and MILP (constructors.R)
+## problem class constructors (constructors.R)
 export("LP")
 export("MILP")
+export("MIQP")
+export("MIQCP")
+export("QCP")
 export("QP")
-export("MIQP")
-
-###############################################################
-## QP and MIQP (constructors.R)
-export("MIQP")
 
 ###############################################################
 ## solver methods (plugin_<solver>.R)
@@ -33,13 +32,17 @@ S3method(".solve_LP", "lpsolve")
 S3method(".solve_LP", "glpk")
 S3method(".solve_LP", "symphony")
 
+S3method(".solve_QCP", "cplex")
+
+S3method(".solve_QP", "cplex")
+S3method(".solve_QP", "quadprog")
+
 S3method(".solve_MILP", "cplex")
 S3method(".solve_MILP", "lpsolve")
 S3method(".solve_MILP", "glpk")
 S3method(".solve_MILP", "symphony")
 
-S3method(".solve_QP", "cplex")
-S3method(".solve_QP", "quadprog")
+S3method(".solve_MIQCP", "cplex")
 
 S3method(".solve_MIQP", "cplex")
 
@@ -67,8 +70,11 @@ S3method("as.Q_objective", "Q_objective")
 S3method("as.Q_objective", "simple_triplet_matrix")
 
 S3method("objective", "LP")
+S3method("objective", "QCP")
 S3method("objective", "QP")
+
 S3method("objective", "MILP")
+S3method("objective", "MIQCP")
 S3method("objective", "MIQP")
 
 S3method("terms", "function")
@@ -80,8 +86,12 @@ S3method("terms", "Q_objective")
 
 export("as.constraint",
        "constraints",
+       "constraints<-",
+       "bounds",
+       "bounds<-",
        "L_constraint",
-       "Q_constraint")
+       "Q_constraint",
+       "V_bound")
 
 S3method("as.L_constraint", "L_constraint")
 S3method("as.L_constraint", "list")
@@ -93,13 +103,49 @@ S3method("as.Q_constraint", "list")
 S3method("as.constraint", "L_constraint")
 S3method("as.constraint", "Q_constraint")
 
+S3method("as.list", "V_bound")
+
+S3method("bounds", "LP")
+S3method("bounds", "QCP")
+S3method("bounds", "QP")
+
+S3method("bounds", "MILP")
+S3method("bounds", "MIQCP")
+S3method("bounds", "MIQP")
+
+S3method("bounds<-", "LP")
+S3method("bounds<-", "QCP")
+S3method("bounds<-", "QP")
+
+S3method("bounds<-", "MILP")
+S3method("bounds<-", "MIQCP")
+S3method("bounds<-", "MIQP")
+
+S3method("constraints", "LP")
+S3method("constraints", "QCP")
+S3method("constraints", "QP")
+
 S3method("constraints", "MILP")
+S3method("constraints", "MIQCP")
 S3method("constraints", "MIQP")
+
+S3method("constraints<-", "LP")
+S3method("constraints<-", "QCP")
+S3method("constraints<-", "QP")
+
+S3method("constraints<-", "MILP")
+S3method("constraints<-", "MIQCP")
+S3method("constraints<-", "MIQP")
+
+S3method("constraints", "LP")
 
 S3method("length", "L_constraint")
 S3method("length", "Q_constraint")
 
+S3method("rbind", "L_constraint")
+
 S3method("print", "constraint")
+
 
 ###############################################################
 ## Further S3 Methods (sorted alphabetically)

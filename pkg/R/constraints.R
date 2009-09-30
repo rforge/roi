@@ -1,22 +1,203 @@
 ## constraints.R
+## includes 'bounds' and 'constraints'
 
-###############################################################
+################################################################################
+## 'bounds'
+
+################################################################################
+## 'V_bound' constructor
+
+## li   ... lower bound indices
+## ui   ... upper bound indices
+## lb   ... lower bound values
+## ub   ... upper bound values
+## nobj ... number of objective variables
+V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
+  li <- as.integer(li)
+  ui <- as.integer(ui)
+  lb <- as.double(lb)
+  ub <- as.double(ub)
+  ## Sanity checking
+  if( (length(li) != length(lb)) || (length(ui) != length(ub)) )
+    stop("length of indices must be equal to the length of the corresponding values.")
+  if( any(duplicated(li)) || any(duplicated(ui)) )
+    stop("duplicated entries in indices.")
+  if( (max(li) > nobj) || (max(ui) > nobj) )
+    stop("indices must not exceed number of objective coefficients.")
+    if( any(lb >= Inf) )
+      stop("lower bound cannot be 'Inf'.")
+  if( any(ub <= -Inf) )
+      stop("upper bounds cannot be '-Inf'.")
+  ## FIXME: lower bounds vs. upper bounds -> lb cannot be higher than ub and
+  ##        the other way round
+  structure( list(lower = list(ind = li, val = lb),
+                  upper = list(ind = ui, val = ub),
+                  nobj = as.integer(nobj)),
+            class = "V_bound" )
+}
+
+as.list.V_bound <- function( x )
+  unclass( x )
+
+################################################################################
+## 'bounds' extractor functions
+
+bounds.LP <- function( x )
+  x$bounds
+
+bounds.QCP <- function( x )
+  x$bounds
+
+bounds.QP <- function( x )
+  x$bounds
+
+bounds.MILP <- function( x )
+  x$bounds
+
+bounds.MIQCP <- function( x )
+  x$bounds
+
+bounds.MIQP <- function( x )
+  x$bounds
+
+bounds.MINLP <- function( x )
+  x$bounds
+
+################################################################################
+## 'constraints' replacement functions
+
+'bounds<-.LP' <- function( x, value ) {
+  if(is.null(value))
+    value <- .make_empty_bounds()
+  x$bounds <- value
+  x
+}
+
+'bounds<-.QCP' <- function( x, value ) {
+  if(is.null(value))
+    value <- .make_empty_bounds()
+  x$bounds <- value
+  x
+}
+
+'bounds<-.QP' <- function( x, value ) {
+  if(is.null(value))
+    value <- .make_empty_bounds()
+  x$bounds <- value
+  x
+}
+
+'bounds<-.MILP' <- function( x, value ){
+  if(is.null(value))
+    value <- .make_empty_bounds()
+  x$bounds <- value
+  x
+}
+
+'bounds<-.MIQCP' <- function( x, value ){
+  if(is.null(value))
+    value <- .make_empty_bounds()
+  x$bounds <- value
+  x
+}
+
+'bounds<-.MIQP' <- function( x, value ){
+  if(is.null(value))
+    value <- .make_empty_bounds()
+  x$bounds <- value
+  x
+}
+
+'bounds<-.MINLP' <- function( x, value ){
+  if(is.null(value))
+    value <- .make_empty_bounds()
+  x$bounds <- value
+  x
+}
+
+                    
+################################################################################
+## 'constraints'
+
+################################################################################
+## 'constraints' extractor functions
+
+## we definitely need a superclass to facilitate extraction
+constraints.LP <- function( x )
+  x$constraints
+
+constraints.QCP <- function( x )
+  x$constraints
+
+constraints.QP <- function( x )
+  x$constraints
+
+constraints.MILP <- function( x )
+  x$constraints
+
+constraints.MIQCP <- function( x )
+  x$constraints
+
+constraints.MIQP <- function( x )
+  x$constraints
+
+constraints.MINLP <- function( x )
+  x$constraints
+
+################################################################################
+## 'constraints' replacement functions
+
+'constraints<-.LP' <- function( x, value ) {
+  if(is.null(value))
+    value <- L_constraint(L = NULL, dir = NULL, rhs = NULL)
+  x$constraints <- as.constraint(value)
+  x
+}
+
+'constraints<-.QCP' <- function( x, value ) {
+  if(is.null(value))
+    value <- Q_constraint(Q = NULL, L = NULL, dir = NULL, rhs = NULL)
+  x$constraints <- as.constraint(value)
+  x
+}
+
+'constraints<-.QP' <- function( x, value ) {
+  if(is.null(value))
+    value <- L_constraint(L = NULL, dir = NULL, rhs = NULL)
+  x$constraints <- as.constraint(value)
+  x
+}
+
+'constraints<-.MILP' <- function( x, value ){
+  if(is.null(value))
+    value <- L_constraint(L = NULL, dir = NULL, rhs = NULL)
+  x$constraints <- as.constraint(value)
+  x
+}
+
+'constraints<-.MIQCP' <- function( x, value ){
+  if(is.null(value))
+    value <- Q_constraint(Q = NULL, L = NULL, dir = NULL, rhs = NULL)
+  x$constraints <- as.constraint(value)
+  x
+}
+
+'constraints<-.MIQP' <- function( x, value ){
+  if(is.null(value))
+    value <- L_constraint(L = NULL, dir = NULL, rhs = NULL)
+  x$constraints <- as.constraint(value)
+  x
+}
+
+'constraints<-.MINLP' <- function( x, value ){
+  if(is.null(value))
+    value <- F_constraint(F = NULL, dir = NULL, rhs = NULL)
+  x$constraints <- as.constraint(value)
+  x
+}
+
+################################################################################
 ## constraint helper functions
-
-constraints.LP <- function( x, ... )
-  x$constraints
-
-constraints.QP <- function( x, ... )
-  x$constraints
-
-constraints.MILP <- function( x, ... )
-  x$constraints
-
-constraints.MIQP <- function( x, ... )
-  x$constraints
-
-constraints.MINLP <- function( x, ... )
-  x$constraints
 
 as.rhs.numeric <- function( x, ... )
   x
@@ -30,31 +211,26 @@ as.constraint.Q_constraint <- function( x, ... )
 as.constraint.F_constraint <- function( x, ... )
   identity(x)
 
-
-##c.constraint <- function( ..., recursive = FALSE ) {
-##  
-##  any(is.NCP
-##  constraints
-##}
+.make_empty_bounds <- function( x )
+  NULL
 
 print.constraint <- function( x, ... ){
   len <- length(x)
-  if( is.NCP(x) )
-    writeLines( c(sprintf("A set of %d constraints.", len),
-                  "Some constraints are of type nonlinear.") )
+  if( is.L_constraint(x) )
+    writeLines( sprintf("An object containing %d linear constraints.", len) )
   else
-    if( is.QCP(x) )
-      writeLines( c(sprintf("A set of %d constraints.", len),
-                  "Some constraints are of type quadratic.") )
-  
+    if( is.Q_constraint(x) )
+      writeLines( c(sprintf("An object containing %d constraints.", len),
+                            "Some constraints are of type quadratic.") )
     else
-      writeLines( sprintf("A set of %d linear constraints.", len) )
+      writeLines( c(sprintf("An object containing %d constraints.", len),
+                            "Some constraints are of type nonlinear.") )
   
   invisible(x)
 }
 
 
-###############################################################
+################################################################################
 ## Linear constraints (class 'L_constraint')
 ##  Ax ~ b
 
@@ -84,12 +260,16 @@ as.L_constraint.list <- function( x, ... ){
   L_constraint( L = x$L, dir = x$dir, rhs = x$rhs )
 }
 
+is.L_constraint <- function( x ) {
+  inherits( x, "L_constraint" )
+}
+
 ## combining matrices (see 'rbind' in matrix.R, package relation)
 rbind.L_constraint <- function( ..., recursive = FALSE ){
-  constraints <- lapply(list(...), ROI:::as.L_constraint)
+  constraints <- lapply(list(...), as.L_constraint)
   L   <- lapply( constraints, function (x) as.simple_triplet_matrix(x$L) )
   dir <- lapply( constraints, function (x) as.character(x$dir) )
-  rhs <- lapply( constraints, function (x) ROI:::as.rhs(x$rhs) )
+  rhs <- lapply( constraints, function (x) as.rhs(x$rhs) )
   L_constraint( L =   Reduce(function(x, y) rbind(x, y), L),
                 dir = Reduce(function(x, y) c(x, y), dir),
                 rhs = Reduce(function(x, y) c(x, y), rhs) )
@@ -109,7 +289,7 @@ as.L_term.matrix <- function( x, ... )
 as.L_term.simple_triplet_matrix <- function( x, ... )
   x
 
-###############################################################
+################################################################################
 ## Quadratic constraints (class 'Q_constraint')
 ## list of constraints of the form a'x + x'Qx ~ b
 
@@ -143,13 +323,17 @@ as.Q_constraint.list <- function( x, ... ){
   Q_constraint( Q = x$Q, L = x$L, dir = x$dir, rhs = x$rhs )
 }
 
+is.Q_constraint <- function( x ) {
+  inherits( x, "Q_constraint" )
+}
+
 length.Q_constraint <- function(x)
   x$n_Q_constraints
 
 ## the quadratic term of the left hand side
 
 as.Q_term.list <- function( x )
-  lapply( x, as.simple_triplet_matrix )
+  lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
 
 as.Q_term.numeric <- function( x )
   list( as.simple_triplet_matrix( matrix(x)) )
@@ -170,10 +354,7 @@ as.Q_term.simple_triplet_matrix <- function( x )
 ##  Q_constraint()
 ##}
 
-is.QCP <- function(x)
-  inherits(x, "Q_constraint")
-
-###############################################################
+################################################################################
 ## Function constraints (class 'F_constraint')
 ## list of constraints of the form f(x) ~ b
 
@@ -202,50 +383,87 @@ as.F_term.function <- function(x)
 as.F_term.list <- function(x)
   lapply( x, as.function )
 
-## does the constraint object include nonlinear constraints
-is.NCP <- function(x)
-  inherits(x, "F_constraint")
-
 ## create box constraints, i.e. lower and upper bounds
 ## when solver doesn't support this feature
 
-.add_box_constraints_to_MIP <- function(x, negative = TRUE){
-  upper <- bounds(x)$upper
-  lower <- bounds(x)$lower
+.make_box_constraints_from_bounds_in_MIP <- function(x, negative = TRUE){
+  ## FIXME: we really need an extractor for the number of objective vars
+  ##        this only works for sure with linear objectives
   n_obj <- length(terms(objective(x))$L)
 
   if(negative) {
-    ## if negative == TRUE then defaults are upper bound Inf, lower bound -Inf
-    
-    ## create lhs upper bound 
-    lhs_upper <- simple_triplet_matrix( i = upper$ind,
-                                        j = upper$ind,
-                                        v = rep(1, length(upper$ind)),
-                                        nrow = n_obj,
-                                        ncol = n_obj)
-    ## create lhs lower bound 
-    lhs_lower <- simple_triplet_matrix( i = lower$ind,
-                                        j = lower$ind,
-                                        v = rep(1, length(lower$ind)),
-                                        nrow = n_obj,
-                                        ncol = n_obj)
-
-    ## FIXME: should be replaced with 'constraints<-' in the future
-    x$constraints <- rbind( constraints(x),
-                            L_constraint(L = lhs_upper[upper$ind, ],
-                                         dir = rep("<=", length(upper$ind)),
-                                         rhs = upper$val),
-                            L_constraint(L = lhs_lower[lower$ind, ],
-                                         dir = rep(">=", length(lower$ind)),
-                                         rhs = lower$val) )
+    ## if negative TRUE, then solver defaults are:
+    ## lower bound -Inf, upper bound Inf
+    constraints(x) <- rbind( constraints(x),
+                             .make_box_constraints_from_bounds(bounds(x),
+                                                               n_obj) )
     ## just in case: be sure that solver uses (-oo, oo)
-    x$bounds <- list( lower = list(ind = 1:n_obj, val = rep(-Inf, n_obj)) )
+    bounds(x) <- list( lower = list(ind = 1:n_obj, val = rep(-Inf, n_obj)) )
+    
   } else {
-    ind_up_neg  <- which(upper$val < 0)
-    ind_low_neg <- which(lower$val < 0)
-
-    
-    
+    ## if negative FALSE , then solver defaults are
+    ## lower bound 0, upper bound Inf (e.g. lpsolve)
+    ## TODO: formulate constraints in case the solver only understands
+    ##       bounds between 0 and Inf
+    if( ! any(bounds(x)$lower$val < 0) ) {
+      constraints(x) <- rbind( constraints(x),
+                              .make_box_constraints_from_bounds(bounds(x),
+                                                                n_obj) )
+##    upper <- bounds(x)$upper
+##    lower <- bounds(x)$lower
+##   
+##    ## first: which bounds are nonpositve?
+##    ind_low_neg <- which( lower$val <= 0 )
+##        ind_up_neg  <- which( upper$val <= 0 )
+##    ## lower bounds not included are 0, thus adding
+##    ind_low_neg <- c( ind_low_neg, (1:n_obj)[ -lower$ind] )
+##    
+##    both_neg <- ind_up_neg[ind_up_neg %in% ind_low_neg]
+##    ## this is easy: simple -x_i everwhere
+##    if(length(both_neg)) {
+##      constr_both <- .make_box_constraints_from_bounds(
+##                       V_bound(bounds(x)$lower$ind[both_neg],
+##                               bounds(x)$upper$ind[both_neg],
+##                               bounds(x)$lower$val[both_neg],
+##                               bounds(x)$upper$val[both_neg]),
+##                       n_obj,
+##                       reverse = TRUE )
+##      constraints(x) <- rbind( constraints(x), constr_both )
+    } else
+    stop("bounds of this type are currently not supported with this solver.")
   }
   x
 }
+
+.make_box_constraints_from_bounds <- function( x, n_obj,
+                                               reverse = FALSE ) {
+  ## create lhs upper bound 
+  lhs_upper <- simple_triplet_matrix( i = x$upper$ind,
+                                      j = x$upper$ind,
+                                      v = rep(1, length(x$upper$ind)),
+                                      nrow = n_obj,
+                                      ncol = n_obj )
+  ## create lhs lower bound 
+  lhs_lower <- simple_triplet_matrix( i = x$lower$ind,
+                                      j = x$lower$ind,
+                                      v = rep(1, length(x$lower$ind)),
+                                      nrow = n_obj,
+                                      ncol = n_obj )
+  ## default constraint direction and multiplicator 
+  d_l <- ">="
+  d_u <- "<="
+  m <- 1
+  if(reverse){
+    ## reverse constraint direction and multiplicator 
+    d_l<- "<="
+    d_u<- ">="
+    m <- -1
+  }
+  rbind( L_constraint(L = lhs_upper[x$upper$ind, ],
+                      dir = rep(d_u, length(x$upper$ind)),
+                      rhs = m * x$upper$val),
+        L_constraint(L = lhs_lower[x$lower$ind, ],
+                     dir = rep(d_l, length(x$lower$ind)),
+                     rhs = m * x$lower$val) )
+}
+

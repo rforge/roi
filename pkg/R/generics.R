@@ -8,14 +8,20 @@
 .solve_LP <- function( x, control )
   UseMethod(".solve_LP")
 
-.solve_MILP <- function( x, control )
-  UseMethod(".solve_MILP")
-
-.solve_MIQP <- function( x, control )
-  UseMethod(".solve_MIQP")
+.solve_QCP <- function( x, control )
+  UseMethod(".solve_QCP")
 
 .solve_QP <- function( x, control )
   UseMethod(".solve_QP")
+
+.solve_MILP <- function( x, control )
+  UseMethod(".solve_MILP")
+
+.solve_MIQCP <- function( x, control )
+  UseMethod(".solve_MIQCP")
+
+.solve_MIQP <- function( x, control )
+  UseMethod(".solve_MIQP")
 
 as.constraint <- function( x, ... )
   UseMethod("as.constraint")
@@ -56,8 +62,17 @@ as.Q_term <- function(x, ...)
 as.rhs <- function(x, ...)
   UseMethod("as.rhs")
 
-constraints <- function(x, ...)
+bounds <- function( x )
+  UseMethod("bounds")
+
+'bounds<-' <- function( x, value )
+  UseMethod("bounds<-")
+
+constraints <- function( x )
   UseMethod("constraints")
 
-objective <- function(x, ...)
+'constraints<-' <- function( x, value )
+  UseMethod("constraints<-")
+
+objective <- function( x )
   UseMethod("objective")

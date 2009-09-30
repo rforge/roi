@@ -45,6 +45,27 @@ solve_LP <- function( x, solver = NULL, control = list() ) {
 
 }
 
+.QCP_solvers <- function(){
+  db <- sapply(get_solver_types_from_db(), function(x) "QCP" %in% x)
+  names(db)[db]
+}
+
+solve_QCP <- function( x, solver = NULL, control = list() ) {  
+  ## for more notes see solve_MILP
+  ## Handle the boundary case of no variables.
+    if( !length(terms(objective(x))$L) && !length(terms(objective(x))$Q) ) {
+        y <- .solve_empty_MIP(x)
+        return(y)
+    }
+
+    solver <- match.arg(solver, .QCP_solvers())
+
+    class(x) <- c(solver, class(x))
+
+    .solve_QCP(x, control)
+
+}
+
 .QP_solvers <- function(){
   db <- sapply(get_solver_types_from_db(), function(x) "QP" %in% x)
   names(db)[db]
@@ -112,8 +133,36 @@ solve_MILP <- function( x, solver = NULL, control = list() ) {
 
 }
 
+### * MICQPs
+
+.MIQCP_solvers <- function(){
+  db <- sapply(get_solver_types_from_db(), function(x) "MIQCP" %in% x)
+  names(db)[db]
+}
+
+solve_MIQCP <-
+function(x, solver = NULL, control = list())
+{
+    ## Currently, only CPLEX can generally be used for solving MIQCPs.
+
+    ## Handle the boundary case of no variables.
+    if( !length(terms(objective(x))$L) && !length(terms(objective(x))$Q) ) {
+        y <- .solve_empty_MIP(x)
+        if(!is.null(nos <- control$n)
+           && !identical(as.integer(nos), 1L))
+            y <- list(y)
+        return(y)
+    }
+
+    solver <- match.arg(solver, .MIQCP_solvers())
+
+    class(x) <- c(solver, class(x))
+
+    .solve_MIQCP(x, control)
+
+}
+
 ### * MIQPs
-## ported. moved to problem_constructor.R
 
 ## get registered MILP solvers
 .MIQP_solvers <- function(){

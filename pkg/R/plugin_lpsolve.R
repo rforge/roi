@@ -1,4 +1,12 @@
 ## ROI plugin: lp_solve
+## based on lpSolve interface
+
+## FIXME: we should really switch to lpsolveAPI since lpSolve
+##        1) returns wrong results, especially for large scale or
+##           complex proplems
+##        2) does support neither, -Inf, Inf nor any reasonable
+##           replacement like .Machine$double.xmax
+##        3) solutions only take nonnegative values 
 
 ## SOLVER METHODS
 .solve_LP.lpsolve <- function( x, control ) {
@@ -9,8 +17,9 @@
     ## Currently, no direct support for bounds.
     ## <FIXME>
     ## Should rewrite the given bounds into additional constraints.
+    ## partially solved -> 0, Inf box constraints available
     if(!is.null(x$bounds))
-        stop("Solver currently does not support variable bounds.")
+      x <- .make_box_constraints_from_bounds_in_MIP(x, negative = FALSE)
     ## </FIXME>
 
     types <- .expand_types(x$types, length(terms(objective(x))[["L"]]))
@@ -18,7 +27,8 @@
     ## Version 5.6.1 of lpSolve has added sparse matrix support via
     ## formal 'dense.const' as well as binary variable types.
     mat <- constraints(x)$L
-    ## FIXME: problem constructors stores matrices always as simple_triplet_matrix!
+    ## FIXME: problem constructors stores matrices always as
+    ## simple_triplet_matrix!
     out <- if(is.simple_triplet_matrix(mat)) {
         ## In the sparse case, lpSolve currently (2008-11-22) checks
         ## that every constraint is used in the sense that each row has
