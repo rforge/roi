@@ -1,7 +1,10 @@
 ## ROI plugin: CPLEX
 ## based on Rcplex interface
 
-## basic structure of a plugin:\
+## TODO: provide a separate package ROI_plugin_cplex?
+
+## TODO: There should be a vignette on creating ROI plugins
+## basic structure of a plugin:
 ## * a corresponding solver method one has to be provided for each problem type
 ##   e.g., for solving MILPs with cplex: .solve_MILP.cplex
 ## * a solution canonicalizer has to be provided
