@@ -9,11 +9,15 @@
 .solve_QP.quadprog <- function( x, control ) {
   ## add constraints made from variable bounds
   if( length(bounds(x)) )
-    constraints(x) <- rbind(constraints(x),
-                            .make_box_constraints_from_bounds(bounds(x),
-                                        dim(terms(objective(x))$Q)[1]) )
-  ## solve the QP
-  out <- .quadprog_solve_QP(Q = terms(objective(x))$Q,
+      constraints(x) <- rbind( constraints(x),
+                               .make_box_constraints_from_bounds(bounds(x),
+                                 dim(terms(objective(x))$Q)[1]) )
+  if( is.null(bounds(x)) )
+     constraints(x) <- rbind( constraints(x),
+                              .make_default_box_constraints(dim(terms(objective(x))$Q)[1]) )
+
+   ## solve the QP
+   out <- .quadprog_solve_QP(Q = terms(objective(x))$Q,
                             L = terms(objective(x))$L,
                             mat = constraints(x)$L,
                             dir = constraints(x)$dir,
@@ -41,14 +45,14 @@
   ## FIXME: no replacement method for 'simple_triplet_matrix[i, ]<-'
   ##       thus, coercing to 'matrix'
   Amat <- as.matrix(mat)
-  Amat[ ind_leq ] <- -Amat[ ind_leq ]
+  Amat[ ind_leq, ] <- -Amat[ ind_leq, ]
   bvec <- rhs
   bvec[ ind_leq ] <- -bvec[ ind_leq ]
 
   ## We have to sort constraints. The first meq constraints are
   ## equality constraints
   if( length(ind_eq) ) {
-    Amat <- rbind( Amat[ ind_eq ], Amat[ -ind_eq ] )
+    Amat <- rbind( Amat[ ind_eq, ], Amat[ -ind_eq, ] )
     bvec <- c( bvec[ ind_eq ], bvec[ -ind_eq ] )
   }
   ## quadprog uses mat^T in the constraints
@@ -56,7 +60,7 @@
   ## replace Inf with .Machine$double.xmax
   Amat[ is.infinite(Amat) & (Amat <= 0) ] <- -.Machine$double.xmax
   Amat[ is.infinite(Amat) & (Amat >= 0) ] <-  .Machine$double.xmax
-  
+
   ## dvec in objective function according to direction of optimization
   dvec <- if( max )
     L
@@ -72,7 +76,7 @@
   ## number objectives
   n_obj <- nrow(Dmat)
   ## number constraints
-  n_constr <- ncol(Amat) 
+  n_constr <- ncol(Amat)
 
   r = min(n_obj, n_constr)
   work = rep(0, 2 * n_obj+ r * (r + 5)/2 + 2 * n_constr + 1)
@@ -87,18 +91,19 @@
            as.integer(n_obj),
            as.integer(n_obj),
            sol = double(n_obj),
+           lagr = double(n_constr),
            crval = double(1),
            as.double(Amat),
            as.double(bvec),
            as.integer(n_obj),
            as.integer(n_constr),
            as.integer(meq),
-           iact = rep(0L, n_constr),
+           iact = integer(n_constr),
            nact = 0L,
-           iter = rep(0L, 2L),
+           iter = integer(2L),
            work = as.double(work),
            ierr = 0L, NAOK = TRUE,
-           PACKAGE = "quadprog")  
+           PACKAGE = "quadprog")
 }
 
 ## CANONICALIZER
@@ -112,22 +117,25 @@
 ## STATUS CODES
 .add_quadprog_status_codes <- function(){
   ## quadprog
-  add_status_code_to_db("quadprog", 
+  add_status_code_to_db("quadprog",
                         0L,
                         "OPTIMAL",
                         "Solution is optimal",
                         0L
                         )
-  add_status_code_to_db("quadprog", 
+  add_status_code_to_db("quadprog",
                         1L,
                         "INCONSISTENT",
                         "Constraints are inconsistent, no solution."
                         )
-  add_status_code_to_db("quadprog", 
+  add_status_code_to_db("quadprog",
                         2L,
                         "NOT_POSITIVE_DEFINITE",
                         "quadratic term in function is not positive definite."
-                        )  
+                        )
   invisible(TRUE)
 }
 
+.make_default_box_constraints <- function(n_obj){
+    L_constraint( simple_triplet_diag_matrix(1, n_obj), rep(">=", n_obj), integer(n_obj) )
+}

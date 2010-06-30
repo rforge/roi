@@ -3,7 +3,7 @@
 
 LP <- function(objective, constraints, bounds = NULL, maximum = FALSE){
   structure(list(objective = as.L_objective(objective),
-                 constraints = as.L_constraint(constraints), 
+                 constraints = as.L_constraint(constraints),
                  bounds = bounds,
                  maximum = maximum),
             class = "LP")
@@ -19,15 +19,20 @@ as.LP.MILP <- function(x){
 }
 
 is.LP <- function( x ) {
-  inherits( x, "LP" )
+    inherits( x, "LP" )
 }
 
+print.LP <- function(x, ...){
+    types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
+    writeLines( sprintf("A linear programming problem with %d constraints of type %s.", length(constraints(x)),
+                        paste(na.omit(types[class(constraints(x))]), collapse = ", ")) )
+}
 ###############################################################
 ## Quadratic program (QP)
 
 QP <- function( objective, constraints, bounds = NULL, maximum = FALSE ) {
   structure(list(objective = as.Q_objective(objective),
-                 constraints = as.L_constraint(constraints), 
+                 constraints = as.L_constraint(constraints),
                  bounds = bounds,
                  maximum = maximum),
             class = "QP")
@@ -46,12 +51,18 @@ is.QP <- function( x ) {
   inherits( x, "QP" )
 }
 
+print.QP <- function(x, ...){
+    types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
+    writeLines( sprintf("A quadratic programming problem with %d constraints of type %s.", length(constraints(x)),
+                        paste(na.omit(types[class(constraints(x))]), collapse = ", ")) )
+}
+
 ###############################################################
 ## Mixed integer quadratically constraint  program (MIQCP)
 
 QCP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){
   structure(list(objective = as.Q_objective(objective),
-                 constraints = as.Q_constraint(constraints), 
+                 constraints = as.Q_constraint(constraints),
                  bounds = bounds,
                  types = types,
                  maximum = maximum),
@@ -62,12 +73,18 @@ is.QCP <- function( x ) {
   inherits( x, "QCP" )
 }
 
+print.QCP <- function(x, ...){
+    types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
+    writeLines( sprintf("A quadratic programming problem with %d constraints of type %s.", length(constraints(x)),
+                        paste(na.omit(types[class(constraints(x))]), collapse = ", ")) )
+}
+
 ###############################################################
 ## Mixed integer linear program (MILP)
 
 MILP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){
   structure(list(objective = as.L_objective(objective),
-                 constraints = as.L_constraint(constraints), 
+                 constraints = as.L_constraint(constraints),
                  bounds = bounds,
                  types = types,
                  maximum = maximum),
@@ -88,12 +105,18 @@ is.MILP <- function( x ) {
   inherits( x, "MILP" )
 }
 
+print.MILP <- function(x, ...){
+    types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
+    writeLines( sprintf("A mixed integer linear programming problem with %d constraints of type %s.", length(constraints(x)),
+                        paste(na.omit(types[class(constraints(x))]), collapse = ", ")) )
+}
+
 ###############################################################
 ## Mixed integer quadratic program (MIQP)
 
 MIQP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){
   structure(list(objective = as.Q_objective(objective),
-                 constraints = as.L_constraint(constraints), 
+                 constraints = as.L_constraint(constraints),
                  bounds = bounds,
                  types = types,
                  maximum = maximum),
@@ -104,12 +127,18 @@ is.MIQP <- function( x ) {
   inherits( x, "MIQP" )
 }
 
+print.MIQP <- function(x, ...){
+    types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
+    writeLines( sprintf("A mixed integer quadratic programming problem with %d constraints of type %s.", length(constraints(x)),
+                        paste(na.omit(types[class(constraints(x))]), collapse = ", ")) )
+}
+
 ###############################################################
 ## Mixed integer quadratically constraint  program (MIQCP)
 
 MIQCP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){
   structure(list(objective = as.Q_objective(objective),
-                 constraints = as.Q_constraint(constraints), 
+                 constraints = as.Q_constraint(constraints),
                  bounds = bounds,
                  types = types,
                  maximum = maximum),
@@ -120,12 +149,18 @@ is.MIQCP <- function( x ) {
   inherits( x, "MIQCP" )
 }
 
+print.MIQCP <- function(x, ...){
+    types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
+    writeLines( sprintf("A mixed integer quadratic programming problem with %d constraints of type %s.", length(constraints(x)),
+                        paste(na.omit(types[class(constraints(x))]), collapse = ", ")) )
+}
+
 ###############################################################
 ## Mixed integer nonlinear program (MINLP)
 
 MINLP <- function(objective, constraints, bounds = NULL, types = NULL, maximum = FALSE){
   structure(list(objective = as.F_objective(objective),
-                 constraints = as.F_constraint(constraints), 
+                 constraints = as.F_constraint(constraints),
                  bounds = bounds,
                  types = types,
                  maximum = maximum),
@@ -153,4 +188,4 @@ is.MINLP <- function( x ) {
 ##     maximum = logical()
 ##     )
 
-             
+

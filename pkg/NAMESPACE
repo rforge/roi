@@ -24,6 +24,14 @@ export("MIQCP")
 export("QCP")
 export("QP")
 
+S3method("print", "LP")
+S3method("print", "MILP")
+S3method("print", "MIQP")
+S3method("print", "MIQCP")
+S3method("print", "QCP")
+S3method("print", "QP")
+
+
 ###############################################################
 ## solver methods (plugin_<solver>.R)
 
@@ -91,6 +99,7 @@ export("as.constraint",
        "bounds<-",
        "L_constraint",
        "Q_constraint",
+       "F_constraint",
        "V_bound")
 
 S3method("as.L_constraint", "L_constraint")
@@ -99,7 +108,7 @@ S3method("as.L_constraint", "numeric")
 
 S3method("as.Q_constraint", "Q_constraint")
 S3method("as.Q_constraint", "list")
-         
+
 S3method("as.constraint", "L_constraint")
 S3method("as.constraint", "Q_constraint")
 
@@ -141,6 +150,7 @@ S3method("constraints", "LP")
 
 S3method("length", "L_constraint")
 S3method("length", "Q_constraint")
+S3method("length", "F_constraint")
 
 S3method("rbind", "L_constraint")
 
