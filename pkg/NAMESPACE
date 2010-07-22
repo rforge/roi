@@ -59,6 +59,7 @@ S3method(".solve_MIQP", "cplex")
 
 export("as.L_objective",
        "as.Q_objective",
+       "F_objective",
        "L_objective",
        "objective",
        "Q_objective")
@@ -77,13 +78,7 @@ S3method("as.Q_objective", "numeric")
 S3method("as.Q_objective", "Q_objective")
 S3method("as.Q_objective", "simple_triplet_matrix")
 
-S3method("objective", "LP")
-S3method("objective", "QCP")
-S3method("objective", "QP")
-
-S3method("objective", "MILP")
-S3method("objective", "MIQCP")
-S3method("objective", "MIQP")
+S3method("objective", "default")
 
 S3method("terms", "function")
 S3method("terms", "L_objective")

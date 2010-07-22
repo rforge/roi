@@ -6,25 +6,7 @@
 ## get objective function from problem object
 ## returns a function!
 ## FIXME: use a super class 'optimization_problem'?
-objective.LP <- function( x )
-  as.function( x$objective )
-
-objective.QCP <- function( x )
-  as.function( x$objective )
-
-objective.QP <- function( x )
-  as.function( x$objective )
-
-objective.MILP <- function( x )
-  as.function( x$objective )
-
-objective.MIQP <- function( x )
-  as.function( x$objective )
-
-objective.MIQCP <- function( x )
-  as.function( x$objective )
-
-objective.MINLP <- function( x )
+objective.default <- function( x )
   as.function( x$objective )
 
 terms.function <- function( x, ... ){
@@ -76,7 +58,7 @@ as.L_objective.function <- function( x, ... ){
 ## quadratic objectives
 
 Q_objective <- function( Q, L = NULL ) {
-  
+
   structure ( list(Q = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
                    L = as.numeric(L)),
               class = c("Q_objective", "objective") )
@@ -110,13 +92,13 @@ as.Q_objective.Q_objective <- function( x, ... )
 
 as.Q_objective.simple_triplet_matrix <- function( x, ... )
   Q_objective(Q = x)
-  
+
 ###############################################################
 ## general objectives
 
 F_objective <- function( F ) {
   structure ( list(F = as.function(F)),
-             class = c("F_objective", "objective") ) 
+             class = c("F_objective", "objective") )
 }
 
 as.function.F_objective <- function( x, ... )

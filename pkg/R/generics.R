@@ -14,6 +14,9 @@
 .solve_QP <- function( x, control )
   UseMethod(".solve_QP")
 
+.solve_NLP <- function( x, control )
+  UseMethod(".solve_NLP")
+
 .solve_MILP <- function( x, control )
   UseMethod(".solve_MILP")
 

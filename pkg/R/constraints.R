@@ -115,7 +115,7 @@ bounds.MINLP <- function( x )
   x
 }
 
-                    
+
 ################################################################################
 ## 'constraints'
 
@@ -164,6 +164,13 @@ constraints.MINLP <- function( x )
 'constraints<-.QP' <- function( x, value ) {
   if(is.null(value))
     value <- L_constraint(L = NULL, dir = NULL, rhs = NULL)
+  x$constraints <- as.constraint(value)
+  x
+}
+
+'constraints<-.NLP' <- function( x, value ){
+  if(is.null(value))
+    value <- F_constraint(F = NULL, dir = NULL, rhs = NULL)
   x$constraints <- as.constraint(value)
   x
 }
@@ -225,7 +232,7 @@ print.constraint <- function( x, ... ){
     else
       writeLines( c(sprintf("An object containing %d constraints.", len),
                             "Some constraints are of type nonlinear.") )
-  
+
   invisible(x)
 }
 
@@ -327,6 +334,15 @@ is.Q_constraint <- function( x ) {
   inherits( x, "Q_constraint" )
 }
 
+rbind.Q_constraint <- function( ..., recursive = FALSE ){
+  constraints <- lapply(list(...), as.Q_constraint)
+  
+  
+  L_constraint( L =   Reduce(function(x, y) rbind(x, y), lapply( constraints, function (x) as.simple_triplet_matrix(x$L) )),
+                dir = Reduce(function(x, y) c(x, y), lapply( constraints, function (x) as.character(x$dir) )),
+                rhs = Reduce(function(x, y) c(x, y), lapply( constraints, function (x) as.rhs(x$rhs) )) )
+}
+
 length.Q_constraint <- function(x)
   x$n_Q_constraints
 
@@ -337,7 +353,7 @@ as.Q_term.list <- function( x )
 
 as.Q_term.numeric <- function( x )
   list( as.simple_triplet_matrix( matrix(x)) )
-  
+
 as.Q_term.matrix <- function( x )
   list( as.simple_triplet_matrix(x) )
 
@@ -347,7 +363,7 @@ as.Q_term.simple_triplet_matrix <- function( x )
 ## combine, print, and summary methods
 
 ##summary.Q_constraint <- function(x){
-##  
+##
 ##}
 
 ##c.Q_constraint <- function( ... ){
@@ -399,7 +415,7 @@ as.F_term.list <- function(x)
                                                                n_obj) )
     ## just in case: be sure that solver uses (-oo, oo)
     bounds(x) <- list( lower = list(ind = 1:n_obj, val = rep(-Inf, n_obj)) )
-    
+
   } else {
     ## if negative FALSE , then solver defaults are
     ## lower bound 0, upper bound Inf (e.g. lpsolve)
@@ -411,13 +427,13 @@ as.F_term.list <- function(x)
                                                                 n_obj) )
 ##    upper <- bounds(x)$upper
 ##    lower <- bounds(x)$lower
-##   
+##
 ##    ## first: which bounds are nonpositve?
 ##    ind_low_neg <- which( lower$val <= 0 )
 ##        ind_up_neg  <- which( upper$val <= 0 )
 ##    ## lower bounds not included are 0, thus adding
 ##    ind_low_neg <- c( ind_low_neg, (1:n_obj)[ -lower$ind] )
-##    
+##
 ##    both_neg <- ind_up_neg[ind_up_neg %in% ind_low_neg]
 ##    ## this is easy: simple -x_i everwhere
 ##    if(length(both_neg)) {
@@ -437,24 +453,24 @@ as.F_term.list <- function(x)
 
 .make_box_constraints_from_bounds <- function( x, n_obj,
                                                reverse = FALSE ) {
-  ## create lhs upper bound 
+  ## create lhs upper bound
   lhs_upper <- simple_triplet_matrix( i = x$upper$ind,
                                       j = x$upper$ind,
                                       v = rep(1, length(x$upper$ind)),
                                       nrow = n_obj,
                                       ncol = n_obj )
-  ## create lhs lower bound 
+  ## create lhs lower bound
   lhs_lower <- simple_triplet_matrix( i = x$lower$ind,
                                       j = x$lower$ind,
                                       v = rep(1, length(x$lower$ind)),
                                       nrow = n_obj,
                                       ncol = n_obj )
-  ## default constraint direction and multiplicator 
+  ## default constraint direction and multiplicator
   d_l <- ">="
   d_u <- "<="
   m <- 1
   if(reverse){
-    ## reverse constraint direction and multiplicator 
+    ## reverse constraint direction and multiplicator
     d_l<- "<="
     d_u<- ">="
     m <- -1
