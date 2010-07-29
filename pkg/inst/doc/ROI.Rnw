@@ -511,13 +511,69 @@ linear quadratic polynom general (functions)
 
 Package \pkg{ROI}
 
+<<>>=
+library("ROI")
+@
 \subsubsection*{Problem Classes and Constructors}
 
+Constructing a linear program is done via the \code{LP()} constructor:
+
+<<>>=
+lp <- LP(objective = c(2, 4, 3),
+         L_constraint(L = matrix(c(3, 2, 1, 4, 1,
+                      3, 2, 2, 2), nrow = 3),
+                      dir = c("<=", "<=", "<="),
+                      rhs = c(60, 40, 80)),
+         maximum = TRUE)
+lp
+@
+
+Constructing a quadratic program (with linear constraints) is done via
+the \code{QP()} constructor:
+
+<<>>=
+qp <- QP( Q_objective (Q = diag(1, 3), L = c(0, -5, 0)),
+          L_constraint(L = matrix(c(-4,-3,0,2,1,0,0,-2,1),
+                       ncol = 3, byrow = TRUE),
+                       dir = rep(">=", 3),
+                       rhs = c(-8,2,0)) )
+qp
+@
+
+Constructing a quadratically constrained quadratic program is done via
+the \code{QCP()} constructor:
+
+<<>>=
+qcp <- QCP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
+                        byrow = TRUE, ncol = 3),
+                        L = c(1, 2, 3)),
+            Q_constraint(Q = list(NULL, NULL, diag(1, nrow = 3)),
+                         L = matrix(c(-1, 1, 1, 1, -3, 1, 0, 0, 0),
+                         byrow = TRUE, ncol = 3),
+                         dir = rep("<=", 3),
+                         rhs = c(20, 30, 1)),
+            maximum = TRUE)
+qcp
+@
+
+
 \subsubsection*{Solver}
+
 The most important function in package \pkg{ROI} is called
 \code{ROI\_solve()}. This function takes an \proglang{R} object
 containing the formulation of the optimization problem, the solver to
 be used and a list containing solver-specific parameters as arguments.
+
+Solving the linear program:
+<<ROI_SOLVE_LP>>=
+ROI_solve(lp, solver = "glpk")
+@
+
+Solving the quadratically constrained program:
+<<ROI_SOLVE_QCP>>=
+#ROI_solve(qp, solver = "quadprog")
+ROI_solve(qcp, solver = "cplex")
+@
 
 \subsubsection*{Return Value}
 
