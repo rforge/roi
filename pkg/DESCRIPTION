@@ -1,6 +1,6 @@
 Package: ROI
-Version: 0.0-2
-Date: 2010-07-22
+Version: 0.0-3
+Date: 2010-09-14
 Title: R Optimization Infrastructure
 Author: Kurt Hornik and David Meyer and Stefan Theussl
 Maintainer: ROI Authors <ROI-commits@R-Forge.R-project.org>

@@ -44,6 +44,7 @@ S3method(".solve_QCP", "cplex")
 
 S3method(".solve_QP", "cplex")
 S3method(".solve_QP", "quadprog")
+S3method(".solve_QP", "nlminb")
 
 S3method(".solve_MILP", "cplex")
 S3method(".solve_MILP", "lpsolve")

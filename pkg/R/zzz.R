@@ -24,15 +24,15 @@ solver_db <- registry( )
 ## SOLVER_DB
 ## standard fields
 solver_db$set_field( "solver",  type = "character", is_key = TRUE )
-solver_db$set_field( "package", type = "character" ) 
-solver_db$set_field( "types",   type = "character", validity_FUN = function(x) stopifnot(all(x %in% available_problem_types())) ) 
+solver_db$set_field( "package", type = "character" )
+solver_db$set_field( "types",   type = "character", validity_FUN = function(x) stopifnot(all(x %in% available_problem_types())) )
 ## we need to add the following field as we use it for solving MILPs
 solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
 ## further db fields can be added by the user later
 
 .onLoad <- function( libname, pkgname ) {
   ## PLUGINS:
-  
+
   ## CPLEX
   ROI_register_plugin( ROI_plugin(solver = "cplex",
                                   package = "Rcplex",
@@ -47,7 +47,7 @@ solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
                                   types = c("LP", "MILP"),
                                   status_codes = ROI:::.add_lpsolve_status_codes
                                   ) )
-  
+
   ## GLPK
   ROI_register_plugin( ROI_plugin(solver = "glpk",
                                   package = "Rglpk",
@@ -67,7 +67,13 @@ solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
                                   types = c("LP", "MILP"),
                                   status_codes = ROI:::.add_symphony_status_codes
                                   ) )
-  
+  ## nlminb
+  ROI_register_plugin( ROI_plugin(solver = "symphony",
+                                  package = "Rsymphony",
+                                  types = c("QP"),
+                                  status_codes = ROI:::.add_symphony_status_codes
+                                  ) )
+
   ## SEAL DBs
   status_db$seal_entries()
   solver_db$seal_entries()
@@ -75,7 +81,7 @@ solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
   ## SET DEFAULTS
   ## for the time being 'glpk' is the default solver
   ROI_options("default_solver", "glpk")
-  
+
   writeLines( sprintf("%s: R Optimization Infrastructure", pkgname) )
   writeLines( sprintf("Installed solver plugins: %s.", paste(available_solver_plugins(), collapse = ", ")) )
   writeLines( sprintf("Default solver: %s.", ROI_options("default_solver")) )
