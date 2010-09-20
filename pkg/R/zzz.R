@@ -68,10 +68,10 @@ solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
                                   status_codes = ROI:::.add_symphony_status_codes
                                   ) )
   ## nlminb
-  ROI_register_plugin( ROI_plugin(solver = "symphony",
-                                  package = "Rsymphony",
+  ROI_register_plugin( ROI_plugin(solver = "nlminb",
+                                  package = "base",
                                   types = c("QP"),
-                                  status_codes = ROI:::.add_symphony_status_codes
+                                  status_codes = ROI:::.add_nlminb_status_codes
                                   ) )
 
   ## SEAL DBs
