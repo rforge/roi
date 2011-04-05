@@ -1,10 +1,10 @@
-Package: ROI
+Package: ROI.obsolete
 Version: 0.0-3
-Date: 2010-09-14
+Date: 2011-04-05
 Title: R Optimization Infrastructure
 Author: Kurt Hornik and David Meyer and Stefan Theussl
 Maintainer: ROI Authors <ROI-commits@R-Forge.R-project.org>
-Description: R Optimization Infrastructure
+Description: R Optimization Infrastructure, obsolete version
 Depends: registry, slam
 Suggests: lpSolve, quadprog, Rglpk, Rsymphony
 Enhances: Rcplex
