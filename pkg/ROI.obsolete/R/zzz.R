@@ -37,7 +37,7 @@ solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
   ROI_register_plugin( ROI_plugin(solver = "cplex",
                                   package = "Rcplex",
                                   types = c("LP", "MILP", "QP", "MIQP", "QCP", "MIQCP"),
-                                  status_codes = ROI:::.add_cplex_status_codes,
+                                  status_codes = ROI.obsolete:::.add_cplex_status_codes,
                                   multiple_solutions = TRUE
                                   ) )
 
@@ -45,33 +45,33 @@ solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
   ROI_register_plugin( ROI_plugin(solver = "lpsolve",
                                   package = "lpSolve",
                                   types = c("LP", "MILP"),
-                                  status_codes = ROI:::.add_lpsolve_status_codes
+                                  status_codes = ROI.obsolete:::.add_lpsolve_status_codes
                                   ) )
 
   ## GLPK
   ROI_register_plugin( ROI_plugin(solver = "glpk",
                                   package = "Rglpk",
                                   types = c("LP", "MILP"),
-                                  status_codes = ROI:::.add_glpk_status_codes
+                                  status_codes = ROI.obsolete:::.add_glpk_status_codes
                                   ) )
   ## quadprog
   ROI_register_plugin( ROI_plugin(solver = "quadprog",
                                   package = "quadprog",
                                   types = c("QP"),
-                                  status_codes = ROI:::.add_quadprog_status_codes
+                                  status_codes = ROI.obsolete:::.add_quadprog_status_codes
                                   ) )
 
   ## SYMPHONY
   ROI_register_plugin( ROI_plugin(solver = "symphony",
                                   package = "Rsymphony",
                                   types = c("LP", "MILP"),
-                                  status_codes = ROI:::.add_symphony_status_codes
+                                  status_codes = ROI.obsolete:::.add_symphony_status_codes
                                   ) )
   ## nlminb
   ROI_register_plugin( ROI_plugin(solver = "nlminb",
                                   package = "base",
                                   types = c("QP"),
-                                  status_codes = ROI:::.add_nlminb_status_codes
+                                  status_codes = ROI.obsolete:::.add_nlminb_status_codes
                                   ) )
 
   ## SEAL DBs
