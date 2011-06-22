@@ -1,0 +1,130 @@
+###############################################################
+## imports
+## we use several functions of package 'slam'
+import("slam")
+
+###############################################################
+## ROI_solve (roi.R)
+
+## export("ROI_solve")
+
+## ###############################################################
+## ## problem class constructors (constructors.R)
+
+## ## constructor for the optimization problem superclass 'OP'
+export("OP")
+
+## ## print method
+S3method("print", "OP")
+
+## legacy of obsolete ROI version
+## export("LP")
+## export("MILP")
+## export("MIQP")
+## export("MIQCP")
+## export("QCP")
+## export("QP")
+
+## print methods for legacy (sub-) classes
+## S3method("print", "LP")
+## S3method("print", "MILP")
+## S3method("print", "MIQP")
+## S3method("print", "MIQCP")
+## S3method("print", "QCP")
+## S3method("print", "QP")
+
+###############################################################
+## objective function (objective.R)
+
+export("as.L_objective",
+       "as.Q_objective",
+       "F_objective",
+       "L_objective",
+       "objective",
+       "Q_objective")
+
+S3method("as.function", "L_objective")
+S3method("as.function", "Q_objective")
+
+S3method("as.L_objective", "function")
+S3method("as.L_objective", "L_objective")
+S3method("as.L_objective", "numeric")
+S3method("as.L_objective", "Q_objective")
+
+S3method("as.Q_objective", "function")
+S3method("as.Q_objective", "matrix")
+S3method("as.Q_objective", "numeric")
+S3method("as.Q_objective", "Q_objective")
+S3method("as.Q_objective", "simple_triplet_matrix")
+
+S3method("objective", "default")
+
+S3method("terms", "function")
+S3method("terms", "L_objective")
+S3method("terms", "Q_objective")
+
+###############################################################
+## constraints (constraints.R)
+
+export("as.constraint",
+       "constraints",
+       "constraints<-",
+       "bounds",
+       "bounds<-",
+       "L_constraint",
+       "Q_constraint",
+       "F_constraint",
+       "V_bound")
+
+S3method("as.L_constraint", "L_constraint")
+S3method("as.L_constraint", "list")
+S3method("as.L_constraint", "numeric")
+
+S3method("as.Q_constraint", "Q_constraint")
+S3method("as.Q_constraint", "list")
+
+S3method("as.constraint", "L_constraint")
+S3method("as.constraint", "Q_constraint")
+
+S3method("as.list", "V_bound")
+
+S3method("bounds", "OP")
+S3method("bounds<-", "OP")
+
+S3method("constraints", "OP")
+S3method("constraints<-", "OP")
+
+
+S3method("length", "L_constraint")
+S3method("length", "Q_constraint")
+S3method("length", "F_constraint")
+
+S3method("rbind", "L_constraint")
+#S3method("rbind", "Q_constraint")
+S3method("c", "L_constraint")
+#S3method("c", "Q_constraint")
+
+S3method("print", "constraint")
+
+
+###############################################################
+## Further S3 Methods (sorted alphabetically)
+
+S3method("as.L_term", "numeric")
+S3method("as.L_term", "matrix")
+S3method("as.L_term", "simple_triplet_matrix")
+
+S3method("as.Q_term", "list")
+S3method("as.Q_term", "numeric")
+S3method("as.Q_term", "matrix")
+S3method("as.Q_term", "simple_triplet_matrix")
+
+S3method("as.rhs", "numeric")
+
+
+
+
+## exported functions for status_db handling
+##export("add_status_code_to_db",
+##       "get_status_message_from_db",
+##       "delete_status_code_from_db")
