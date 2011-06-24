@@ -120,6 +120,7 @@ L_constraint <- function( L, dir, rhs ) {
 ##' @return an object of class \code{"L_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
+##' @export
 as.L_constraint <- function(x, ...)
   UseMethod("as.L_constraint")
 
@@ -137,12 +138,35 @@ as.L_constraint.list <- function( x, ... ){
   L_constraint( L = x$L, dir = x$dir, rhs = x$rhs )
 }
 
+##' Tests if an object is interpretable as being of class \code{"L_constraint"}.
+##'
+##' @title Linear Constraints
+##' @param x object to be tested.
+##' @return returns \code{TRUE} if its argument is of class
+##' \code{"L_constraint"} and \code{FALSE} otherwise.
+##' @author Stefan Theussl
+##' @export
 is.L_constraint <- function( x ) {
   inherits( x, "L_constraint" )
 }
 
 ## combining matrices (see 'rbind' in matrix.R, package relation)
 
+##' Take a sequence of constraints (ROI objects) arguments and combine
+##' by rows, i.e., putting several constraints together.
+##'
+##' The output type is determined from the highest type of the
+##' components in the hierarchy NULL < \class{"L_constraint"} <
+##' \class{"Q_constraint"} < \class{"F_constraint"}.
+##'
+##' @title Linear Constraints
+##' @param ... constraints objects to be concatenated.
+##' @param recursive logical. Currently ignored (enable compatibility
+##' with \code{c()} operator).
+##' @return an object of a class depending on the input which also
+##' inherits from \code{"constraint"}. See \bold{Details}.
+##' @author Stefan Theussl
+##' @S3method rbind L_constraint
 rbind.L_constraint <- function( ..., recursive = FALSE ){
   constraints <- lapply(list(...), as.L_constraint)
   L   <- lapply( constraints, function (x) as.simple_triplet_matrix(x$L) )
@@ -153,10 +177,18 @@ rbind.L_constraint <- function( ..., recursive = FALSE ){
                 rhs = Reduce(function(x, y) c(x, y), rhs) )
 }
 
+## FIXME: connection to rbind documentation
+##' @S3method c L_constraint
 c.L_constraint <- function( ..., recursive = FALSE )
     rbind( ..., recursive = recursive )
 
-## length (i.e., number) of constraints
+##' Get the number of constraints from a corresponding ROI object.
+##'
+##' @title Linear Constraints
+##' @param x constraints object.
+##' @return an integer.
+##' @author Stefan Theussl
+##' @S3method length L_constraint
 length.L_constraint <- function( x )
   x$n_L_constraints
 
@@ -165,12 +197,15 @@ length.L_constraint <- function( x )
 as.L_term <- function( x, ... )
   UseMethod("as.L_term")
 
+##' @S3method as.L_term numeric
 as.L_term.numeric <- function( x, ... )
   as.simple_triplet_matrix( matrix(x, nrow = 1L) )
 
+##' @S3method as.L_term matrix
 as.L_term.matrix <- function( x, ... )
   as.simple_triplet_matrix(x)
 
+##' @S3method as.L_term simple_triplet_matrix
 as.L_term.simple_triplet_matrix <- function( x, ... )
   x
 
@@ -179,6 +214,31 @@ as.L_term.simple_triplet_matrix <- function( x, ... )
 ## Quadratic constraints (class 'Q_constraint')
 ## list of constraints of the form a'x + x'Qx ~ b
 
+##' Quadratic constraints are typically of the form
+##' \eqn{\frac{1}{2}x^{\top}Qx + c^\{\top}x \leq b}. \eqn{A} is a
+##' (sparse) matrix of coefficients to the objective variables \eqn{x}
+##' of the quadratic part and \eqn{c} is the vector of coefficients of
+##' the linear part of a given constraint. \eqn{b} is called the right
+##' hand side of the constraints.
+##'
+##' @title Quadratic Constraints
+##' @param Q a list of (sparse) matrices representing the quadratic
+##' part of each constraint.
+##' @param L a numeric vector of length \eqn{n} (a single constraint)
+##' or a matrix of dimension \eqn{n \times m}, where \eqn{n} is the
+##' number of objective variables and \eqn{m} is the number of
+##' constraints. Matrices can be of class
+##' \code{"simple_triplet_matrix"} to allow a sparse representation of
+##' constraints.
+##' @param dir a character vector with the directions of the
+##' constraints. Each element must be one of \code{"<"}, \code{"<="},
+##' \code{">"}, \code{">="}, \code{"=="} or \code{"!="}.
+##' @param rhs a numeric vector with the right hand side of the
+##' constraints.
+##' @return an object of class \code{"Q_constraint"} which inherits
+##' from \code{"constraint"}.
+##' @author Stefan Theussl
+##' @export
 Q_constraint <- function(Q, L, dir, rhs){
   Q     <- as.Q_term( Q )
   L     <- as.L_term( L )
@@ -201,17 +261,43 @@ Q_constraint <- function(Q, L, dir, rhs){
              class = c("Q_constraint", "constraint") )
 }
 
+##' Coerces objects of type \code{"Q_constraint"}.
+##'
+##' Objects from the following classes can be coerced to
+##' \code{"Q_constraint"}: \code{"list"}. The \code{"list"} must
+##' contain four elements, a list of matrices \eqn{Q_m} representing
+##' the quadratic part of \eqn{m} constraints, the matrix \eqn{A}
+##' describing the linear part, the direction of the constraints, and
+##' the right hand side.
+##' @title Quadratic Constraints
+##' @param x an R object.
+##' @param ... further arguments passed to or from other methods
+##' (currently ignored).
+##' @return an object of class \code{"Q_constraint"} which inherits
+##' from \code{"constraint"}.
+##' @author Stefan Theussl
+##' @export
 as.Q_constraint <- function(x, ...)
   UseMethod("as.Q_constraint")
 
+##' S3method as.Q_constraint Q_constraint
 as.Q_constraint.Q_constraint <- function( x, ... )
   identity(x)
 
+##' S3method as.Q_constraint list
 as.Q_constraint.list <- function( x, ... ){
   names(x) <- c("Q", "L", "dir", "rhs")
   Q_constraint( Q = x$Q, L = x$L, dir = x$dir, rhs = x$rhs )
 }
 
+##' Tests if an object is interpretable as being of class \code{"Q_constraint"}.
+##'
+##' @title Quadratic Constraints
+##' @param x object to be tested.
+##' @return returns \code{TRUE} if its argument is of class
+##' \code{"Q_constraint"} and \code{FALSE} otherwise.
+##' @author Stefan Theussl
+##' @export
 is.Q_constraint <- function( x ) {
   inherits( x, "Q_constraint" )
 }
@@ -237,15 +323,19 @@ length.Q_constraint <- function(x)
 as.Q_term <- function(x, ...)
   UseMethod( "as.Q_term" )
 
+##' @S3method as.Q_term list
 as.Q_term.list <- function( x )
   lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
 
+##' @S3method as.Q_term numeric
 as.Q_term.numeric <- function( x )
   list( as.simple_triplet_matrix( matrix(x)) )
 
+##' @S3method as.Q_term matrix
 as.Q_term.matrix <- function( x )
   list( as.simple_triplet_matrix(x) )
 
+##' @S3method as.Q_term simple_triplet_matrix
 as.Q_term.simple_triplet_matrix <- function( x )
   list( x )
 

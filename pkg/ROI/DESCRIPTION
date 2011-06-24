@@ -7,7 +7,6 @@ Maintainer: Stefan Theussl <stefan.theussl@wu.ac.at>
 Description: The R Optimization Infrastructure (ROI) package provides a 
 	     sophisticated framework for handling optimization problems in R.
 Depends: registry, slam
-Suggests: ROI.plugin.glpk, ROI.plugin.lpsolve, ROI.plugin.quadprog, ROI.plugin.symphony
 Enhances: ROI.plugin.cplex
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
