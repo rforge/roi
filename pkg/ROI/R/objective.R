@@ -7,11 +7,26 @@
 ## returns a function!
 ## FIXME: use a super class 'optimization_problem'?
 
+##' @export
 objective <- function( x )
   UseMethod("objective")
 
+##' @S3method objective default
 objective.default <- function( x )
   as.function( x$objective )
+
+##' @export
+as.objective <- function( x )
+  UseMethod("as.objective")
+
+##' @S3method as.objective default
+as.objective.default <- function( x )
+  as.L_objective( x )
+
+##' @S3method as.objective objective
+as.objective.objective <-
+    identity
+
 
 terms.function <- function( x, ... ){
   if(inherits(x, "L_objective"))
@@ -30,11 +45,13 @@ terms.Q_objective <- function( x, ... )
 ###############################################################
 ## linear objectives
 
+##' @export
 L_objective <- function( L ) {
   structure( list(L = as.numeric(L)),
              class = c("L_objective", "objective") )
 }
 
+##' @S3method as.function L_objective
 as.function.L_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
   out <- function(x)
@@ -43,18 +60,23 @@ as.function.L_objective <- function( x, ... ){
   out
 }
 
+##' @export
 as.L_objective <- function(x, ...)
   UseMethod("as.L_objective")
 
+##' @S3method as.L_objective L_objective
 as.L_objective.L_objective <- function( x, ... )
   identity(x)
 
+##' @S3method as.L_objective numeric
 as.L_objective.numeric <- function( x, ... )
   L_objective( x )
 
+##' @S3method as.L_objective Q_objective
 as.L_objective.Q_objective <- function( x, ... )
   L_objective( terms(x)[["L"]])
 
+##' @S3method as.L_objective function
 as.L_objective.function <- function( x, ... ){
   if( !inherits(x, "objective") )
     stop("'x' must be a function which inherits from 'objective'")
@@ -64,6 +86,7 @@ as.L_objective.function <- function( x, ... ){
 ###############################################################
 ## quadratic objectives
 
+##' @export
 Q_objective <- function( Q, L = NULL ) {
 
   structure ( list(Q = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
@@ -71,6 +94,7 @@ Q_objective <- function( Q, L = NULL ) {
               class = c("Q_objective", "objective") )
 }
 
+##' @S3method as.function Q_objective
 as.function.Q_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
   Q <- terms(x)[["Q"]]
@@ -80,9 +104,11 @@ as.function.Q_objective <- function( x, ... ){
   out
 }
 
+##' @export
 as.Q_objective <- function(x, ...)
   UseMethod("as.Q_objective")
 
+##' @S3method as.Q_objective function
 as.Q_objective.function <- function( x, ... ){
   if( !inherits(x, "objective") )
     stop( "'x' must be a function which inherits from 'objective'" )
@@ -91,15 +117,19 @@ as.Q_objective.function <- function( x, ... ){
                Q = get("Q", environment(x)) )
 }
 
+##' @S3method as.Q_objective matrix
 as.Q_objective.matrix <- function( x, ... )
   Q_objective( Q = x)
 
+##' @S3method as.Q_objective numeric
 as.Q_objective.numeric <- function( x, ... )
   Q_objective( Q = matrix(x))
 
+##' @S3method as.Q_objective Q_objective
 as.Q_objective.Q_objective <- function( x, ... )
   identity(x)
 
+##' @S3method as.Q_objective simple_triplet_matrix
 as.Q_objective.simple_triplet_matrix <- function( x, ... )
   Q_objective(Q = x)
 

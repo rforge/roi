@@ -44,6 +44,7 @@ V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
             class = "V_bound" )
 }
 
+##' @method as.list V_bound
 ##' @S3method as.list V_bound
 as.list.V_bound <- function( x, ... )
   unclass( x )
@@ -85,11 +86,13 @@ bounds.OP <- function( x )
 ##' Currently, there is no default method. See \code{\link{bounds<-.OP}}
 ##' for replacing bounds in ROI objects of class \code{"OP"}.
 ##' @title Replacement of Variable Bounds
+##' @name bounds-replace
+##' @aliases bounds<-
 ##' @param x an R object.
 ##' @param value an R object.
 ##' @return the updated object.
 ##' @author Stefan Theussl
-##' @export
+##' @export bounds<-
 'bounds<-' <- function( x, value )
   UseMethod("bounds<-")
 
@@ -97,12 +100,14 @@ bounds.OP <- function( x )
 ##' with the object given by \code{value}.
 ##'
 ##' @title Replacement of Variable Bounds
+##' @name bounds-replace-OP
+##' @aliases bounds<-.OP
 ##' @param x an object of class \code{"OP"}.
 ##' @param value an object of class \code{"V_bound"} or NULL (standard
 ##' variable bound).
-##' @return the updated \class{"OP"} object.
+##' @return the updated \code{"OP"} object.
 ##' @author Stefan Theussl
-##' @method bounds<- OP
+##' @method 'bounds<-' OP
 ##' @S3method bounds<- OP
 'bounds<-.OP' <- function( x, value ) {
    if(is.null(value))

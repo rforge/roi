@@ -37,11 +37,13 @@ constraints.OP <- function( x )
 ##' Currently, there is no default method. See \code{\link{constraints<-.OP}}
 ##' for replacing constraints in ROI objects of class \code{"OP"}.
 ##' @title Replacement of constraints
+##' @name constraints-replace
+##' @aliases constraints<-
 ##' @param x an R object.
 ##' @param value an R object.
 ##' @return the updated object.
 ##' @author Stefan Theussl
-##' @export
+##' @export constraints<-
 'constraints<-' <- function( x, value )
   UseMethod("constraints<-")
 
@@ -49,12 +51,14 @@ constraints.OP <- function( x )
 ##' with the new constraints object given by \code{value}.
 ##'
 ##' @title Replacement of constraints
+##' @name constraints-replace-OP
+##' @aliases constraints<-.OP
 ##' @param x an object of class \code{"OP"}.
 ##' @param value an object of class \code{"constraints"}, coercible to
 ##' such, or NULL (no constraints).
-##' @return the updated \class{"OP"} object.
+##' @return the updated \code{"OP"} object.
 ##' @author Stefan Theussl
-##' @method constraints<- OP
+##' @method constraints OP
 ##' @S3method constraints<- OP
 'constraints<-.OP' <- function( x, value ) {
     ## if 'empty' constraints are given (NULL) then we assume it's and
@@ -124,14 +128,17 @@ L_constraint <- function( L, dir, rhs ) {
 as.L_constraint <- function(x, ...)
   UseMethod("as.L_constraint")
 
+##' @method as.L_constraint L_constraint
 ##' @S3method as.L_constraint L_constraint
 as.L_constraint.L_constraint <- function( x, ... )
   identity(x)
 
+##' @method as.L_constraint numeric
 ##' @S3method as.L_constraint numeric
 as.L_constraint.numeric <- function( x, ... )
   L_constraint( L = x, dir = ">=", rhs = 0 )
 
+##' @method as.L_constraint list
 ##' @S3method as.L_constraint list
 as.L_constraint.list <- function( x, ... ){
   names(x) <- c("L", "dir", "rhs")
@@ -156,8 +163,8 @@ is.L_constraint <- function( x ) {
 ##' by rows, i.e., putting several constraints together.
 ##'
 ##' The output type is determined from the highest type of the
-##' components in the hierarchy NULL < \class{"L_constraint"} <
-##' \class{"Q_constraint"} < \class{"F_constraint"}.
+##' components in the hierarchy NULL < \code{"L_constraint"} <
+##' \code{"Q_constraint"} < \code{"F_constraint"}.
 ##'
 ##' @title Linear Constraints
 ##' @param ... constraints objects to be concatenated.
@@ -178,6 +185,8 @@ rbind.L_constraint <- function( ..., recursive = FALSE ){
 }
 
 ## FIXME: connection to rbind documentation
+
+##' @method c L_constraint
 ##' @S3method c L_constraint
 c.L_constraint <- function( ..., recursive = FALSE )
     rbind( ..., recursive = recursive )
@@ -188,10 +197,10 @@ c.L_constraint <- function( ..., recursive = FALSE )
 ##' @param x constraints object.
 ##' @return an integer.
 ##' @author Stefan Theussl
+##' @method length L_constraint
 ##' @S3method length L_constraint
 length.L_constraint <- function( x )
   x$n_L_constraints
-
 ## the linear term of the left hand side
 
 as.L_term <- function( x, ... )
@@ -215,7 +224,7 @@ as.L_term.simple_triplet_matrix <- function( x, ... )
 ## list of constraints of the form a'x + x'Qx ~ b
 
 ##' Quadratic constraints are typically of the form
-##' \eqn{\frac{1}{2}x^{\top}Qx + c^\{\top}x \leq b}. \eqn{A} is a
+##' \eqn{\frac{1}{2}x^{\top}Qx + c^{\top}x \leq b}. \eqn{A} is a
 ##' (sparse) matrix of coefficients to the objective variables \eqn{x}
 ##' of the quadratic part and \eqn{c} is the vector of coefficients of
 ##' the linear part of a given constraint. \eqn{b} is called the right
@@ -277,15 +286,15 @@ Q_constraint <- function(Q, L, dir, rhs){
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
 ##' @export
-as.Q_constraint <- function(x, ...)
+as.Q_constraint <- function( x )
   UseMethod("as.Q_constraint")
 
 ##' S3method as.Q_constraint Q_constraint
-as.Q_constraint.Q_constraint <- function( x, ... )
-  identity(x)
+as.Q_constraint.Q_constraint <-
+  identity
 
 ##' S3method as.Q_constraint list
-as.Q_constraint.list <- function( x, ... ){
+as.Q_constraint.list <- function( x ){
   names(x) <- c("Q", "L", "dir", "rhs")
   Q_constraint( Q = x$Q, L = x$L, dir = x$dir, rhs = x$rhs )
 }
@@ -388,21 +397,27 @@ as.F_term.list <- function(x)
 as.rhs <- function(x, ...)
   UseMethod("as.rhs")
 
+##' @S3method as.rhs numeric
 as.rhs.numeric <- function( x, ... )
   x
 
-as.constraint <- function( x, ... )
+##' @export
+as.constraint <- function( x )
   UseMethod("as.constraint")
 
-as.constraint.L_constraint <- function( x, ... )
-  identity(x)
+##' @S3method as.constraint L_constraint
+as.constraint.L_constraint <-
+  identity
 
-as.constraint.Q_constraint <- function( x, ... )
-  identity(x)
+##' @S3method as.constraint Q_constraint
+as.constraint.Q_constraint <-
+  identity
 
-as.constraint.F_constraint <- function( x, ... )
-  identity(x)
+##' @S3method as.constraint F_constraint
+as.constraint.F_constraint <-
+  identity
 
+##' @S3method print constraint
 print.constraint <- function( x, ... ){
   len <- length(x)
   if( is.L_constraint(x) )
