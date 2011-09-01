@@ -1,4 +1,7 @@
 ################################################################################
+available_constraint_classes <- function()
+    c(L = "L_constraint", Q = "Q_constraint", F = "F_constraint", X = "NO_constraint")
+
 ## 'constraints' extractor functions
 
 ##' Extract constraints from its argument (typically ROI objects) and
@@ -58,7 +61,7 @@ constraints.OP <- function( x )
 ##' such, or NULL (no constraints).
 ##' @return the updated \code{"OP"} object.
 ##' @author Stefan Theussl
-##' @method constraints OP
+##' @method constraints<- OP
 ##' @S3method constraints<- OP
 'constraints<-.OP' <- function( x, value ) {
     ## if 'empty' constraints are given (NULL) then we assume it's and
@@ -105,7 +108,7 @@ L_constraint <- function( L, dir, rhs ) {
                   dir = dir,
                   rhs = rhs,
                   n_L_constraints = n_L_constraints),
-            class = c("L_constraint", "constraint") )
+            class = c("L_constraint", "Q_constraint", "constraint") )
 }
 
 ##' Coerces objects of type \code{"L_constraint"}.
@@ -380,7 +383,6 @@ as.F_constraint <- function(x, ...)
 
 as.F_term <- function(x, ...)
   UseMethod( "as.F_term" )
-
 length.F_constraint <- function(x)
   x$n_F_constraints
 
@@ -405,6 +407,11 @@ as.rhs.numeric <- function( x, ... )
 as.constraint <- function( x )
   UseMethod("as.constraint")
 
+##' @method as.constraint NULL
+##' @S3method as.constraint NULL
+as.constraint.NULL <- identity
+
+
 ##' @S3method as.constraint L_constraint
 as.constraint.L_constraint <-
   identity
@@ -417,6 +424,7 @@ as.constraint.Q_constraint <-
 as.constraint.F_constraint <-
   identity
 
+##' @method print constraint
 ##' @S3method print constraint
 print.constraint <- function( x, ... ){
   len <- length(x)

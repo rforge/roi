@@ -3,7 +3,7 @@ Version: 0.0-3
 Date: 2011-04-05
 Title: R Optimization Infrastructure
 Author: Kurt Hornik and David Meyer and Stefan Theussl
-Maintainer: ROI Authors <ROI-commits@R-Forge.R-project.org>
+Maintainer: Stefan Theussl <stefan.theussl@wu.ac.at>
 Description: R Optimization Infrastructure, obsolete version
 Depends: registry, slam
 Suggests: lpSolve, quadprog, Rglpk, Rsymphony

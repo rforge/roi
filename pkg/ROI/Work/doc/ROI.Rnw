@@ -1,0 +1,629 @@
+\documentclass[fleqn]{article}
+\usepackage[round,longnamesfirst]{natbib}
+\usepackage[utf8]{inputenc}
+
+\usepackage{graphicx,keyval,thumbpdf,url}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%% math commannd
+\newcommand\argmin{\mathop{\mathrm{arg min}}}
+\newcommand\trace{\mathop{\mathrm{tr}}}
+\newcommand\R{{\mathbb{R}}}
+\newcommand{\set}[1]{\mathcal{#1}}
+%% R specific commands
+\let\proglang=\textsf
+\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\newcommand{\sQuote}[1]{`{#1}'}
+\newcommand{\dQuote}[1]{``{#1}''}
+\let\code=\texttt
+\newcommand{\file}[1]{\sQuote{\textsf{#1}}}
+\newcommand{\class}[1]{\code{"#1"}}
+
+\SweaveOpts{strip.white=TRUE}
+
+\AtBeginDocument{\setkeys{Gin}{width=0.6\textwidth}}
+
+\date{\today}
+\title{\pkg{ROI}: the \proglang{R} Optimization Infrastructure Package}
+\author{Stefan Theu\ss{}l}
+%% \VignetteIndexEntry{ROI}
+
+\sloppy{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  A modern, versatile environment for statistical computing like
+  \proglang{R} has to be able to cope with challenging optimization
+  problems, e.g.~mixed integer programming problems. \proglang{R}
+  offers a wide variety of extensions (so-called packages) to solve
+  many different optimization problems. Unfortunately, almost each of
+  the available optimization routines provide their own, different
+  user interface. This may lead to confusion at many users interested
+  in solving optimization problems using \proglang{R}. For this reason
+  a standardized optimization framework seems to be desirable. This
+  vignette introduces \pkg{ROI}, the \proglang{R} Optimization
+  Infrastructure package consolidating many of those extensions in
+  order to provide a standardized interface.
+\end{abstract}
+
+<<echo=FALSE, results = hide>>=
+options(width = 60)
+### for sampling
+set.seed(1782)
+##library("xtable")
+##library("ctv")
+## install cplex by hand, e.g. install.packages("Rcplex", configure.args="--with-cplex-dir=/home/theussl/lib/CPLEX/cplex121")
+##update.views("Optimization", repos = "http://cran.R-project.org")
+@ %
+
+
+
+\section{Introduction}
+\label{sec:introduction}
+
+Optimization is playing an increasingly important role in statistical
+computing. Even routinely used methods in statistics like regression
+models typically solve optimization problems.
+
+In general, optimization problems have the objective to allocate
+scarce resources to a feasible set of alternative solutions in order
+to minimize (or maximize) the overall outcome of this optimization
+process.
+
+This paper discusses different classes of optimization problems
+encountered in statistical computing, including general purpose
+nonlinear optimization as well as linear, quadratic and nonlinear
+programming. \proglang{R}~\citep[][]{ROI:Rcore:2010} offers one or
+more solvers in each of those problem classes. Unfortunately, the user
+interfaces of these solvers may differ considerably. This may lead to
+confusion at many users interested in in solving optimization problems
+using \proglang{R}. For this reason a standardized optimization
+framework seems to be desirable.
+
+We investigate the different problem classes and corresponding solvers
+in order to derive a suitable optimization framework for the
+\proglang{R} language. This framework is provided as an extension to
+\proglang{R} called \pkg{ROI}---\proglang{R} Optimization
+Infrastructure. Among other features this package provides a unified
+user interface to many different solvers.
+
+The remainder of this paper is organized as follows. First we discuss
+basic optimization problem classes in
+Section~\ref{sec:problem_classes}. In Section~\ref{sec:software} we
+provide an overview of \proglang{R} packages providing functions
+capable of solving the presented optimization instances. In
+Section~\ref{sec:optimization_infrastructure} we present and discuss
+\pkg{ROI}---a package providing a general optimization infrastructure
+for \proglang{R}. Applications of the infrastructure are shown in
+Section~\ref{sec:applications}. Section~\ref{sec:conclusions}
+concludes this paper.
+
+
+
+\section{Problem Classes}
+\label{sec:problem_classes}
+
+Optimization is the process of allocating scarce resources to a
+feasible set of alternative solutions (the \textit{objective})in order
+to minimize (or maximize) the overall outcome. Given a function $f(x):
+\mathbb{R}^n \rightarrow \mathbb{R}$ and a set $\set{C} \subset
+\mathbb{R}^n$ we are interested in finding an $x^* \in \mathbb{R}^n$
+that solves
+\begin{equation}
+\label{eq:general_optimization_problem}
+\begin{array}{ll}
+\min_x      & f(x) \\
+\mbox{s.t.} & x \in \set{C}.
+\end{array}
+\end{equation}
+
+
+%% Feasibility
+The function $f$ is called the \textit{objective function}. A point
+$x$ is said to be feasible if it satisfies every constraint given by
+the set $\set{C}$ of all feasible points defining the \textit{feasible
+  region}. If $\set{C}$ is empty then we say that the instance is
+\textit{infeasible}. Maximization problems can obviously be expressed
+as minimization problems by changing the sign in the objective
+function. Thus, we mainly deal with minimization problems
+subsequently.
+
+%%Bounded Unbounded
+An optimization problem can be
+\textit{bounded} or \textit{unbounded}, i.e., the value of the
+objective for a given sequence $x^j \in \set{C}$ tends to $-\infty$ in
+a minimization problem, symbolically $f(x^j) \rightarrow -\infty$ as
+$j \rightarrow +\infty$. Thus, a problem like in
+Equation~\ref{eq:general_optimization_problem} may or may not have a
+solution. If the problem is neither infeasible nor unbounded then we
+can often find a solution $x^* \in \set{C}$ that satisfies
+$$ f(x^*) \leq f(x), \forall x \in \set{C},$$
+thus, the optimal
+solution is a point in the feasible region with the minimal value of
+the objective function.
+
+Basically, functional (equality) constraints  define the feasible
+set $\set{C}$. Thus, we can formulate the standard optimization
+problem as follows:
+\begin{equation}
+\label{eq:standard_optimization_problem}
+\begin{array}{ll}
+\min_x      & f(x) \\
+\mbox{s.t.} & g_i(x) = b_i, i \in \set{I}
+\end{array}
+\end{equation}
+where $b$ is a vector and $\set{I}$ is the index set for the
+constraints.
+
+From the general definition of an optimization problem as seen in
+Equation~\ref{eq:standard_optimization_problem} we derive a set of
+more specific problem instances with different characteristics, namely
+nonlinear, quadratic and linear optimization problems constrained by
+nonlinear, quadratic and/or linear functions. Based on a survey on
+optimization packages available at the Comprehensive \proglang{R}
+Archive Network \citep[CRAN, see also][]{ROI:Theussl:2009} we
+identified several problem classes which can already be solved by
+using these tools.
+
+
+\subsection{Linear Programming}
+\label{sec:linear_programming}
+
+The definition of a linear program (LP) in standard form is given
+below.
+\begin{equation}
+  \label{eq:LP_standard_form}
+  \begin{array}{lrl}
+    \min_x & c^\top x & \\
+    & Ax   & = b \\
+    & x    & \geq  0
+  \end{array}
+\end{equation}
+
+The vector $x \in \mathbb{R}^n$ represents the objective variables
+which are to be optimized. $A \in \mathbb{R}^{m \times n}$ is a
+matrix of coefficients representing the constraints of the LP. The
+vector $b$ contains the so-called right-hand-side and $c$ represents
+the vector of coefficients in the objective function.
+
+\subsection{Quadratic Programming}
+\label{sec:quadratic_programming}
+
+The definition of a quadratic program (QP) in standard form is given
+below.
+
+\begin{equation}
+  \label{eq:QP_standard_form}
+  \begin{array}{lrl}
+    \min_x & \frac{1}{2} x^\top Qx + c^\top x & \\
+    & Ax   & = b \\
+    & x    & \geq  0
+  \end{array}
+\end{equation}
+
+A QP is a generalization of the standard LP shown in
+Equation~\ref{eq:LP_standard_form}. The objective function contains a
+quadratic term in addition to the linear term. The fromer is typically
+represented by a matrix $Q \in \mathbb{R}^{n \times n}$.
+
+
+\subsection{Nonlinear Optimization}
+\label{sec:nonlinear_programming}
+
+The most general problem class is nonlinear optimization or nonlinear
+programming (NLP). Here, we optimize a nonlinear objective function
+subject to nonlinear equality and/or inequality
+constraints. Considering
+Equation~\ref{eq:standard_optimization_problem}, $f$ and at least one
+of the constraints $g_i$ are not linear.
+
+
+\subsection{Mixed Integer Programming}
+\label{sec:mixed_integer_programming}
+
+A central issue in combinatorial optimization is mixed integer
+programming (MIP). Consider the problem classes presented above
+(Equations~\ref{eq:standard_optimization_problem},
+\ref{eq:LP_standard_form}, \ref{eq:QP_standard_form}, and
+\ref{eq:CP_standard_form}): a mixed integer program (MIP) adds
+additional requirements to the optimization problem, namely some
+objective variables have to be of type integer.
+
+%% MILP in standard form
+In the case of a mixed integer linear programming (MILP) the solver
+needs to minimize a linear objective function:
+
+\begin{equation}
+  \label{eq:MILP_standard_form}
+  \begin{array}{lrl}
+    \min_x & c^\top x & \\
+    & Ax   & = b \\
+    & x    & \geq  0\\
+    &x_k   & \in \mathbb{N} \mbox{ for } k = 1,\ldots,z
+  \end{array}
+\end{equation}
+.
+
+Thus, $z$ objective variables are of type integer where $ 1 \leq z < n
+$. If all $n$ objective variables are integral we speak of a pure
+integer programming (IP) problem. When all of the objective variables
+have to take on values from the set ${0, 1}$ then we speak of a binary
+program (BP).
+
+MIP problems are known to be very difficult to solve, nevertheless an
+increase in quantity and quality of noncommercial and open source
+solver was observed in the last
+decade~\citep[][]{ROI:Linderoth+Ralphs:2006}.  Solvers capable to
+solve mixed integer problem classes are usually capable to solve their
+continuous pendant (\textit{relaxation}) as well.
+
+
+
+\section{Software Review}
+\label{sec:software}
+
+Recently, we observed an increase of the available packages handling
+many different optimization problems in \proglang{R}. In this
+section we provide an overview on the optimization landscape in
+\proglang{R}.
+
+
+\subsection{\proglang{R} Packages for Solving Mathematical Programs}
+\label{sec:R_MP}
+
+\subsubsection*{(Mixed Integer) Linear Programming Solvers}
+
+Interfaces to three different open source MILP solvers are available
+in \proglang{R}, namely lp\_solve, the GNU Linear Programming
+Kit~\citep[GLPK,][]{ROI:Makhorin:2009} and
+SYMPHONY~\citep[][]{ROI:SYMPHONY:Ralphs+Guzelsoy:2005,
+  ROI:SYMPHONY:Ralphs+Guzelsoy:2009} which is part of the COIN-OR
+optimization suite (\url{http://www.COIN-OR.org}).
+
+\medskip
+\pkg{lpSolve}~\citep[][]{ROI:Berkelaar:2008}
+interfaces lp\_solve which is a solver based on the revised simplex
+method for LPs and the branch and bound algorithm for
+MILPs. The function \code{lp()} is used for optimizing a given problem:
+<<lpSolve_lp, echo = FALSE>>=
+require("lpSolve")
+args(lp)
+@
+The package also includes special purpose solvers for assignment and
+transportation problems. Another package called \pkg{lpSolveAPI}
+\citet[][]{ROI:Konis:2009} interfaces the same library by providing
+\proglang{R} functions for the underlying \proglang{C} API routines.
+
+\medskip
+\pkg{Rglpk}~\citep[][]{ROI:Theussl+Hornik:2009} is an interface to
+GLPK and has similar capabilities like lp\_solve but additionally
+includes an interior point solver. The primary function for solving
+MILPs is \code{Rglpk\_solve\_LP()}:
+<<Rglpk_solve_LP, echo = FALSE>>=
+require("Rglpk")
+args(Rglpk_solve_LP)
+@
+
+\medskip
+\pkg{Rsymphony} is an interface to SYMPHONY which is based on
+the branch, cut, price algorithm for solving MILPs. Whereas the
+library can take advantage of parallel processing \pkg{Rsymphony} is
+not yet capable of using this special feature. MILPs can be handled
+with the function \code{Rsymphony\_solve\_LP()}:
+<<Rsymphony_solve_LP, echo = FALSE>>=
+require("Rsymphony")
+args(Rsymphony_solve_LP)
+@
+
+\subsubsection*{(Mixed Integer) Quadratic Programming Solvers}
+
+Currently only package \pkg{Rcplex} can handle MIQP which ports the
+commercial solver IBM CPLEX to \proglang{R}. MIQP are solved via the
+function \code{Rcplex()}:
+<<Rcplex, echo = FALSE>>=
+require("Rcplex")
+args(Rcplex)
+@
+
+
+\subsection{General Purpose Continuous Solvers}
+\label{sec:GPCS}
+
+Solvers capable of handling nonlinear objective functions without
+further restrictions are called general purpose continuous solvers
+(GPCS). Solving NLPs is most sophisticated and is typically done in
+\proglang{R} by using one of the following GPCS:
+
+\begin{itemize}
+\item \code{nlminb()}, \code{optim} in package \pkg{base},
+\item \code{donlp2()} in \pkg{Rdonlp2},
+\item and \code{sumt()} in \pkg{clue}~\citep[][]{ROI:Hornik:2009}.
+\end{itemize}
+
+The above solvers take an \proglang{R} \class{function} as the
+objective function as argument. This function is of the form
+\code{f(x, \ldots{})}, where \code{x} will be the elements to be
+optimized over. Further arguments are box constraints (expandable to
+linear constraints) and in case of \code{donlp2()} and \code{sumt()}
+possibly nonlinear (\class{function}) constraints. Whereas box
+constraints are usually represented as vectors of lower and upper
+bounds, nonlinear constraints (or in case of \code{sumt()} penalty
+functions) are represented as \proglang{R} functions and corresponding
+variable bounds.
+
+
+\subsubsection*{Solver Arguments}
+
+From \code{optim()}, \code{nlminb()}, \code{donlp2()}, and
+\code{sumt()} we derived the critical arguments to a GPCS:
+\begin{itemize}
+\item \code{start}, initial values for the (numeric) parameter vector,
+\item \code{objective}, the function to be optimized,
+\item \code{bounds}, the variable bounds and/or \code{constraints}.
+\end{itemize}
+
+\noindent Optional arguments are:
+\begin{itemize}
+\item \code{gradient}, a function that evaluates the gradient of ``objective'',
+\item \code{hessian}, a function that evaluates the hessian of ``objective'',
+\item \code{maximization}, indicates whether to maximize or minimize,
+\item \code{control}, further control arguments to the solver.
+  %% ex. control$fnscale in optim()
+%% \item[method] optim offers several differnet methods to use
+%%\item[scale] parameter to PORT routines in nlminb()
+\end{itemize}
+
+\noindent Return values include:
+\begin{itemize}
+\item \code{par}, the optimal parameters,
+\item \code{value/objective}, the value of the objective function
+  using ``par'',
+\item \code{convergence, status}, ,
+\item \code{gradient}, the gradient evaluated at ``par'',
+\item \code{hessian}, the hessian evaluated at ``par'',
+\item \code{message}, a message returned by the solver,
+\item \code{iterations/evaluations}.
+\end{itemize}
+
+\subsubsection*{Further GPCS}
+
+Several other GPCS are available. Among them there are the functions
+\code{constrOptim} (based on \code{optim()}) and \code{nlm()} in
+package \pkg{stats} for minimization with and without linear
+inequality constraints, respectively. Package
+\pkg{ucminf}~\citep[][]{ROI:Nielsen+Mortensen:2009} implements an
+algorithm for general purpose unconstrained nonlinear
+optimization. Function \code{spg()} in package
+\pkg{BB}~\citep[][]{ROI:Varadhan+Gilbert:2009} optimizes nonlinear
+objective functions subject to simple constraints using the spectral
+projected gradient method.
+
+
+\subsection{Summary}
+
+As pointed out in Section~\ref{sec:problem_classes}, in the field of
+optimization we are typically facing different problem classes. We can
+characterize an optimization problem based on two dimensions:
+
+\begin{itemize}
+  \item the type of objective function,
+  \item and the type of constraints.
+\end{itemize}
+
+Ordered based on increasing complexity both elements are either of
+type linear, quadratic, \ldots{}, a polynom of degree $k$, \ldots{},
+or simply nonlinear. Table~\ref{tab:overview_solvers} gives an
+overview on which of the above solvers can be used to solve a given
+optimization problem. The position of a particular solver in the table
+limits its ability to solve a given problem. Each problem class to the
+left and above of the current position can be handled by the solver
+including its current position. E.g., the solver provided in package
+\pkg{Rsocp} is limited to QP-QCP problems, i.e., it can handle LP and
+QP as well.
+
+%% has to be replaced by information provided in the ROI DB
+\begin{table}[ht]
+  \begin{tabular}{l | p{2.5cm} p{2.5cm} p{2.5cm}}
+                 & Objective & & \\
+Constraints      & linear                    &  quadratic   & nonlinear \\
+\hline
+linear           & \pkg{Rglpk}, \pkg{glpk}, \pkg{Rsymphony}, \pkg{lpSolve}, \pkg{lpSolveAPI} & \pkg{quadprog} & \code{nlminb()} and \code{optim()} in \pkg{base} \\
+quadratic  &              & \pkg{Rsocp}, \pkg{Rcplex} & \\
+nonlinear        &                           &
+&\pkg{Rdonlp2}, \code{sumt()} in \pkg{clue}\\
+  \end{tabular}
+  \caption{Overview on optimization problems and solvers}
+  \label{tab:overview_solvers}
+\end{table}
+
+
+
+\section{A General Optimization Infrastructure for \proglang{R}}
+\label{sec:optimization_infrastructure}
+
+
+\subsection{Design Issues}
+
+As we have seen in Section~\ref{sec:problem_classes}, an optimization
+problem usually consists of an objective function, bounds and types of
+the objective variables, one or several constraints, and the direction
+of optimization (minimization or maximization).
+
+\subsubsection*{Objective Function}
+
+The objective function can be represented in several ways. If the
+objective function is linear, i.e., $c^\top x$ then it is sufficient
+and often the case to supply the vector of coefficients $c$. For
+quadratic objective functions of the form $c^\top x + \frac{1}{2}
+x^\top Q x$ it is sufficient and often the case to supply $c$ and
+$Q$. This can be extended to every polynom of degree $k$. The most
+general form to represent an objective function is to implement an
+\proglang{R} function which takes the vector of objective variables as
+argument and returns the objective value.
+
+\subsubsection*{Objective Variable Bounds}
+
+We differentiate between five types of objective variable bounds: free
+$(-\infty, \infty)$, upper $(-\infty, ub]$, lower $[lb, \infty)$,
+double bounded $[lb, ub]$, and fixed bounds. In \pkg{ROI} bounds are
+represented as a list with two elements---\code{upper} and
+\code{lower}. A mathematical program in standard form is bounded
+between zero and infinity. This is the default in \pkg{ROI}, thus no
+bounds have to be specified in such a case. Upper and/or lower bounds
+are specified by providing the index $i$ of the corresponding variable
+and its lower or upper bound, respectively.
+
+\subsubsection*{Objective Variables Types}
+
+Typically, objective variables are of type continuous, integer, or
+binary. It is also common to define variables to be of type
+semi-integer or semi-continuous, i.e., variables that by default can
+take the value $0$ (zero) or any value between its (finite)
+semi-integer/semi-continuous lower bound and its upper bound. More
+generally one might also want to define a variable to take on values
+from a prespecified set of numbers. Conceptually, bounds are
+represented as sets~\citep[e.g., by using package
+\pkg{sets}][]{ROI:Meyer_et_al:2009} in \pkg{ROI}. Out of convenience
+the sets of continuous, integer and binary numbers are represented as
+characters \code{"C"}, \code{"I"}, and \code{"B"}, respectively.
+
+\subsubsection*{Constraints}
+
+linear quadratic polynom general (functions)
+
+%%\comment{How to model conditional statements (\textit{if},
+%%  \textit{then}, \ldots{}) to express complex relations between
+%%  (not necessarily linear?) constraints? CPLEX uses logical constraints
+%%  by means of logical operators (and, or, negation).}
+%%
+%%\comment{CPLEX offers also the possibility to include indicator
+%%  constraints, i.e. binary variables
+%%  indicating whether (not necessarily linear?) constraints are active
+%%  or not. This is an alternative of the big~M approach.}
+%%
+\subsubsection*{Solution}
+
+
+\subsection{Implementation}
+
+Package \pkg{ROI}
+
+<<>>=
+library("ROI")
+@
+\subsubsection*{Problem Classes and Constructors}
+
+Constructing a linear program is done via:
+
+<<>>=
+lp <- OP(objective = c(2, 4, 3),
+         L_constraint(L = matrix(c(3, 2, 1, 4, 1,
+                      3, 2, 2, 2), nrow = 3),
+                      dir = c("<=", "<=", "<="),
+                      rhs = c(60, 40, 80)),
+         maximum = TRUE)
+lp
+@
+
+Constructing a quadratic program (with linear constraints) is done via:
+
+<<>>=
+qp <- OP( Q_objective (Q = diag(1, 3), L = c(0, -5, 0)),
+          L_constraint(L = matrix(c(-4,-3,0,2,1,0,0,-2,1),
+                       ncol = 3, byrow = TRUE),
+                       dir = rep(">=", 3),
+                       rhs = c(-8,2,0)) )
+qp
+@
+
+Constructing a quadratically constrained quadratic program is done via
+the \code{QCP()} constructor:
+
+<<>>=
+qcp <- OP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
+                        byrow = TRUE, ncol = 3),
+                        L = c(1, 2, 3)),
+            Q_constraint(Q = list(NULL, NULL, diag(1, nrow = 3)),
+                         L = matrix(c(-1, 1, 1, 1, -3, 1, 0, 0, 0),
+                         byrow = TRUE, ncol = 3),
+                         dir = rep("<=", 3),
+                         rhs = c(20, 30, 1)),
+            maximum = TRUE)
+qcp
+@
+
+
+\subsubsection*{Solver}
+
+The most important function in package \pkg{ROI} is called
+\code{ROI\_solve()}. This function takes an \proglang{R} object
+containing the formulation of the optimization problem, the solver to
+be used and a list containing solver-specific parameters as arguments.
+
+Solving the linear program:
+<<ROI_SOLVE_LP>>=
+ROI_solve(lp, solver = "glpk")
+@
+
+Solving the quadratically constrained program:
+<<ROI_SOLVE_QCP>>=
+#ROI_solve(qp, solver = "quadprog")
+ROI_solve(qcp, solver = "cplex")
+@
+
+\subsubsection*{Return Value}
+
+Intuitively, \code{ROI\_solve} returns an integer, 0 (zero) indicating
+success of the call and nonzero in case of a failure.
+
+
+\subsection{Extensibility}
+
+The interfaces to the various optimizers provided in package~\pkg{ROI}
+have been implemented according to a pre-specified concept called
+\pkg{ROI} plugins.
+
+
+Extending support to other solvers/packages is straightforward, provided that
+certain components are available and registered. These components are:
+
+
+%% Example
+Suppose e.g.\ that a package has a function \code{foo()} for
+optimizing MIQPs. To integrate this into the \pkg{ROI} framework, all
+that is necessary is to provide the following methods.
+
+
+\section{Applications}
+\label{sec:applications}
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+{\small
+  \bibliographystyle{abbrvnat}
+  \bibliography{ROI}
+}
+
+\appendix
+
+\section{Abbreviations}
+
+\begin{tabular}{l l}
+Abbreviation & Full Name \\
+\hline
+LP           & Linear Programming \\
+NLP          & Nonlinear Programming \\
+MILP         & Mixed Integer Linear Programming \\
+MINLP        & Mixed Integer Nonlinear Programming \\
+MIQP         & Mixed Integer Quadratic Programming \\
+MIQCP        & Mixed Integer Quadraticly Constraint Programming \\
+QP           & Quadratic Programming \\
+QCP          & Quadraticly Constraint Programming \\
+SOCP         & Second Order Cone Programming
+\end{tabular}
+
+\end{document}

@@ -27,7 +27,7 @@
 ##' information about the solution provided by the solver.}
 ##' @author Stefan Theussl
 ##' @export
-OP <- function( objective, constraints, bounds = NULL, types = NULL,
+OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
   maximum = FALSE ) {
     structure(list(objective = as.objective(objective),
                    constraints = as.constraint(constraints),
@@ -38,8 +38,67 @@ OP <- function( objective, constraints, bounds = NULL, types = NULL,
 
 ## FIXME: also consider objective function
 
+##' @method print OP
+##' @S3method print OP
 print.OP <- function(x, ...){
     types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
     writeLines( sprintf("A mathematical programming problem with %d constraints of type %s.", length(constraints(x)),
                         paste(na.omit(types[class(constraints(x))]), collapse = ", ")) )
+
 }
+
+##' @export
+as.OP <- function(x)
+    UseMethod("as.OP")
+
+##' @method as.OP OP
+##' @S3method as.OP OP
+as.OP.OP <- identity
+
+##' @method as.OP numeric
+##' @S3method as.OP numeric
+as.OP.numeric <- function(x){
+    OP( objective = x, constraints = NULL, bounds = NULL, types = NULL,
+        maximum = FALSE )
+
+##' @method as.OP default
+##' @S3method as.OP default
+as.OP.default <- function(x, ...)
+    stop("Method not implemented.")
+
+}
+
+## OP_class <- function( x ){
+##     x <- as.OP( x )
+##     uniq_types <- if( is.null(types(x)) )
+##         available_types()[1]
+##     else unique(types(x))
+##     signature <- list(
+
+##                       )
+##     c(sapply(available_objective_classes(),
+##                           function(what) inherits(objective(x), what) ),
+##                    sapply(available_constraint_classes(),
+##                           function(what) inherits(constraints(x), what)),
+##                    sapply(available_types(),
+##                           function(what) what %in% uniq_types),
+##                    bounds  = !is.null(bounds(x)),
+##                    maximum = x$maximum
+##     )
+##     signature
+## }
+
+##' @export
+OP_signature <- function( x ){
+    x <- as.OP( x )
+    uniq_types <- if( is.null(types(x)) )
+        available_types()[1]
+    else unique(types(x))
+    ROI_make_signature( objective = names( available_objective_classes() )[ ROI:::available_objective_classes() %in% class(objective(x)) ],
+                        constraints = names( available_constraint_classes() )[ ROI:::available_constraint_classes() %in% class(constraints(x)) ],
+                        types = uniq_types,
+                        bounds  = !is.null(bounds(x)),
+                        maximum = x$maximum
+                       )
+}
+

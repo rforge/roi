@@ -31,58 +31,11 @@ solver_db$set_field( "multiple_solutions", type = "logical", default = FALSE )
 ## further db fields can be added by the user later
 
 .onLoad <- function( libname, pkgname ) {
-  ## PLUGINS:
+    ## register all solver methods supported by this plugin
 
-  ## CPLEX
-  ROI_register_plugin( ROI_plugin(solver = "cplex",
-                                  package = "Rcplex",
-                                  types = c("LP", "MILP", "QP", "MIQP", "QCP", "MIQCP"),
-                                  status_codes = ROI.obsolete:::.add_cplex_status_codes,
-                                  multiple_solutions = TRUE
-                                  ) )
+    ROI:::ROI_register_solver_method( solver = "glpk",
+                                      package = pkgname,
+                                      signatures = ROI:::ROI_make_LP_signatures(),
+                                      method = ROI.plugin.glpk:::.solve_LP.glpk )
 
-  ## LP_SOLVE
-  ROI_register_plugin( ROI_plugin(solver = "lpsolve",
-                                  package = "lpSolve",
-                                  types = c("LP", "MILP"),
-                                  status_codes = ROI.obsolete:::.add_lpsolve_status_codes
-                                  ) )
-
-  ## GLPK
-  ROI_register_plugin( ROI_plugin(solver = "glpk",
-                                  package = "Rglpk",
-                                  types = c("LP", "MILP"),
-                                  status_codes = ROI.obsolete:::.add_glpk_status_codes
-                                  ) )
-  ## quadprog
-  ROI_register_plugin( ROI_plugin(solver = "quadprog",
-                                  package = "quadprog",
-                                  types = c("QP"),
-                                  status_codes = ROI.obsolete:::.add_quadprog_status_codes
-                                  ) )
-
-  ## SYMPHONY
-  ROI_register_plugin( ROI_plugin(solver = "symphony",
-                                  package = "Rsymphony",
-                                  types = c("LP", "MILP"),
-                                  status_codes = ROI.obsolete:::.add_symphony_status_codes
-                                  ) )
-  ## nlminb
-  ROI_register_plugin( ROI_plugin(solver = "nlminb",
-                                  package = "base",
-                                  types = c("QP"),
-                                  status_codes = ROI.obsolete:::.add_nlminb_status_codes
-                                  ) )
-
-  ## SEAL DBs
-  status_db$seal_entries()
-  solver_db$seal_entries()
-
-  ## SET DEFAULTS
-  ## for the time being 'glpk' is the default solver
-  ROI_options("default_solver", "glpk")
-
-  writeLines( sprintf("%s: R Optimization Infrastructure", pkgname) )
-  writeLines( sprintf("Installed solver plugins: %s.", paste(available_solver_plugins(), collapse = ", ")) )
-  writeLines( sprintf("Default solver: %s.", ROI_options("default_solver")) )
 }

@@ -3,42 +3,52 @@
 ###############################################################
 ## objective helper functions
 
+available_objective_classes <- function()
+    c(L = "L_objective", Q = "Q_objective", F = "F_objective")
+
 ## get objective function from problem object
 ## returns a function!
-## FIXME: use a super class 'optimization_problem'?
 
 ##' @export
 objective <- function( x )
-  UseMethod("objective")
+    UseMethod( "objective" )
 
+##' @method objective default
 ##' @S3method objective default
 objective.default <- function( x )
-  as.function( x$objective )
+    as.function( x$objective )
 
 ##' @export
 as.objective <- function( x )
   UseMethod("as.objective")
 
+##' @method as.objective default
 ##' @S3method as.objective default
 as.objective.default <- function( x )
   as.L_objective( x )
 
+##' @method as.objective objective
 ##' @S3method as.objective objective
 as.objective.objective <-
     identity
 
-
+##' @method terms function
+##' @S3method terms function
 terms.function <- function( x, ... ){
-  if(inherits(x, "L_objective"))
-    return( terms(as.L_objective(x)) )
-  if(inherits(x, "Q_objective"))
-    return( terms(as.Q_objective(x)) )
-  NA
+    if( inherits(x, "L_objective") )
+        return( terms(as.L_objective(x)) )
+    if( inherits(x, "Q_objective") )
+        return( terms(as.Q_objective(x)) )
+    NA
 }
 
+##' @method terms L_objective
+##' @S3method terms L_objective
 terms.L_objective <- function( x, ... )
   list( L = x$L )
 
+##' @method terms Q_objective
+##' @S3method terms Q_objective
 terms.Q_objective <- function( x, ... )
   list( Q = x$Q, L = x$L )
 
@@ -51,6 +61,7 @@ L_objective <- function( L ) {
              class = c("L_objective", "objective") )
 }
 
+##' @method as.function L_objective
 ##' @S3method as.function L_objective
 as.function.L_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
@@ -61,26 +72,34 @@ as.function.L_objective <- function( x, ... ){
 }
 
 ##' @export
-as.L_objective <- function(x, ...)
-  UseMethod("as.L_objective")
+as.L_objective <- function( x )
+    UseMethod( "as.L_objective" )
 
+##' @method as.L_objective L_objective
 ##' @S3method as.L_objective L_objective
-as.L_objective.L_objective <- function( x, ... )
-  identity(x)
+as.L_objective.L_objective <- identity
 
+##' @method as.L_objective NULL
+##' @S3method as.L_objective NULL
+as.L_objective.NULL <- function( x )
+    L_objective( x )
+
+##' @method as.L_objective numeric
 ##' @S3method as.L_objective numeric
-as.L_objective.numeric <- function( x, ... )
-  L_objective( x )
+as.L_objective.numeric <- function( x )
+    L_objective( x )
 
+##' @method as.L_objective Q_objective
 ##' @S3method as.L_objective Q_objective
-as.L_objective.Q_objective <- function( x, ... )
-  L_objective( terms(x)[["L"]])
+as.L_objective.Q_objective <- function( x )
+    L_objective( terms(x)[["L"]])
 
+##' @method as.L_objective function
 ##' @S3method as.L_objective function
-as.L_objective.function <- function( x, ... ){
-  if( !inherits(x, "objective") )
-    stop("'x' must be a function which inherits from 'objective'")
-  L_objective( get("L", environment(x)) )
+as.L_objective.function <- function( x ){
+    if( !inherits(x, "objective") )
+        stop("'x' must be a function which inherits from 'objective'")
+    L_objective( get("L", environment(x)) )
 }
 
 ###############################################################
@@ -94,6 +113,7 @@ Q_objective <- function( Q, L = NULL ) {
               class = c("Q_objective", "objective") )
 }
 
+##' @method as.function Q_objective
 ##' @S3method as.function Q_objective
 as.function.Q_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
@@ -108,6 +128,7 @@ as.function.Q_objective <- function( x, ... ){
 as.Q_objective <- function(x, ...)
   UseMethod("as.Q_objective")
 
+##' @method as.Q_objective function
 ##' @S3method as.Q_objective function
 as.Q_objective.function <- function( x, ... ){
   if( !inherits(x, "objective") )
@@ -117,18 +138,22 @@ as.Q_objective.function <- function( x, ... ){
                Q = get("Q", environment(x)) )
 }
 
+##' @method as.Q_objective matrix
 ##' @S3method as.Q_objective matrix
 as.Q_objective.matrix <- function( x, ... )
   Q_objective( Q = x)
 
+##' @method as.Q_objective numeric
 ##' @S3method as.Q_objective numeric
 as.Q_objective.numeric <- function( x, ... )
   Q_objective( Q = matrix(x))
 
+##' @method as.Q_objective Q_objective
 ##' @S3method as.Q_objective Q_objective
 as.Q_objective.Q_objective <- function( x, ... )
   identity(x)
 
+##' @method as.Q_objective simple_triplet_matrix
 ##' @S3method as.Q_objective simple_triplet_matrix
 as.Q_objective.simple_triplet_matrix <- function( x, ... )
   Q_objective(Q = x)

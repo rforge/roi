@@ -62,6 +62,8 @@ ex1_lp <- OP(objective = c(2, 4, 3),
                rhs = c(60, 40, 80)),
              maximum = TRUE)
 
+OP_class( ex1_lp )
+
 lpsolvers <- ROI:::.LP_solvers()
 lp_results <- data.frame(objval = rep(NA, length.out = length(lpsolvers)),
                          timing = NA)
@@ -90,6 +92,8 @@ ex2_milp <- OP(objective = c(3, 1, 3),
                rhs = c(4, 2, 3)),
                types = c("I", "C", "I"),
                maximum = TRUE)
+
+OP_class( ex2_milp )
 
 milpsolvers <- ROI:::.MILP_solvers()
 milp_results <- data.frame(objval = rep(NA, length.out = length(milpsolvers)),
@@ -121,6 +125,8 @@ ex3a_milp <- OP(objective = c(3, 1, 3),
                                    lb = c(-Inf, 2), ub = c(4, 100) ),
                  maximum = TRUE)
 
+OP_class( ex3a_milp )
+
 for(solver in milpsolvers){
   milp_results[solver, ] <- c(NA, NA)
   timing <- system.time(res <- tryCatch(ROI_solve(ex3a_milp, solver = solver),
@@ -148,12 +154,12 @@ ex3c_milp <- ROI:::.make_box_constraints_from_bounds_in_MIP(ex3b_milp)
 ##             2 x_1 +   x_2       >= 2
 ##                   - 2 x_2 + x_3 >= 0
 
-ex4_qp <- QP( Q_objective (Q = diag(1, 3), L = c(0, -5, 0)),
+ex4_qp <- OP( Q_objective (Q = diag(1, 3), L = c(0, -5, 0)),
               L_constraint(L = matrix(c(-4,-3,0,2,1,0,0,-2,1),
                              ncol = 3, byrow = TRUE),
                            dir = rep(">=", 3),
                            rhs = c(-8,2,0)) )
-
+OP_class( ex4_qp )
 qpsolvers <- ROI:::.QP_solvers()
 qp_results <- data.frame(objval = rep(NA, length.out = length(qpsolvers)),
                            timing = NA)

@@ -107,7 +107,7 @@ bounds.OP <- function( x )
 ##' variable bound).
 ##' @return the updated \code{"OP"} object.
 ##' @author Stefan Theussl
-##' @method 'bounds<-' OP
+##' @method bounds<- OP
 ##' @S3method bounds<- OP
 'bounds<-.OP' <- function( x, value ) {
    if(is.null(value))
