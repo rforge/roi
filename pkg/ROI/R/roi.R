@@ -2,6 +2,18 @@
 ## MAIN FUNCTION TO SOLVE OPTIMIZATION PROBLEMS USING ROI
 
 
+##' This function makes a given solver (or searches for an appropriate
+##' solver) solve the supplied optimization problem.
+##'
+##' @title Solve an Optimization Problem
+##' @param x an optimization problem of class \code{"OP"}
+##' @param solver a character vector specifying the solver to use.
+##' @param control a list with additional control parameters for the
+##' solver. This is solver specific so please consult the
+##' corresponding documentation.
+##' @param ... a list of control parameters (overruling those specified in \code{control}).
+##' @return a list containing the solution and a message from the solver.
+##' @author Stefan Theussl
 ##' @export
 ROI_solve <- function( x, solver, control = NULL, ... ){
 

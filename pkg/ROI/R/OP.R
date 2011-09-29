@@ -38,6 +38,7 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
 
 ## FIXME: also consider objective function
 
+##' @nord
 ##' @method print OP
 ##' @S3method print OP
 print.OP <- function(x, ...){
@@ -47,20 +48,36 @@ print.OP <- function(x, ...){
 
 }
 
+##' Coerces objects of type \code{"OP"}.
+##'
+##' Objects from the following classes can be coerced to \code{"OP"}:
+##' \code{"NULL"}, and \code{"numeric"}. The former represents an
+##' empty optimization problem, the latter an unconstrained linear
+##' programming problem where the elements of a \code{"numeric"}
+##' vector \eqn{c} are treated as being objective variable
+##' coefficients in \eqn{c^\top x}).  inherits from class
+##' \code{"objective"}.
+##' @title Optimization Problem Object
+##' @param x an R object.
+##' @return an object of class \code{"OP"}.
+##' @author Stefan Theussl
 ##' @export
 as.OP <- function(x)
     UseMethod("as.OP")
 
+##' @nord
 ##' @method as.OP OP
 ##' @S3method as.OP OP
 as.OP.OP <- identity
 
+##' @nord
 ##' @method as.OP numeric
 ##' @S3method as.OP numeric
 as.OP.numeric <- function(x){
     OP( objective = x, constraints = NULL, bounds = NULL, types = NULL,
         maximum = FALSE )
 
+##' @nord
 ##' @method as.OP default
 ##' @S3method as.OP default
 as.OP.default <- function(x, ...)
@@ -88,7 +105,6 @@ as.OP.default <- function(x, ...)
 ##     signature
 ## }
 
-##' @export
 OP_signature <- function( x ){
     x <- as.OP( x )
     uniq_types <- if( is.null(types(x)) )

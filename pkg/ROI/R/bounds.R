@@ -44,6 +44,7 @@ V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
             class = "V_bound" )
 }
 
+##' @nord
 ##' @method as.list V_bound
 ##' @S3method as.list V_bound
 as.list.V_bound <- function( x, ... )
@@ -52,11 +53,11 @@ as.list.V_bound <- function( x, ... )
 ################################################################################
 ## 'bounds' extractor functions
 
-##' Extract bounds from its argument (typically ROI objects) and
+##' Extract bounds from its argument (typically \pkg{ROI} objects) and
 ##' return them.
 ##'
-##' Currently, there is no default method. See \code{\link{print.OP}}
-##' for extracting bounds from ROI objects of class \code{"OP"}.
+##' Currently, there is no default method. See \code{\link{bounds.OP}}
+##' for extracting bounds from \pkg{ROI} objects of class \code{"OP"}.
 ##' @title Extract Objective Variable Bounds
 ##' @param x an object used to select the method.
 ##' @return the extracted bounds object.

@@ -131,16 +131,20 @@ L_constraint <- function( L, dir, rhs ) {
 as.L_constraint <- function(x, ...)
   UseMethod("as.L_constraint")
 
+
+##' @nord
 ##' @method as.L_constraint L_constraint
 ##' @S3method as.L_constraint L_constraint
 as.L_constraint.L_constraint <- function( x, ... )
   identity(x)
 
+##' @nord
 ##' @method as.L_constraint numeric
 ##' @S3method as.L_constraint numeric
 as.L_constraint.numeric <- function( x, ... )
   L_constraint( L = x, dir = ">=", rhs = 0 )
 
+##' @nord
 ##' @method as.L_constraint list
 ##' @S3method as.L_constraint list
 as.L_constraint.list <- function( x, ... ){
@@ -189,6 +193,7 @@ rbind.L_constraint <- function( ..., recursive = FALSE ){
 
 ## FIXME: connection to rbind documentation
 
+##' @nord
 ##' @method c L_constraint
 ##' @S3method c L_constraint
 c.L_constraint <- function( ..., recursive = FALSE )
@@ -209,14 +214,17 @@ length.L_constraint <- function( x )
 as.L_term <- function( x, ... )
   UseMethod("as.L_term")
 
+##' @nord
 ##' @S3method as.L_term numeric
 as.L_term.numeric <- function( x, ... )
   as.simple_triplet_matrix( matrix(x, nrow = 1L) )
 
+##' @nord
 ##' @S3method as.L_term matrix
 as.L_term.matrix <- function( x, ... )
   as.simple_triplet_matrix(x)
 
+##' @nord
 ##' @S3method as.L_term simple_triplet_matrix
 as.L_term.simple_triplet_matrix <- function( x, ... )
   x
@@ -292,10 +300,12 @@ Q_constraint <- function(Q, L, dir, rhs){
 as.Q_constraint <- function( x )
   UseMethod("as.Q_constraint")
 
+##' @nord
 ##' S3method as.Q_constraint Q_constraint
 as.Q_constraint.Q_constraint <-
   identity
 
+##' @nord
 ##' S3method as.Q_constraint list
 as.Q_constraint.list <- function( x ){
   names(x) <- c("Q", "L", "dir", "rhs")
@@ -335,18 +345,22 @@ length.Q_constraint <- function(x)
 as.Q_term <- function(x, ...)
   UseMethod( "as.Q_term" )
 
+##' @nord
 ##' @S3method as.Q_term list
 as.Q_term.list <- function( x )
   lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
 
+##' @nord
 ##' @S3method as.Q_term numeric
 as.Q_term.numeric <- function( x )
   list( as.simple_triplet_matrix( matrix(x)) )
 
+##' @nord
 ##' @S3method as.Q_term matrix
 as.Q_term.matrix <- function( x )
   list( as.simple_triplet_matrix(x) )
 
+##' @nord
 ##' @S3method as.Q_term simple_triplet_matrix
 as.Q_term.simple_triplet_matrix <- function( x )
   list( x )
@@ -399,31 +413,43 @@ as.F_term.list <- function(x)
 as.rhs <- function(x, ...)
   UseMethod("as.rhs")
 
+##' @nord
 ##' @S3method as.rhs numeric
 as.rhs.numeric <- function( x, ... )
   x
 
+##' Coerces objects of type \code{"constraint"}.
+##'
+##' @title Constraint Utilities
+##' @param x an R object.
+##' @return an object inheriting from \code{"constraint"}.
+##' @author Stefan Theussl
 ##' @export
 as.constraint <- function( x )
   UseMethod("as.constraint")
 
+##' @nord
 ##' @method as.constraint NULL
 ##' @S3method as.constraint NULL
 as.constraint.NULL <- identity
 
 
+##' @nord
 ##' @S3method as.constraint L_constraint
 as.constraint.L_constraint <-
   identity
 
+##' @nord
 ##' @S3method as.constraint Q_constraint
 as.constraint.Q_constraint <-
   identity
 
+##' @nord
 ##' @S3method as.constraint F_constraint
 as.constraint.F_constraint <-
   identity
 
+##' @nord
 ##' @method print constraint
 ##' @S3method print constraint
 print.constraint <- function( x, ... ){

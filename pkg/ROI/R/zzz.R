@@ -26,9 +26,9 @@ solver_db$set_field( "objective",   type = names(available_objective_classes()),
 solver_db$set_field( "constraints", type = names(available_constraint_classes()), is_key = TRUE)
 for( type in available_types() )
     solver_db$set_field( type,      type = "logical", is_key = TRUE)
-solver_db$set_field( "bounds",      type = logical, is_key = TRUE)
-solver_db$set_field( "maximum",     type = logical, is_key = TRUE)
-solver_db$set_field( "FUN",         type = function)
+solver_db$set_field( "bounds",      type = "logical", is_key = TRUE)
+solver_db$set_field( "maximum",     type = "logical", is_key = TRUE)
+solver_db$set_field( "FUN",         type = "function" )
 
 stopifnot( all(names(formals(OP)) %in% c(solver_db$get_field_names(), "types")) )
 
