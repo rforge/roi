@@ -82,13 +82,17 @@ bounds.OP <- function( x )
 ## 'bounds' replacement functions
 
 ##' Replaces the (variable) bounds in R objects (typically ROI
-##' objects).
+##' objects of class \code{"OP"}).
 ##'
-##' Currently, there is no default method. See \code{\link{bounds<-.OP}}
-##' for replacing bounds in ROI objects of class \code{"OP"}.
+##' Currently, there is no default method. Bounds in ROI objects of
+##' class \code{"OP"} given by the argument \code{x} are replaced with
+##' \code{value}, either being an object of class \code{"V_bound"} or
+##' \code{NULL} (standard variable bound). The updated \code{"OP"}
+##' object will be returned.
 ##' @title Replacement of Variable Bounds
 ##' @name bounds-replace
-##' @aliases bounds<-
+##' @aliases bounds<- bounds<-.OP
+##' @usage bounds(x) <- value
 ##' @param x an R object.
 ##' @param value an R object.
 ##' @return the updated object.
@@ -97,18 +101,8 @@ bounds.OP <- function( x )
 'bounds<-' <- function( x, value )
   UseMethod("bounds<-")
 
-##' Replaces the bounds element in a ROI object of class \code{"OP"}
-##' with the object given by \code{value}.
-##'
-##' @title Replacement of Variable Bounds
-##' @name bounds-replace-OP
-##' @aliases bounds<-.OP
-##' @param x an object of class \code{"OP"}.
-##' @param value an object of class \code{"V_bound"} or NULL (standard
-##' variable bound).
-##' @return the updated \code{"OP"} object.
-##' @author Stefan Theussl
-##' @method bounds<- OP
+
+##' @nord
 ##' @S3method bounds<- OP
 'bounds<-.OP' <- function( x, value ) {
    if(is.null(value))

@@ -37,11 +37,15 @@ constraints.OP <- function( x )
 ##' Replaces the constraints in R objects (typically ROI
 ##' objects).
 ##'
-##' Currently, there is no default method. See \code{\link{constraints<-.OP}}
-##' for replacing constraints in ROI objects of class \code{"OP"}.
+##' Currently, there is no default method. Constraints in ROI objects
+##' of class \code{"OP"} given by the argument \code{x} are replaced
+##' with \code{value}, either being an object of class
+##' \code{"constraint"}, coercible to such, or \code{NULL}
+##' (unconstrained). The updated \code{"OP"} object will be returned.
 ##' @title Replacement of constraints
 ##' @name constraints-replace
-##' @aliases constraints<-
+##' @aliases constraints<- constraints<-.OP
+##' @usage constraints(x) <- value
 ##' @param x an R object.
 ##' @param value an R object.
 ##' @return the updated object.
@@ -50,18 +54,7 @@ constraints.OP <- function( x )
 'constraints<-' <- function( x, value )
   UseMethod("constraints<-")
 
-##' Replaces the constraints element in a ROI object of class \code{"OP"}
-##' with the new constraints object given by \code{value}.
-##'
-##' @title Replacement of constraints
-##' @name constraints-replace-OP
-##' @aliases constraints<-.OP
-##' @param x an object of class \code{"OP"}.
-##' @param value an object of class \code{"constraints"}, coercible to
-##' such, or NULL (no constraints).
-##' @return the updated \code{"OP"} object.
-##' @author Stefan Theussl
-##' @method constraints<- OP
+##' @nord
 ##' @S3method constraints<- OP
 'constraints<-.OP' <- function( x, value ) {
     ## if 'empty' constraints are given (NULL) then we assume it's and

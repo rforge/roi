@@ -68,11 +68,12 @@ get_solver_packages_from_db <- function ( ){
 ##########################################################################
 ## NEW SOLVER METHODS
 
-ROI_register_solver_method <- function( signatures, solver, method, package ){
-    args <- lapply( signatures, function(x) method )
-    names(args) <- signatures
-    args <- c( list(solver = solver, package = package), args )
-    do.call(solver_db$set_entry, args)
+ROI_register_solver_method <- function( signatures, solver, method ){
+    for( i in 1:nrow(signatures) )
+        do.call(ROI:::solver_db$set_entry, c(as.list(signatures[i,]),
+                                             list(solver = solver),
+                                             list(FUN = method)))
+
     invisible( TRUE )
 }
 
@@ -82,87 +83,84 @@ ROI_register_solver_method <- function( signatures, solver, method, package ){
 ## make only one signature
 ROI_make_signature <- function(...){
     dotargs <- list(...)
-    dotargs
     required <- names(formals(OP))
-    if( !is.null(names(dotargs)) )
-        stopifnot( all(names(dotargs) %in% required) )
     if( length(dotargs) < 2 )
-        stop( sprintf("Signature for '%s' and '%s' need to be given.", required[1], required[2]) )
+        stop( sprintf("Signature element for '%s' and '%s' need to be given.",
+                      required[1], required[2]) )
     length(dotargs) <- length(formals(OP))
-    names(dotargs) <- names(formals(OP))
-    ## types need special treatment
-    if(is.null(dotargs$types))
-        dotargs$types <- available_types()[1]
-    types <- as.list( logical(length(available_types())) )
-    names(types) <- available_types()
+    if( is.null(names(dotargs)) )
+        names(dotargs) <- names(formals(OP))
+    else {
+        nam <- names(dotargs)
+        nam[nam == ""] <-  names(formals(OP))[!(names(formals(OP)) %in% nam)]
+        names(dotargs) <- nam
+    }
+    stopifnot( all(names(dotargs) %in% required) )
 
     ## FIXME: handle NULL case
-    .sort_types(unique(dotargs$types))
-    out <- dotargs[ names(dotargs)[-which(names(dotargs) == "types")] ]
-    dotargs <- types_to_logical( dotargs )
-    dotargs <- lapply(dotargs, function(x) ifelse(is.null(x), FALSE, x))
-    dotargs
+    #.sort_types(unique(dotargs$types))
+    #out <- dotargs[ names(dotargs)[-which(names(dotargs) == "types")] ]
+
+    dotargs <- lapply(dotargs, function(x) if(is.null(x))
+                                               FALSE
+                                           else x)
+    .make_signature(do.call(ROI_expand, dotargs))
 }
 
+ROI_expand <- function(...){
+    base::expand.grid(..., stringsAsFactors = FALSE)
+}
 
     #.make_signature(dotargs)
 
 ## make a set of signatures based on problem class
-ROI_make_LP_signatures <- function(){
-    sigs <- expand.grid( objective = "L",
-                         constraints = "L",
-                         types = c("C"),
-                         bounds = c("TRUE", "FALSE"),
-                         maximum = c("TRUE", "FALSE") )
-    stopifnot( ncol(sigs) == length(formals(OP)) )
-    stopifnot( identical(colnames(sigs), names(formals(OP))) )
-    apply( sigs, 1, .make_signature )
-}
+ROI_make_LP_signatures <- function()
+    ROI_make_signature( objective = "L",
+                        constraints = "L",
+                        types = c("C"),
+                        bounds = c(TRUE, FALSE),
+                        maximum = c(TRUE, FALSE) )
 
-ROI_make_QP_signatures <- function(){
-    sigs <- expand.grid( objective = "Q",
-                         constraints = "L",
-                         types = c("C"),
-                         bounds = c("TRUE", "FALSE"),
-                         maximum = c("TRUE", "FALSE") )
-    stopifnot( ncol(sigs) == length(formals(OP)) )
-    stopifnot( identical(colnames(sigs), names(formals(OP))) )
-    apply( sigs, 1, .make_signature )
-}
-
-ROI_make_MILP_signatures <- function(){
-    sigs <- expand.grid( objective = "L",
-                         constraints = "L",
-                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
-                         bounds = c("TRUE", "FALSE"),
-                         maximum = c("TRUE", "FALSE") )
-    stopifnot( ncol(sigs) == length(formals(OP)) )
-    stopifnot( identical(colnames(sigs), names(formals(OP))) )
-    apply( sigs, 1, .make_signature )
-}
+ROI_make_QP_signatures <- function()
+    ROI_make_signature( objective = "Q",
+                        constraints = "L",
+                        types = c("C"),
+                        bounds = c(TRUE, FALSE),
+                        maximum = c(TRUE, FALSE) )
 
 
-ROI_make_MIQP_signatures <- function(){
-    sigs <- expand.grid( objective = "Q",
-                         constraints = "L",
-                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
-                         bounds = c("TRUE", "FALSE"),
-                         maximum = c("TRUE", "FALSE") )
-    stopifnot( ncol(sigs) == length(formals(OP)) )
-    stopifnot( identical(colnames(sigs), names(formals(OP))) )
-    apply( sigs, 1, .make_signature )
+ROI_make_MILP_signatures <- function()
+    ROI_make_signature( objective = "L",
+                        constraints = "L",
+                        types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
+                        bounds = c(TRUE, FALSE),
+                        maximum = c(TRUE, FALSE) )
+
+
+ROI_make_MIQP_signatures <- function()
+    ROI_make_signature( objective = c("L", "Q"),
+                        constraints = "L",
+                        types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
+                        bounds = c(TRUE, FALSE),
+                        maximum = c(TRUE, FALSE) )
+
+ROI_make_MIQCP_signatures <- function()
+    ROI_make_signature( objective = c("L", "Q"),
+                        constraints = c("L", "Q"),
+                        types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
+                        bounds = c(TRUE, FALSE),
+                        maximum = c(TRUE, FALSE) )
+
+
+.make_signature <- function( x ){
+    stopifnot( ncol(x) == length(formals(OP)) )
+    stopifnot( identical(colnames(x), names(formals(OP))) )
+    types <- strsplit(as.character(x[["types"]]), "")
+    types <- do.call(rbind, lapply( types, function(t) available_types() %in% t) )
+    colnames(types) <- available_types()
+    cbind(x[, colnames(x) != "types"], types)
 }
 
-.make_signature <- function(x){
-    x <- lapply(x, function(e){ if( as.character(e) %in% as.character(c(TRUE, FALSE))){
-        if( e )
-            "T"
-        else
-            ""
-    } else e})
-    out <- paste(x, collapse = "_")
-    structure( out, class = c("ROI_signature", class(out)) )
-}
 
 .sort_types <- function(x){
     stopifnot( all(x %in% available_types()) )
