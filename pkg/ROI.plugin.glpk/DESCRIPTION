@@ -1,12 +1,12 @@
 Package: ROI.plugin.glpk
 Version: 0.0-1
-Date: 2011-08-31
+Date: 2011-10-03
 Title: ROI-plugin GLPK
 Author: Stefan Theussl
 Maintainer: Stefan Theussl <stefan.theussl@wu.ac.at>
 Description: This package enhances the R Optimization Infrastructure (ROI) package 
 	     with the GLPK solver for solving mixed integer linear programming (MILP) 
 	     problems as well as all  variants/combinations of LP, IP.
-Depends: ROI, Rglpk
+Imports: methods, ROI, Rglpk
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi

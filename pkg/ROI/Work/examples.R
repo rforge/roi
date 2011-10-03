@@ -1,3 +1,5 @@
+require("ROI")
+
 ################################################################################
 ## linear constraints
 
@@ -54,7 +56,6 @@ F_constraint(f, "<", 5)
 ##             2 x_1 +   x_2 +   x_3 <= 40
 ##               x_1 + 3 x_2 + 2 x_3 <= 80
 ##               x_1, x_2, x_3 are non-negative real numbers
-library("ROI")
 ex1_lp <- OP(objective = c(2, 4, 3),
              constraints = L_constraint(L = matrix(c(3, 2, 1, 4, 1,
                                                      3, 2, 2, 2), nrow = 3),

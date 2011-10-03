@@ -91,7 +91,7 @@ terms.Q_objective <- function( x, ... )
 ##' @export
 L_objective <- function( L ) {
   structure( list(L = as.numeric(L)),
-             class = c("L_objective", "objective") )
+             class = c("L_objective", "Q_objective", "objective") )
 }
 
 ##' @nord

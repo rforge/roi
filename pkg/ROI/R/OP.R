@@ -44,7 +44,7 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
 print.OP <- function(x, ...){
     types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
     writeLines( sprintf("A mathematical programming problem with %d constraints of type %s.", length(constraints(x)),
-                        paste(na.omit(types[class(constraints(x))]), collapse = ", ")) )
+                        paste(na.omit(types[class(constraints(x))])[1], collapse = ", ")) )
 
 }
 
@@ -105,13 +105,15 @@ as.OP.default <- function(x, ...)
 ##     signature
 ## }
 
+## NOTE: objective(x) returns something which inherits from function and class(x).
+##       this is why we need to derive the type of objective by taking the 2nd element.
 OP_signature <- function( x ){
     x <- as.OP( x )
     uniq_types <- if( is.null(types(x)) )
         available_types()[1]
-    else unique(types(x))
-    ROI_make_signature( objective = names( available_objective_classes() )[ ROI:::available_objective_classes() %in% class(objective(x)) ],
-                        constraints = names( available_constraint_classes() )[ ROI:::available_constraint_classes() %in% class(constraints(x)) ],
+    else paste(unique(types(x)), collapse = "")
+    ROI_make_signature( objective = names( available_objective_classes() )[ available_objective_classes() %in% class(objective(x))[2] ],
+                        constraints = names( available_constraint_classes() )[ available_constraint_classes() %in% class(constraints(x))[1] ],
                         types = uniq_types,
                         bounds  = !is.null(bounds(x)),
                         maximum = x$maximum

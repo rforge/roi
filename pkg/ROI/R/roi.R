@@ -20,7 +20,7 @@ ROI_solve <- function( x, solver, control = NULL, ... ){
     dots <- list(...)
     control[names(dots)] <- dots
 
-    op <- as.OP( x )
+    x <- as.OP( x )
 
     ## handle the boundary case of no variables.
     ## FIXME: should also consider other
@@ -32,41 +32,80 @@ ROI_solve <- function( x, solver, control = NULL, ... ){
     if(!length(objective(x)))
         stop("Cannot compute solution of empty objective function.")
 
-    SOLVE <- get_solver_method( solver, OP_signature(op) )
+    methods <- get_solver_methods( OP_signature(x) )
+    SOLVE <- methods[[ solver ]]
     SOLVE( x, control )
 }
 
-ROI_solver_plugins <- function(){
-  ## solvers registered
-  registered_solvers <- get_solver_packages_from_db()
 
-  ## solver packages installed
-  pkgs_installed <- rownames( utils::installed.packages() )
 
-  if( !is.null(pkgs_installed) )
-    names(registered_solvers[registered_solvers %in% pkgs_installed])
-  else
-    NA
+##########################################################################
+## UTILITY FUNCTIONS TO QUERY SOLVERS
+
+
+##' Retrieve all available solvers hosted in the given package repository.
+##'
+##' @title Solver Tools
+##' @param ... arguments passed on to \code{\link{available.packages}}.
+##' @return a named character vector.
+##' @author Stefan Theussl
+##' @export
+ROI_available_solvers <- function( ... ){
+    pkgs <- grep(.plugin_prefix(), rownames(utils::available.packages( ... )), value = TRUE)
+    structure(pkgs, names = get_solver_name(pkgs))
 }
 
+##' Retrieve the names of all installed solvers.
+##'
+##' @title Solver Tools
+##' @param ... arguments passed on to \code{\link{installed.packages}}.
+##' @return a named character vector.
+##' @author Stefan Theussl
+##' @export
+ROI_installed_solvers <- function( ... ){
+    pkgs <- grep( .plugin_prefix(), rownames(utils::installed.packages( ... )),
+                  value = TRUE )
+    structure( pkgs, names = get_solver_name(pkgs) )
+}
+
+##' Retrieve the names of all registered solvers.
+##'
+##' @title Solver Tools
+##' @return a named character vector.
+##' @author Stefan Theussl
+##' @export
+ROI_registered_solvers <- function(){
+    ## solvers registered
+    get_solver_packages_from_db()
+}
+
+
+
+##########################################################################
+## HELPER FUNCTIONS (not exported)
+
+
 ## returns solver method
-get_solver_method <- function( solver, signature ){
-    solver_db$get_entry( solver = solver )[[ signature ]]
+get_solver_methods <- function( signature ){
+    entries <- do.call( ROI:::solver_db$get_entries, as.list(signature) )
+    solvers <- unlist(lapply( entries, function(x) x$solver ))
+    structure( lapply(entries, function(x) x$FUN), names = solvers)
 }
 
 ## returns available solvers from db
 get_solvers_from_db <- function( ) {
-  solver_db$get_entry_names()
+    unique( solver_db$get_field_entries("solver", unlist = TRUE) )
 }
 
 ## returns package names of available solvers from db
 get_solver_packages_from_db <- function ( ){
-  solver_db$get_field_entries( "package" )
+    solvers <- get_solvers_from_db()
+    structure( get_package_name(solvers), names = solvers )
 }
 
 
 ##########################################################################
-## NEW SOLVER METHODS
+## REGISTER NEW SOLVER METHODS
 
 ROI_register_solver_method <- function( signatures, solver, method ){
     for( i in 1:nrow(signatures) )

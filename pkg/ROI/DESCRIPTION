@@ -6,7 +6,7 @@ Author: Kurt Hornik and David Meyer and Stefan Theussl
 Maintainer: Stefan Theussl <stefan.theussl@wu.ac.at>
 Description: The R Optimization Infrastructure (ROI) package provides a 
 	     sophisticated framework for handling optimization problems in R.
-Depends: registry, slam
-Enhances: ROI.plugin.cplex
+Imports: methods, registry, slam
+Suggests: ROI.plugin.glpk
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi

@@ -88,6 +88,7 @@ constraints.OP <- function( x )
 ##' @return an object of class \code{"L_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
+##' @import slam
 ##' @export
 L_constraint <- function( L, dir, rhs ) {
   L     <- as.L_term(L)

@@ -46,3 +46,13 @@ available_row_sense <- function( )
     }
 }
 
+## returns solver name based on package name
+## Convention: ROI.plugin.<solver> => <solver>
+.plugin_prefix <- function()
+    "ROI.plugin"
+
+get_solver_name <- function( pkgname )
+    sub(sprintf("%s.", .plugin_prefix()), "", as.character(pkgname))
+
+get_package_name <- function( solver )
+    paste(.plugin_prefix(), as.character(solver), sep = ".")

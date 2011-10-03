@@ -1,3 +1,5 @@
+##' @nord
+##' @import registry
 ROI_options <-
 local({
     options <- list()
@@ -33,6 +35,21 @@ solver_db$set_field( "FUN",         type = "function" )
 stopifnot( all(names(formals(OP)) %in% c(solver_db$get_field_names(), "types")) )
 
 
-#solver_db$set_field( "package", type = "character" )
-##for(field in apply(ROI:::all_signatures(), 1, ROI:::.make_signature))
-##    solver_db$set_field( field, type = "function" )
+.onLoad <- function( libname, pkgname ) {
+    ## SET DEFAULTS
+    ## for the time being 'glpk' is the default solver
+    ROI_options("default_solver", "glpk")
+}
+
+.onAttach <- function( libname, pkgname ){
+    ## Search for all solvers in same library as ROI and register found solvers
+    ## implicitely be running the corresponding .onLoad() function.
+    solvers <- ROI_installed_solvers( lib.loc = libname )
+    lapply( solvers, function( pkgname ){ load <- methods::getFunction( ".onLoad", where = getNamespace(pkgname) )
+                                          load( libname = libname, pkgname = pkgname ) } )
+    ## Startup messages
+    packageStartupMessage( sprintf("%s: R Optimization Infrastructure", pkgname) )
+    packageStartupMessage( sprintf("Registered solver plugins: %s.",
+                                   paste(names(ROI_registered_solvers()), collapse = ", ")) )
+    packageStartupMessage( sprintf("Default solver: %s.", ROI_options("default_solver")) )
+}
