@@ -1,6 +1,15 @@
-##########################################################################
-## MAIN FUNCTION TO SOLVE OPTIMIZATION PROBLEMS USING ROI
+################################################################################
+## Package: ROI
+## File:    roi.R
+## Author:  Stefan Theussl
+## Changed: 2011-10-03
+################################################################################
 
+
+
+################################################################################
+## MAIN FUNCTION TO SOLVE OPTIMIZATION PROBLEMS USING ROI
+################################################################################
 
 ##' This function makes a given solver (or searches for an appropriate
 ##' solver) solve the supplied optimization problem.
@@ -39,9 +48,9 @@ ROI_solve <- function( x, solver, control = NULL, ... ){
 
 
 
-##########################################################################
+################################################################################
 ## UTILITY FUNCTIONS TO QUERY SOLVERS
-
+################################################################################
 
 ##' Retrieve all available solvers hosted in the given package repository.
 ##'
@@ -81,9 +90,9 @@ ROI_registered_solvers <- function(){
 
 
 
-##########################################################################
+################################################################################
 ## HELPER FUNCTIONS (not exported)
-
+################################################################################
 
 ## returns solver method
 get_solver_methods <- function( signature ){
@@ -104,8 +113,10 @@ get_solver_packages_from_db <- function ( ){
 }
 
 
-##########################################################################
+
+################################################################################
 ## REGISTER NEW SOLVER METHODS
+################################################################################
 
 ROI_register_solver_method <- function( signatures, solver, method ){
     for( i in 1:nrow(signatures) )
@@ -116,8 +127,11 @@ ROI_register_solver_method <- function( signatures, solver, method ){
     invisible( TRUE )
 }
 
-##########################################################################
+
+
+################################################################################
 ## SIGNATURES
+################################################################################
 
 ## make only one signature
 ROI_make_signature <- function(...){
@@ -149,8 +163,6 @@ ROI_make_signature <- function(...){
 ROI_expand <- function(...){
     base::expand.grid(..., stringsAsFactors = FALSE)
 }
-
-    #.make_signature(dotargs)
 
 ## make a set of signatures based on problem class
 ROI_make_LP_signatures <- function()

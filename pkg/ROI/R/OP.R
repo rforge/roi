@@ -1,3 +1,12 @@
+################################################################################
+## Package: ROI
+## File:    OP.R
+## Author:  Stefan Theussl
+## Changed: 2011-10-04
+################################################################################
+
+
+
 ##' Optimization problem constructor
 ##'
 ##' @title Optimization Problem Constructor
@@ -42,10 +51,13 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
 ##' @method print OP
 ##' @S3method print OP
 print.OP <- function(x, ...){
-    types <- c(L_constraint = "linear", Q_constraint = "quadratic", F_constraint = "nonlinear" )
-    writeLines( sprintf("A mathematical programming problem with %d constraints of type %s.", length(constraints(x)),
-                        paste(na.omit(types[class(constraints(x))])[1], collapse = ", ")) )
-
+    types <- c( L_constraint = "linear",
+                Q_constraint = "quadratic",
+                F_constraint = "nonlinear" )
+    writeLines( sprintf("A mathematical programming problem with %d constraints of type %s.",
+                        length(constraints(x)),
+                        paste(na.omit(types[class(constraints(x))])[1],
+                              collapse = ", ")) )
 }
 
 ##' Coerces objects of type \code{"OP"}.

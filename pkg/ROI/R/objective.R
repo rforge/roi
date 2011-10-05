@@ -1,10 +1,32 @@
-## objective.R
+################################################################################
+## Package: ROI
+## File:    objective.R
+## Author:  Stefan Theussl
+## Changed: 2011-10-03
+################################################################################
 
-###############################################################
+
+
+################################################################################
 ## objective helper functions
+################################################################################
 
 available_objective_classes <- function()
-    c(L = "L_objective", Q = "Q_objective", F = "F_objective")
+    c( L = "L_objective", Q = "Q_objective", F = "F_objective" )
+
+## the 'objective' class - a named list of coefficients of a polynom
+## of degree 'k'.
+## o k = 1: linear objective function (element L), numeric
+## o k = 2: quadratic objective function (Q), matrix
+## o k > 2: higher polynomial objective function (P_k), multidimensional array
+## o Nonlinear objective function (F), function
+## Note that for polynoms of degree k each element in the list contains the
+## corresponding coefficients defining the polynom. E.g., c^\top x => L = c
+## c^\top x + x^\top Q x => Q = Q, L = c, etc. ordering is always from highest
+## to lowest degree.
+.objective <- function( nobj, ... ){
+    structure( list(...), nobj = nobj, class = "objective")
+}
 
 ## get objective function from problem object
 ## returns a function!
@@ -42,6 +64,17 @@ as.objective <- function( x )
 ##' @nord
 ##' @method as.objective default
 ##' @S3method as.objective default
+as.objective.function <- function( x ){
+    if( inherits(x, "Q_objective", which = TRUE) == 2 )
+        return( as.Q_objective( x ) )
+    if( inherits(x, "L_objective", which = TRUE) == 2 )
+        return( as.L_objective( x ) )
+    stop("Not implemented.")
+}
+
+##' @nord
+##' @method as.objective default
+##' @S3method as.objective default
 as.objective.default <- function( x )
   as.L_objective( x )
 
@@ -50,6 +83,12 @@ as.objective.default <- function( x )
 ##' @S3method as.objective objective
 as.objective.objective <-
     identity
+
+##' @nord
+##' @method length objective
+##' @S3method length objective
+length.objective <- function( x )
+    attr( as.objective(x), "nobj" )
 
 ##' @nord
 ##' @method terms function
@@ -74,8 +113,12 @@ terms.L_objective <- function( x, ... )
 terms.Q_objective <- function( x, ... )
   list( Q = x$Q, L = x$L )
 
+
+
+
 ###############################################################
 ## linear objectives
+###############################################################
 
 ## Linear objective function (class 'L_objective')
 ## of type c^\top x, where c is a vector of coefficients
@@ -90,8 +133,9 @@ terms.Q_objective <- function( x, ... )
 ##' @author Stefan Theussl
 ##' @export
 L_objective <- function( L ) {
-  structure( list(L = as.numeric(L)),
-             class = c("L_objective", "Q_objective", "objective") )
+  obj <- Q_objective( Q = NULL, L = L )
+  class( obj ) <- c( "L_objective", class(obj) )
+  obj
 }
 
 ##' @nord
@@ -157,8 +201,11 @@ as.L_objective.function <- function( x ){
     L_objective( get("L", environment(x)) )
 }
 
+
+
 ###############################################################
 ## quadratic objectives
+###############################################################
 
 ##' A quadratic objective function is typically of the form
 ##' \eqn{x^\top Qx + c^\top x} where \eqn{Q} is a (sparse) matrix
@@ -175,10 +222,15 @@ as.L_objective.function <- function( x ){
 ##' @author Stefan Theussl
 ##' @export
 Q_objective <- function( Q, L = NULL ) {
-
-  structure ( list(Q = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
-                   L = as.numeric(L)),
-              class = c("Q_objective", "objective") )
+    L <- as.numeric(L)
+    if( !is.null(Q) )
+        obj <- .objective( Q    = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
+                           L    = L,
+                           nobj = dim(Q)[1] )
+    else
+        obj <- .objective( L = L, nobj = length(L) )
+    class(obj) <- c( "Q_objective", class(obj) )
+    obj
 }
 
 ##' @nord
@@ -241,9 +293,14 @@ as.Q_objective.Q_objective <- identity
 as.Q_objective.simple_triplet_matrix <- function( x )
   Q_objective(Q = x)
 
+
+
+
 ###############################################################
 ## general objectives
+###############################################################
 
+## TODO:
 F_objective <- function( F ) {
   structure ( list(F = as.function(F)),
              class = c("F_objective", "objective") )
