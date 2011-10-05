@@ -1,5 +1,5 @@
 PACKAGE=ROI
-R=/home/theussl/bin/R-devel
+R=$(shell which R-devel)
 
 all: pkg plugins
 
@@ -10,11 +10,18 @@ pkg: roxclean
 	R CMD roxygen -s $(PACKAGE)
 	$(R) CMD build $(PACKAGE).roxygen
 
+plugins:
+	$(R) CMD build $(PACKAGE).plugin.glpk
+	$(R) CMD build $(PACKAGE).plugin.symphony
+	$(R) CMD build $(PACKAGE).plugin.quadprog
+
 check:
-	$(R) CMD check $(PACKAGE)_*.tar.gz
+	$(R) CMD check $(PACKAGE)*.tar.gz
+	./check_results
+	cat SUMMARY
 
 install:
-	$(R) CMD INSTALL $(PACKAGE)_*.tar.gz
+	$(R) CMD INSTALL $(PACKAGE)*.tar.gz
 
 roxclean:
 	rm -rf $(PACKAGE).roxygen
@@ -22,4 +29,10 @@ roxclean:
 clean: roxclean
 	rm -rf $(PACKAGE)*.Rcheck
 	rm -f  $(PACKAGE)*.tar.gz
+	rm -f check.csv
+	rm -f SUMMARY
 
+submit: 
+	echo 'scp $(PACKAGE)*.tar.gz cran.wu.ac.at:/srv/ftp/incoming/'
+	echo 'ssh cran.wu.ac.at "chgrp cranadmin /srv/ftp/incoming/$(PACKAGE)*"'
+	echo 'ssh cran.wu.ac.at "chmod g+w /srv/ftp/incoming/$(PACKAGE)*"'

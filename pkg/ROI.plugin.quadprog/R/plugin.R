@@ -32,7 +32,7 @@ solve_QP <- function( x, control ) {
 
   ind_eq  <- which( dir == "==")
   ind_geq <- which( (dir == ">=") | (dir == ">") )
-  ind_leq <- which( (dir == "<=") | (dir == "<") )
+  ind_leq <- which( (dir == "<=") | (dir =q= "<") )
   meq <- length(ind_eq)
 
   ## everything except equaltity constraints have to be ">="
@@ -78,7 +78,6 @@ solve_QP <- function( x, control ) {
   ## FIXME: do we need santiy checks here?
 
   # Optimize:
-  require("quadprog")
   .Fortran("qpgen2",
            as.double(Dmat),
            dvec = as.double(dvec),

@@ -39,10 +39,14 @@ MAD <- OP( objective = obj,
            constraints = c(MAD.LE, MAD.GE, RETURN, BUDGET, X, WEIGHTS) )
 
 ## OK
+## for cplex we need cplex/ampl interface
+#ROI_solve( MAD, solver = "solveLP", control = list(solver = "snopt", invoke = "AMPL") )
+#ROI_solve( MAD, solver = "solveLP", control = list(solver = "symphony", invoke = "AMPL") )
+
 ROI_solve( MAD, solver = "glpk" )
 ROI_solve( MAD, solver = "symphony" )
 ## FAILS
-ROI_solve( MAD, solver = "quadprog" )
+#ROI_solve( MAD, solver = "quadprog" )
 
 ## Example: Mean/Variance (Markowitz) Portfolio
 ##          Chapter xx.x in Wuertz et al (2011)

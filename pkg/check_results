@@ -1,0 +1,59 @@
+#!/bin/bash
+## check_results: makes results for ROI distribution
+## code based on parts of Kurt Hornik's check-R script
+
+get_check_args () {
+    safe=`echo "${1}" | tr . _`
+    eval echo '${'check_args_db_${safe}'}' ;
+}
+
+get_dcf_field () {
+  ## Get one field including all continuation lines from a DCF file.
+  ## Usage:
+  ##   get_dcf_field FIELD FILE
+  ws="[         ]"              # space and tab
+  (sed -n "/^${1}:/,/^[^ ]/{p;}" ${2} | \
+    sed -n "/^${1}:/{s/^${1}:${ws}*//;p;}
+            /^${ws}/{s/^${ws}*//;p;}") |
+    sed "s/[    ^M]*$//"
+}
+
+
+## Create check.csv.
+(echo "Package,Version,Priority,Maintainer,Status,Comment"
+    for d in *.Rcheck; do
+	package=`basename ${d} .Rcheck`
+	version=`get_dcf_field Version ${package}/DESCRIPTION | head -1`
+	priority=`get_dcf_field Priority ${package}/DESCRIPTION | head -1`
+	maintainer=`get_dcf_field Maintainer ${package}/DESCRIPTION | \
+	    head -1 | sed 's/\\"/""/g'`
+	warnings=`grep 'WARNING$' ${d}/00check.log`
+	errors=`grep 'ERROR' ${d}/00check.log`
+	if test -n "${errors}"; then
+	    status=ERROR
+	elif test -n "${warnings}"; then
+	    status=WARN
+	else
+	    status=OK
+	fi
+	args=`get_check_args ${package}`
+	if test -n "${args}"; then args="[${args}]"; fi
+	echo "${package},${version},${priority},\"${maintainer}\",${status},${args}"
+	done) | sed 's/^M/ /' > check.csv
+
+## Create SUMMARY.
+(for d in *.Rcheck; do
+    package=`basename ${d} .Rcheck`
+    if test "${R_flavor}" = r-release; then
+	problems=`egrep -e 'ERROR$' ${d}/00check.log`
+    else
+	problems=`egrep -e \
+	    '(^\*   Rd files|^\*   non-standard|(WARNING|ERROR)$)' \
+	    ${d}/00check.log`
+    fi
+    if test -n "${problems}"; then
+	echo "${package}"
+	egrep -e '^Maintainer:' "${package}/DESCRIPTION"
+	echo "${problems}"
+    fi
+    done) > SUMMARY

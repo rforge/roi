@@ -2,7 +2,7 @@
 ## Package: ROI
 ## File:    OP.R
 ## Author:  Stefan Theussl
-## Changed: 2011-10-04
+## Changed: 2011-10-05
 ################################################################################
 
 
@@ -51,13 +51,35 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
 ##' @method print OP
 ##' @S3method print OP
 print.OP <- function(x, ...){
+    writeLines( "ROI Optimization Problem:\n" )
+    ## objective
+    op_type <- switch( class(objective(x))[2],
+                       "L_objective" = "linear",
+                       "Q_objective" = "quadratic",
+                       "F_objective" = "nonlinear",
+                       "abstract" )
+    writeLines( sprintf("%s a %s objective function with",
+                        ifelse(x$maximum, "Maximize", "Minimize"), op_type) )
+    writeLines( sprintf("- %d objective variables,", length(objective(x))) )
+    writeLines( "\nsubject to" )
+    ## constraints
     types <- c( L_constraint = "linear",
                 Q_constraint = "quadratic",
                 F_constraint = "nonlinear" )
-    writeLines( sprintf("A mathematical programming problem with %d constraints of type %s.",
+    writeLines( sprintf("- %d constraints of type %s.",
                         length(constraints(x)),
                         paste(na.omit(types[class(constraints(x))])[1],
-                              collapse = ", ")) )
+                              collapse = ", ")
+                        ) )
+        ## calculate if types have to be written to stdout
+    writetypes <- FALSE
+    if( !is.null(types(x)) )
+        if( any(types(x) %in% ROI:::available_types()[2:3]) )
+            writetypes <- TRUE
+    if( writetypes ){
+        writeLines( "" )
+        writeLines( "Some of the objective variables are of type linear or binary." )
+    }
 }
 
 ##' Coerces objects of type \code{"OP"}.

@@ -32,6 +32,24 @@ make_OP_solution <- function(solution, objval, status, solver, ...)
 
 
 ################################################################################
+## Methods on solution object
+################################################################################
+
+##' @nord
+##' @S3method print OP_solution
+print.OP_solution <- function(x, ...){
+    success <- x$status$code == 0
+    if( !success ){
+        writeLines( "No solution found." )
+        writeLines( sprintf("The solver message was: %s", x$status$msg$message) )
+    }
+    writeLines( "Optimal solution found." )
+    writeLines( sprintf("The objective value is: %e", x$objval) )
+}
+
+
+
+################################################################################
 ## CANONICALIZER
 ################################################################################
 
