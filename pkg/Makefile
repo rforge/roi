@@ -32,7 +32,7 @@ clean: roxclean
 	rm -f check.csv
 	rm -f SUMMARY
 
-submit: 
+submit: clean all install check
 	echo 'scp $(PACKAGE)*.tar.gz cran.wu.ac.at:/srv/ftp/incoming/'
 	echo 'ssh cran.wu.ac.at "chgrp cranadmin /srv/ftp/incoming/$(PACKAGE)*"'
 	echo 'ssh cran.wu.ac.at "chmod g+w /srv/ftp/incoming/$(PACKAGE)*"'
