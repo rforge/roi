@@ -42,8 +42,9 @@ print.OP_solution <- function(x, ...){
     if( !success ){
         writeLines( "No solution found." )
         writeLines( sprintf("The solver message was: %s", x$status$msg$message) )
+    } else{
+        writeLines( "Optimal solution found." )
     }
-    writeLines( "Optimal solution found." )
     writeLines( sprintf("The objective value is: %e", x$objval) )
 }
 

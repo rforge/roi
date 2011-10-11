@@ -27,7 +27,11 @@ targetReturn <- mean( data )
 obj <- L_objective( c(rep(0, nAssets),  rep(1/nScenarios, nScenarios)) )
 
 ## - Constraints
-MAD.LE <- L_constraint( cbind(as.matrix(Data), -diag(nScenarios)), rep("<=", nScenarios), rep(0, nScenarios) )
+MAD.LE <- function(data){
+    nScenarios <- nrow(data)
+    L_constraint( cbind(as.matrix(data), -diag(nScenrarios)), rep("<=", nScenarios), rep(0, nScenarios) )
+}
+
 MAD.GE <- L_constraint( cbind(as.matrix(Data),  diag(nScenarios)), rep(">=", nScenarios), rep(0, nScenarios) )
 RETURN <- L_constraint( c(Mean, rep(0, nScenarios)), "==", targetReturn )
 BUDGET <- L_constraint( c(rep(1, nAssets), rep(0, nScenarios)), "==", 1 )
@@ -36,21 +40,25 @@ WEIGHTS <- L_constraint( cbind(matrix(rep(0, nAssets*nScenarios), ncol = nAssets
 
 
 MAD <- OP( objective = obj,
-           constraints = c(MAD.LE, MAD.GE, RETURN, BUDGET, X, WEIGHTS) )
+           constraints = c(MAD.LE( Data ), MAD.GE, RETURN, BUDGET, X, WEIGHTS) )
 
 ## OK
 ## for cplex we need cplex/ampl interface
-#ROI_solve( MAD, solver = "solveLP", control = list(solver = "snopt", invoke = "AMPL") )
+ROI_solve( MAD, solver = "solveLP", control = list(solver = "snopt", invoke = "AMPL") )
 #ROI_solve( MAD, solver = "solveLP", control = list(solver = "symphony", invoke = "AMPL") )
 
 ROI_solve( MAD, solver = "glpk" )
 ROI_solve( MAD, solver = "symphony" )
+ROI_solve( MAD, solver = "ipop" )
 ## FAILS
 #ROI_solve( MAD, solver = "quadprog" )
 
 ## Example: Mean/Variance (Markowitz) Portfolio
 ##          Chapter xx.x in Wuertz et al (2011)
 ##############################################################
+
+require("ROI")
+require("fPortfolio")
 
 nAssets <- 6
 data <- 100 * LPP2005REC[, 1:nAssets]
@@ -65,6 +73,8 @@ MV <- OP( objective = MIN_RISK,
           constraints = c(FULL_INVEST, RETURN) )
 
 sol <- ROI_solve( MV, solver = "quadprog" )
+sol
+sol <- ROI_solve( MV, solver = "ipop" )
 sol
 
 w <- round(sol$solution, 4)

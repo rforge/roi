@@ -1,0 +1,4 @@
+import("ROI")
+importFrom("kernlab", "ipop")
+importFrom("methods", "getPackageName")
+importFrom("methods", "getFunction")
