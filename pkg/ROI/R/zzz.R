@@ -36,17 +36,20 @@ stopifnot( all(names(formals(OP)) %in% c(solver_db$get_field_names(), "types")) 
 
 
 .onLoad <- function( libname, pkgname ) {
-    ## SET DEFAULTS
-    ## for the time being 'glpk' is the default solver
-    ROI_options("default_solver", "glpk")
+    ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
+    ## OPs is the default solver
+    ROI_options("default_solver", "ROI_NULL")
 }
 
 .onAttach <- function( libname, pkgname ){
     ## Search for all solvers in same library as ROI and register found solvers
     ## implicitely be running the corresponding .onLoad() function.
     solvers <- ROI_installed_solvers( lib.loc = libname )
-    lapply( solvers, function( pkgname ){ load <- methods::getFunction( ".onLoad", where = getNamespace(pkgname) )
-                                          load( libname = libname, pkgname = pkgname ) } )
+    lapply( solvers, function( pkgname ){ nmspc <- tryCatch(getNamespace(pkgname), error = identity)
+                                          if( !inherits(nmspc, "error") ){
+                                              load <- methods::getFunction( ".onLoad", where = nmspc )
+                                              load( libname = libname, pkgname = pkgname )
+                                          }} )
     ## Startup messages
     packageStartupMessage( sprintf("%s: R Optimization Infrastructure", pkgname) )
     packageStartupMessage( sprintf("Registered solver plugins: %s.",

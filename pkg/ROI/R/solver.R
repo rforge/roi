@@ -29,7 +29,3 @@ all_signatures <- function(){
 #make_generics <- function(){
 #    lapply( apply( all_signatures(), 1, .make_signature), function(x) sprintf('%s <- function(x) UseMethod( "%s" )', x, x))
 #}
-
-
-
-
