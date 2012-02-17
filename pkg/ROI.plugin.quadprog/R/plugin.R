@@ -32,7 +32,7 @@ solve_QP <- function( x, control ) {
 
   ind_eq  <- which( dir == "==")
   ind_geq <- which( (dir == ">=") | (dir == ">") )
-  ind_leq <- which( (dir == "<=") | (dir =q= "<") )
+  ind_leq <- which( (dir == "<=") | (dir == "<") )
   meq <- length(ind_eq)
 
   ## everything except equaltity constraints have to be ">="
