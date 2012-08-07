@@ -238,9 +238,13 @@ Q_objective <- function( Q, L = NULL ) {
 ##' @S3method as.function Q_objective
 as.function.Q_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
+  ## FIXME: L can be numeric(0); should this not always be a slam data structure?
+  if( !length(L) )
+      L <- double(length(x))
+
   Q <- terms(x)[["Q"]]
   out <- function(x)
-    crossprod(L, x) + 0.5 * .xtQx(Q, x)
+      crossprod(L, x) + 0.5 * .xtQx(Q, x)
   class(out) <- c(class(out), class(x))
   out
 }

@@ -1,9 +1,9 @@
 Package: ROI.plugin.quadprog
-Version: 0.0-1
-Date: 2011-10-04
+Version: 0.0-2
+Date: 2012-08-07
 Title: ROI-plugin quadprog
 Author: Stefan Theussl
-Maintainer: Stefan Theussl <stefan.theussl@wu.ac.at>
+Maintainer: Stefan Theussl <stefan.theussl@R-project.org>
 Description: This package enhances the R Optimization Infrastructure (ROI) package 
 	     with the quadprog solver for solving quadratic programming (QP)
 	     problems.

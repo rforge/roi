@@ -7,9 +7,16 @@ solve_QP <- function( x, control ) {
     ## them as constraints
     x <- ROI:::as.no_V_bounds_OP( x )
 
+    L <- terms(objective(x))$L
+
+    ## quadprog needs an appropiately formated linear part of the objective function
+    if( !length(L) )
+        L <- double(length(objective(x)))
+    stopifnot( length(L) == length(objective(x)) )
+
     ## solve the QP
     out <- .quadprog_solve_QP(Q   = terms(objective(x))$Q,
-                              L   = terms(objective(x))$L,
+                              L   = L,
                               mat = constraints(x)$L,
                               dir = constraints(x)$dir,
                               rhs = constraints(x)$rhs,
