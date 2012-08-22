@@ -244,6 +244,10 @@ as.L_term.matrix <- function( x, ... )
 as.L_term.simple_triplet_matrix <- function( x, ... )
     x
 
+##' @nord
+##' @S3method as.L_term NULL
+as.L_term.NULL <- function( x, ... )
+    x
 
 
 ################################################################################

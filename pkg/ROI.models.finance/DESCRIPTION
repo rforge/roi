@@ -1,0 +1,9 @@
+Package: ROI
+Version: 0.0-1
+Date: 2012-08-21
+Title: R Optimization Infrastructure: (Portfolio) Models in Finance
+Authors@R: c(person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"))
+Description: The R Optimization Infrastructure (ROI) models packages provide examples for a given field. This packages include (portfolio) models from Finance.
+Depends: ROI
+License: GPL-3
+URL: http://R-Forge.R-project.org/projects/roi

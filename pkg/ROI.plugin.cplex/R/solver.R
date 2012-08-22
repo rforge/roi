@@ -1,43 +1,6 @@
 ## ROI.plugin.cplex: solver interfaces
 ## Description: provides problem object <-> solver mappings
 
-## TODO: this file is still based on old design
-
-## SOLVER METHODS
-.solve_LP.cplex <- function( x, control ) {
-  .solve_MIP_via_cplex(x, control)
-}
-
-.solve_QCP.cplex <-
-function(x, control)
-{
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_QP.cplex <- function( x, control ) {
-  .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MILP.cplex <-
-function(x, control)
-{
-    ## Wrap into the common MIP CPLEX framework.
-    ##x$objective <- list(Q = NULL, L = x$objective)
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MIQCP.cplex <-
-function(x, control)
-{
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MIQP.cplex <-
-function(x, control)
-{
-    .solve_MIP_via_cplex(x, control)
-}
-
 .solve_MIP_via_cplex <-
 function(x, control)
 {
@@ -52,7 +15,7 @@ function(x, control)
                      dim(terms(objective(x))$Q)[1],
                      length(terms(objective(x))$L))
 
-    types <- .expand_types(x$types, n_obj)
+    types <- ROI:::.expand_types(x$types, n_obj)
 
     ## variable bounds
     lb <- 0
@@ -67,7 +30,7 @@ function(x, control)
     if(is.null(nos <- control$n)) nos <- 1L
       value_is_list_of_solutions <- !identical(as.integer(nos), 1L)
 
-    out <- if( is.QCP(x) || is.MIQCP(x) ) {
+    out <- if( any(is.Q_constraint(constraints(x))) ) {
         ## which are the quadratic constraints
         qc <- which( ! sapply(constraints(x)$Q, .all_zero_in_simple_triplet_matrix_or_NULL) )
 
@@ -144,14 +107,20 @@ function(x, control)
         objval <- NA_real_
         status <- 2                     # or whatever ...
         names(status) <- msg            # should be of length one ...
-        out <- .make_MIP_solution(solution, objval, status)
+        out <- ROI:::canonicalize_solution(solution, objval, status, ROI:::get_solver_name(getPackageName()) )
         if(value_is_list_of_solutions) out <- list(out)
     } else {
         class(out) <- c(class(x), class(out))
         out <- if(value_is_list_of_solutions)
-            lapply( out, .canonicalize_solution(out, x) )
+            lapply( out, ROI:::canonicalize_solution(solution = out$xopt,
+                                                      optimum  = objective(x)(out$xopt),
+                                                      status   = out$status,
+                                                      solver   = ROI:::get_solver_name(getPackageName())) )
         else
-            .canonicalize_solution(out, x)
+            ROI:::canonicalize_solution(solution = out$xopt,
+                                         optimum  = objective(x)(out$xopt),
+                                         status   = out$status,
+                                         solver   = ROI:::get_solver_name(getPackageName()) )
     }
     out
 }
