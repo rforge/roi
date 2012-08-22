@@ -5,7 +5,8 @@
 ## Changed: 2011-10-04
 ################################################################################
 
-
+## NOTE: probably support "range" constraints in order to improve efficiency
+## (lhs ~ Ax ~ rhs)
 
 ################################################################################
 ## 'constraints' helper functions

@@ -4,56 +4,33 @@
 ## TODO: this file is still based on old design
 
 ## SOLVER METHODS
-.solve_LP.cplex <- function( x, control ) {
-  .solve_MIP_via_cplex(x, control)
-}
-
-.solve_QCP.cplex <-
-function(x, control)
-{
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_QP.cplex <- function( x, control ) {
-  .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MILP.cplex <-
-function(x, control)
-{
-    ## Wrap into the common MIP CPLEX framework.
-    ##x$objective <- list(Q = NULL, L = x$objective)
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MIQCP.cplex <-
-function(x, control)
-{
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MIQP.cplex <-
-function(x, control)
-{
-    .solve_MIP_via_cplex(x, control)
-}
-
-.solve_MIP_via_cplex <-
+.solve_MIP_via_mosek <-
 function(x, control)
 {
     if( ! is.null(terms(objective(x))$Q) ) {
       ## Ensure that the coefficient matrix of the quadratic term is
       ## symmetric, required by Rcplex.
       Q <- terms(objective(x))$Q
-      x$objective$Q <- (Q + t(Q)) / 2
+      ind <- x$objective$Q$j <= x$objective$Q$i
+      x$objective$Q$j <- x$objective$Q$j[ind]
+      x$objective$Q$i <- x$objective$Q$i[ind]
+      x$objective$Q$v <- x$objective$Q$v[ind]
     }
 
     n_obj <- ifelse( !is.null(terms(objective(x))$Q),
                      dim(terms(objective(x))$Q)[1],
                      length(terms(objective(x))$L))
 
-    types <- .expand_types(x$types, n_obj)
+    ## initialize problem
+    prob <- list()
 
+    ## TODO: make this more efficient
+    types <- ROI:::.expand_types(x$types, n_obj)
+    if( any(c("I", "B") %in% types) )
+        prob$intsub <- which( types %in% c("B", "I") )
+    ## TODO: for  binary variables we need to add box constraints
+
+    
     ## variable bounds
     lb <- 0
     ub <- Inf
@@ -64,10 +41,12 @@ function(x, control)
       ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
     }
 
-    if(is.null(nos <- control$n)) nos <- 1L
-      value_is_list_of_solutions <- !identical(as.integer(nos), 1L)
+    ## rbind( prob$bx -> ... obj variables, prob%bc ... rhs
+    ## prob$bx <- rbind(lb, ub)
+    ## prob$bc <- ...
 
-    out <- if( is.QCP(x) || is.MIQCP(x) ) {
+
+    out <- if( any(is.Q_constraint(constraints(x))) ) {
         ## which are the quadratic constraints
         qc <- which( ! sapply(constraints(x)$Q, .all_zero_in_simple_triplet_matrix_or_NULL) )
 

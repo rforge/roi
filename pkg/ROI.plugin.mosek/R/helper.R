@@ -23,3 +23,10 @@
   stm <- as.simple_triplet_matrix(x)
   apply(x, 1, function(x) as.simple_triplet_matrix(matrix(x, nrow = 1)))
 }
+
+as.mosek_triplet_matrix <- function( x )
+    UseMethod("as.mosek_triplet_matrix")
+
+as.mosek_triplet_matrix.simple_triplet_matrix <- function( x )
+    unclass( x )
+
