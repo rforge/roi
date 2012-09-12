@@ -1,0 +1,13 @@
+Package: ROI.models.MIPLIB
+Version: 0.0-1
+Date: 2012-08-22
+Title: R Optimization Infrastructure: MIPLIB 2010 (benchmark) instances
+Authors@R: c(person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"))
+Description: This R Optimization Infrastructure (ROI) models package provides 
+	     the well-known standard test set used to compare the performance of 
+	     mixed integer optimizers (see http://miplib.zib.de/).
+	     The paper by Koch et al. describing the test set can be found 
+	     at: http://mpc.zib.de/index.php/MPC/article/viewFile/56/28.
+Depends:  R (>= 2.10), ROI
+License: GPL-3
+URL: http://R-Forge.R-project.org/projects/roi
