@@ -6,7 +6,7 @@
 ################################################################################
 
 ## NOTE: probably support "range" constraints in order to improve efficiency
-## (lhs ~ Ax ~ rhs)
+## (lhs ~ f(x) ~ rhs)
 
 ################################################################################
 ## 'constraints' helper functions

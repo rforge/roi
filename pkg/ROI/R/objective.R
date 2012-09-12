@@ -2,7 +2,7 @@
 ## Package: ROI
 ## File:    objective.R
 ## Author:  Stefan Theussl
-## Changed: 2011-10-03
+## Changed: 2012-09-04
 ################################################################################
 
 
@@ -128,14 +128,16 @@ terms.Q_objective <- function( x, ... )
 ##' \eqn{n} objective variables \eqn{x}.
 ##'
 ##' @title Linear Objective Function
-##' @param L a numeric vector of length \eqn{n}, where \eqn{n} is the
-##' number of objective variables.
+##' @param L a numeric vector of length \eqn{n} or an object of class
+##' \code{"simple_triplet_matrix"} (or coercible to such) with dimension \eqn{1 \times n},
+##' where \eqn{n} is the number of objective variables. Names will be
+##' preserved and used e.g., in the print method.
 ##' @author Stefan Theussl
 ##' @export
 L_objective <- function( L ) {
-  obj <- Q_objective( Q = NULL, L = L )
-  class( obj ) <- c( "L_objective", class(obj) )
-  obj
+    obj <- Q_objective( Q = NULL, L = L )
+    class( obj ) <- c( "L_objective", class(obj) )
+    obj
 }
 
 ##' @nord
@@ -222,7 +224,7 @@ as.L_objective.function <- function( x ){
 ##' @author Stefan Theussl
 ##' @export
 Q_objective <- function( Q, L = NULL ) {
-    L <- as.numeric(L)
+    L <- as.L_term(L)
     if( !is.null(Q) )
         obj <- .objective( Q    = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
                            L    = L,
@@ -238,9 +240,9 @@ Q_objective <- function( Q, L = NULL ) {
 ##' @S3method as.function Q_objective
 as.function.Q_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
-  ## FIXME: L can be numeric(0); should this not always be a slam data structure?
+  ## FIXME: shouldn't this already be initialized earlier?
   if( !length(L) )
-      L <- double(length(x))
+      L <- slam::simple_triplet_zero_matrix(ncol = length(x), nrow = 1L)
 
   Q <- terms(x)[["Q"]]
   out <- function(x)

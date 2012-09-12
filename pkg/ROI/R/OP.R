@@ -78,7 +78,7 @@ print.OP <- function(x, ...){
             writetypes <- TRUE
     if( writetypes ){
         writeLines( "" )
-        writeLines( "Some of the objective variables are of type linear or binary." )
+        writeLines( "Some of the objective variables are of type binary or integer." )
     }
 }
 
