@@ -230,7 +230,7 @@ Q_objective <- function( Q, L = NULL ) {
                            L    = L,
                            nobj = dim(Q)[1] )
     else
-        obj <- .objective( L = L, nobj = length(L) )
+        obj <- .objective( L = L, nobj = ncol(L) )
     class(obj) <- c( "Q_objective", class(obj) )
     obj
 }

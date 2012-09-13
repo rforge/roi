@@ -37,12 +37,25 @@
 ##' @author Stefan Theussl
 ##' @export
 OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
-  maximum = FALSE ) {
-    structure(list(objective = as.objective(objective),
-                   constraints = as.constraint(constraints),
-                   bounds = bounds,
-                   types = types,
-                   maximum = maximum), class = "OP")
+  maximum = FALSE )
+    .check_OP_for_sanity( structure(list(objective = as.objective(objective),
+                                         constraints = as.constraint(constraints),
+                                         bounds = bounds,
+                                         types = as.types(types),
+                                         maximum = as.logical(maximum)), class = "OP")
+                         )
+
+.check_OP_for_sanity <- function( x ){
+    if( length(objective(x)) != dim(constraints(x))[2] )
+        stop( "dimensions of 'objective' and 'constraints' not conformable." )
+    len_types <- length(types)
+    if( len_types && (len_types > 1L) )
+        if( length(objective(x)) != len_types )
+            stop( "dimensions of 'objective' and 'types' not conformable." )
+    if( !is.null(bounds) )
+        if( length(objective(x)) != bounds(x)$nobj )
+            stop( "dimensions of 'objective' and 'bounds' not conformable." )
+    invisible(x)
 }
 
 ## FIXME: also consider objective function

@@ -492,3 +492,18 @@ print.constraint <- function( x, ... ){
 
     invisible(x)
 }
+
+##' @nord
+##' @S3method dim constraint
+dim.constraint <- function( x ){
+    ## FIXME: we should actually save both dimensions in constraint object
+    out <- if( inherits(x, "L_constraint") )
+        c( length(x), ncol(constraints(x)$L))
+    else if( inherits(x, "Q_constraint") )
+        c( length(x), unique(unlist(lapply( constraints(x)$Q, dim ))) )
+    else if( inherits(x, "F_constraint") ){
+        warning( "Not implemented." )
+        NULL
+    }
+    out
+}

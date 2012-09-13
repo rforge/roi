@@ -21,34 +21,77 @@
 ##' @author Stefan Theussl
 ##' @export
 V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
-  li <- as.integer(li)
-  ui <- as.integer(ui)
-  lb <- as.double(lb)
-  ub <- as.double(ub)
-  ## Sanity checking
-  if( (length(li) != length(lb)) || (length(ui) != length(ub)) )
-    stop("length of indices must be equal to the length of the corresponding values.")
-  if( any(duplicated(li)) || any(duplicated(ui)) )
-    stop("duplicated entries in indices.")
-  if( (max(li) > nobj) || (max(ui) > nobj) )
-    stop("indices must not exceed number of objective coefficients.")
+    if(missing(li))
+        li <- integer()
+    if(missing(ui))
+        ui <- integer()
+    if(missing(lb))
+        lb <- double()
+    if(missing(ub))
+        ub <- double()
+    li <- as.integer(li)
+    ui <- as.integer(ui)
+    lb <- as.double(lb)
+    ub <- as.double(ub)
+    if(length(lb)){
+        zero <- ub == 0
+        lb <- lb[!zero]
+        li <- li[!zero]
+    }
+        if(length(ub)){
+        inf <- ub == Inf
+        ub <- ub[!inf]
+        ui <- ui[!inf]
+    }
+
+    ## Sanity checking
+    if( (length(li) != length(lb)) || (length(ui) != length(ub)) )
+        stop("length of indices must be equal to the length of the corresponding values.")
+    if( any(duplicated(li)) || any(duplicated(ui)) )
+        stop("duplicated entries in indices.")
+    if(length(li))
+        if( max(li) > nobj )
+            stop("indices must not exceed number of objective coefficients.")
+    if(length(ui))
+        if( max(ui) > nobj )
+            stop("indices must not exceed number of objective coefficients.")
     if( any(lb >= Inf) )
       stop("lower bound cannot be 'Inf'.")
-  if( any(ub <= -Inf) )
-      stop("upper bounds cannot be '-Inf'.")
-  ## FIXME: lower bounds vs. upper bounds -> lb cannot be higher than ub and
-  ##        the other way round
-  structure( list(lower = list(ind = li, val = lb),
-                  upper = list(ind = ui, val = ub),
-                  nobj = as.integer(nobj)),
-            class = "V_bound" )
+    if( any(ub <= -Inf) )
+        stop("upper bounds cannot be '-Inf'.")
+    ## FIXME: lower bounds vs. upper bounds -> lb cannot be higher than ub and
+    ##        the other way round
+    structure( list(lower = list(ind = li, val = lb),
+                    upper = list(ind = ui, val = ub),
+                    nobj = as.integer(nobj)),
+              class = "V_bound" )
 }
+
+as.V_bound <- function( x ){
+    UseMethod( "as.V_bound" )
+}
+
+##' @nord
+##' @S3method as.V_bound V_bound
+as.V_bound.V_bound <- identity
+
+##' @nord
+##' @S3method as.V_bound NULL
+as.V_bound.NULL <- identity
 
 ##' @nord
 ##' @method as.list V_bound
 ##' @S3method as.list V_bound
 as.list.V_bound <- function( x, ... )
   unclass( x )
+
+print.V_bound <- function(x, ...){
+    writeLines( "ROI Variable Bounds:\n" )
+
+    writeLines( sprintf("%d lower and %d upper non-standard variable bounds.",
+                        length(x$lower$ind), length(x$upper$ind)) )
+}
+
 
 ################################################################################
 ## 'bounds' extractor functions
