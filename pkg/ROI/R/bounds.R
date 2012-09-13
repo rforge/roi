@@ -77,7 +77,8 @@ as.V_bound.V_bound <- identity
 
 ##' @nord
 ##' @S3method as.V_bound NULL
-as.V_bound.NULL <- identity
+as.V_bound.NULL <- function( x )
+    .make_standard_bounds()
 
 ##' @nord
 ##' @method as.list V_bound
@@ -149,12 +150,12 @@ bounds.OP <- function( x )
 ##' @S3method bounds<- OP
 'bounds<-.OP' <- function( x, value ) {
    if(is.null(value))
-     value <- .make_empty_bounds()
+     value <- .make_standard_bounds()
    else
        stopifnot( inherits(value, "V_bound") )
    x$bounds <- value
    x
 }
 
-.make_empty_bounds <- function( x )
+.make_standard_bounds <- function( x )
   NULL
