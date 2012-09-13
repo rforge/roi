@@ -34,7 +34,7 @@ V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
     lb <- as.double(lb)
     ub <- as.double(ub)
     if(length(lb)){
-        zero <- ub == 0
+        zero <- lb == 0
         lb <- lb[!zero]
         li <- li[!zero]
     }
