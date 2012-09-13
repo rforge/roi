@@ -149,11 +149,7 @@ bounds.OP <- function( x )
 ##' @nord
 ##' @S3method bounds<- OP
 'bounds<-.OP' <- function( x, value ) {
-   if(is.null(value))
-     value <- .make_standard_bounds()
-   else
-       stopifnot( inherits(value, "V_bound") )
-   x$bounds <- value
+   x$bounds <- as.V_bound(value)
    x
 }
 
