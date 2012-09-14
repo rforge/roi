@@ -3,6 +3,10 @@
 
 ## BASIC SOLVER METHOD
 solve_OP <- function( x, control ){
+    if(is.null(control))
+        control <- list()
+    ## ROI has its own translation table, thus we do not need to canonicalize in Rglpk
+    control$canonicalize_status = FALSE
     if( all(ROI::types(x) == "C") )
         out <- .solve_LP( x, control )
     else
@@ -18,7 +22,8 @@ solve_OP <- function( x, control ){
                            constraints(x)$dir,
                            constraints(x)$rhs,
                            bounds = bounds(x),
-                           max = x$maximum )
+                           max = x$maximum,
+                           control = control)
     ## FIXME: keep oiginal solution (return value)
     ROI:::canonicalize_solution( solution = out$solution,
                                  optimum = out$optimum,
@@ -34,7 +39,8 @@ solve_OP <- function( x, control ){
                            constraints(x)$rhs,
                            bounds = bounds(x),
                            types = types(x),
-                           max = x$maximum )
+                           max = x$maximum,
+                           control = control)
     ROI:::canonicalize_solution( solution = out$solution,
                                  optimum = out$optimum,
                                  status = out$status,
@@ -47,12 +53,6 @@ solve_OP <- function( x, control ){
     ## from GLPK 4.34 reference manual and glpk.h (symbol, code, message)
     ## FIXME: change in solver interface, canonicalization now done in ROI
     solver <- ROI:::get_solver_name( getPackageName() )
-    ROI:::add_status_code_to_db(solver,
-                                0L,
-                                "GLP_OPT",
-                                "(DEPRECATED) Solution is optimal. Compatibility status code will be removed in Rglpk soon.",
-                                0L
-                                )
     ROI:::add_status_code_to_db(solver,
                                 1L,
                                 "GLP_UNDEF",
