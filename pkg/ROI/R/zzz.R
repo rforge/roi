@@ -48,6 +48,18 @@ cross_validate_schema <- function( args, solver_db){
 schema_valid <- cross_validate_schema( names(formals(OP)), solver_db )
 
 .onLoad <- function( libname, pkgname ) {
+    if( ! pkgname %in% ROI_registered_solvers() ){
+        ## Register solver methods here.
+        ## One can assign several signatures a single solver method
+        solver <- "nlminb"
+        ROI:::ROI_register_solver_method( signatures = ROI:::ROI_make_QP_signatures(),
+                                          solver = solver,
+                                          method =
+                                          getFunction( ".solve_QP_nlminb", where = getNamespace(pkgname)) )
+        ## Finally, for status code canonicalization add status codes to data base
+        .add_nlminb_status_codes()
+    }
+
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
     ## OPs is the default solver
     ROI_options("default_solver", "ROI_NULL")

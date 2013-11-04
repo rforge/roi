@@ -9,7 +9,7 @@ function(x, control)
 {
     if( ! is.null(terms(objective(x))$Q) ) {
       ## Ensure that the coefficient matrix of the quadratic term is
-      ## symmetric, required by Rcplex.
+      ## symmetric, a lower triangular matrix is required by Rmosek
       Q <- terms(objective(x))$Q
       ind <- x$objective$Q$j <= x$objective$Q$i
       x$objective$Q$j <- x$objective$Q$j[ind]
@@ -24,22 +24,26 @@ function(x, control)
     ## initialize problem
     prob <- list()
 
-    ## TODO: make this more efficient
+    ## FIXME: make this more efficient
     types <- ROI:::.expand_types(x$types, n_obj)
     if( any(c("I", "B") %in% types) )
         prob$intsub <- which( types %in% c("B", "I") )
-    ## TODO: for  binary variables we need to add box constraints
 
-    
     ## variable bounds
-    lb <- 0
-    ub <- Inf
+    lb <- rep(0, n_obj)
+    ub <- rep(Inf, n_obj)
     if( ! is.null(bounds(x)) ){
-      lb <- rep(lb, n_obj)
-      ub <- rep(ub, n_obj)
       lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
       ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
     }
+    ## there are no binary variables supported per se, so adding box constraints
+    if( "B" %in% types ){
+        indb <- which(types == "B")
+        lb[indb] <- 0
+        ub[indb] <- 1
+    }
+    ## add to mosek problem object
+    prob$bx <- rbind(lb, ub)
 
     ## rbind( prob$bx -> ... obj variables, prob%bc ... rhs
     ## prob$bx <- rbind(lb, ub)

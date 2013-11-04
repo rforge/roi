@@ -1,4 +1,4 @@
-Package: ROI
+Package: ROI.models.finance
 Version: 0.0-1
 Date: 2012-08-21
 Title: R Optimization Infrastructure: (Portfolio) Models in Finance

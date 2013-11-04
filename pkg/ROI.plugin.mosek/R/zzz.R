@@ -4,7 +4,7 @@
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
         solver <- ROI:::get_solver_name( pkgname )
-        ROI:::ROI_register_solver_method( signatures = ROI:::ROI_make_MIQCP_signatures(),
+        ROI:::ROI_register_solver_method( signatures = ROI:::ROI_make_MILP_signatures(),
                                           solver = solver,
                                           method =
             getFunction( ".solve_MIP_via_mosek", where = getNamespace(pkgname)) )
