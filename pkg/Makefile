@@ -1,5 +1,6 @@
 PACKAGE=ROI
-R=$(shell which R-devel)
+## R=$(shell which R-devel)
+R=R
 
 all: pkg plugins
 
@@ -7,7 +8,7 @@ ROI: pkg
 
 ## FIXME: roxygen should be installed for R-devel as well
 pkg: roxclean
-	R CMD roxygen -s $(PACKAGE)
+	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE)', roxygen.dir = '$(PACKAGE).roxygen', overwrite = TRUE, roclets = c('namespace', 'rd'))" | $(R) --vanilla
 	$(R) CMD build $(PACKAGE).roxygen
 
 plugins:
