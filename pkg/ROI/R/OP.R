@@ -55,7 +55,7 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
     if( !is.null(bounds) )
         if( length(objective(x)) != bounds(x)$nobj )
             stop( "dimensions of 'objective' and 'bounds' not conformable." )
-    invisible(x)
+    x
 }
 
 ## FIXME: also consider objective function
