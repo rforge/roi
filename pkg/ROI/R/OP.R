@@ -52,7 +52,7 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
     if( len_types && (len_types > 1L) )
         if( length(objective(x)) != len_types )
             stop( "dimensions of 'objective' and 'types' not conformable." )
-    if( !is.null(bounds) )
+    if( !is.null(bounds(x)) )
         if( length(objective(x)) != bounds(x)$nobj )
             stop( "dimensions of 'objective' and 'bounds' not conformable." )
     x

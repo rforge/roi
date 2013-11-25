@@ -1,3 +1,7 @@
+
+require("ROI")
+
+
 ## Simple linear program.
 ## maximize:   2 x_1 + 4 x_2 + 3 x_3
 ## subject to: 3 x_1 + 4 x_2 + 2 x_3 <= 60
@@ -11,8 +15,6 @@ LP <- OP( c(2, 4, 3),
                        rhs = c(60, 40, 80)),
          max = TRUE )
 
-
-require("ROI")
 
 ################################################################################
 ## linear constraints
@@ -77,13 +79,14 @@ ex1_lp <- OP(objective = c(2, 4, 3),
                rhs = c(60, 40, 80)),
              maximum = TRUE)
 
-OP_class( ex1_lp )
 
-lpsolvers <- ROI:::.LP_solvers()
+ROI:::OP_signature(ex1_lp)
+
+lpsolvers <- names( ROI:::get_solver_methods(ROI:::OP_signature(ex1_lp)) )
 lp_results <- data.frame(objval = rep(NA, length.out = length(lpsolvers)),
                          timing = NA)
 rownames(lp_results) <- lpsolvers
-
+## FIXME: symphony not working yet
 for(solver in lpsolvers){
   timing <- system.time(res <- ROI_solve(ex1_lp, solver = solver))["elapsed"]
   lp_results[solver, ] <- c(res$objval, timing)
@@ -108,9 +111,9 @@ ex2_milp <- OP(objective = c(3, 1, 3),
                types = c("I", "C", "I"),
                maximum = TRUE)
 
-OP_class( ex2_milp )
+ROI:::OP_signature(ex2_milp)
 
-milpsolvers <- ROI:::.MILP_solvers()
+milpsolvers <- names( ROI:::get_solver_methods(ROI:::OP_signature(ex2_milp)) )
 milp_results <- data.frame(objval = rep(NA, length.out = length(milpsolvers)),
                            timing = NA)
 rownames(milp_results) <- milpsolvers
@@ -140,7 +143,7 @@ ex3a_milp <- OP(objective = c(3, 1, 3),
                                    lb = c(-Inf, 2), ub = c(4, 100) ),
                  maximum = TRUE)
 
-OP_class( ex3a_milp )
+ROI:::OP_signature( ex3a_milp )
 
 for(solver in milpsolvers){
   milp_results[solver, ] <- c(NA, NA)
@@ -153,12 +156,12 @@ for(solver in milpsolvers){
 milp_results
 
 ## force negative values in solution
-
 ex3b_milp <- ex3a_milp
+## FIXME: sanity check on replacement implemented?
 bounds(ex3b_milp) <- V_bound( c(1L, 2L, 3L), c(1L, 2L),
                               c(-Inf, -Inf, 2), c(4, -0.5) )
 
-
+## FIXME: does not work yet
 ex3c_milp <- ROI:::.make_box_constraints_from_bounds_in_MIP(ex3b_milp)
 
 ## Example 4:
@@ -174,12 +177,13 @@ ex4_qp <- OP( Q_objective (Q = diag(1, 3), L = c(0, -5, 0)),
                              ncol = 3, byrow = TRUE),
                            dir = rep(">=", 3),
                            rhs = c(-8,2,0)) )
-OP_class( ex4_qp )
-qpsolvers <- ROI:::.QP_solvers()
+ROI:::OP_signature( ex4_qp )
+qpsolvers <- names( ROI:::get_solver_methods(ROI:::OP_signature(ex4_qp)) )
 qp_results <- data.frame(objval = rep(NA, length.out = length(qpsolvers)),
                            timing = NA)
 rownames(qp_results) <- qpsolvers
 
+## FIXME: QP not working with both solvers
 for(solver in qpsolvers){
   qp_results[solver, ] <- c(NA, NA)
   timing <- system.time(res <- tryCatch(ROI_solve(ex4_qp, solver = solver),
