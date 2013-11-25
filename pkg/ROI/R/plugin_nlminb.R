@@ -6,44 +6,46 @@
 ## we need for each problem class a separate solver method
 
 .solve_QP_nlminb <- function( x, control ) {
-  ## if needed, add constraints made from variable bounds
-  ##if( length(bounds(x)) )
-  ##  constraints(x) <- rbind(constraints(x),
-  ##                         .make_box_constraints_from_bounds(bounds(x),
-  ##                                     dim(terms(objective(x))$Q)[1]) )
-
-  ## solve the QP
-  ## adjust arguments depending on problem class
-  out <- .nlminb_solve_QP(Q = terms(objective(x))$Q,
-                          L = terms(objective(x))$L,
-                          mat = constraints(x)$L,
-                          dir = constraints(x)$dir,
-                          rhs = constraints(x)$rhs,
-                          bounds = bounds(x),
-                          max = x$maximum,
-                          control = control
-                          )
-  class(out) <- c(class(x), class(out))
-  .canonicalize_solution(out, x)
-}
-
-.nlminb_solve_QP <- function(Q, L, mat, dir, rhs, max, control = list()) {
+    ## if needed, add constraints made from variable bounds
+    ##if( length(bounds(x)) )
+    ##  constraints(x) <- rbind(constraints(x),
+    ##                         .make_box_constraints_from_bounds(bounds(x),
+    ##                                     dim(terms(objective(x))$Q)[1]) )
 
     solver <- "nlminb"
+    ## solve the QP
+    ## adjust arguments depending on problem class
+    out <- .nlminb_solve_QP( Q = terms(objective(x))$Q,
+                             L = terms(objective(x))$L,
+                             mat = constraints(x)$L,
+                             dir = constraints(x)$dir,
+                             rhs = constraints(x)$rhs,
+                             bounds = bounds(x),
+                             max = x$maximum,
+                             control = control )
+    canonicalize_solution( solution = out$solution,
+                           optimum = objective(x)(out$solution),
+                           status = out$convergence,
+                           solver = solver )
+}
+
+.nlminb_solve_QP <- function(Q, L, mat, dir, rhs, bounds, max, control = list()) {
 
     # nlminb does not directly support constraints
     # we need to translate Ax ~ b constraints to lower, upper bounds
+    ## FIXME: what about variable bounds????
+    stopifnot( is.null(bounds) )
 
     A <- solve(t(mat))
     n_obj <- ifelse( !is.null(Q),
-                    dim(Q)[1],
-                    length(L) )
+                     dim(Q)[1],
+                     length(L) )
 
     ## start
     start <- as.numeric( control$start )
     if( !length(start) )
         start <- mat %*% rep(1/n_obj, n_obj)
-    stopifnot( length(start) == n_obj)
+    stopifnot( length(start) == n_obj )
 
     lower <- rhs
     upper <- c(Inf, Inf, Inf)
@@ -59,10 +61,7 @@
     out$solution <- as.vector(A %*% out$par)
 
     # Return Value:
-    canonicalize_solution( solution = out$solution,
-                           optimum = objective(x)(out$solution),
-                           status = out$convergence,
-                           solver = solver )
+    out
 }
 
 

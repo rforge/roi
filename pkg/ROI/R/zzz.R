@@ -1,5 +1,5 @@
-##' @nord
-##' @import registry
+##' @noRd
+##' @import registry methods
 ROI_options <-
 local({
     options <- list()

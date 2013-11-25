@@ -38,11 +38,11 @@ available_row_sense <- function( )
 as.no_V_bounds_OP <- function( x )
     UseMethod("as.no_V_bounds_OP")
 
-##' @nord
+##' @noRd
 ##' @S3method as.no_V_bounds_OP no_V_bounds
 as.no_V_bounds_OP.no_V_bounds <- identity
 
-##' @nord
+##' @noRd
 ##' @S3method as.no_V_bounds_OP OP
 as.no_V_bounds_OP.OP <- function( x ){
     if( length(bounds(x)) )

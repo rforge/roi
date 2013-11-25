@@ -71,16 +71,16 @@ as.V_bound <- function( x ){
     UseMethod( "as.V_bound" )
 }
 
-##' @nord
+##' @noRd
 ##' @S3method as.V_bound V_bound
 as.V_bound.V_bound <- identity
 
-##' @nord
+##' @noRd
 ##' @S3method as.V_bound NULL
 as.V_bound.NULL <- function( x )
     .make_standard_bounds()
 
-##' @nord
+##' @noRd
 ##' @method as.list V_bound
 ##' @S3method as.list V_bound
 as.list.V_bound <- function( x, ... )
@@ -146,7 +146,7 @@ bounds.OP <- function( x )
   UseMethod("bounds<-")
 
 
-##' @nord
+##' @noRd
 ##' @S3method bounds<- OP
 'bounds<-.OP' <- function( x, value ) {
    x$bounds <- as.V_bound(value)

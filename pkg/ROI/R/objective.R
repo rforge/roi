@@ -45,7 +45,7 @@ available_objective_classes <- function()
 objective <- function( x )
     UseMethod( "objective" )
 
-##' @nord
+##' @noRd
 ##' @method objective default
 ##' @S3method objective default
 objective.default <- function( x )
@@ -61,7 +61,7 @@ objective.default <- function( x )
 as.objective <- function( x )
   UseMethod("as.objective")
 
-##' @nord
+##' @noRd
 ##' @method as.objective default
 ##' @S3method as.objective default
 as.objective.function <- function( x ){
@@ -72,25 +72,25 @@ as.objective.function <- function( x ){
     stop("Not implemented.")
 }
 
-##' @nord
+##' @noRd
 ##' @method as.objective default
 ##' @S3method as.objective default
 as.objective.default <- function( x )
   as.L_objective( x )
 
-##' @nord
+##' @noRd
 ##' @method as.objective objective
 ##' @S3method as.objective objective
 as.objective.objective <-
     identity
 
-##' @nord
+##' @noRd
 ##' @method length objective
 ##' @S3method length objective
 length.objective <- function( x )
     attr( as.objective(x), "nobj" )
 
-##' @nord
+##' @noRd
 ##' @method terms function
 ##' @S3method terms function
 terms.function <- function( x, ... ){
@@ -101,13 +101,13 @@ terms.function <- function( x, ... ){
     NA
 }
 
-##' @nord
+##' @noRd
 ##' @method terms L_objective
 ##' @S3method terms L_objective
 terms.L_objective <- function( x, ... )
   list( L = x$L )
 
-##' @nord
+##' @noRd
 ##' @method terms Q_objective
 ##' @S3method terms Q_objective
 terms.Q_objective <- function( x, ... )
@@ -142,7 +142,7 @@ L_objective <- function( L ) {
     obj
 }
 
-##' @nord
+##' @noRd
 ##' @method as.function L_objective
 ##' @S3method as.function L_objective
 as.function.L_objective <- function( x, ... ){
@@ -173,30 +173,30 @@ as.function.L_objective <- function( x, ... ){
 as.L_objective <- function( x )
     UseMethod( "as.L_objective" )
 
-##' @nord
+##' @noRd
 ##' @method as.L_objective L_objective
 ##' @S3method as.L_objective L_objective
 as.L_objective.L_objective <- identity
 
-##' @nord
+##' @noRd
 ##' @method as.L_objective NULL
 ##' @S3method as.L_objective NULL
 as.L_objective.NULL <- function( x )
     L_objective( x )
 
-##' @nord
+##' @noRd
 ##' @method as.L_objective numeric
 ##' @S3method as.L_objective numeric
 as.L_objective.numeric <- function( x )
     L_objective( x )
 
-##' @nord
+##' @noRd
 ##' @method as.L_objective Q_objective
 ##' @S3method as.L_objective Q_objective
 as.L_objective.Q_objective <- function( x )
     L_objective( terms(x)[["L"]])
 
-##' @nord
+##' @noRd
 ##' @method as.L_objective function
 ##' @S3method as.L_objective function
 as.L_objective.function <- function( x ){
@@ -239,7 +239,7 @@ Q_objective <- function( Q, L = NULL ) {
     obj
 }
 
-##' @nord
+##' @noRd
 ##' @method as.function Q_objective
 ##' @S3method as.function Q_objective
 as.function.Q_objective <- function( x, ... ){
@@ -270,7 +270,7 @@ as.function.Q_objective <- function( x, ... ){
 as.Q_objective <- function( x )
   UseMethod("as.Q_objective")
 
-##' @nord
+##' @noRd
 ##' @method as.Q_objective function
 ##' @S3method as.Q_objective function
 as.Q_objective.function <- function( x ){
@@ -281,24 +281,24 @@ as.Q_objective.function <- function( x ){
                Q = get("Q", environment(x)) )
 }
 
-##' @nord
+##' @noRd
 ##' @method as.Q_objective matrix
 ##' @S3method as.Q_objective matrix
 as.Q_objective.matrix <- function( x )
   Q_objective( Q = x)
 
-##' @nord
+##' @noRd
 ##' @method as.Q_objective numeric
 ##' @S3method as.Q_objective numeric
 as.Q_objective.numeric <- function( x )
   Q_objective( Q = matrix(x))
 
-##' @nord
+##' @noRd
 ##' @method as.Q_objective Q_objective
 ##' @S3method as.Q_objective Q_objective
 as.Q_objective.Q_objective <- identity
 
-##' @nord
+##' @noRd
 ##' @method as.Q_objective simple_triplet_matrix
 ##' @S3method as.Q_objective simple_triplet_matrix
 as.Q_objective.simple_triplet_matrix <- function( x )
@@ -330,7 +330,7 @@ F_objective <- function( F, n, G = NULL ) {
     obj
 }
 
-##' @nord
+##' @noRd
 ##' @S3method as.function F_objective
 as.function.F_objective <- function( x, ... )
   x$F
@@ -346,22 +346,22 @@ as.function.F_objective <- function( x, ... )
 ##' from \code{"objective"}.
 ##' @author Stefan Theussl
 ##' @export
-as.F_objective <- function(x, ...)
+as.F_objective <- function( x )
   UseMethod("as.F_objective")
 
-##' @nord
+##' @noRd
 ##' @S3method as.F_objective F_objective
-as.F_objective.F_objective <- function(x, ... )
+as.F_objective.F_objective <- function( x )
     identity( x )
 
-##' @nord
+##' @noRd
 ##' @S3method as.F_objective F_objective
-as.F_objective.L_objective <- function( x, ... )
+as.F_objective.L_objective <- function( x )
     F_objective( F = as.function(x), n = length(x), G = G(x) )
 
-##' @nord
+##' @noRd
 ##' @S3method as.F_objective Q_objective
-as.F_objective.Q_objective <- function( x, ... )
+as.F_objective.Q_objective <- function( x )
   F_objective( F = as.function(x), n = length(x), G = G(x) )
 
 .check_function_for_sanity <- function(F, n){

@@ -60,7 +60,7 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
 
 ## FIXME: also consider objective function
 
-##' @nord
+##' @noRd
 ##' @method print OP
 ##' @S3method print OP
 print.OP <- function(x, ...){
@@ -112,19 +112,19 @@ print.OP <- function(x, ...){
 as.OP <- function(x)
     UseMethod("as.OP")
 
-##' @nord
+##' @noRd
 ##' @method as.OP OP
 ##' @S3method as.OP OP
 as.OP.OP <- identity
 
-##' @nord
+##' @noRd
 ##' @method as.OP numeric
 ##' @S3method as.OP numeric
 as.OP.numeric <- function(x){
     OP( objective = x, constraints = NULL, bounds = NULL, types = NULL,
         maximum = FALSE )
 
-##' @nord
+##' @noRd
 ##' @method as.OP default
 ##' @S3method as.OP default
 as.OP.default <- function(x, ...)

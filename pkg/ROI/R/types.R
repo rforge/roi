@@ -17,7 +17,7 @@ available_types <- function( )
 types <- function( x )
   UseMethod("types")
 
-##' @nord
+##' @noRd
 ##' @method types OP
 ##' @S3method types OP
 types.OP <- function( x )
@@ -26,7 +26,7 @@ types.OP <- function( x )
 as.types <- function( x )
     UseMethod("as.types")
 
-##' @nord
+##' @noRd
 ##' @S3method as.types character
 as.types.character <- function( x ){
     if( !all(x %in% available_types()) ){
@@ -35,6 +35,6 @@ as.types.character <- function( x ){
     x
 }
 
-##' @nord
+##' @noRd
 ##' @S3method as.types NULL
 as.types.NULL <- identity

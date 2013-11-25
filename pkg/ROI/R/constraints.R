@@ -73,7 +73,7 @@ constraints.OP <- function( x )
 'constraints<-' <- function( x, value )
     UseMethod("constraints<-")
 
-##' @nord
+##' @noRd
 ##' @S3method constraints<- OP
 'constraints<-.OP' <- function( x, value ) {
     ## if 'empty' constraints are given (NULL) then we assume it's and
@@ -148,19 +148,19 @@ as.L_constraint <- function(x, ...)
     UseMethod("as.L_constraint")
 
 
-##' @nord
+##' @noRd
 ##' @method as.L_constraint L_constraint
 ##' @S3method as.L_constraint L_constraint
 as.L_constraint.L_constraint <- function( x, ... )
     identity(x)
 
-##' @nord
+##' @noRd
 ##' @method as.L_constraint numeric
 ##' @S3method as.L_constraint numeric
 as.L_constraint.numeric <- function( x, ... )
     L_constraint( L = x, dir = ">=", rhs = 0 )
 
-##' @nord
+##' @noRd
 ##' @method as.L_constraint list
 ##' @S3method as.L_constraint list
 as.L_constraint.list <- function( x, ... ){
@@ -209,7 +209,7 @@ rbind.L_constraint <- function( ..., recursive = FALSE ){
 
 ## FIXME: connection to rbind documentation
 
-##' @nord
+##' @noRd
 ##' @method c L_constraint
 ##' @S3method c L_constraint
 c.L_constraint <- function( ..., recursive = FALSE )
@@ -230,22 +230,22 @@ length.L_constraint <- function( x )
 as.L_term <- function( x, ... )
     UseMethod("as.L_term")
 
-##' @nord
+##' @noRd
 ##' @S3method as.L_term numeric
 as.L_term.numeric <- function( x, ... )
     as.simple_triplet_matrix( matrix(x, nrow = 1L) )
 
-##' @nord
+##' @noRd
 ##' @S3method as.L_term matrix
 as.L_term.matrix <- function( x, ... )
     as.simple_triplet_matrix(x)
 
-##' @nord
+##' @noRd
 ##' @S3method as.L_term simple_triplet_matrix
 as.L_term.simple_triplet_matrix <- function( x, ... )
     x
 
-##' @nord
+##' @noRd
 ##' @S3method as.L_term NULL
 as.L_term.NULL <- function( x, ... )
     x
@@ -322,12 +322,12 @@ Q_constraint <- function(Q, L, dir, rhs){
 as.Q_constraint <- function( x )
     UseMethod("as.Q_constraint")
 
-##' @nord
+##' @noRd
 ##' S3method as.Q_constraint Q_constraint
 as.Q_constraint.Q_constraint <-
     identity
 
-##' @nord
+##' @noRd
 ##' S3method as.Q_constraint list
 as.Q_constraint.list <- function( x ){
     names(x) <- c("Q", "L", "dir", "rhs")
@@ -367,22 +367,22 @@ length.Q_constraint <- function(x)
 as.Q_term <- function(x, ...)
     UseMethod( "as.Q_term" )
 
-##' @nord
+##' @noRd
 ##' @S3method as.Q_term list
 as.Q_term.list <- function( x )
     lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
 
-##' @nord
+##' @noRd
 ##' @S3method as.Q_term numeric
 as.Q_term.numeric <- function( x )
     list( as.simple_triplet_matrix( matrix(x)) )
 
-##' @nord
+##' @noRd
 ##' @S3method as.Q_term matrix
 as.Q_term.matrix <- function( x )
     list( as.simple_triplet_matrix(x) )
 
-##' @nord
+##' @noRd
 ##' @S3method as.Q_term simple_triplet_matrix
 as.Q_term.simple_triplet_matrix <- function( x )
     list( x )
@@ -439,7 +439,7 @@ as.F_term.list <- function(x)
 as.rhs <- function(x, ...)
     UseMethod("as.rhs")
 
-##' @nord
+##' @noRd
 ##' @S3method as.rhs numeric
 as.rhs.numeric <- function( x, ... )
     x
@@ -454,28 +454,28 @@ as.rhs.numeric <- function( x, ... )
 as.constraint <- function( x )
     UseMethod("as.constraint")
 
-##' @nord
+##' @noRd
 ##' @method as.constraint NULL
 ##' @S3method as.constraint NULL
 as.constraint.NULL <- identity
 
 
-##' @nord
+##' @noRd
 ##' @S3method as.constraint L_constraint
 as.constraint.L_constraint <-
     identity
 
-##' @nord
+##' @noRd
 ##' @S3method as.constraint Q_constraint
 as.constraint.Q_constraint <-
     identity
 
-##' @nord
+##' @noRd
 ##' @S3method as.constraint F_constraint
 as.constraint.F_constraint <-
     identity
 
-##' @nord
+##' @noRd
 ##' @method print constraint
 ##' @S3method print constraint
 print.constraint <- function( x, ... ){
@@ -493,7 +493,7 @@ print.constraint <- function( x, ... ){
     invisible(x)
 }
 
-##' @nord
+##' @noRd
 ##' @S3method dim constraint
 dim.constraint <- function( x ){
     ## FIXME: we should actually save both dimensions in constraint object
