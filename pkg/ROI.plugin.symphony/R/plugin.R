@@ -1,5 +1,5 @@
-## ROI plugin: GLPK
-## based on Rglpk interface
+## ROI plugin: SYMPHONY
+## based on Rsymphony interface
 
 ## BASIC SOLVER METHOD
 solve_OP <- function( x, control ){
@@ -13,31 +13,54 @@ solve_OP <- function( x, control ){
 ## SOLVER SUBMETHODS
 .solve_LP <- function( x, control ) {
     solver <- ROI:::get_solver_name( getPackageName() )
-    out <- Rsymphony_solve_LP( terms(objective(x))[["L"]],
-                               constraints(x)$L,
-                               constraints(x)$dir,
-                               constraints(x)$rhs,
-                               bounds = bounds(x),
-                               max = x$maximum )
+    ## handle control args
+    main_args <- list( obj = terms(objective(x))[["L"]],
+                       mat = constraints(x)$L,
+                       dir = constraints(x)$dir,
+                       rhs = constraints(x)$rhs,
+                       bounds = bounds(x),
+                       max = x$maximum )
+    ## handle STMs (shouldn't this be done on the Rsymphony side?)
+    if( slam::is.simple_triplet_matrix(main_args$obj) )
+        main_args$obj <- as.matrix( main_args$obj )
+    foo_args <- names( as.list(args(Rsymphony_solve_LP)) )
+    control_args <- as.list(control)[ names(control) %in% foo_args[!foo_args %in% c(names(main_args), "")] ]
+    out <- do.call( Rsymphony_solve_LP, c(main_args, control_args) )
+    ## FIXME: retranslate Rsymphony status code canonicalization
+    status <- if( out$status == 0L )
+        c(TM_OPTIMAL_SOLUTION_FOUND = 227L)
+    else
+        out$status
     ## FIXME: keep oiginal solution (return value)
     ROI:::canonicalize_solution( solution = out$solution,
                                  optimum = out$objval,
-                                 status = out$status,
+                                 status = status,
                                  solver = solver )
 }
 
 .solve_MILP <- function( x, control ) {
     solver <- ROI:::get_solver_name( getPackageName() )
-    out <- Rsymphony_solve_LP( terms(objective(x))[["L"]],
-                               constraints(x)$L,
-                               constraints(x)$dir,
-                               constraints(x)$rhs,
-                               bounds = bounds(x),
-                               types = types(x),
-                               max = x$maximum )
+    main_args <- list( obj = terms(objective(x))[["L"]],
+                       mat = constraints(x)$L,
+                       dir = constraints(x)$dir,
+                       rhs = constraints(x)$rhs,
+                       bounds = bounds(x),
+                       types = types(x),
+                       max = x$maximum )
+    ## handle STMs (shouldn't this be done on the Rsymphony side?)
+    if( slam::is.simple_triplet_matrix(main_args$obj) )
+        main_args$obj <- as.matrix( main_args$obj )
+    foo_args <- names( as.list(args(Rsymphony_solve_LP)) )
+    control_args <- as.list(control)[ names(control) %in% foo_args[!foo_args %in% c(names(main_args), "")] ]
+    out <- do.call( Rsymphony_solve_LP, c(main_args, control_args) )
+    ## FIXME: retranslate Rsymphony status code canonicalization
+    status <- if( out$status == 0L )
+        c(TM_OPTIMAL_SOLUTION_FOUND = 227L)
+    else
+        out$status
     ROI:::canonicalize_solution( solution = out$solution,
                                  optimum = out$objval,
-                                 status = out$status,
+                                 status = status,
                                  solver = solver )
 }
 

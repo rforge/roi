@@ -1,11 +1,11 @@
 Package: ROI.plugin.symphony
-Version: 0.0-1
-Date: 2011-10-03
+Version: 0.0-2
+Date: 2013-11-26
 Title: ROI-plugin symphony
 Author: Stefan Theussl
-Maintainer: Stefan Theussl <stefan.theussl@wu.ac.at>
-Description: This package enhances the R Optimization Infrastructure (ROI) package 
-	     with the symphony solver from the COIN-OR suite for solving mixed integer linear programming (MILP) 
+Maintainer: Stefan Theussl <stefan.theussl@R-project.org>
+Description: This package enhances the R Optimization Infrastructure (ROI) package
+	     with the symphony solver from the COIN-OR suite for solving mixed integer linear programming (MILP)
 	     problems as well as all variants/combinations of LP, IP.
 Imports: methods, ROI, Rsymphony
 License: GPL-3
