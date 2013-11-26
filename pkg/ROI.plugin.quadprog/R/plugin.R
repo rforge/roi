@@ -7,7 +7,13 @@ solve_QP <- function( x, control ) {
     ## them as constraints
     x <- ROI:::as.no_V_bounds_OP( x )
 
-    L <- terms(objective(x))$L
+    ## since ROI 0.1 the objective function is an STM, quadprog only supports 1 (dense) row
+    L <- if( slam::is.simple_triplet_matrix(terms(objective(x))$L) ){
+        stopifnot( dim(terms(objective(x))$L)[1] == 1L )
+        as.numeric( as.matrix(terms(objective(x))$L) )
+    } else {
+        terms(objective(x))$L
+    }
 
     ## quadprog needs an appropiately formated linear part of the objective function
     if( !length(L) )
