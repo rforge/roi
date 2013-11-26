@@ -30,16 +30,16 @@ L_constraint(matrix(c(1, 1), nrow = 2), c("<", "=="), c(5, 4))
 
 L_constraint(matrix(c(1:4), ncol = 2), c("<", "<"), c(4, 5))
 
-rbind( L_constraint(matrix(c(1, 1), nrow = 2), c("<", "=="), c(5, 4)),
+rbind( L_constraint(matrix(c(1, 1, 0, 0), nrow = 2), c("<", "=="), c(5, 4)),
        L_constraint(matrix(c(1:4),  ncol = 2), c("<", "<"), c(4, 5)) )
 
 ## invalid input
 
-L_constraint(1, "<", c(5, 4))
+stopifnot( inherits(tryCatch(L_constraint(1, "<", c(5, 4)), error = identity), "error") )
 
-L_constraint(matrix(c(1, 1), nrow = 2), c("<", "=="), 4)
+stopifnot( inherits(tryCatch(L_constraint(matrix(c(1, 1), nrow = 2), c("<", "=="), 4), error=identity), "error") )
 
-L_constraint(matrix(c(1, 1), nrow = 2), c("<", "!="), c(5, 4))
+stopifnot( inherits(tryCatch(L_constraint(matrix(c(1, 1), nrow = 2), c("<", "!="), c(5, 4)), error=identity), "error") )
 
 ################################################################################
 ## quadratic constraints

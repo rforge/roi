@@ -2,7 +2,7 @@
 ## Package: ROI
 ## File:    constraints.R
 ## Author:  Stefan Theussl
-## Changed: 2011-10-04
+## Changed: 2013-11-25
 ################################################################################
 
 ## NOTE: probably support "range" constraints in order to improve efficiency
@@ -394,12 +394,32 @@ as.Q_term.simple_triplet_matrix <- function( x )
 ##}
 
 
+## FIXME: Function constraints still incomplete and untested
 
 ################################################################################
 ## Function constraints (class 'F_constraint')
 ## list of constraints of the form f(x) ~ b
 ################################################################################
 
+##' Function (or generally speaking nonlinear) constraints are
+##' typically of the form \eqn{f(x) \leq b}. \eqn{f()} is a
+##' well-defined R function taking the objective variables \eqn{x}
+##' (typically a numeric vector) as arguments. \eqn{b} is called the
+##' right hand side of the constraints.
+##'
+##' @title Function Constraints
+##' @param F a \code{function} or a list of \code{function}s of length
+##' \eqn{m}. Each \code{function} takes \eqn{n} parameters as input
+##' and must return a skalar. Thus, \eqn{n} is the number of objective
+##' variables and \eqn{m} is the number of constraints.
+##' @param dir a character vector with the directions of the
+##' constraints. Each element must be one of \code{"<"}, \code{"<="},
+##' \code{">"}, \code{">="}, \code{"=="} or \code{"!="}.
+##' @param rhs a numeric vector with the right hand side of the constraints.
+##' @return an object of class \code{"F_constraint"} which inherits
+##' from \code{"constraint"}.
+##' @author Stefan Theussl
+##' @export
 F_constraint <- function(F, dir, rhs){
     F     <- as.F_term( F )
     stopifnot( row_sense_is_feasible(dir) )
@@ -416,7 +436,7 @@ F_constraint <- function(F, dir, rhs){
               class = c("F_constraint", "constraint"))
 }
 
-## FIXME: F_constraint methods
+## FIXME: there are still F_constraint methods to implement
 as.F_constraint <- function(x, ...)
     UseMethod("as.F_constraint")
 
