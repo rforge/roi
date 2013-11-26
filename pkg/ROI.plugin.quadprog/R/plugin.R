@@ -108,8 +108,7 @@ solve_QP <- function( x, control ) {
            nact = 0L,
            iter = integer(2L),
            work = as.double(work),
-           ierr = 0L, NAOK = TRUE,
-           PACKAGE = "quadprog")
+           ierr = 0L, NAOK = TRUE, PACKAGE = "quadprog")
 }
 
 
