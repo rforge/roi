@@ -1,5 +1,6 @@
 ## ROI plugin: nlminb
 ## based on MySolver Template
+## DISABLED - need to find literature first
 
 ## SOLVER METHODS
 
@@ -44,21 +45,23 @@
     ## start
     start <- as.numeric( control$start )
     if( !length(start) )
-        start <- mat %*% rep(1/n_obj, n_obj)
+        start <- slam::tcrossprod_simple_triplet_matrix( mat, matrix(rep(1/n_obj, n_obj), nrow = 1))
     stopifnot( length(start) == n_obj )
 
     lower <- rhs
     upper <- c(Inf, Inf, Inf)
 
     ## possibly transformed objective function
-    foo <- function(x, L, mat, A, Q) {
-        X = as.vector(A %*% x)
-        Objective = - t(L) %*% X + 0.5 * ( t(X) %*% Q %*% X )
+    foo <- function(x, L, A, Q) {
+        X = A %*% x
+        Objective = - slam::tcrossprod_simple_triplet_matrix(L, t(X)) + 0.5 * ( t(X) %*% slam::tcrossprod_simple_triplet_matrix(Q, t(X)))
         Objective[[1]]
     }
-    out <- nlminb(start, foo, lower = lower, upper = upper,
-                  L = L, mat = mat, A = A, Q = Q)
-    out$solution <- as.vector(A %*% out$par)
+    ## FIXME: SPARSE!!! control list handling ok? what about "scale" parameter?
+    out <- nlminb(start, foo, gradient = control$gradient, hessian = control$hessian,
+                  L = L, A = A, Q = Q,
+                  control = control, lower = lower, upper = upper)
+    out$solution <- as.numeric(A %*% out$par)
 
     # Return Value:
     out

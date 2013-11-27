@@ -47,7 +47,7 @@ solve_QP <- function( x, control ) {
   ## Note 2: we currently disable the direct call of the Fortran routine
   ##   since R-devel 2013-11-27 requires a different mechanism in calling .Fortran
   ##   (see 5.4 and 5.4.2 in Writing R Extensions)
-  
+
   ind_eq  <- which( dir == "==")
   ind_geq <- which( (dir == ">=") | (dir == ">") )
   ind_leq <- which( (dir == "<=") | (dir == "<") )
@@ -88,11 +88,11 @@ solve_QP <- function( x, control ) {
   factorized <- control$factorized
   if( is.null(factorized) )
     factorized <- formals(solve.QP)$factorized
-  
+
   ## FIXME: temporarily added in order to remove .Fortran call
   ##########  ##########  ##########  ##########  ##########
   out <- tryCatch( solve.QP(Dmat = Dmat, dvec = dvec, Amat = Amat, bvec = bvec, meq = meq, factorized = factorized), error = identity )
-
+  out$ierr <- 0L
   if( inherits(out, "error") ){
     ierr <- if( out$message == "constraints are inconsistent, no solution!" )
       1L
@@ -106,7 +106,7 @@ solve_QP <- function( x, control ) {
   out
   ## END FIXME: temporarily added in order to remove .Fortran call
   ##########  ##########  ##########  ##########  ##########
-  
+
   ## ## number objectives
   ## n_obj <- nrow(Dmat)
   ## ## number constraints
@@ -136,7 +136,7 @@ solve_QP <- function( x, control ) {
   ##          iter = integer(2L),
   ##          work = as.double(work),
   ##         ierr = 0L) # , NAOK = TRUE
-  
+
 }
 
 
@@ -159,6 +159,12 @@ solve_QP <- function( x, control ) {
                                 2L,
                                 "NOT_POSITIVE_DEFINITE",
                                 "quadratic term in function is not positive definite."
+                                )
+    ## FIXME: temporary status code until Fortran routine is called directly again
+    ROI:::add_status_code_to_db(solver,
+                                3L,
+                                "ROI_INTERFACE_ERROR",
+                                "contact the plugin maintainer."
                                 )
     invisible(TRUE)
 }
