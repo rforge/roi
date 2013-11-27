@@ -6,6 +6,6 @@ Authors@R: c(person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan
 Description: This package enhances the R Optimization Infrastructure (ROI) package
 	     with the symphony solver from the COIN-OR suite for solving mixed integer
 	     linear programming (MILP) problems as well as all variants/combinations of LP, IP.
-Imports: methods, ROI, Rsymphony, slam
+Imports: methods, ROI (>= 0.1-0), Rsymphony, slam
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi

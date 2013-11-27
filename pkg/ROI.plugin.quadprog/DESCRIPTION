@@ -6,6 +6,6 @@ Authors@R: c(person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan
 Description: This package enhances the R Optimization Infrastructure (ROI) package
 	     with the quadprog solver for solving quadratic programming (QP)
 	     problems.
-Imports: methods, quadprog, ROI, slam
+Imports: methods, quadprog, ROI (>= 0.1-0), slam
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
