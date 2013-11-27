@@ -26,15 +26,17 @@ solve_QP <- function( x, control ) {
                               mat = constraints(x)$L,
                               dir = constraints(x)$dir,
                               rhs = constraints(x)$rhs,
-                              max = x$maximum)
+                              max = x$maximum,
+                              control = control)
     ROI:::canonicalize_solution( solution = out$sol,
                                  optimum  = objective(x)(out$sol),
                                  status   = out$ierr,
-                                 solver   = ROI:::get_solver_name(getPackageName()) )
+                                 solver   = ROI:::get_solver_name(getPackageName()),
+                                 solver_return_object = out)
 }
 
 ## SOLVER SUBMETHODS
-.quadprog_solve_QP <- function(Q, L, mat, dir, rhs, max) {
+.quadprog_solve_QP <- function(Q, L, mat, dir, rhs, max, control) {
 
   ## Partially borrowed from the fPortfolio function '.rquadprog'
   ## Description:
@@ -42,7 +44,10 @@ solve_QP <- function( x, control ) {
   ## Note:
   ##   Requires to load contributed R package quadprog from which we
   ##   directly use the Fortran subroutine of the quadratic solver.
-
+  ## Note 2: we currently disable the direct call of the Fortran routine
+  ##   since R-devel 2013-11-27 requires a different mechanism in calling .Fortran
+  ##   (see 5.4 and 5.4.2 in Writing R Extensions)
+  
   ind_eq  <- which( dir == "==")
   ind_geq <- which( (dir == ">=") | (dir == ">") )
   ind_leq <- which( (dir == "<=") | (dir == "<") )
@@ -80,35 +85,58 @@ solve_QP <- function( x, control ) {
   else
     as.matrix(Q)
 
-  ## number objectives
-  n_obj <- nrow(Dmat)
-  ## number constraints
-  n_constr <- ncol(Amat)
+  factorized <- control$factorized
+  if( is.null(factorized) )
+    factorized <- formals(solve.QP)$factorized
+  
+  ## FIXME: temporarily added in order to remove .Fortran call
+  ##########  ##########  ##########  ##########  ##########
+  out <- tryCatch( solve.QP(Dmat = Dmat, dvec = dvec, Amat = Amat, bvec = bvec, meq = meq, factorized = factorized), error = identity )
 
-  r = min(n_obj, n_constr)
-  work = rep(0, 2 * n_obj+ r * (r + 5)/2 + 2 * n_constr + 1)
+  if( inherits(out, "error") ){
+    ierr <- if( out$message == "constraints are inconsistent, no solution!" )
+      1L
+    else if (out$message == "matrix D in quadratic function is not positive definite!" )
+      2L
+    else
+      3L ## new status code
+    out <- list( solution = rep(NA, nrow(Dmat)), ierr = ierr )
+  }
+  out$sol <- out$solution # we need this since the Fortran routine would provide this field
+  out
+  ## END FIXME: temporarily added in order to remove .Fortran call
+  ##########  ##########  ##########  ##########  ##########
+  
+  ## ## number objectives
+  ## n_obj <- nrow(Dmat)
+  ## ## number constraints
+  ## n_constr <- ncol(Amat)
 
-  ## FIXME: do we need santiy checks here?
+  ## r = min(n_obj, n_constr)
+  ## work = rep(0, 2 * n_obj+ r * (r + 5)/2 + 2 * n_constr + 1)
 
-  # Optimize:
-  .Fortran("qpgen2",
-           as.double(Dmat),
-           dvec = as.double(dvec),
-           as.integer(n_obj),
-           as.integer(n_obj),
-           sol = double(n_obj),
-           lagr = double(n_constr),
-           crval = double(1),
-           as.double(Amat),
-           as.double(bvec),
-           as.integer(n_obj),
-           as.integer(n_constr),
-           as.integer(meq),
-           iact = integer(n_constr),
-           nact = 0L,
-           iter = integer(2L),
-           work = as.double(work),
-           ierr = 0L, NAOK = TRUE, PACKAGE = "quadprog")
+  ## ## FIXME: do we need santiy checks here?
+
+  ## # Optimize:
+  ## .Fortran(.QP_qpgen2,
+  ##          as.double(Dmat),
+  ##          dvec = as.double(dvec),
+  ##          as.integer(n_obj),
+  ##          as.integer(n_obj),
+  ##          sol = double(n_obj),
+  ##          lagr = double(n_constr),
+  ##          crval = double(1),
+  ##          as.double(Amat),
+  ##          as.double(bvec),
+  ##          as.integer(n_obj),
+  ##          as.integer(n_constr),
+  ##          as.integer(meq),
+  ##          iact = integer(n_constr),
+  ##          nact = 0L,
+  ##          iter = integer(2L),
+  ##          work = as.double(work),
+  ##         ierr = 0L) # , NAOK = TRUE
+  
 }
 
 

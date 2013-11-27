@@ -87,7 +87,7 @@ print.OP <- function(x, ...){
         ## calculate if types have to be written to stdout
     writetypes <- FALSE
     if( !is.null(types(x)) )
-        if( any(types(x) %in% ROI:::available_types()[2:3]) )
+        if( any(types(x) %in% available_types()[2:3]) )
             writetypes <- TRUE
     if( writetypes ){
         writeLines( "" )

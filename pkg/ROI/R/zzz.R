@@ -52,10 +52,10 @@ schema_valid <- cross_validate_schema( names(formals(OP)), solver_db )
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
         solver <- "nlminb"
-        ROI:::ROI_register_solver_method( signatures = ROI:::ROI_make_QP_signatures(),
-                                          solver = solver,
-                                          method =
-                                          getFunction( ".solve_QP_nlminb", where = getNamespace(pkgname)) )
+        ROI_register_solver_method( signatures = ROI_make_QP_signatures(),
+                                    solver = solver,
+                                    method =
+                                    getFunction( ".solve_QP_nlminb", where = getNamespace(pkgname)) )
         ## Finally, for status code canonicalization add status codes to data base
         .add_nlminb_status_codes()
     }

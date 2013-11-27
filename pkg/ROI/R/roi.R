@@ -96,7 +96,7 @@ ROI_registered_solvers <- function(){
 
 ## returns solver method
 get_solver_methods <- function( signature ){
-    entries <- do.call( ROI:::solver_db$get_entries, as.list(signature) )
+    entries <- do.call( solver_db$get_entries, as.list(signature) )
     solvers <- unlist(lapply( entries, function(x) x$solver ))
     structure( lapply(entries, function(x) x$FUN), names = solvers)
 }
@@ -120,7 +120,7 @@ get_solver_packages_from_db <- function ( ){
 
 ROI_register_solver_method <- function( signatures, solver, method ){
     for( i in 1:nrow(signatures) )
-        do.call(ROI:::solver_db$set_entry, c(as.list(signatures[i,]),
+        do.call(solver_db$set_entry, c(as.list(signatures[i,]),
                                              list(solver = solver),
                                              list(FUN = method)))
 

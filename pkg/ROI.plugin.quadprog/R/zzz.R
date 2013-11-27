@@ -1,4 +1,5 @@
 .onLoad <- function( libname, pkgname ) {
+  library.dynam( "quadprog", package = "quadprog", lib.loc = .libPaths() )
     ## Solver plugin name (based on package name)
     if( ! pkgname %in% ROI_registered_solvers() ){
         ## Register solver methods here.

@@ -1,4 +1,4 @@
 import("ROI")
-import("quadprog")
+importFrom("quadprog", "solve.QP")
 importFrom("methods", "getPackageName")
 importFrom("methods", "getFunction")
