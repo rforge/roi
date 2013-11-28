@@ -161,8 +161,33 @@ ex3b_milp <- ex3a_milp
 bounds(ex3b_milp) <- V_bound( c(1L, 2L, 3L), c(1L, 2L),
                               c(-Inf, -Inf, 2), c(4, -0.5) )
 
+for(solver in milpsolvers){
+  milp_results[solver, ] <- c(NA, NA)
+  timing <- system.time(res <- tryCatch(ROI_solve(ex3b_milp, solver = solver),
+                                        error = identity))["elapsed"]
+  if(!inherits(res, "error"))
+    milp_results[solver, ] <- c(res$objval, timing)
+}
+
+milp_results
+milp_results_bound <- milp_results
+
 ## FIXME: does not work yet
-ex3c_milp <- ROI:::.make_box_constraints_from_bounds_in_MIP(ex3b_milp)
+#ex3c_milp <- ROI:::.make_box_constraints_from_bounds_in_MIP(ex3b_milp)
+
+ex3c_milp <-ROI:::as.no_V_bounds_OP(ex3b_milp)
+
+for(solver in milpsolvers){
+  milp_results[solver, ] <- c(NA, NA)
+  timing <- system.time(res <- tryCatch(ROI_solve(ex3b_milp, solver = solver),
+                                        error = identity))["elapsed"]
+  if(!inherits(res, "error"))
+    milp_results[solver, ] <- c(res$objval, timing)
+}
+
+milp_results
+stopifnot( all(milp_results$objval  == milp_results_bound$objval) )
+## FIXME: as.no_V_bound_OP should make unbounded problem!!!
 
 ## Example 4:
 ## Simple quadratic program (QP)
@@ -171,7 +196,7 @@ ex3c_milp <- ROI:::.make_box_constraints_from_bounds_in_MIP(ex3b_milp)
 ## subject to: -4 x_1 - 3 x_2      >= -8
 ##             2 x_1 +   x_2       >= 2
 ##                   - 2 x_2 + x_3 >= 0
-
+require("ROI")
 ex4_qp <- OP( Q_objective (Q = diag(1, 3), L = c(0, -5, 0)),
               L_constraint(L = matrix(c(-4,-3,0,2,1,0,0,-2,1),
                              ncol = 3, byrow = TRUE),
@@ -194,6 +219,9 @@ for(solver in qpsolvers){
 
 qp_results
 
+
+
+
 ## Example 5:
 ## Another QP (this is qpex1.c in the CPLEX examples)
 ## maximize:     x_1 + 2 x_2 + 3  x_3 - 1/2 (33 x_1^2 + 22 x_2^2 + 11 x_3^2) + 6 x_1 x_2 + 11.5 x_2 x_3
@@ -201,7 +229,7 @@ qp_results
 ##               x_1 - 3 x_2 +    x_3 <= 30
 ##
 
-ex5_qp <- QP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
+ex5_qp <- OP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
                         byrow = TRUE, ncol = 3),
                       L = c(1, 2, 3)),
           L_constraint(L = matrix(c(-1, 1, 1, 1, -3, 1),
@@ -246,7 +274,7 @@ qp_results
 ##               x_1 - 3 x_2 +   x_3   <= 30
 ##               x_1^2 + x_2^2 + x_3^2 <= 1
 
-ex7_qcp <- QCP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
+ex7_qcp <- OP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
                             byrow = TRUE, ncol = 3),
                           L = c(1, 2, 3)),
               Q_constraint(Q = list(NULL, NULL, diag(1, nrow = 3)),
@@ -256,7 +284,9 @@ ex7_qcp <- QCP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
                            rhs = c(20, 30, 1)),
              maximum = TRUE)
 
-qcpsolvers <- ROI:::.QCP_solvers()
+ROI:::OP_signature( ex7_qcp )
+
+qcpsolvers <- names( ROI:::get_solver_methods(ROI:::OP_signature(ex7_qcp)) )
 qcp_results <- data.frame(objval = rep(NA, length.out = length(qcpsolvers)),
                            timing = NA)
 rownames(qcp_results) <- qcpsolvers
