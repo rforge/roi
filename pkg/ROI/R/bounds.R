@@ -86,6 +86,9 @@ as.V_bound.NULL <- function( x )
 as.list.V_bound <- function( x, ... )
   unclass( x )
 
+##' @noRd
+##' @method print V_bound
+##' @S3method print V_bound
 print.V_bound <- function(x, ...){
     writeLines( "ROI Variable Bounds:\n" )
 

@@ -72,6 +72,8 @@ solve_QP <- function( x, control ) {
   ## replace Inf with .Machine$double.xmax
   Amat[ is.infinite(Amat) & (Amat <= 0) ] <- -.Machine$double.xmax
   Amat[ is.infinite(Amat) & (Amat >= 0) ] <-  .Machine$double.xmax
+  bvec[ is.infinite(bvec) & (bvec <= 0) ] <- -.Machine$double.xmax
+  bvec[ is.infinite(bvec) & (bvec >= 0) ] <-  .Machine$double.xmax
 
   ## dvec in objective function according to direction of optimization
   dvec <- if( max )
