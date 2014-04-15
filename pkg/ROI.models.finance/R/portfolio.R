@@ -11,41 +11,48 @@
 ##' optimization model. Should be of the following form:
 ##' \code{"foo_bar"}, where "foo" is the direction of optimization and
 ##' "bar" specifies the objective function. Currently the following
-##' models are supported: \code{"min_var", "min_rpa", "max_div",
-##' "min_tdp", "max_cva"}. See Section Details for further
+##' models are supported: \code{"min_var", "max_div",
+##' "max_cva"}. See Section Details for further
 ##' information.
 ##' @param control further arguments passed down to the individual
-##' modelling routine. This argument contains following elements:
+##' modelling routine. The following list of optional arguments is
+##' supported:
 ##' \itemize{
-##' \item{\code{n_assets}} The number of assets, i.e. column
-##' dimension of \code{x}. Calculated value.
-##' \item{\code{n_period}} The number of time periods, i.e. row dimension
-##' of \code{x}. Calculated value.
-##' \item{\code{n_objective}} The number of objective values. Typically
-##' the same as \code{n_assets} except for optimization problems that
-##' require dummy variables.
-##' \item{\code{target}} Integer specifying a target minimum
-##' return. If not given no target return has to be achieved. User
-##' value.
-##' \item{\code{col_means}} Vector specifying the mean returns
-##' for each asset. If not given the columns means of \code{x} are
-##' used. User or calculated value.
-##' \item{\code{long_only}} Logical value. If \code{TRUE} each objective
-##' variable has to be in the interval \eqn{[0,\infty)}. If \code{FALSE}
-##' no usage of this sort of constraint. Defaults to \code{FALSE}.
-##' User or calculated value.
-##' \item{\code{long_short}} Logical value. If \code{TRUE} each
-##' objective variable is allowed to vary in the interval
-##' \eqn{[-\infty,\infty)}.  If \code{FALSE} no usage of this sort of
-##' constraint. Defaults to \code{FALSE}. User or calculated value.
-##' \item{\code{fully_invest}} Logical value. If \code{TRUE} the sum
-##' of objective variables has to be equal \eqn{1}.  If \code{FALSE}
-##' no usage of this sort of constraint. Defaults to
-##' \code{FALSE}. User or calculated value.
-##' \item{\code{market_neutral}} Logical value. If \code{TRUE} the sum
-##' of objective variables has to be equal \eqn{0}.  If \code{FALSE}
-##' no usage of this sort of constraint. Defaults to
-##' \code{FALSE}. User or calculated value.}
+##'   \item{\code{long_only}} Logical value. If \code{TRUE} each
+##'   objective variable has to be in the interval \eqn{[0,\infty)}.
+##'   If \code{FALSE} no usage of this sort of constraint. Defaults to
+##'   \code{FALSE}. Passed by user or calculated value.
+##'   \item{\code{long_short}} Logical value. If \code{TRUE} each
+##'   objective variable is allowed to vary in the interval
+##'   \eqn{(-\infty,\infty)}.
+##'   If \code{FALSE} no usage of this sort of constraint. Defaults to
+##'   \code{FALSE}. Passed by user or calculated value.
+##'   \item{\code{fully_invest}} Logical value. If \code{TRUE} the sum of
+##'   objective variables has to be equal \eqn{1}.
+##'   If \code{FALSE} no usage of this sort of constraint. Defaults to
+##'   \code{FALSE}. Passed by user or calculated value.
+##'   \item{\code{market_neutral}} Logical value. If \code{TRUE} the sum
+##'   of objective variables has to be equal \eqn{0}.
+##'   If \code{FALSE} no usage of this sort of constraint. Defaults to
+##'   \code{FALSE}. Passed by user or calculated value.
+##'   \item{\code{n_assets}} The number of assets, i.e. column dimension of
+##'   \code{x}. Calculated value.
+##'   \item{\code{n_period}} The number of time periods, i.e. row dimension
+##'   of \code{x}. Calculated value.
+##'   \item{\code{n_objective}} The number of objective values. Typically
+##'   the same as \code{n_assets}
+##'   except for optimization problems that require dummy variables.
+##'   Calculated value.
+##'   \item{\code{col_means}} Vector specifying the mean returns for each
+##'   asset. If not given the column means of \code{x} are used. Passed by
+##'   user or calculated value.
+##'   \item{\code{target}} Integer specifying a target minimum return.
+##'   If not given no target return has to be achieved. Passed by user.
+##'   \item{\code{alpha}} Numeric value specifying the significancy level
+##'   \eqn{\alpha} for the CVaR Portfolio.
+##'   If not given \code{alpha} is set to \code{0.1}. Only used for
+##'   \code{model="max_cva"}. Passed by user or calculated value.
+##'   }
 ##' @param ... currently ignored.
 ##' @return an object of class \code{"ROI_portfolio_model"} inheriting
 ##' from class \code{"OP"}.
@@ -61,7 +68,10 @@
 ##' (derived from the time series object).
 ##' \item{\code{meta}} further meta data about the process of creating
 ##' the problem object like the timestamp and system information.}
-##' @details The following models are currently supported:
+##' @details The following models are currently supported.  Note that
+##' \code{long_only} and \code{fully_invest} constraints are shown
+##' below, but other types of constraints can be used as well.
+##'
 ##' \itemize{
 ##'   \item{Minimum Variance}{
 ##'         \deqn{ argmin_w~ \frac{1}{2} w'\Sigma w }{ argmin_w 1/2 w'\Sigma w }
@@ -100,38 +110,36 @@
 ##'			The key is to approximate the continuous joint density function \eqn{p(r)} with a number of discrete scenarios,
 ##'			e.g. \eqn{r_s} for \eqn{s=1,...,S}, which typically represent historical returns. Then the optimization problem transforms to
 ##'			\deqn{argmin_w~ VaR_\alpha+\frac{1}{(1-\alpha S)}\sum\limits_{s=1}^{S}(f(w,r_s)-VaR_\alpha)^+.}
-##'			Typically it is assumed that \eqn{f(w,r_s)} is a linear function of \eqn{w}.
+##'			Typically it is assumend that \eqn{f(w,r_s)} is a linear function of \eqn{w}.
 ##'			Therefore the CVaR optimization can be solved by linear optimization algorithms.}
 ##' }
 ##' @export
 ##' @import ROI
 ##' @import slam
-##' @importFrom FRAPO tdc
 ##' @examples
 ##' ## daily returns (discrete) of 30 US stocks from 2008-03-20 to 2013-12-31
 ##' data( US30 )
 ##' r <- na.omit( US30 / lag(US30, 1, na.pad = TRUE) - 1 )
 ##'
 ##' ## generate and solve the "maximum diversification" optimization problem
-##' MD  <- portfolio_model( r, model = "maximum_diversification" )
+##' MD  <- ROI_model_portfolio( r, model = "max_div", control = list(long_only = TRUE,
+##'                                                                  fully_invest = TRUE) )
 ##' sol <- ROI_solve( MD, solver = "quadprog" )
 ##' w_md <- round( sol$solution, 5 )
 ##'
 ##' ## generate and solve the "minimum variance" optimization problem
-##' MV  <- portfolio_model( r, model = "minimum_variance" )
+##' MV  <- ROI_model_portfolio( r, model = "min_var", control = list(long_only = TRUE,
+##'                                                                  fully_invest = TRUE) )
 ##' sol <- ROI_solve( MV, solver = "quadprog" )
 ##' w_mv <- round( sol$solution, 5 )
 ##'
-##' ## generate and solve the "minimum tail dependence" optimization problem
-##' TD  <- portfolio_model( r, model = "minimum_tail_dependence" )
-##' sol <- ROI_solve( TD, solver = "quadprog" )
-##' w_td <- round( sol$solution, 5 )
-##'
 ##' ## generate and solve the "conditional value at risk" optimization problem
-##' CV  <- portfolio_model( r, model = "conditional_var" )
+##' CV  <- ROI_model_portfolio( r, model = "max_cva", control = list(long_only = TRUE,
+##'                                                                  fully_invest = TRUE,
+##'                                                                  alpha = 0.1) )
 ##' sol <- ROI_solve( CV, solver = "glpk" )
 ##' w_cv <- round( sol$solution[1:ncol(r)], 5 )
-ROI_model_portfolio <- function( x, model = c("min_var","min_rpa","max_div","min_tdp","max_cva"),
+ROI_model_portfolio <- function( x, model = c("min_var", "max_div", "max_cva"),
                                  control = list(), ... ){
 
     ## validate input
@@ -147,7 +155,7 @@ ROI_model_portfolio <- function( x, model = c("min_var","min_rpa","max_div","min
         control$col_means <- apply( x, 2, mean, na.rm=TRUE )
 
     ## build objective function and model specific constraints
-    FUN <- getFunction( paste(".make_portfolio", model, sep = "_") )
+    FUN <- getFunction( paste(".make_op", model, sep = "_") )
     op <- FUN( x, control )
 
     ## FIXME: need to document that this is a reserved control argument
@@ -160,17 +168,19 @@ ROI_model_portfolio <- function( x, model = c("min_var","min_rpa","max_div","min
     constr <- make_constraints_from_control( control = control )
 
     ## add constraints to OP
-    if( length(constr$constr) & !is.null(constraints(op)) ){
-        constraints(op) <- rbind( constraints(op), constr$constr )
-    }else if( length(constr$constr) ){
-        constraints(op) <- constr$constr
+    if( length(constr$constr) ){
+        ## FIXME: we currently support only L_constraints, rbind does not
+        ## work otherwise since it demands that every input object must be
+        ## of the same class (really??)
+        stopifnot( is.L_constraint(constr$constr) )
+        constraints(op) <- rbind( as.L_constraint(constraints(op)), constr$constr )
     }
 
     if( length(constr$bounds) )
     bounds(op) <- constr$bounds
 
     ## Subclass "ROI_model_portfolio" extends "OP". See documentation.
-    structure( op, class= c("ROI_model_portfolio", class(obj)),
+    structure( op, class= c("ROI_model_portfolio", class(op)),
                model = model,
                control = control,
                asset_names = colnames(x),
@@ -337,25 +347,25 @@ make_constraints_from_control <- function( control ){
 
 ## Minimum Tail Dependence
 ## Author: Zebhauser
-.make_op_min_tdp <- function( x, control ) {
-    if( !is.null(control$TD) ){
-        TD_base <- control$TD}
-    else{
-        ## FIXME: can we define a default in our package instead of using FRAPO?
-        TD_base <- FRAPO::tdc}
-    TD <- TD_base
+## .make_op_min_tdp <- function( x, control ) {
+##     if( !is.null(control$TD) ){
+##         TD_base <- control$TD}
+##     else{
+##         ## FIXME: can we define a default in our package?
+##         TD_base <- <REPLACE_WITH_PROPER_PKG>::tdc}
+##     TD <- TD_base
 
-    ## alternative minimum tail dep (change: st)
-    if( !is.null(control$diag_var) )
-        if( control$diag_var )
-            TD <- function( x ) {
-                out <- TD_base( x )
-                diag( out ) <- apply( x, 2, var )
-                out
-            }
+##     ## alternative minimum tail dep (change: st)
+##     if( !is.null(control$diag_var) )
+##         if( control$diag_var )
+##             TD <- function( x ) {
+##                 out <- TD_base( x )
+##                 diag( out ) <- apply( x, 2, var )
+##                 out
+##             }
 
-    OP( objective = Q_objective(TD(x)) )
-}
+##     OP( objective = Q_objective(TD(x)) )
+## }
 
 ## Conditional Value at Risk
 ## Author: Kopatz
