@@ -147,8 +147,8 @@ ROI_model_portfolio <- function( x, model = c("min_var", "max_div", "max_cva"),
 
     ## control list handling
     ## FIXME: need to document that these are reserved control arguments
-    control$n_assets <- ncol( x )
-    control$n_periods <- nrow( x )
+    control[[ "n_assets" ]] <- ncol( x )
+    control[[ "n_periods" ]] <- nrow( x )
     ## for target return constraints user may supply "mean
     ## return". Default: arithmetic mean on the asset returns.
     if( is.null(control$col_means) )
@@ -159,7 +159,7 @@ ROI_model_portfolio <- function( x, model = c("min_var", "max_div", "max_cva"),
     op <- FUN( x, control )
 
     ## FIXME: need to document that this is a reserved control argument
-    control$n_objective <- length( objective(op) )
+    control[[ "n_objective" ]] <- length( objective(op) )
 
     ## make model invariant contstraints, e.g. non-negativity
     ## value: a list with two elements
@@ -237,11 +237,11 @@ print.ROI_model_portfolio <- function( x, ... ){
 make_constraints_from_control <- function( control ){
 
   ## reformat control arguments to logical values if they are NULL
-  control$long_only     <- ifelse( is.logical(control$long_only), control$long_only, FALSE )
-  control$long_short    <- ifelse( is.logical(control$long_short), control$long_short, FALSE )
-  control$fully_invest  <- ifelse( is.logical(control$fully_invest), control$fully_invest, FALSE )
-  control$target_invest <- ifelse( is.logical(control$target_invest), control$target_invest, FALSE )
-  control$market_neutral<- ifelse( is.logical(control$market_neutral), control$market_neutral, FALSE )
+  control[[ "long_only" ]]     <- ifelse( is.logical(control[[ "long_only" ]]), control[[ "long_only" ]], FALSE )
+  control[[ "long_short"]]    <- ifelse( is.logical(control[[ "long_short"]]), control[[ "long_short"]], FALSE )
+  control[[ "fully_invest" ]]  <- ifelse( is.logical(control[[ "fully_invest" ]]), control[[ "fully_invest" ]], FALSE )
+  control[[ "target_invest" ]] <- ifelse( is.logical(control[[ "target_invest" ]]), control[[ "target_invest" ]], FALSE )
+  control[[ "market_neutral"]]<- ifelse( is.logical(control[[ "market_neutral"]]), control[[ "market_neutral"]], FALSE )
 
   ## check for sanity
   .check_control_for_sanity( control )
@@ -249,33 +249,27 @@ make_constraints_from_control <- function( control ){
   ## constraints on each weight
   A <- dir <- rhs <- bnds <- NULL
 
-  if( control$long_only ){
-      A   <- rbind( A, slam::simple_triplet_diag_matrix(1, control$n_assets) )
-      dir <- c( dir, rep(">=",control$n_assets) )
-      rhs <- c( rhs, rep(0,control$n_assets) )
-  }
-
-  if( control$long_short ){
-      bnds <- V_bound( li   = 1:control$n_assets,
-                       ui   = 1:control$n_assets,
-                       lb   = rep(-Inf,control$n_assets),
-                       ub   = rep(Inf,control$n_assets),
-                       nobj = control$n_assets )
+  if( control[[ "long_short" ]] ){
+      bnds <- V_bound( li   = 1:control[[ "n_assets" ]],
+                       ui   = 1:control[[ "n_assets" ]],
+                       lb   = rep(-Inf,control[[ "n_assets" ]]),
+                       ub   = rep(Inf,control[[ "n_assets" ]]),
+                       nobj = control[[ "n_assets" ]] )
   }
 
   ## constraints on sum of weights
   A <- rbind( A,
-              slam::simple_triplet_matrix(i = rep(1, control$n_assets),
-                                          j = 1:control$n_assets,
-                                          v = rep(1, control$n_assets)) )
+              slam::simple_triplet_matrix(i = rep(1, control[[ "n_assets" ]]),
+                                          j = 1:control[[ "n_assets" ]],
+                                          v = rep(1, control[[ "n_assets" ]])) )
   dir  <- c( dir, "==" )
-  rhs  <- c( rhs, ifelse(control$market_neutral, 0, 1) )
+  rhs  <- c( rhs, ifelse(control[[ "market_neutral" ]], 0, 1) )
 
   ## add target minimum return if specified via model
-  if( !is.null(control$target) ){
+  if( !is.null(control[[ "target" ]]) ){
       A <- rbind( A,
-                  slam::simple_triplet_matrix(i = rep(1,control$n_assets),
-                                              j = 1:control$n_assets,
+                  slam::simple_triplet_matrix(i = rep(1,control[[ "n_assets" ]]),
+                                              j = 1:control[[ "n_assets" ]],
                                               v = control$col_means) )
       dir <- c( dir, ">=" )
       rhs <- c( rhs, as.numeric(control$target) )
@@ -285,10 +279,10 @@ make_constraints_from_control <- function( control ){
   	## NOTE: if objective function has more variables than assets,
     ## we need fill up (with zero coefficients) the contraints object
     ## such that it fullfills dimensionality requirements
-      if( control$n_objective > dim(A)[2] )
+      if( control[[ "n_objective" ]] > dim(A)[2] )
           A <- cbind( A,
                       slam::simple_triplet_zero_matrix(nrow = dim(A)[1],
-                                                       ncol=control$n_objective - dim(A)[2]) )
+                                                       ncol=control[[ "n_objective" ]] - dim(A)[2]) )
   }
 
   list( bounds = bnds, constr = L_constraint(L = A, dir, rhs) )
@@ -320,7 +314,7 @@ make_constraints_from_control <- function( control ){
     else
         stats::cov
 
-    n_assets <- control$n_assets
+    n_assets <- control[[ "n_assets" ]]
 
     SIGMA <- COV( x )
     start  <- rep( 1/n_assets, n_assets)
@@ -370,14 +364,14 @@ make_constraints_from_control <- function( control ){
 ## Conditional Value at Risk
 ## Author: Kopatz
 .make_op_max_cva <- function( x, control ) {
-    if( !is.null(control$alpha) ){
-        alpha <- control$alpha
+    if( !is.null(control[[ "alpha" ]]) ){
+        alpha <- control[[ "alpha" ]]
     } else {
         alpha <- 0.10
     }
 
-    n_assets <- control$n_assets
-    n_periods <- control$n_periods
+    n_assets <- control[[ "n_assets" ]]
+    n_periods <- control[[ "n_periods" ]]
 
     ## CVaR constraints
     A    <- cbind( matrix(coredata(x),
