@@ -7,7 +7,7 @@
         ROI:::ROI_register_solver_method( signatures = ROI:::ROI_make_MIQCP_signatures(),
                                           solver = solver,
                                           method =
-            getFunction( ".solve_MIP_via_cplex", where = getNamespace(pkgname)) )
+            getFunction( "solve_OP", where = getNamespace(pkgname)) )
         ## Finally, for status code canonicalization add status codes to data base
         .add_status_codes()
     }

@@ -97,7 +97,7 @@ as.no_V_bounds_OP.OP <- function( x ){
 .make_box_constraints_from_bounds_in_MIP <- function(x, negative = TRUE){
     ## FIXME: we really need an extractor for the number of objective vars
     ##        this only works for sure with linear objectives
-    n_obj <- length(terms(objective(x))$L)
+    n_obj <- length(objective(x))
 
     if(negative) {
         ## if negative TRUE, then solver defaults are:

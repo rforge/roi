@@ -1,8 +1,7 @@
 ## ROI.plugin.cplex: solver interfaces
 ## Description: provides problem object <-> solver mappings
 
-.solve_MIP_via_cplex <-
-function(x, control)
+solve_OP <- function( x, control )
 {
     if( ! is.null(terms(objective(x))$Q) ) {
       ## Ensure that the coefficient matrix of the quadratic term is
@@ -13,7 +12,7 @@ function(x, control)
 
     n_obj <- ifelse( !is.null(terms(objective(x))$Q),
                      dim(terms(objective(x))$Q)[1],
-                     length(terms(objective(x))$L))
+                     length(objective(x)) )
 
     types <- ROI:::.expand_types(x$types, n_obj)
 
@@ -30,7 +29,7 @@ function(x, control)
     if(is.null(nos <- control$n)) nos <- 1L
       value_is_list_of_solutions <- !identical(as.integer(nos), 1L)
 
-    out <- if( any(is.Q_constraint(constraints(x))) ) {
+    out <- if( ! is.null(constraints(x)$Q) ) {
         ## which are the quadratic constraints
         qc <- which( ! sapply(constraints(x)$Q, .all_zero_in_simple_triplet_matrix_or_NULL) )
 
@@ -47,7 +46,7 @@ function(x, control)
 
         ## we need to handle quadratic constraint
         tryCatch( Rcplex:::Rcplex_solve_QCP(Qmat = terms(objective(x))$Q,
-                                            cvec = terms(objective(x))$L,
+                                            cvec = as.numeric(as.matrix(terms(objective(x))$L)), # these are STMs
                                             QC = list(QC = list(Q = constraints(x)$Q[ qc ],
                                                                 L = .make_list_of_linear_constraints(
                                                                   constraints(x)$L[ qc, ])),
@@ -69,20 +68,16 @@ function(x, control)
     else {
         mat <- constraints(x)$L
         sense <- .as_Rcplex_sense(constraints(x)$dir)
-        ## FIXME: always simple triplet matrix with problem constructors
-        if(is.simple_triplet_matrix(mat)) {
-            ## Reorder indices as CPLEX needs a column major order
-            ## representation i.e., column indices j have to be in ascending
-            ## order.
-            column_major_order <- order(mat$j)
-            mat$i <- mat$i[column_major_order]
-            mat$j <- mat$j[column_major_order]
-            mat$v <- mat$v[column_major_order]
-        } else {
-            mat <- as.matrix(mat)
-        }
+        ## Reorder indices as CPLEX needs a column major order
+        ## representation i.e., column indices j have to be in ascending
+        ## order.
+        column_major_order <- order(mat$j)
+        mat$i <- mat$i[column_major_order]
+        mat$j <- mat$j[column_major_order]
+        mat$v <- mat$v[column_major_order]
+        
         tryCatch( Rcplex::Rcplex(Qmat = terms(objective(x))$Q,
-                                cvec = terms(objective(x))$L,
+                                cvec = as.numeric(as.matrix(terms(objective(x))$L)),
                                 Amat = mat,
                                 sense = sense,
                                 bvec = constraints(x)$rhs,
@@ -117,7 +112,7 @@ function(x, control)
                                                       status   = out$status,
                                                       solver   = ROI:::get_solver_name(getPackageName())) )
         else
-            ROI:::canonicalize_solution(solution = out$xopt,
+            ROI:::canonicalize_solution( solution = out$xopt,
                                          optimum  = objective(x)(out$xopt),
                                          status   = out$status,
                                          solver   = ROI:::get_solver_name(getPackageName()) )
