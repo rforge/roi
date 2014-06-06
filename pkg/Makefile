@@ -7,14 +7,18 @@ all: pkg plugins
 ROI: pkg
 
 ## FIXME: roxygen should be installed for R-devel as well
-pkg: roxclean
-	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE)', roxygen.dir = '$(PACKAGE).roxygen', overwrite = TRUE, roclets = c('namespace', 'rd'))" | $(R) --vanilla
-	$(R) CMD build $(PACKAGE).roxygen
+pkg:
+	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE)', overwrite = TRUE, roclets = c('namespace', 'rd'))" | $(R) --vanilla
+	$(R) CMD build $(PACKAGE)
 
 plugins:
 	$(R) CMD build $(PACKAGE).plugin.glpk
 	$(R) CMD build $(PACKAGE).plugin.symphony
 	$(R) CMD build $(PACKAGE).plugin.quadprog
+
+models:
+	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE).models.finance', overwrite = TRUE, roclets = c('namespace', 'rd'))" | $(R) --vanilla
+	$(R) CMD build $(PACKAGE).models.finance
 
 check:
 	$(R) CMD check $(PACKAGE)*.tar.gz
@@ -23,9 +27,6 @@ check:
 
 install:
 	$(R) CMD INSTALL $(PACKAGE)*.tar.gz
-
-roxclean:
-	rm -rf $(PACKAGE).roxygen
 
 clean: roxclean
 	rm -rf $(PACKAGE)*.Rcheck

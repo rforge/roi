@@ -2,7 +2,7 @@
 ## Package: ROI
 ## File:    constraints.R
 ## Author:  Stefan Theussl
-## Changed: 2013-11-25
+## Changed: 2014-04-15
 ################################################################################
 
 ## NOTE: probably support "range" constraints in order to improve efficiency
@@ -44,8 +44,12 @@ constraints <- function( x )
 ##' @author Stefan Theussl
 ##' @method constraints OP
 ##' @S3method constraints OP
-constraints.OP <- function( x )
-    x$constraints
+constraints.OP <- function( x ){
+    if( is.null(x$constraints) )
+        NO_constraint( length(objective(x)) )
+    else
+        x$constraints
+}
 
 
 
@@ -76,13 +80,129 @@ constraints.OP <- function( x )
 ##' @noRd
 ##' @S3method constraints<- OP
 'constraints<-.OP' <- function( x, value ) {
-    ## if 'empty' constraints are given (NULL) then we assume it's and
-    ## 'empty' linear constraint
-    if( is.null(value) )
-        value <- L_constraint(L = NULL, dir = NULL, rhs = NULL)
     x$constraints <- as.constraint(value)
     x
 }
+
+
+
+################################################################################
+## No constraints (class 'NO_constraint')
+## 0xn simple_triplet_zero_matrix
+################################################################################
+
+##' In case the \code{constraints} slot in the problem object is
+##' \code{NULL} the return value of a call of \code{constraints()}
+##' will return an object of class \code{"NO_constraint"} which
+##' inherits from \code{"L_constraint"}.
+##'
+##' @title Class: \code{"NO_constraint"}
+##' @param n_obj a numeric vector of length \code{1} representing the number
+##' of objective variables.
+##' @return an object of class \code{"NO_constraint"} which inherits
+##' from \code{"L_constraint"} and \code{"constraint"}.
+##' @author Stefan Theussl
+##' @import slam
+##' @export
+NO_constraint <- function( n_obj ) {
+    n_obj <- as.integer( n_obj )
+    stopifnot( length(n_obj) == 1L )
+    structure( list(),
+               n_constraints = 0,
+               n_obj = n_obj,
+               class = c("NO_constraint", "constraint") )
+}
+
+##' Coerces objects of type \code{"NO_constraint"}.
+##'
+##' (Almost) all objects inheriting from class \code{"constraint"} can be
+##' coerced to \code{"NO_constraint"}. It extracts the number of
+##' (objective) variables from the original constraints objects and
+##' returns the \code{"NO_constraint"} object.
+##' @title Coercing Constraints
+##' @param x an R object.
+##' @param ... further arguments passed to or from other methods
+##' (currently ignored).
+##' @return an object of class \code{"NO_constraint"} which inherits
+##' from \code{"constraint"}.
+##' @author Stefan Theussl
+##' @export
+as.NO_constraint <- function(x, ...)
+    UseMethod( "as.NO_constraint" )
+
+##' @noRd
+##' @method as.NO_constraint NO_constraint
+##' @S3method as.NO_constraint NO_constraint
+as.NO_constraint.NO_constraint <- function( x, ... )
+    x
+
+##' @noRd
+##' @method as.NO_constraint L_constraint
+##' @S3method as.NO_constraint L_constraint
+as.NO_constraint.L_constraint <- function( x, ... )
+    NO_constraint( ncol(x$L) )
+
+##' Tests if an object is interpretable as being of class \code{"L_constraint"}.
+##'
+##' @title Class: \code{"NO_constraint"}
+##' @param x object to be tested.
+##' @return returns \code{TRUE} if its argument is of class
+##' \code{"NO_constraint"} and \code{FALSE} otherwise.
+##' @author Stefan Theussl
+##' @export
+is.NO_constraint <- function( x ) {
+    inherits( x, "NO_constraint" )
+}
+
+##' Take a sequence of constraints (ROI objects) arguments and combine
+##' by rows, i.e., putting several constraints together.
+##'
+##' The output type is determined from the highest type of the
+##' components in the hierarchy NULL < \code{"NO_constraint"} <
+##' \code{"L_constraint"} < \code{"Q_constraint"} <
+##' \code{"F_constraint"}.
+##'
+##' @title Class: \code{"NO_constraint"}
+##' @param ... constraints objects to be concatenated.
+##' @param recursive logical. Currently ignored (enable compatibility
+##' with \code{c()} operator).
+##' @return an object of a class depending on the input which also
+##' inherits from \code{"constraint"}. See \bold{Details}.
+##' @author Stefan Theussl
+##' @S3method rbind NO_constraint
+rbind.NO_constraint <- function( ..., recursive = FALSE ){
+    constraints <- list(...)
+    nc <- unlist(lapply(constraints, is.NO_constraint))
+    dims <- unlist(lapply(constraints, function(x) dim(x)[1]))
+    stopifnot( all(dims == dims[1]) )
+    ## FIXME: shouldn't we check dimensionaliy of constraints?
+    if( all(nc) )
+        constraints[[1]]
+    else
+        stop( "can only rbind objects of class 'NO_constraint'." )
+}
+
+## @S3method rbind constraint
+## rbind.constraint <- function( ..., recursive = FALSE ){
+##     rbind.NO_constraint( ..., recursive = recursive )
+##}
+
+##' @noRd
+##' @method c NO_constraint
+##' @S3method c NO_constraint
+c.NO_constraint <- function( ..., recursive = FALSE )
+    rbind( ..., recursive = recursive )
+
+##' Get the number of constraints from a corresponding ROI object.
+##'
+##' @title Class: \code{"NO_constraint"}
+##' @param x constraints object.
+##' @return an integer.
+##' @author Stefan Theussl
+##' @method length NO_constraint
+##' @S3method length NO_constraint
+length.NO_constraint <- function( x )
+    attr(x, "n_constraints")
 
 
 
@@ -110,7 +230,6 @@ constraints.OP <- function( x )
 ##' @return an object of class \code{"L_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
-##' @import slam
 ##' @export
 L_constraint <- function( L, dir, rhs ) {
     L     <- as.L_term(L)
@@ -120,6 +239,9 @@ L_constraint <- function( L, dir, rhs ) {
     n_dir <- length( dir )
     n_L_constraints <- length( rhs )
     stopifnot( all(c(dim_L[ 1 ], n_dir) == n_L_constraints) )
+    ## FIXME: we cannot use this check since we need zero row
+    ##L_constraints for coercing NO_constraonts to L_constraints
+    ##stopifnot( n_L_constraints >= 1 )
     structure( list(L   = L,
                     dir = dir,
                     rhs = rhs),
@@ -167,6 +289,13 @@ as.L_constraint.list <- function( x, ... ){
     names(x) <- c("L", "dir", "rhs")
     L_constraint( L = x$L, dir = x$dir, rhs = x$rhs )
 }
+
+##' @noRd
+##' @method as.L_constraint NO_constraint
+##' @S3method as.L_constraint NO_constraint
+as.L_constraint.NO_constraint<- function( x, ... )
+    L_constraint( L = simple_triplet_zero_matrix(nrow = length(x), ncol = dim(x)[2]),
+                  dir = NULL, rhs = NULL )
 
 ##' Tests if an object is interpretable as being of class \code{"L_constraint"}.
 ##'
@@ -350,7 +479,7 @@ is.Q_constraint <- function( x ) {
 rbind.Q_constraint <- function( ..., recursive = FALSE ){
     constraints <- lapply(list(...), as.Q_constraint)
 
-
+    warning("Q part not implemented.")
     L_constraint( L =   Reduce(function(x, y) rbind(x, y), lapply( constraints, function (x) as.simple_triplet_matrix(x$L) )),
                  dir = Reduce(function(x, y) c(x, y), lapply( constraints, function (x) as.character(x$dir) )),
                  rhs = Reduce(function(x, y) c(x, y), lapply( constraints, function (x) as.rhs(x$rhs) )) )
@@ -438,13 +567,13 @@ F_constraint <- function(F, dir, rhs){
 
 ## FIXME: there are still F_constraint methods to implement
 as.F_constraint <- function(x, ...)
-    UseMethod("as.F_constraint")
+    UseMethod( "as.F_constraint")
 
 as.F_term <- function(x, ...)
     UseMethod( "as.F_term" )
 
 length.F_constraint <- function(x)
-    attr(x, "n_F_constraints")
+    attr( x, "n_F_constraints" )
 
 as.F_term.function <- function(x)
     list( x )
@@ -456,13 +585,17 @@ as.F_term.list <- function(x)
 ################################################################################
 ## constraint helper functions
 
-as.rhs <- function(x, ...)
+as.rhs <- function( x )
     UseMethod("as.rhs")
 
 ##' @noRd
 ##' @S3method as.rhs numeric
-as.rhs.numeric <- function( x, ... )
-    x
+as.rhs.numeric <- identity
+
+##' @noRd
+##' @S3method as.rhs NULL
+as.rhs.NULL <- function( x )
+    numeric(0)
 
 ##' Coerces objects of type \code{"constraint"}.
 ##'
@@ -496,6 +629,11 @@ as.constraint.F_constraint <-
     identity
 
 ##' @noRd
+##' @S3method as.constraint numeric
+as.constraint.numeric <- function( x )
+    as.L_constraint( x )
+
+##' @noRd
 ##' @method print constraint
 ##' @S3method print constraint
 print.constraint <- function( x, ... ){
@@ -517,7 +655,9 @@ print.constraint <- function( x, ... ){
 ##' @S3method dim constraint
 dim.constraint <- function( x ){
     ## FIXME: we should actually save both dimensions in constraint object
-    out <- if( inherits(x, "L_constraint") )
+    out <- if( inherits(x, "NO_constraint") )
+        c( length(x), attributes(x)$n_obj )
+    else if( inherits(x, "L_constraint") )
         c( length(x), ncol(x$L))
     else if( inherits(x, "Q_constraint") )
         c( length(x), unique(unlist(lapply( x$Q, dim ))) )

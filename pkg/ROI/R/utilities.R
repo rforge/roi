@@ -68,12 +68,24 @@ as.no_V_bounds_OP.OP <- function( x ){
                                         v = rep(1, length(x$upper$ind)),
                                         nrow = n_obj,
                                         ncol = n_obj )
+
+    ## if lower indices are not set, we need to set them here
+    ## otherwise the constraints will not be built
+    if( !length(x$lower$ind) ){
+        ## FIXME: shouldn't this also include a "reverse" argument?
+        box <- .make_default_box_constraints( n_obj )
+        x$lower$ind <- box$L$i
+        x$lower$val <- box$rhs
+    }
+
     ## create lhs lower bound
-    lhs_lower <- simple_triplet_matrix( i = x$lower$ind,
-                                        j = x$lower$ind,
-                                        v = rep(1, length(x$lower$ind)),
-                                        nrow = n_obj,
-                                        ncol = n_obj )
+    lhs_lower <-  simple_triplet_matrix( i = x$lower$ind,
+                                         j = x$lower$ind,
+                                         v = rep(1, length(x$lower$ind)),
+                                         nrow = n_obj,
+                                         ncol = n_obj )
+
+
     ## default constraint direction and multiplicator
     d_l <- ">="
     d_u <- "<="
