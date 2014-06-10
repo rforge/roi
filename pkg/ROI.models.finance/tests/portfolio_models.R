@@ -60,7 +60,7 @@ w <- w/sum(w)
 names( w ) <- names( US30 )
 stopifnot( all.equal(w, weights[model, ]) )
 
-## Maximum Diversification
+## CVaR Optimization
 ################################################################################
 
 model <- "max_cva"
