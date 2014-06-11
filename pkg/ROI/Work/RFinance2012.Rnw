@@ -1,0 +1,800 @@
+\documentclass[beamer]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage{Sweave}
+
+\usetheme[style=free]{wu}
+
+\let\code=\texttt
+\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\newcommand{\proglang}[1]{\textsf{#1}}
+\newcommand{\class}[1]{`\code{#1}'}
+
+\RequirePackage{fancyvrb}
+\RequirePackage{color}
+
+\newenvironment{Schunk}{}{}
+
+\definecolor{Sinput}{rgb}{0,0,0.56}
+\definecolor{Scode}{rgb}{0,0,0.56}
+\definecolor{Soutput}{rgb}{0.56,0,0}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}
+{formatcom={\Zinput},fontsize=\scriptsize}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}
+{formatcom={\Zoutput},fontsize=\scriptsize}
+\DefineVerbatimEnvironment{Scode}{Verbatim}
+{formatcom={\Zcode},fontsize=\scriptsize}
+
+\newcommand{\Zoutput}{ \vspace*{-0.1cm} \color{Soutput}}
+\newcommand{\Zinput}{ \color{Sinput}}
+\newcommand{\Zcode}{ \color{Scode}}
+
+
+%% Title has to be of the form \textbf{Main Title}\\Subtitle
+%% note that the short title has to be in uppercase letters
+\title{\pkg{ROI} --- the \proglang{R} Optimization Infrastructure
+  Package}
+\author{Stefan Theu\ss{}l \and Kurt Hornik \and David Meyer}
+\institute{WU Wien, Department of Finance, Accounting and Statistics}
+\date{R/Finance 2012, May 12}
+
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Motivation}
+
+\begin{frame}
+\frametitle{Motivation (1)}
+
+Mean-Variance Portfolio Optimization (Markowitz, 1952)
+
+\begin{itemize}
+  \item Minimum Risk
+    \begin{eqnarray*}
+      \min_w ~~ w^{\top} ~ \hat{\Sigma} ~ w
+      \nonumber
+      \\
+      s.t. ~~~~~~~~~~ ~~~~~~~~~~
+      \\
+      Aw^{\top} \leq  b
+    \end{eqnarray*}
+  \item Maximum Return
+    \begin{eqnarray*}
+      \max_{w} ~~ w^{\top} \hat{\mu}
+    \nonumber
+    \\
+    s.t. ~~~~~~~~~~ ~~~~~~~~~~
+    \nonumber
+    \\
+    A w \leq b
+    \nonumber
+    \\
+    w^{\top} \hat{\Sigma} w \leq \sigma
+    \nonumber
+\end{eqnarray*}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Motivation (2)}
+
+Least absolute deviations (LAD) or $L_1$ regression problem
+\begin{eqnarray*}
+  \min ~~ \sum_i^n | y_i - \hat{y}_i |
+\end{eqnarray*}
+
+can be expressed as (see Brooks and Dula, 2009)
+\begin{eqnarray*}
+  \min_{\beta_0,\mathbf{\beta},\mathbf{e}^+,\mathbf{e}^-} ~~ \sum_{i=1}^n e_i^+ + e_i^- ~~~~~~~~~~~~~~~~~
+  \nonumber
+  \\
+  s.t. ~~~~~~~~~~ ~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~
+  \nonumber
+  \\
+  \beta_0 + \mathbf{\beta}^\top \mathbf{x}_i + e_i^+ - e_i^- = 0 ~~~~~~ i = 1,\ldots{},n
+  \nonumber
+  \\
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \beta_j = -1 ~~~~~~~~~~~~~~~~~~~~~
+  \nonumber
+  \\
+  ~~~~~~~~~~~~~~~~~~~~~~~ e_i^+, e_i^- \geq 0 ~~~~~ i = 1,\ldots{},n
+\end{eqnarray*}
+given a point set $\mathbf{x}_i \in \mathbb{R}^m$, $i = 1,\ldots{},n$
+and the $j^{th}$ column representing the dependent variable.
+\end{frame}
+
+\section{Problem Classes and Solvers}
+
+\subsection{Overview}
+\begin{frame}
+\frametitle{Problem Classes}
+
+Several different \textit{problem classes} (in Mathematical Programming, MP)
+have been identified. Given $N$ objective variables, $x_i, i =
+1,\ldots{}, N$, to be optimized we can differentiate between
+
+\begin{itemize}
+\item Linear Programming (LP, $\min_x c^\top x$ s.t. $Ax = b$, $x \geq 0$)
+\item Quadratic Programming (QP, $\min_x x^\top Q x$ s.t. $Ax = b$, $x \geq 0$)
+\item Nonlinear Programming (NLP, $\min_x f(x)$ s.t. $x \in S$)
+\end{itemize}
+
+Additionally, if variables have to be of \textit{type} integer,
+formally $x_j \in \mathbb{N}$ for $j = 1, \dots{}, p$, $1 \leq p \leq
+N$: Mixed Integer Linear Programming (MILP), Mixed Integer Quadratic
+Programming (MIQP), NonLinear Mixed INteger Programming (NLMINP)
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Solvers in \proglang{R}}
+
+  Subset of available solvers categorized by the capability to solve a given problem class:
+ \medskip
+ \begin{centering}
+ \begin{tabular}{l|c|c|c}
+     & LP             & QP         & NLP \\
+ \hline
+ LC  & Rglpk$^*$, lpSolve$^*$, Rsymphony$^*$ & quadprog, ipop  & optim(), nlminb()\\
+ \hline
+ QC  &                & Rcplex$^*$ & \\
+ \hline
+ NLC &                &           & donlp2, solnp
+ \end{tabular}
+ \end{centering}
+
+ \smallskip
+ {\tiny
+ $^*$ \ldots{} integer capability
+ }
+
+ \medskip
+ For a full list of solvers see the CRAN task view \textit{Optimization}.
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Overview of R-packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Solving Optimization Problems (1)}
+
+  \begin{itemize}
+  \item \pkg{lpSolve}:
+\begin{Schunk}
+\begin{Sinput}
+> args(lp)
+\end{Sinput}
+\begin{Soutput}
+function (direction = "min", objective.in, const.mat, const.dir, 
+    const.rhs, transpose.constraints = TRUE, int.vec, presolve = 0, 
+    compute.sens = 0, binary.vec, all.int = FALSE, all.bin = FALSE, 
+    scale = 196, dense.const, num.bin.solns = 1, use.rw = FALSE) 
+NULL
+\end{Soutput}
+\end{Schunk}
+  \item \pkg{quadprog}:
+\begin{Schunk}
+\begin{Sinput}
+> args(solve.QP)
+\end{Sinput}
+\begin{Soutput}
+function (Dmat, dvec, Amat, bvec, meq = 0, factorized = FALSE) 
+NULL
+\end{Soutput}
+\end{Schunk}
+ \item \pkg{Rglpk}:
+\begin{Schunk}
+\begin{Sinput}
+> args(Rglpk_solve_LP)
+\end{Sinput}
+\begin{Soutput}
+function (obj, mat, dir, rhs, types = NULL, max = FALSE, bounds = NULL, 
+    verbose = FALSE) 
+NULL
+\end{Soutput}
+\end{Schunk}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Solving Optimization Problems (2)}
+
+  \begin{itemize}
+  \item \pkg{Rcplex}:
+\begin{Schunk}
+\begin{Sinput}
+> args(Rcplex)
+\end{Sinput}
+\begin{Soutput}
+function (cvec, Amat, bvec, Qmat = NULL, lb = 0, ub = Inf, control = list(), 
+    objsense = c("min", "max"), sense = "L", vtype = NULL, n = 1) 
+NULL
+\end{Soutput}
+\end{Schunk}
+  \item \code{optim()} from \pkg{stats}:
+\begin{Schunk}
+\begin{Sinput}
+> args(optim)
+\end{Sinput}
+\begin{Soutput}
+function (par, fn, gr = NULL, ..., method = c("Nelder-Mead", 
+    "BFGS", "CG", "L-BFGS-B", "SANN"), lower = -Inf, upper = Inf, 
+    control = list(), hessian = FALSE) 
+NULL
+\end{Soutput}
+\end{Schunk}
+\item \code{nlminb()} from \pkg{stats}:
+\begin{Schunk}
+\begin{Sinput}
+> args(nlminb)
+\end{Sinput}
+\begin{Soutput}
+function (start, objective, gradient = NULL, hessian = NULL, 
+    ..., scale = 1, control = list(), lower = -Inf, upper = Inf) 
+NULL
+\end{Soutput}
+\end{Schunk}
+\end{itemize}
+
+\end{frame}
+
+\section{Design Issues}
+
+\begin{frame}
+\frametitle{ROI Modeling (1)}
+
+A general framework for optimization should be capable of handling
+several different problem classes in a transparent and uniform way. We
+define optimization problems as \proglang{R} objects (S3). These
+objects contain:
+
+\begin{itemize}
+\item a function $f(x)$ to be optimized: \textbf{objective}
+  \begin{itemize}
+  \item linear: coefficients $c$ expressed as a \class{numeric} (a vector)
+  \item quadratic: a \class{matrix} $Q$ of coefficients representing
+    the quadratic form as well as a linear part $L$
+  \item nonlinear: an arbitrary (\proglang{R}) \class{function}
+  \end{itemize}
+\item one or several \textbf{constraints} $g(x)$ describing the
+  feasible set $S$
+  \begin{itemize}
+  \item linear: coefficients expressed as a \class{numeric} (a
+    vector), or several constraints as a (sparse) \class{matrix}
+  \item quadratic: a quadratic part $Q$ and a linear part $L$
+  \item nonlinear: an arbitrary (\proglang{R}) \class{function}
+  \item equality (\code{"=="}) or inequality (\code{"<="},
+    \code{">="}, \code{">"}, etc.) constraints
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{ROI Modeling (2)}
+
+Additionally we have:
+\begin{itemize}
+\item variable \textbf{bounds} (or so-called box constraints)
+\item variable \textbf{types} (continuous, integer, mixed, etc.)
+\item direction of optimization (search for minimum, \textbf{maximum})
+\end{itemize}
+Thus, a problem constructor (say for a MIQP) usually takes the following
+arguments:
+\begin{verbatim}
+function (objective, constraints, bounds = NULL,
+          types = NULL, maximum = FALSE)
+\end{verbatim}
+
+In ROI this constructor is named \code{OP()}.
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: ROI and Constraints}
+
+\begin{Schunk}
+\begin{Sinput}
+> library("ROI")
+\end{Sinput}
+\begin{Soutput}
+ROI: R Optimization Infrastructure
+Installed solver plugins: cplex, lpsolve, glpk, quadprog, symphony, nlminb.
+Default solver: glpk.
+\end{Soutput}
+\begin{Sinput}
+> (constr1 <- L_constraint(c(1, 2), "<", 4))
+\end{Sinput}
+\begin{Soutput}
+An object containing 1 linear constraints.
+\end{Soutput}
+\begin{Sinput}
+> (constr2 <- L_constraint(matrix(c(1:4), ncol = 2), c("<", "<"), 
++     c(4, 5)))
+\end{Sinput}
+\begin{Soutput}
+An object containing 2 linear constraints.
+\end{Soutput}
+\begin{Sinput}
+> rbind(constr1, constr2)
+\end{Sinput}
+\begin{Soutput}
+An object containing 3 linear constraints.
+\end{Soutput}
+\begin{Sinput}
+> (constr3 <- Q_constraint(matrix(rep(2, 4), ncol = 2), c(1, 2), 
++     "<", 5))
+\end{Sinput}
+\begin{Soutput}
+An object containing 1 constraints.
+Some constraints are of type quadratic.
+\end{Soutput}
+\begin{Sinput}
+> foo <- function(x) {
++     sum(x^3) - seq_along(x) %*% x
++ }
+> F_constraint(foo, "<", 5)
+\end{Sinput}
+\begin{Soutput}
+An object containing 1 constraints.
+Some constraints are of type nonlinear.
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: Optimization Instances}
+
+\begin{Schunk}
+\begin{Sinput}
+> lp <- OP(objective = c(2, 4, 3), L_constraint(L = matrix(c(3, 
++     2, 1, 4, 1, 3, 2, 2, 2), nrow = 3), dir = c("<=", "<=", "<="), 
++     rhs = c(60, 40, 80)), maximum = TRUE)
+> lp
+\end{Sinput}
+\begin{Soutput}
+A linear programming problem with 3 constraints of type linear.
+\end{Soutput}
+\begin{Sinput}
+> qp <- OP(Q_objective(Q = diag(1, 3), L = c(0, -5, 0)), L_constraint(L = matrix(c(-4, 
++     -3, 0, 2, 1, 0, 0, -2, 1), ncol = 3, byrow = TRUE), dir = rep(">=", 
++     3), rhs = c(-8, 2, 0)))
+> qp
+\end{Sinput}
+\begin{Soutput}
+A quadratic programming problem with 3 constraints of type linear.
+\end{Soutput}
+\begin{Sinput}
+> qcp <- OP(Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 
++     0, 11.5, -11), byrow = TRUE, ncol = 3), L = c(1, 2, 3)), 
++     Q_constraint(Q = list(NULL, NULL, diag(1, nrow = 3)), L = matrix(c(-1, 
++         1, 1, 1, -3, 1, 0, 0, 0), byrow = TRUE, ncol = 3), dir = rep("<=", 
++         3), rhs = c(20, 30, 1)), maximum = TRUE)
+> qcp
+\end{Sinput}
+\begin{Soutput}
+A quadratic programming problem with 3 constraints of type quadratic.
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+
+\section{ROI}
+
+\begin{frame}
+  \frametitle{ROI Solver Interface}
+
+  The R Optimization Infrastructure (ROI) package promotes the
+  development and use of interoperable (open source) optimization
+  problem solvers for \proglang{R}.
+
+  \begin{itemize}
+  \item \code{ROI\_solve( problem, solver, control, ... )}
+  \end{itemize}
+  The main function takes 3 arguments:
+  \begin{description}
+  \item[problem] represents an object containing the description of the
+    corresponding optimization problem
+  \item[solver] specifies the solver to be used (\code{"glpk"},
+    \code{"quadprog"}, \code{"symphony"}, etc.)
+  \item[control] is a list containing additional control arguments to the
+    corresponding solver
+  \item[\ldots{}] replacement for additional control arguments
+  \end{description}
+
+  See \url{https://R-Forge.R-project.org/projects/roi/}.
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{ROI Plugins (1)}
+
+\begin{itemize} 
+\item \pkg{ROI} is very easy to extend via ``plugins''
+  (\pkg{ROI.plugin.$<$solver$>$} packages)
+\item Link between ``API packages'' and \pkg{ROI}
+\item Capabilities registered in data base
+\item Solution canonicalization
+\item Status code canonicalization
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{ROI Plugins (2)}
+
+ The version which is published on CRAN can handle LP up to
+ MILP and MIQCP problems using the following supported solvers:
+
+ \begin{itemize}
+ \item \pkg{lpSolve} (soon)
+ \item \pkg{ipop} (R-Forge)
+ \item \pkg{quadprog}
+ \item \pkg{Rcplex} (R-Forge)
+ \item \pkg{Rglpk} (default)
+ \item \pkg{Rsymphony}
+ \end{itemize}
+
+Additional requirements to run \pkg{ROI}:
+ \begin{itemize}
+ \item \pkg{slam} for storing coefficients (constraints, objective) as
+   sparse matrices
+ \item \pkg{registry} providing a pure \proglang{R} data base system
+ \end{itemize}
+
+ \end{frame}
+
+ 
+\begin{frame}[containsverbatim]
+\frametitle{Examples: Solving LPs}
+
+\begin{Schunk}
+\begin{Sinput}
+> ROI_solve(lp, solver = "glpk")
+\end{Sinput}
+\begin{Soutput}
+$solution
+[1]  0.000000  6.666667 16.666667
+
+$objval
+[1] 76.66667
+
+$status
+$status$code
+[1] 0
+
+$status$msg
+  solver glpk
+    code 0
+  symbol GLP_OPT
+ message (DEPRECATED) Solution is optimal. Compatibility status code
+         will be removed in Rglpk soon.
+roi_code 0
+
+
+attr(,"class")
+[1] "MIP_solution"
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: Solving LPs}
+
+\begin{Schunk}
+\begin{Sinput}
+> ROI_solve(qcp, solver = "cplex")
+\end{Sinput}
+\begin{Soutput}
+$solution
+[1] 0.1291236 0.5499528 0.8251539
+
+$objval
+         [,1]
+[1,] 2.002347
+
+$status
+$status$code
+[1] 0
+
+$status$msg
+  solver cplex
+    code 1
+  symbol CPX_STAT_OPTIMAL
+ message (Simplex or barrier): optimal solution.
+roi_code 0
+
+
+attr(,"class")
+[1] "MIP_solution"
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: Computations on Objects}
+
+\begin{Schunk}
+\begin{Sinput}
+> obj <- objective(qcp)
+> obj
+\end{Sinput}
+\begin{Soutput}
+function (x) 
+crossprod(L, x) + 0.5 * .xtQx(Q, x)
+<environment: 0x29f34c8>
+attr(,"class")
+[1] "function"    "Q_objective" "objective"  
+\end{Soutput}
+\begin{Sinput}
+> constr <- constraints(qcp)
+> length(constr)
+\end{Sinput}
+\begin{Soutput}
+[1] 3
+\end{Soutput}
+\begin{Sinput}
+> x <- ROI_solve(qcp, solver = "cplex")$solution
+> obj(x)
+\end{Sinput}
+\begin{Soutput}
+         [,1]
+[1,] 2.002347
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+%$
+
+\section{Applications}
+
+
+\subsection{Portfolio Optimization}
+
+\begin{frame}[containsverbatim]
+\frametitle{Portfolio Optimization (1)}
+
+Example\footnote{Portfolio Optimization with R/Rmetrics by W\"urtz et
+  al (2009)}:
+\begin{Schunk}
+\begin{Sinput}
+> library("fPortfolio")
+> data(LPP2005.RET)
+> lppData <- 100 * LPP2005.RET[, 1:6]
+> r <- mean(lppData)
+> r
+\end{Sinput}
+\begin{Soutput}
+[1] 0.04307677
+\end{Soutput}
+\begin{Sinput}
+> foo <- Q_objective(Q = cov(lppData), L = rep(0, ncol(lppData)))
+> full_invest <- L_constraint(rep(1, ncol(lppData)), "==", 1)
+> target_return <- L_constraint(apply(lppData, 2, mean), "==", 
++     r)
+> op <- OP(objective = foo, constraints = rbind(full_invest, target_return))
+> op
+\end{Sinput}
+\begin{Soutput}
+A quadratic programming problem with 2 constraints of type linear.
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Portfolio Optimization (2)}
+
+Solve the portfolio optimization problem via \code{ROI\_solve()}
+\begin{Schunk}
+\begin{Sinput}
+> sol <- ROI_solve(op, solver = "cplex")
+> w <- sol$solution
+> round(w, 4)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.0000 0.0086 0.2543 0.3358 0.0000 0.4013
+\end{Soutput}
+\begin{Sinput}
+> sqrt(t(w) %*% cov(lppData) %*% w)
+\end{Sinput}
+\begin{Soutput}
+          [,1]
+[1,] 0.2450869
+\end{Soutput}
+\begin{Sinput}
+> sol <- ROI_solve(op, solver = "quadprog")
+> w <- sol$solution
+> round(w, 4)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.0000 0.0086 0.2543 0.3358 0.0000 0.4013
+\end{Soutput}
+\begin{Sinput}
+> sqrt(t(w) %*% cov(lppData) %*% w)
+\end{Sinput}
+\begin{Soutput}
+          [,1]
+[1,] 0.2450869
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Portfolio Optimization (3)}
+
+Solve the max-return portfolio optimization problem:
+\begin{Schunk}
+\begin{Sinput}
+> sigma <- sqrt(t(w) %*% cov(lppData) %*% w)
+> zero_mat <- simple_triplet_zero_matrix(ncol(lppData))
+> foo <- Q_objective(Q = zero_mat, L = colMeans(lppData))
+> maxret_constr <- Q_constraint(Q = list(cov(lppData), NULL), L = rbind(rep(0, 
++     ncol(lppData)), rep(1, ncol(lppData))), c("<=", "<="), c(sigma^2, 
++     1))
+> op <- OP(objective = foo, constraints = maxret_constr, maximum = TRUE)
+> op
+\end{Sinput}
+\begin{Soutput}
+A quadratic programming problem with 2 constraints of type quadratic.
+\end{Soutput}
+\begin{Sinput}
+> sol <- ROI_solve(op, solver = "cplex")
+> w <- sol$solution
+> round(w, 4)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.0000 0.0086 0.2543 0.3358 0.0000 0.4013
+\end{Soutput}
+\begin{Sinput}
+> w %*% colMeans(lppData)
+\end{Sinput}
+\begin{Soutput}
+           [,1]
+[1,] 0.04307677
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+\subsection{L1 Regression}
+
+\begin{frame}[containsverbatim]
+\frametitle{L1 Regression (1)}
+
+\begin{Schunk}
+\begin{Sinput}
+> library("quantreg")
+> data(stackloss)
+> create_L1_problem <- function(x, j) {
++     len <- 1 + ncol(x) + 2 * nrow(x)
++     beta <- rep(0, len)
++     beta[j + 1] <- 1
++     OP(L_objective(c(rep(0, ncol(x) + 1), rep(1, 2 * nrow(x)))), 
++         rbind(L_constraint(cbind(1, as.matrix(x), diag(nrow(x)), 
++             -diag(nrow(x))), rep("==", nrow(x)), rep(0, nrow(x))), 
++             L_constraint(beta, "==", -1)), bounds = V_bound(li = seq_len(ncol(x) + 
++             1), ui = seq_len(ncol(x) + 1), lb = rep(-Inf, ncol(x) + 
++             1), ub = rep(Inf, ncol(x) + 1), nobj = len))
++ }
+\end{Sinput}
+\end{Schunk}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{L1 Regression (2)}
+
+\begin{Schunk}
+\begin{Sinput}
+> ROI_solve(create_L1_problem(stackloss, 4), solver = "glpk")$solution
+\end{Sinput}
+\begin{Soutput}
+ [1] -39.68985507   0.83188406   0.57391304  -0.06086957  -1.00000000
+ [6]   5.06086957   0.00000000   5.42898551   7.63478261   0.00000000
+[11]   0.00000000   0.00000000   0.00000000   0.00000000   0.00000000
+[16]   0.52753623   0.04057971   0.00000000   0.00000000   1.18260870
+[21]   0.00000000   0.00000000   0.00000000   0.48695652   1.61739130
+[26]   0.00000000   0.00000000   0.00000000   0.00000000   0.00000000
+[31]   1.21739130   1.79130435   1.00000000   0.00000000   1.46376812
+[36]   0.02028986   0.00000000   0.00000000   2.89855072   1.80289855
+[41]   0.00000000   0.00000000   0.42608696   0.00000000   0.00000000
+[46]   0.00000000   9.48115942
+\end{Soutput}
+\begin{Sinput}
+> rq(stack.loss ~ stack.x, 0.5)
+\end{Sinput}
+\begin{Soutput}
+Call:
+rq(formula = stack.loss ~ stack.x, tau = 0.5)
+
+Coefficients:
+      (Intercept)   stack.xAir.Flow stack.xWater.Temp stack.xAcid.Conc. 
+     -39.68985507        0.83188406        0.57391304       -0.06086957 
+
+Degrees of freedom: 21 total; 17 residual
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Outlook to packages which are to be ported soon (bonmin)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Outlook and Future Work}
+\begin{frame}
+\frametitle{Outlook and Future Work}
+
+\begin{itemize}
+
+\item Optimization terminology (What is a solution?)
+\item Status codes (What is a reasonable set of status codes?)
+\item File reader for standard formats like MPS.
+\item Parallel computing and optimizers (e.g., SYMPHONY's or CPLEX'
+  parallel solver)
+\item NLP solvers (\code{optim()}, \code{nlminb()}, \pkg{Rsolnp}, etc.)
+\item Interface to NLMINP solver Bonmin?
+\item AMPL?
+\item Applications (e.g., \pkg{fPortfolio}, \pkg{relations}, etc.)
+\item Compare the performance of MILP solvers in \proglang{R} via
+  standard test sets like MIPLIB2003
+  (\url{http://miplib.zib.de/miplib2003.php})
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Thank you for your attention}
+
+\begin{flushleft}
+    Stefan Theu\ss{}l \\
+    Department of Finance, Accounting and Statistics \\
+    Institute for Statistics and Mathematics\\
+
+    email: \texttt{Stefan.Theussl@wu.ac.at} \\
+    URL: \texttt{http://statmath.wu.ac.at/\~{}theussl}
+
+    \medskip
+
+    WU Wirtschaftsuniversit\"at Wien\\
+    Augasse 2--6, A-1090 Wien \\
+
+\end{flushleft}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% END OF PRESENTATION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
