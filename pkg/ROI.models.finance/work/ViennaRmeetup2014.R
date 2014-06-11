@@ -20,7 +20,7 @@
 ?nlm
 ?optimize
 
-## some function
+## some function (see parallel intro)
 
 
 
@@ -107,13 +107,39 @@ dotchart( tour_lengths/min(tour_lengths)*100 - 100, xlab = 'percent excess over 
 ## ROI
 ################################################################################
 
-
-
-## ROI
-
 require( "ROI" )
 
+
+
+################################################################################
+## L1 Regression
+################################################################################
+
+require( "quantreg" )
+data( stackloss )
+create_L1_problem <- function(x, j) {
+    len <- 1 + ncol(x) + 2 * nrow(x)
+    beta <- rep(0, len)
+    beta[j + 1] <- 1
+    OP(L_objective(c(rep(0, ncol(x) + 1), rep(1, 2 * nrow(x)))),
+       rbind(L_constraint(cbind(1, as.matrix(x), diag(nrow(x)),
+                                -diag(nrow(x))), rep("==", nrow(x)), rep(0, nrow(x))),
+             L_constraint(beta, "==", -1)),
+       bounds = V_bound(li = seq_len(ncol(x) + 1), ui = seq_len(ncol(x) + 1),
+                        lb = rep(-Inf, ncol(x) + 1), ub = rep(Inf, ncol(x) + 1), nobj = len))
+}
+
+## solve the LP
+ROI_solve( create_L1_problem(stackloss, 4), solver = "glpk" )$solution
+
+## compare to regression model implemented in package quantreg
+rq( stack.loss ~ stack.x, 0.5 ) # median (l1) regression  fit for the stackloss data
+
+
+
+################################################################################
 ## Portfolio Optimization
+################################################################################
 
 ## Package where we collect portfolio models (work in progress)
 ## install.packages( "ROI.models.finance", repos = "http://r-forge.r-project.org" )
@@ -129,7 +155,13 @@ plot( US30[, "JPM"], main = "JPMorgan Chase" )
 ## need some helper functions for financial time series
 require( "TTR" )
 
+## calculate weekly simple returns for each asset in the index
 r <- na.omit( ROC( US30[ endpoints(index(US30), on = "weeks") ], type = "discrete" ) )
+
+## scatterplots of asset returns
+plot( x = as.numeric(r[,"IBM"]), y = as.numeric(r[,"JPM"]) )
+
+## Covariance matrix between all assets in the index
 S <- cov( r )
 
 ## risk return trade-off
@@ -268,15 +300,28 @@ lines( efficient_cvar, col = "brown" )
 ## Integer Programming: Constructing an Index Fund (Cornuejols and Tuetuencue, 2008)
 ################################################################################
 
-# r <- r[,1:5]
+## We use approx 60 months for calibration and 12 months for
+## testing. We take only those stocks into account which where included
+## in the US30 or US500 index at all time from early 2008 to the end of 2013
+#us_large <- na.locf( US500["20080101::"], maxgap = 2 ) # too large for dense representation
+#us_large <- us_large[, !apply(us_large, 2, function(x) any(is.na(x))) ]
+r <- na.omit( ROC( US30[ endpoints(index(US30["::20121231"]), on = "weeks") ], type = "discrete" ) )
+
+## we'd like to choose 15 stocks to replicate the index
 q <- 15
 
+## build the optimization problem
+
+## coefficients to objective variables (similarities between assets)
 rho <- as.numeric( cor(r) )
+
+## number of assets
 n <- ncol( r )
 
-#x11, x12, x13, ..., x21, x22, x23, ..., xn1, xn2, xn3 ...
+## the objective function
 Z <- L_objective( c(rho, rep(0, n)) )
 
+## the constraints
 min_stocks_included <- L_constraint( c(rep(0, length(rho)), rep(1, n)), "==", q )
 
 full_block <- matrix( 0, nrow = n, ncol = dim(Z$L)[2] )
@@ -287,10 +332,43 @@ for( i in 1:n ){
 sum_most_similar <- L_constraint( full_block, rep("==", n), rep(1, n) )
 
 block_x <- diag(1, length(rho))
-block_y <- matrix( rep(diag( 1,  n ), n ), ncol = n, byrow = TRUE )
+block_y <- matrix( rep(diag( -1,  n ), n ), ncol = n, byrow = TRUE )
+x_ij_constraints <- L_constraint( cbind(block_x, block_y),
+                                  rep("<=", nrow(block_x)),
+                                  rep(0,  nrow(block_x)) )
 
-x_ij_constraints <- L_constraint( cbind(block_x, block_y), rep("<=", nrow(block_x)), rep( 0,  nrow(block_x) ) )
+## the ROI optimization problem object
+op <- OP( Z, c(min_stocks_included, sum_most_similar, x_ij_constraints),
+          types = rep("B", length(Z)), maximum = TRUE )
 
-op <- OP( Z, c(min_stocks_included, sum_most_similar, x_ij_constraints), types = rep("B", length(Z$L)) )
+## solve the specified problem using an LP solver
+sol <- ROI_solve( op, solver = "glpk" )
 
-ROI_solve( op, solver = "glpk", maximum = TRUE )
+## calculate and print the assets included in the index fund
+idx_included <- sol$solution[ (length(sol$solution)-n+1):length(sol$solution) ]
+names( idx_included ) <- colnames( r )
+
+idx_included
+
+## NOTE: we should really use market capitalization instead
+
+## calculate weights of assets in index fund
+x_ij <- matrix( sol$solution[ 1:(length(sol$solution)-n) ], nrow = n, byrow = TRUE )
+w_j <- apply( sweep( x_ij, 1, as.numeric(last(US30["20121231"])), "*"), 2, sum )
+fund_w <- w_j/sum(w_j)
+names( fund_w ) <- colnames( r )
+
+## calculate benchmark weights
+bm_w <- as.numeric(last(US30["::20121231"]))/sum(as.numeric(last(US30["::20121231"])))
+
+# compare weights
+cbind( bm_w, fund_w)
+
+## out of sample performance
+
+## Q1 perf comparison bm vs fund
+last( US30["::20130331"] ) %*% fund_w / (last( US30["::20130331"] ) %*% bm_w)
+## Q2 perf comparison bm vs fund
+last( US30["::20130630"] ) %*% fund_w / (last( US30["::20130630"] ) %*% bm_w)
+## 1Y perf comparison bm vs fund
+last( US30 ) %*% fund_w / (last( US30 ) %*% bm_w)
