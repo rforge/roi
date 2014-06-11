@@ -102,10 +102,42 @@ We generally consider families or \emph{classes of optimization problems}, chara
 by particular forms of the objective and constraint functions.
 \end{frame}
 
+
+%\begin{frame}
+%\frametitle{Linear vs. Nonlinear Optimization}
+
+
+%\end{frame}
+
 \subsection{Applications}
 
 \begin{frame}
 \frametitle{Motivation (1)}
+
+We want to find the global minimum of the following function:
+  $$ f(x, y) = 3(1 - x)^2 e^{-x^2 - (y+1)^2} - 10 (\frac{x}{5} - x^3 -
+y^5) e^{-x^2 - y^2} - \frac{1}{3} e^{-(x+1)^2 - y^2}$$
+\vspace{-7em}
+<<fig_opt, fig = TRUE, echo = FALSE, width = 5, height = 4>>=
+## generate a 3D Plot
+x <- y <- seq(from = -2.5, to = 2.5, length.out = 100)
+f <- function(x, y){
+    3*(1-x)^2*exp(-x^2-(y+1)^2) - 10 * (x/5 - x^3 - y^5) * exp(-x^2 - y^2) - 1/3 * exp(-(x+1)^2 - y^2)
+}
+z <- outer(x, y, f)
+pp <- persp(x, y, z,
+#            main="Function to be optimized",
+            col="lightgreen",
+            theta = -30, phi = 20, r = 10, d = 1, expand = 1,
+            ltheta = 90, lphi = 180,shade = 0.75,
+            ticktype = "detailed",
+            nticks = 5)
+@
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Motivation (2)}
 
 Least absolute deviations (LAD) or $L_1$ regression problem
 \begin{eqnarray*}
@@ -134,7 +166,7 @@ and the $j^{th}$ column representing the dependent variable.
 \end{frame}
 
 \begin{frame}
-\frametitle{Motivation (2)}
+\frametitle{Motivation (3)}
 
 Mean-Variance Portfolio Optimization (Markowitz, 1952)
 

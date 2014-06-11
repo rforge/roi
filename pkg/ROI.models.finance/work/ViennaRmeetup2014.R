@@ -7,10 +7,10 @@
 
 
 ################################################################################
-## Optimization general
+## PART I: Optimization general
 ################################################################################
 
-## what is optimization?
+## Let's start with the nonlinear case and general purpose continuous solvers
 
 ## tools in base R
 ?optim
@@ -20,11 +20,47 @@
 ?nlm
 ?optimize
 
-## some function (see parallel intro)
+## Example 1)
+## Nonlinear optimization of the function from the slides
+
+## generate a 3D Plot
+x <- y <- seq(from = -2.5, to = 2.5, length.out = 100)
+f <- function(x, y){
+    3*(1-x)^2*exp(-x^2-(y+1)^2) - 10 * (x/5 - x^3 - y^5) * exp(-x^2 - y^2) - 1/3 * exp(-(x+1)^2 - y^2)
+}
+z <- outer(x, y, f)
+pp <- persp(x, y, z,
+#            main="Function to be optimized",
+            col="lightgreen",
+            theta = -30, phi = 20, r = 10, d = 1, expand = 1,
+            ltheta = 90, lphi = 180,shade = 0.75,
+            ticktype = "detailed",
+            nticks = 5)
+fun <- function(x){
+    3*(1-x[1])^2*exp(-x[1]^2-(x[2]+1)^2) - 10 * (x[1]/5 - x[1]^3 - x[2]^5) * exp(-x[1]^2 - x[2]^2) -
+    1/3 * exp(-(x[1]+1)^2 - x[2]^2)
+}
+
+## TODO just call optim on this stuff
 
 
 
+## optimization using a multistart procedure
+start <- list( c(0, 0), c(-1, -1), c(0, -1), c(0, 1) )
+seqt <- system.time(sol <- lapply(start, function(par) optim(par, fun, method = "Nelder-Mead",
+          lower = -Inf, upper = Inf, control = list(maxit = 1000000, beta = 0.01, reltol = 1e-15)))
+        )["elapsed"]
+seqt
 
+require(parallel)
+part <- system.time(sol <- mclapply(start, function(par)
+                      optim(par, fun, method = "Nelder-Mead", lower = -Inf, upper = Inf,
+                            control = list(maxit = 1000000, beta = 0.01, reltol = 1e-15)), mc.cores = 2)
+                    )["elapsed"]
+
+
+
+## Example 2a)
 
 ## travelling salesperson (see optim help)
 ## optim via SANN heuristics
@@ -75,11 +111,12 @@ text(x, y, labels(eurodist), cex = 0.8)
 
 
 
-## contributed packages: CRAN Task View Optimization and Mathematical Programming
+## Contributed packages: CRAN Task View Optimization 
+## and Mathematical Programming
 ## http://CRAN.R-Project.org/view=Optimization
 
 
-
+## Example 2b)
 ## Solver for specific purposes: e.g., the TSP package.
 require( "TSP" )
 
@@ -101,22 +138,28 @@ tour_lengths <- c( sapply(tours, FUN = attr, "tour_length") )
 
 dotchart( tour_lengths/min(tour_lengths)*100 - 100, xlab = 'percent excess over "optimum"' )
 
+## Example 3)
+## (Mixed Integer) Linear Programming Example
+require( "Rglpk" )
+?Rglpk_solve_LP
+
 
 
 ################################################################################
-## ROI
+## PART II: ROI
 ################################################################################
 
 require( "ROI" )
 
+## see optimization modeling using ROI on the slides
 
-
-################################################################################
+## Example 4)
 ## L1 Regression
-################################################################################
 
 require( "quantreg" )
 data( stackloss )
+
+## function which creates the ROI optimization object from the given data set
 create_L1_problem <- function(x, j) {
     len <- 1 + ncol(x) + 2 * nrow(x)
     beta <- rep(0, len)
@@ -129,7 +172,7 @@ create_L1_problem <- function(x, j) {
                         lb = rep(-Inf, ncol(x) + 1), ub = rep(Inf, ncol(x) + 1), nobj = len))
 }
 
-## solve the LP
+## solve the optimization object LP
 ROI_solve( create_L1_problem(stackloss, 4), solver = "glpk" )$solution
 
 ## compare to regression model implemented in package quantreg
@@ -138,8 +181,11 @@ rq( stack.loss ~ stack.x, 0.5 ) # median (l1) regression  fit for the stackloss 
 
 
 ################################################################################
-## Portfolio Optimization
+## PART III: Portfolio Optimization
 ################################################################################
+
+## Example 5)
+## Risk-return tradeof of stocks
 
 ## Package where we collect portfolio models (work in progress)
 ## install.packages( "ROI.models.finance", repos = "http://r-forge.r-project.org" )
@@ -178,9 +224,8 @@ ew <- c( sqrt(w %*% S %*% w),
 points( x = ew[1], y = ew[2], col = "orange" )
 text( x = ew[1], y = ew[2], labels = "EW", pos = 3, col = "orange" )
 
-
-## MV Optimization using ROI
-################################################################################
+## Example 6)
+## MV Optimization using ROI (long-only, fully invested)
 
 ## Constraints
 full_invest <- L_constraint( rep( 1, ncol(r)), "==", 1 )
@@ -200,10 +245,11 @@ mv <- c( sqrt(res$solution %*% S %*% res$solution),
 points( x = mv[1], y = mv[2], col = "green" )
 text( x = mv[1], y = mv[2], labels = "MV", pos = 3, col = "green" )
 
+## this function samples for given asset properties n random portfolios in risk/return space
 
 make_random_portfolios <- function( MU, COV, n ){
-    u <-  matrix( runif(n * length(mu)), nrow = n )
-    constituents <- sample( 1:length(mu), n, replace = TRUE )
+    u <-  matrix( runif(n * length(MU)), nrow = n )
+    constituents <- sample( 1:length(MU), n, replace = TRUE )
     l <- matrix( FALSE, nrow = nrow(u), ncol = ncol(u) )
     for( i in 1:length(constituents) )
         l[i, sample(1:length(mu), constituents[i])] <- TRUE
@@ -222,12 +268,11 @@ points( sigma, mu )
 text( x = sigma, y = mu, labels = colnames(US30), pos = 3 )
 
 
-## Target Return
-################################################################################
+## Example 7)
+## Mean-Variance Portfolio
 
 ## Say we like the return of the EW protfolio, but with minimal risk
 target_return <- L_constraint( mu, ">=", ew[2] )
-
 
 constraints(op)
 constraints(op) <- rbind( constraints(op),  )
@@ -243,8 +288,8 @@ points( x = mvtr[1], y = mvtr[2], col = "blue" )
 text( x = mvtr[1], y = mvtr[2], labels = "MinVar_tr", pos = 3, col = "blue" )
 
 
+## Example 8)
 ## Calculate efficient frontier
-################################################################################
 
 grid_start <- mv[2]
 grid_end <- mu[ which.max(mu) ]
@@ -265,40 +310,8 @@ efficient_frontier <- do.call( rbind, l )
 lines( efficient_frontier, col = "red" )
 
 
-## CVAR
-################################################################################
-
-model <- "max_cva"
-CV <- ROI_model_portfolio( r, model, control = list(long_only = TRUE,
-                                                    fully_invest = TRUE,
-                                                    alpha = 0.1) )
-sol <- ROI_solve( CV, solver = "glpk" )
-w <- sol$solution[ 1:ncol(r) ]
-
-cvar <- c( sqrt(w %*% S %*% w),
-           w %*% mu )
-points( x = cvar[1], y = cvar[2], col = "purple" )
-text( x = cvar[1], y = cvar[2], labels = "CVaR", pos = 3, col = "purple" )
-
-grid_cvar <- grid[ grid >= cvar[2] ]
-## efficient CVaR portfolios
-l <- lapply( grid, function(r) {
-    constr_vec <- numeric( ncol(constraints(CV)$L) )
-    constr_vec[1:length(mu)] <- mu
-    target_return <- L_constraint( constr_vec, ">=", r )
-    op <- CV
-    constraints(op) <- c( constraints(op), target_return )
-    res <- ROI_solve( op, solver = "glpk" )
-    w <- res$solution[ 1:length(mu) ]
-    c( sqrt(w %*% S %*% w), r )
-} )
-
-efficient_cvar <- do.call( rbind, l )
-lines( efficient_cvar, col = "brown" )
-
-
+## Example 9)
 ## Integer Programming: Constructing an Index Fund (Cornuejols and Tuetuencue, 2008)
-################################################################################
 
 ## We use approx 60 months for calibration and 12 months for
 ## testing. We take only those stocks into account which where included
