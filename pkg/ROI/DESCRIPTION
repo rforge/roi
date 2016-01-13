@@ -4,8 +4,16 @@ Date: 2014-04-15
 Title: R Optimization Infrastructure
 Authors@R: c(person("Kurt", "Hornik", role = "aut"), person("David", "Meyer", role = "aut"), person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"), person("Diethelm", "Wuertz", role = "ctb") )
 Description: The R Optimization Infrastructure (ROI) package provides a
-	     sophisticated framework for handling optimization problems in R.
-Imports: methods, registry, slam
-Suggests: ROI.plugin.glpk, ROI.plugin.symphony, ROI.plugin.quadprog, numDeriv
+    sophisticated framework for handling optimization problems in R.
+Imports:
+    methods,
+    registry,
+    slam
+Suggests:
+    ROI.plugin.glpk,
+    ROI.plugin.symphony,
+    ROI.plugin.quadprog,
+    numDeriv
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
+RoxygenNote: 5.0.1

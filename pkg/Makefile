@@ -1,6 +1,6 @@
 PACKAGE=ROI
-## R=$(shell which R-devel)
-R=R
+R=$(shell which R-devel)
+##R=R
 
 all: pkg plugins
 
@@ -8,7 +8,7 @@ ROI: pkg
 
 ## FIXME: roxygen should be installed for R-devel as well
 pkg:
-	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE)', overwrite = TRUE, roclets = c('namespace', 'rd'))" | $(R) --vanilla
+	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE)', roclets = c('namespace', 'rd'))" | $(R) --vanilla
 	$(R) CMD build $(PACKAGE)
 
 plugins:
@@ -17,7 +17,7 @@ plugins:
 	$(R) CMD build $(PACKAGE).plugin.quadprog
 
 models:
-	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE).models.finance', overwrite = TRUE, roclets = c('namespace', 'rd'))" | $(R) --vanilla
+	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE).models.finance', roclets = c('namespace', 'rd'))" | $(R) --vanilla
 	$(R) CMD build $(PACKAGE).models.finance
 
 check:
