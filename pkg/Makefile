@@ -8,7 +8,7 @@ ROI: pkg
 
 ## FIXME: roxygen should be installed for R-devel as well
 pkg:
-	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE)', roclets = c('namespace', 'rd'))" | $(R) --vanilla
+	echo "require(roxygen2); roxygenize(package.dir = '$(PACKAGE)', clean = TRUE, roclets = c('namespace', 'rd'))" | $(R) --vanilla
 	$(R) CMD build $(PACKAGE)
 
 plugins:
