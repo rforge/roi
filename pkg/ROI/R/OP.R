@@ -61,8 +61,7 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
 ## FIXME: also consider objective function
 
 ##' @noRd
-##' @method print OP
-##' @S3method print OP
+##' @export
 print.OP <- function(x, ...){
     writeLines( "ROI Optimization Problem:\n" )
     ## objective
@@ -113,23 +112,20 @@ as.OP <- function(x)
     UseMethod("as.OP")
 
 ##' @noRd
-##' @method as.OP OP
-##' @S3method as.OP OP
+##' @export
 as.OP.OP <- identity
 
 ##' @noRd
-##' @method as.OP numeric
-##' @S3method as.OP numeric
+##' @export
 as.OP.numeric <- function(x){
     OP( objective = x, constraints = NULL, bounds = NULL, types = NULL,
         maximum = FALSE )
+}
 
 ##' @noRd
-##' @method as.OP default
-##' @S3method as.OP default
-as.OP.default <- function(x, ...)
+##' @export
+as.OP.default <- function(x, ...){
     stop("Method not implemented.")
-
 }
 
 ## OP_class <- function( x ){

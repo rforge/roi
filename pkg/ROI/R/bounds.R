@@ -67,28 +67,31 @@ V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
               class = "V_bound" )
 }
 
+##' V_bounds
+##'
+##' Function to coerce to \code{"V_bound"}.
+##' @param x object to be coerced.
+##' @export
 as.V_bound <- function( x ){
     UseMethod( "as.V_bound" )
 }
 
 ##' @noRd
-##' @S3method as.V_bound V_bound
+##' @export
 as.V_bound.V_bound <- identity
 
 ##' @noRd
-##' @S3method as.V_bound NULL
+##' @export
 as.V_bound.NULL <- function( x )
     .make_standard_bounds()
 
 ##' @noRd
-##' @method as.list V_bound
-##' @S3method as.list V_bound
+##' @export
 as.list.V_bound <- function( x, ... )
   unclass( x )
 
 ##' @noRd
-##' @method print V_bound
-##' @S3method print V_bound
+##' @export
 print.V_bound <- function(x, ...){
     writeLines( "ROI Variable Bounds:\n" )
 
@@ -120,8 +123,7 @@ bounds <- function( x )
 ##' @param x an object of class \code{"OP"}.
 ##' @return an object of class \code{"V_bound"}.
 ##' @author Stefan Theussl
-##' @method bounds OP
-##' @S3method bounds OP
+##' @export
 bounds.OP <- function( x )
    x$bounds
 
@@ -150,7 +152,7 @@ bounds.OP <- function( x )
 
 
 ##' @noRd
-##' @S3method bounds<- OP
+##' @export
 'bounds<-.OP' <- function( x, value ) {
    x$bounds <- as.V_bound(value)
    x

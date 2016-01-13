@@ -69,7 +69,7 @@ ROI_registered_solvers <- function( ... ){
     get_solver_packages_from_db()
 }
 
-##' @describeIn ROI_registered_solvers
+##' @rdname ROI_registered_solvers
 ##' @export
 ROI_installed_solvers <- function( ... ){
     pkgs <- grep( .plugin_prefix(), rownames(utils::installed.packages( ... )),
@@ -77,7 +77,7 @@ ROI_installed_solvers <- function( ... ){
     structure( pkgs, names = get_solver_name(pkgs) )
 }
 
-##' @describeIn ROI_registered_solvers
+##' @rdname ROI_registered_solvers
 ##' @export
 ROI_available_solvers <- function( ... ){
     ROI_installed_solvers( ... )

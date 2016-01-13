@@ -42,8 +42,7 @@ constraints <- function( x )
 ##' @param x an object of class \code{"OP"}.
 ##' @return an object inheriting from class \code{"constraints"}.
 ##' @author Stefan Theussl
-##' @method constraints OP
-##' @S3method constraints OP
+##' @export
 constraints.OP <- function( x ){
     if( is.null(x$constraints) )
         NO_constraint( length(objective(x)) )
@@ -78,7 +77,7 @@ constraints.OP <- function( x ){
     UseMethod("constraints<-")
 
 ##' @noRd
-##' @S3method constraints<- OP
+##' @export
 'constraints<-.OP' <- function( x, value ) {
     x$constraints <- as.constraint(value)
     x
@@ -131,14 +130,12 @@ as.NO_constraint <- function(x, ...)
     UseMethod( "as.NO_constraint" )
 
 ##' @noRd
-##' @method as.NO_constraint NO_constraint
-##' @S3method as.NO_constraint NO_constraint
+##' @export
 as.NO_constraint.NO_constraint <- function( x, ... )
     x
 
 ##' @noRd
-##' @method as.NO_constraint L_constraint
-##' @S3method as.NO_constraint L_constraint
+##' @export
 as.NO_constraint.L_constraint <- function( x, ... )
     NO_constraint( ncol(x$L) )
 
@@ -169,7 +166,7 @@ is.NO_constraint <- function( x ) {
 ##' @return an object of a class depending on the input which also
 ##' inherits from \code{"constraint"}. See \bold{Details}.
 ##' @author Stefan Theussl
-##' @S3method rbind NO_constraint
+##' @export
 rbind.NO_constraint <- function( ..., recursive = FALSE ){
     constraints <- list(...)
     nc <- unlist(lapply(constraints, is.NO_constraint))
@@ -182,14 +179,13 @@ rbind.NO_constraint <- function( ..., recursive = FALSE ){
         stop( "can only rbind objects of class 'NO_constraint'." )
 }
 
-## @S3method rbind constraint
+## @export
 ## rbind.constraint <- function( ..., recursive = FALSE ){
 ##     rbind.NO_constraint( ..., recursive = recursive )
 ##}
 
 ##' @noRd
-##' @method c NO_constraint
-##' @S3method c NO_constraint
+##' @export
 c.NO_constraint <- function( ..., recursive = FALSE )
     rbind( ..., recursive = recursive )
 
@@ -199,8 +195,7 @@ c.NO_constraint <- function( ..., recursive = FALSE )
 ##' @param x constraints object.
 ##' @return an integer.
 ##' @author Stefan Theussl
-##' @method length NO_constraint
-##' @S3method length NO_constraint
+##' @export
 length.NO_constraint <- function( x )
     attr(x, "n_constraints")
 
@@ -271,28 +266,24 @@ as.L_constraint <- function(x, ...)
 
 
 ##' @noRd
-##' @method as.L_constraint L_constraint
-##' @S3method as.L_constraint L_constraint
+##' @export
 as.L_constraint.L_constraint <- function( x, ... )
     identity(x)
 
 ##' @noRd
-##' @method as.L_constraint numeric
-##' @S3method as.L_constraint numeric
+##' @export
 as.L_constraint.numeric <- function( x, ... )
     L_constraint( L = x, dir = ">=", rhs = 0 )
 
 ##' @noRd
-##' @method as.L_constraint list
-##' @S3method as.L_constraint list
+##' @export
 as.L_constraint.list <- function( x, ... ){
     names(x) <- c("L", "dir", "rhs")
     L_constraint( L = x$L, dir = x$dir, rhs = x$rhs )
 }
 
 ##' @noRd
-##' @method as.L_constraint NO_constraint
-##' @S3method as.L_constraint NO_constraint
+##' @export
 as.L_constraint.NO_constraint<- function( x, ... )
     L_constraint( L = simple_triplet_zero_matrix(nrow = length(x), ncol = dim(x)[2]),
                   dir = NULL, rhs = NULL )
@@ -325,7 +316,7 @@ is.L_constraint <- function( x ) {
 ##' @return an object of a class depending on the input which also
 ##' inherits from \code{"constraint"}. See \bold{Details}.
 ##' @author Stefan Theussl
-##' @S3method rbind L_constraint
+##' @export
 rbind.L_constraint <- function( ..., recursive = FALSE ){
     constraints <- lapply(list(...), as.L_constraint)
     L   <- lapply( constraints, function (x) as.simple_triplet_matrix(x$L) )
@@ -339,8 +330,7 @@ rbind.L_constraint <- function( ..., recursive = FALSE ){
 ## FIXME: connection to rbind documentation
 
 ##' @noRd
-##' @method c L_constraint
-##' @S3method c L_constraint
+##' @export
 c.L_constraint <- function( ..., recursive = FALSE )
     rbind( ..., recursive = recursive )
 
@@ -350,8 +340,7 @@ c.L_constraint <- function( ..., recursive = FALSE )
 ##' @param x constraints object.
 ##' @return an integer.
 ##' @author Stefan Theussl
-##' @method length L_constraint
-##' @S3method length L_constraint
+##' @export
 length.L_constraint <- function( x )
     attr(x, "n_L_constraints")
 ## the linear term of the left hand side
@@ -360,22 +349,22 @@ as.L_term <- function( x, ... )
     UseMethod("as.L_term")
 
 ##' @noRd
-##' @S3method as.L_term numeric
+##' @export
 as.L_term.numeric <- function( x, ... )
     as.simple_triplet_matrix( matrix(x, nrow = 1L) )
 
 ##' @noRd
-##' @S3method as.L_term matrix
+##' @export
 as.L_term.matrix <- function( x, ... )
     as.simple_triplet_matrix(x)
 
 ##' @noRd
-##' @S3method as.L_term simple_triplet_matrix
+##' @export
 as.L_term.simple_triplet_matrix <- function( x, ... )
     x
 
 ##' @noRd
-##' @S3method as.L_term NULL
+##' @export
 as.L_term.NULL <- function( x, ... )
     x
 
@@ -452,12 +441,12 @@ as.Q_constraint <- function( x )
     UseMethod("as.Q_constraint")
 
 ##' @noRd
-##' S3method as.Q_constraint Q_constraint
+##' @export
 as.Q_constraint.Q_constraint <-
     identity
 
 ##' @noRd
-##' S3method as.Q_constraint list
+##' @export
 as.Q_constraint.list <- function( x ){
     names(x) <- c("Q", "L", "dir", "rhs")
     Q_constraint( Q = x$Q, L = x$L, dir = x$dir, rhs = x$rhs )
@@ -497,22 +486,22 @@ as.Q_term <- function(x, ...)
     UseMethod( "as.Q_term" )
 
 ##' @noRd
-##' @S3method as.Q_term list
+##' @export
 as.Q_term.list <- function( x )
     lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
 
 ##' @noRd
-##' @S3method as.Q_term numeric
+##' @export
 as.Q_term.numeric <- function( x )
     list( as.simple_triplet_matrix( matrix(x)) )
 
 ##' @noRd
-##' @S3method as.Q_term matrix
+##' @export
 as.Q_term.matrix <- function( x )
     list( as.simple_triplet_matrix(x) )
 
 ##' @noRd
-##' @S3method as.Q_term simple_triplet_matrix
+##' @export
 as.Q_term.simple_triplet_matrix <- function( x )
     list( x )
 
@@ -589,11 +578,11 @@ as.rhs <- function( x )
     UseMethod("as.rhs")
 
 ##' @noRd
-##' @S3method as.rhs numeric
+##' @export
 as.rhs.numeric <- identity
 
 ##' @noRd
-##' @S3method as.rhs NULL
+##' @export
 as.rhs.NULL <- function( x )
     numeric(0)
 
@@ -608,34 +597,32 @@ as.constraint <- function( x )
     UseMethod("as.constraint")
 
 ##' @noRd
-##' @method as.constraint NULL
-##' @S3method as.constraint NULL
+##' @export
 as.constraint.NULL <- identity
 
 
 ##' @noRd
-##' @S3method as.constraint L_constraint
+##' @export
 as.constraint.L_constraint <-
     identity
 
 ##' @noRd
-##' @S3method as.constraint Q_constraint
+##' @export
 as.constraint.Q_constraint <-
     identity
 
 ##' @noRd
-##' @S3method as.constraint F_constraint
+##' @export
 as.constraint.F_constraint <-
     identity
 
 ##' @noRd
-##' @S3method as.constraint numeric
+##' @export
 as.constraint.numeric <- function( x )
     as.L_constraint( x )
 
 ##' @noRd
-##' @method print constraint
-##' @S3method print constraint
+##' @export
 print.constraint <- function( x, ... ){
     len <- length(x)
     if( is.L_constraint(x) )
@@ -652,7 +639,7 @@ print.constraint <- function( x, ... ){
 }
 
 ##' @noRd
-##' @S3method dim constraint
+##' @export
 dim.constraint <- function( x ){
     ## FIXME: we should actually save both dimensions in constraint object
     out <- if( inherits(x, "NO_constraint") )

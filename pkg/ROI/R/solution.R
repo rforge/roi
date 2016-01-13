@@ -36,7 +36,7 @@ make_OP_solution <- function(solution, objval, status, solver, ...)
 ################################################################################
 
 ##' @noRd
-##' @S3method print OP_solution
+##' @export
 print.OP_solution <- function(x, ...){
     success <- x$status$code == 0
     if( !success ){

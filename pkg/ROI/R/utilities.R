@@ -39,11 +39,11 @@ as.no_V_bounds_OP <- function( x )
     UseMethod("as.no_V_bounds_OP")
 
 ##' @noRd
-##' @S3method as.no_V_bounds_OP no_V_bounds
+##' @export
 as.no_V_bounds_OP.no_V_bounds <- identity
 
 ##' @noRd
-##' @S3method as.no_V_bounds_OP OP
+##' @export
 as.no_V_bounds_OP.OP <- function( x ){
     if( length(bounds(x)) )
         constraints(x) <- rbind( constraints(x),

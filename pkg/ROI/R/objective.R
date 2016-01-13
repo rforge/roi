@@ -46,8 +46,7 @@ objective <- function( x )
     UseMethod( "objective" )
 
 ##' @noRd
-##' @method objective default
-##' @S3method objective default
+##' @export
 objective.default <- function( x )
     as.function( x$objective )
 
@@ -62,8 +61,7 @@ as.objective <- function( x )
   UseMethod("as.objective")
 
 ##' @noRd
-##' @method as.objective default
-##' @S3method as.objective default
+##' @export
 as.objective.function <- function( x ){
     if( inherits(x, "Q_objective", which = TRUE) == 2 )
         return( as.Q_objective( x ) )
@@ -73,26 +71,22 @@ as.objective.function <- function( x ){
 }
 
 ##' @noRd
-##' @method as.objective default
-##' @S3method as.objective default
+##' @export
 as.objective.default <- function( x )
   as.L_objective( x )
 
 ##' @noRd
-##' @method as.objective objective
-##' @S3method as.objective objective
+##' @export
 as.objective.objective <-
     identity
 
 ##' @noRd
-##' @method length objective
-##' @S3method length objective
+##' @export
 length.objective <- function( x )
     attr( as.objective(x), "nobj" )
 
 ##' @noRd
-##' @method terms function
-##' @S3method terms function
+##' @export
 terms.function <- function( x, ... ){
     if( inherits(x, "L_objective") )
         return( terms(as.L_objective(x)) )
@@ -102,14 +96,12 @@ terms.function <- function( x, ... ){
 }
 
 ##' @noRd
-##' @method terms L_objective
-##' @S3method terms L_objective
+##' @export
 terms.L_objective <- function( x, ... )
   list( L = x$L )
 
 ##' @noRd
-##' @method terms Q_objective
-##' @S3method terms Q_objective
+##' @export
 terms.Q_objective <- function( x, ... )
   list( Q = x$Q, L = x$L )
 
@@ -143,8 +135,7 @@ L_objective <- function( L ) {
 }
 
 ##' @noRd
-##' @method as.function L_objective
-##' @S3method as.function L_objective
+##' @export
 as.function.L_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
   out <- function(x)
@@ -174,31 +165,26 @@ as.L_objective <- function( x )
     UseMethod( "as.L_objective" )
 
 ##' @noRd
-##' @method as.L_objective L_objective
-##' @S3method as.L_objective L_objective
+##' @export
 as.L_objective.L_objective <- identity
 
 ##' @noRd
-##' @method as.L_objective NULL
-##' @S3method as.L_objective NULL
+##' @export
 as.L_objective.NULL <- function( x )
     L_objective( x )
 
 ##' @noRd
-##' @method as.L_objective numeric
-##' @S3method as.L_objective numeric
+##' @export
 as.L_objective.numeric <- function( x )
     L_objective( x )
 
 ##' @noRd
-##' @method as.L_objective Q_objective
-##' @S3method as.L_objective Q_objective
+##' @export
 as.L_objective.Q_objective <- function( x )
     L_objective( terms(x)[["L"]])
 
 ##' @noRd
-##' @method as.L_objective function
-##' @S3method as.L_objective function
+##' @export
 as.L_objective.function <- function( x ){
     if( !inherits(x, "objective") )
         stop("'x' must be a function which inherits from 'objective'")
@@ -240,8 +226,7 @@ Q_objective <- function( Q, L = NULL ) {
 }
 
 ##' @noRd
-##' @method as.function Q_objective
-##' @S3method as.function Q_objective
+##' @export
 as.function.Q_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
   ## FIXME: shouldn't this already be initialized earlier?
@@ -271,8 +256,7 @@ as.Q_objective <- function( x )
   UseMethod("as.Q_objective")
 
 ##' @noRd
-##' @method as.Q_objective function
-##' @S3method as.Q_objective function
+##' @export
 as.Q_objective.function <- function( x ){
   if( !inherits(x, "objective") )
     stop( "'x' must be a function which inherits from 'objective'" )
@@ -282,25 +266,21 @@ as.Q_objective.function <- function( x ){
 }
 
 ##' @noRd
-##' @method as.Q_objective matrix
-##' @S3method as.Q_objective matrix
+##' @export
 as.Q_objective.matrix <- function( x )
   Q_objective( Q = x)
 
 ##' @noRd
-##' @method as.Q_objective numeric
-##' @S3method as.Q_objective numeric
+##' @export
 as.Q_objective.numeric <- function( x )
   Q_objective( Q = matrix(x))
 
 ##' @noRd
-##' @method as.Q_objective Q_objective
-##' @S3method as.Q_objective Q_objective
+##' @export
 as.Q_objective.Q_objective <- identity
 
 ##' @noRd
-##' @method as.Q_objective simple_triplet_matrix
-##' @S3method as.Q_objective simple_triplet_matrix
+##' @export
 as.Q_objective.simple_triplet_matrix <- function( x )
   Q_objective(Q = x)
 
@@ -331,7 +311,7 @@ F_objective <- function( F, n, G = NULL ) {
 }
 
 ##' @noRd
-##' @S3method as.function F_objective
+##' @export
 as.function.F_objective <- function( x, ... )
   x$F
 
@@ -350,17 +330,17 @@ as.F_objective <- function( x )
   UseMethod("as.F_objective")
 
 ##' @noRd
-##' @S3method as.F_objective F_objective
+##' @export
 as.F_objective.F_objective <- function( x )
     identity( x )
 
 ##' @noRd
-##' @S3method as.F_objective F_objective
+##' @export
 as.F_objective.L_objective <- function( x )
     F_objective( F = as.function(x), n = length(x), G = G(x) )
 
 ##' @noRd
-##' @S3method as.F_objective Q_objective
+##' @export
 as.F_objective.Q_objective <- function( x )
   F_objective( F = as.function(x), n = length(x), G = G(x) )
 
