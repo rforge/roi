@@ -52,24 +52,24 @@ ROI_solve <- function( x, solver, control = NULL, ... ){
 ## UTILITY FUNCTIONS TO QUERY SOLVERS
 ################################################################################
 
-##' Retrieve all available solvers hosted in the given package repository.
+##' Retrieve the names of installed or registered solvers.
 ##'
-##' @title Solver Tools
-##' @param ... arguments passed on to \code{\link{available.packages}}.
-##' @return a named character vector.
-##' @author Stefan Theussl
-##' @export
-ROI_available_solvers <- function( ... ){
-    pkgs <- grep(.plugin_prefix(), rownames(utils::available.packages( ... )), value = TRUE)
-    structure(pkgs, names = get_solver_name(pkgs))
-}
-
-##' Retrieve the names of all installed solvers.
-##'
+##' Whereas \code{ROI_installed_solvers()} and
+##' \code{ROI_available_solvers()} may list the names of installed
+##' solvers that do not necessarily work,
+##' \code{ROI_registered_solvers()} lists all solvers that can be used
+##' to solve optimization problems.
 ##' @title Solver Tools
 ##' @param ... arguments passed on to \code{\link{installed.packages}}.
 ##' @return a named character vector.
 ##' @author Stefan Theussl
+##' @export
+ROI_registered_solvers <- function( ... ){
+    ## solvers registered
+    get_solver_packages_from_db()
+}
+
+##' @describeIn ROI_registered_solvers
 ##' @export
 ROI_installed_solvers <- function( ... ){
     pkgs <- grep( .plugin_prefix(), rownames(utils::installed.packages( ... )),
@@ -77,17 +77,11 @@ ROI_installed_solvers <- function( ... ){
     structure( pkgs, names = get_solver_name(pkgs) )
 }
 
-##' Retrieve the names of all registered solvers.
-##'
-##' @title Solver Tools
-##' @return a named character vector.
-##' @author Stefan Theussl
+##' @describeIn ROI_registered_solvers
 ##' @export
-ROI_registered_solvers <- function(){
-    ## solvers registered
-    get_solver_packages_from_db()
+ROI_available_solvers <- function( ... ){
+    ROI_installed_solvers( ... )
 }
-
 
 
 ################################################################################
