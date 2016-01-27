@@ -13,7 +13,7 @@
 ################################################################################
 
 available_constraint_classes <- function()
-    c(L = "L_constraint", Q = "Q_constraint", F = "F_constraint", X = "NO_constraint")
+    c(L = "L_constraint", Q = "Q_constraint", C = "C_constraint", F = "F_constraint", X = "NO_constraint")
 
 
 
@@ -235,8 +235,8 @@ L_constraint <- function( L, dir, rhs ) {
     n_L_constraints <- length( rhs )
     stopifnot( all(c(dim_L[ 1 ], n_dir) == n_L_constraints) )
     ## FIXME: we cannot use this check since we need zero row
-    ##L_constraints for coercing NO_constraonts to L_constraints
-    ##stopifnot( n_L_constraints >= 1 )
+    ## L_constraints for coercing NO_constraints to L_constraints
+    ## stopifnot( n_L_constraints >= 1 )
     structure( list(L   = L,
                     dir = dir,
                     rhs = rhs),
@@ -512,6 +512,164 @@ as.Q_term.simple_triplet_matrix <- function( x )
 ##}
 
 
+################################################################################
+## Conic constraints (class 'C_constraint')
+## Ax + s = b
+## s in K    
+################################################################################
+##' Conic constraints are typically of the form \eqn{Ax + s = b} where \eqn{s \in \mathcal{K}}. 
+##' \eqn{A} is a (sparse) matrix of coefficients to the objective
+##' variables \eqn{x}. \eqn{b} is called the right hand side of the
+##' constraints.
+##'
+##' @title Conic Constraints
+##' @param L a numeric vector of length \eqn{n} (a single constraint)
+##' or a matrix of dimension \eqn{m \times n}, where \eqn{n} is the
+##' number of objective variables and \eqn{m} is the number of
+##' constraints. Matrices can be of class \code{"simple_triplet_matrix"}
+##' to allow a sparse representation of constraints.
+##' @param cones a list giving the cones of the slack variables.
+##' @param rhs a numeric vector with the right hand side of the constraints.
+##' @return an object of class \code{"C_constraint"} which inherits
+##' from \code{"constraint"}.
+##' @author Florian Schwendinger
+##' @export
+C_constraint <- function( L, cones, rhs ) {
+    L     <- as.L_term(L)
+    rhs   <- as.rhs( rhs )
+    dim_L <- dim( L )
+    n_C_constraints <- length( rhs )
+    structure( list(L   = L,
+                    cones = cones,
+                    rhs = rhs),
+              n_C_constraints = n_C_constraints,
+              class = c("C_constraint", "constraint") )
+}
+
+##' Coerces objects of type \code{"C_constraint"}.
+##'
+##' Objects from the following classes can be coerced to
+##' \code{"C_constraint"}: \code{"numeric"} and \code{"list"}. The
+##' elements of a \code{"numeric"} vector \eqn{a} are treated as
+##' objective variable coefficients of a single constraint in standard
+##' form (\eqn{ax \geq 0}). A \code{"list"} must contain three
+##' elements, the matrix \eqn{A}, the direction of constraints, and
+##' the right hand side defining a linear constraint \eqn{Ax \leq b}.
+##' @title Linear Constraints
+##' @param x an R object.
+##' @param ... further arguments passed to or from other methods
+##' (currently ignored).
+##' @return an object of class \code{"L_constraint"} which inherits
+##' from \code{"constraint"}.
+##' @author Florian Schwendinger
+##' @export
+as.C_constraint <- function(x, ...)
+    UseMethod("as.C_constraint")
+
+##' @noRd
+##' @export
+as.C_constraint.C_constraint <- function( x, ... )
+    identity(x)
+
+##' @noRd
+##' @export
+as.C_constraint.numeric <- function( x, ... )
+    C_constraint( L = x, cones = list(f=seq_along(x)), rhs = 0 )
+
+##' @noRd
+##' @export
+as.C_constraint.list <- function( x, ... ){
+    names(x) <- c("L", "cones", "rhs" )
+    C_constraint( L = x$L, cones = x$cones, rhs = x$rhs )
+}
+
+##' @noRd
+##' @export
+as.C_constraint.NO_constraint<- function( x, ... )
+    L_constraint( L = simple_triplet_zero_matrix(nrow = length(x), ncol = dim(x)[2]),
+                  cones = NULL, rhs = NULL )
+
+##' Tests if an object is interpretable as being of class \code{"L_constraint"}.
+##'
+##' @title Linear Constraints
+##' @param x object to be tested.
+##' @return returns \code{TRUE} if its argument is of class
+##' \code{"C_constraint"} and \code{FALSE} otherwise.
+##' @author Florian Schwendinger
+##' @export
+is.C_constraint <- function( x ) {
+    inherits( x, "C_constraint" )
+}
+
+## combining matrices (see 'rbind' in matrix.R, package relation)
+
+##' Take a sequence of constraints (ROI objects) arguments and combine
+##' by rows, i.e., putting several constraints together.
+##'
+##' The output type is determined from the highest type of the
+##' components in the hierarchy 
+##' NULL < \code{"L_constraint"} < \code{"Q_constraint"} 
+##' < \code{"C_constraint"} < \code{"F_constraint"}.
+##'
+##' @title Conic Constraints
+##' @param ... constraints objects to be concatenated.
+##' @param recursive logical. Currently ignored (enable compatibility
+##' with \code{c()} operator).
+##' @return an object of a class depending on the input which also
+##' inherits from \code{"constraint"}. See \bold{Details}.
+##' @author Florian Schwendinger
+##' @export
+## TODO:
+rbind.C_constraint <- function( ..., recursive = FALSE ){
+    constraints <- lapply(list(...), as.L_constraint)
+    L   <- lapply( constraints, function (x) as.simple_triplet_matrix(x$L) )
+    dir <- lapply( constraints, function (x) as.character(x$dir) )
+    rhs <- lapply( constraints, function (x) as.rhs(x$rhs) )
+    L_constraint( L =   Reduce(function(x, y) rbind(x, y), L),
+                 dir = Reduce(function(x, y) c(x, y), dir),
+                 rhs = Reduce(function(x, y) c(x, y), rhs) )
+}
+
+## FIXME: connection to rbind documentation
+
+##' @noRd
+##' @export
+c.C_constraint <- function( ..., recursive = FALSE )
+    rbind( ..., recursive = recursive )
+
+##' Get the number of constraints from a corresponding ROI object.
+##'
+##' @title Linear Constraints
+##' @param x constraints object.
+##' @return an integer.
+##' @author Florian Schwendinger
+##' @export
+length.C_constraint <- function( x )
+    attr(x, "n_C_constraints")
+
+as.C_term <- function( x, ... )
+    UseMethod("as.C_term")
+
+##' @noRd
+##' @export
+as.C_term.numeric <- function( x, ... )
+    as.simple_triplet_matrix( matrix(x, nrow = 1L) )
+
+##' @noRd
+##' @export
+as.C_term.matrix <- function( x, ... )
+    as.simple_triplet_matrix(x)
+
+##' @noRd
+##' @export
+as.C_term.simple_triplet_matrix <- function( x, ... )
+    x
+
+##' @noRd
+##' @export
+as.C_term.NULL <- function( x, ... )
+    x
+
 ## FIXME: Function constraints still incomplete and untested
 
 ################################################################################
@@ -613,6 +771,11 @@ as.constraint.Q_constraint <-
 
 ##' @noRd
 ##' @export
+as.constraint.C_constraint <-
+    identity
+
+##' @noRd
+##' @export
 as.constraint.F_constraint <-
     identity
 
@@ -648,6 +811,8 @@ dim.constraint <- function( x ){
         c( length(x), ncol(x$L))
     else if( inherits(x, "Q_constraint") )
         c( length(x), unique(unlist(lapply( x$Q, dim ))) )
+    else if( inherits(x, "C_constraint") )
+        c( length(x), ncol(x$L))
     else if( inherits(x, "F_constraint") ){
         warning( "Not implemented." )
         NULL
