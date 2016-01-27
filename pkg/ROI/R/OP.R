@@ -77,6 +77,7 @@ print.OP <- function(x, ...){
     ## constraints
     types <- c( L_constraint = "linear",
                 Q_constraint = "quadratic",
+                C_constraint = "conic",
                 F_constraint = "nonlinear" )
     writeLines( sprintf("- %d constraints of type %s.",
                         length(constraints(x)),
