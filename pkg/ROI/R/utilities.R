@@ -24,7 +24,11 @@ function(Q, x)
 }
 
 available_row_sense <- function( )
-  c('<', '<=', "==", ">", ">=")
+    c("<", "<=", "==", ">", ">=")
+
+
+available_cones <- function( )
+    c("<K0", "<Kfree", "<K+", "<Ksoc", "<Kpsd", "<Ke", "<Kpow")
 
 
 
