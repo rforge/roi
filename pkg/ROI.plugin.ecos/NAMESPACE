@@ -1,0 +1,5 @@
+import("ROI")
+import("ECOSolveR")
+importFrom("methods", "getPackageName")
+importFrom("methods", "getFunction")
+importFrom("Matrix", "sparseMatrix")
