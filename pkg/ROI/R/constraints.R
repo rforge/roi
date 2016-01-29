@@ -517,22 +517,64 @@ as.Q_term.simple_triplet_matrix <- function( x )
 ## Ax + s = b
 ## s in K    
 ################################################################################
-##' Conic constraints are typically of the form \eqn{Ax + s = b} where \eqn{s \in \mathcal{K}}. 
+##' Conic constraints are typically of the form 
+##' \deqn{Ax + s = b \ \mbox{ where } \ s \in \mathcal{K} \ \mbox{ and } \ \mathcal{K} \mbox{ a convex cone. } }
 ##' \eqn{A} is a (sparse) matrix of coefficients to the objective
-##' variables \eqn{x}. \eqn{b} is called the right hand side of the
+##' variables \eqn{x}. \cr
+##' \eqn{b} is called the right hand side of the
 ##' constraints.
 ##'
 ##' @title Conic Constraints
 ##' @param L a numeric vector of length \eqn{n} (a single constraint)
 ##' or a matrix of dimension \eqn{m \times n}, where \eqn{n} is the
-##' number of objective variables and \eqn{m} is the number of
+##' number of objective variables and \eqn{m} is the number offset
 ##' constraints. Matrices can be of class \code{"simple_triplet_matrix"}
 ##' to allow a sparse representation of constraints.
-##' @param cones a list giving the cones of the slack variables.
+##' @param cones a list giving the cones of the slack variables. See \bold{Details}
 ##' @param rhs a numeric vector with the right hand side of the constraints.
 ##' @return an object of class \code{"C_constraint"} which inherits
 ##' from \code{"constraint"}.
+##' @details 
+##' The dimensions of the cones are given as a list, where depending on the solver
+##' typically a subset of the following convex cones are supported. 
+##' \tabular{ll}{
+##' \emph{Short Name}  \tab \emph{Description}       \cr    
+##' free               \tab free cone         \cr
+##' nonneg             \tab non-negative cone \cr
+##' soc                \tab second-order cone \cr
+##' expp               \tab exponential cone \cr
+##' expd               \tab dual of the exponential cone \cr
+##' }
+##'  
+##' The cone types \code{free}, \code{noneg}, \code{expp} and \code{expd} are vectors,
+##' giving the indicies of the constrains they belong to. 
+##' The cone type \code{soc} is a list which can consist of multiple vectors, where each
+##' list item corresponds to a specific cone.
 ##' @author Florian Schwendinger
+##' @examples
+##' ## Example 1: 
+##' cones <- list(free = c(1, 3),
+##'               nonneg = c(2, 4),
+##'               soc = list(5:7, 8:11),
+##'               expp = c(12, 13),
+##'               expd = c(14, 15) )  
+##'    
+##' ## Example 2:
+##' ## min:  0 x1 - 2 x2 - 2 x3 + 0 x4 - 2 x5 - 2 x6
+##' ## s.t.     x1 == sqrt(2)
+##' ##          x4 == sqrt(2)
+##' ##          x1 >= ||(x2, x3)||
+##' ##          x4 >= ||(x5, x6)||
+##' ##
+##' ## solution: c(sqrt(2), 1, 1, sqrt(2), 1, 1)
+##' A <- rbind(c(1, 0, 0, 0, 0, 0),
+##'            c(0, 0, 0, 1, 0, 0))
+##' b <- c(sqrt(2), sqrt(2))
+##' G <- diag(x=-1, 6)
+##' h <- rep(0, 6)
+##' cones=list("free"=c(1L, 2L), "soc"=list(3:5, 6:8))
+##' 
+##' C_constraint(L = rbind(A, G), cones=cones, rhs = c(b, h))
 ##' @export
 C_constraint <- function( L, cones, rhs ) {
     L     <- as.L_term(L)
@@ -548,19 +590,16 @@ C_constraint <- function( L, cones, rhs ) {
 
 ##' Coerces objects of type \code{"C_constraint"}.
 ##'
-##' Objects from the following classes can be coerced to
-##' \code{"C_constraint"}: \code{"numeric"} and \code{"list"}. The
-##' elements of a \code{"numeric"} vector \eqn{a} are treated as
-##' objective variable coefficients of a single constraint in standard
-##' form (\eqn{ax \geq 0}). A \code{"list"} must contain three
-##' elements, the matrix \eqn{A}, the direction of constraints, and
-##' the right hand side defining a linear constraint \eqn{Ax \leq b}.
-##' @title Linear Constraints
+##' Objects from class \code{"list"} can be coerced to
+##' \code{"C_constraint"}. A \code{"list"} must contain three
+##' elements, the matrix \eqn{A}, the cones as a list, and
+##' the right hand side defining a conic constraint \eqn{Ax \preceq_K b }.
+##' @title Conic Constraints
 ##' @param x an R object.
 ##' @param ... further arguments passed to or from other methods
 ##' (currently ignored).
-##' @return an object of class \code{"L_constraint"} which inherits
-##' from \code{"constraint"}.
+##' @return an object of class \code{"C_constraint"} which inherits
+##' from \code{"constraint"}. 
 ##' @author Florian Schwendinger
 ##' @export
 as.C_constraint <- function(x, ...)
@@ -570,11 +609,6 @@ as.C_constraint <- function(x, ...)
 ##' @export
 as.C_constraint.C_constraint <- function( x, ... )
     identity(x)
-
-##' @noRd
-##' @export
-as.C_constraint.numeric <- function( x, ... )
-    C_constraint( L = x, cones = list(f=seq_along(x)), rhs = 0 )
 
 ##' @noRd
 ##' @export
@@ -591,7 +625,7 @@ as.C_constraint.NO_constraint<- function( x, ... )
 
 ##' Tests if an object is interpretable as being of class \code{"L_constraint"}.
 ##'
-##' @title Linear Constraints
+##' @title Conic Constraints
 ##' @param x object to be tested.
 ##' @return returns \code{TRUE} if its argument is of class
 ##' \code{"C_constraint"} and \code{FALSE} otherwise.
@@ -795,9 +829,12 @@ print.constraint <- function( x, ... ){
             writeLines( c(sprintf("An object containing %d constraints.", len),
                           "Some constraints are of type quadratic.") )
         else
-            writeLines( c(sprintf("An object containing %d constraints.", len),
-                          "Some constraints are of type nonlinear.") )
-
+            if( is.Q_constraint(x) )
+                writeLines( c(sprintf("An object containing %d constraints.", len),
+                              "Some constraints are of type conic.") )
+            else
+                writeLines( c(sprintf("An object containing %d constraints.", len),
+                              "Some constraints are of type nonlinear.") )
     invisible(x)
 }
 
