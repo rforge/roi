@@ -1,8 +1,10 @@
 Package: ROI.plugin.mosek
-Version: 0.0-1
+Version: 0.0-2
 Date: 2012-08-22
 Title: ROI-plugin MOSEK
-Authors@R: c(person("Henrik Alsing", "Friberg", role = "aut"), person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"))
+Authors@R: c(person("Henrik Alsing", "Friberg", role = "aut"), 
+             person("Stefan", "Theussl", role = c("aut", "cre"), 
+                    email = "Stefan.Theussl@R-Project.org"))
 Description: This package enhances the R Optimization Infrastructure (ROI) package 
 	     with the MOSEK commercial solver for solving mixed integer quadratic 
 	     programming quadratically constrained (MIQPQC) problems as well as all 

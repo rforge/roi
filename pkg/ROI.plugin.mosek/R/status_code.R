@@ -1,18 +1,18 @@
-## ROI.plugin.cplex: status codes
+## ROI.plugin.mosek: status codes
 ## Description: provides canonicalization of solver status codes
 
 ## STATUS CODES
-.add_cplex_status_codes <- function( ) {
+.add_status_codes <- function( ) {
 
     ## MOSEK status codes
-    ## from  C API manual: http://docs.mosek.com/6.0/capi/index.html
+    ## from  C API manual: http://docs.mosek.com/7.1/capi/Solution_status_keys.html
     ## FIXME: only a (relevant) subset from MOSEK status codes
 
     solver <- ROI:::get_solver_name( getPackageName() )
 
     ROI:::add_status_code_to_db(solver,
                                 NA,
-                                "SK_SOL_STA_DUAL_FEAS	",
+                                "MSK_SOL_STA_DUAL_FEAS",
                                 "The solution is dual feasible."
                                 )
     ROI:::add_status_code_to_db(solver,
@@ -29,7 +29,7 @@
     ROI:::add_status_code_to_db(solver,
                                 NA,
                                 "MSK_SOL_STA_NEAR_DUAL_FEAS",
-                                "The solution is nearly dual feasible.",
+                                "The solution is nearly dual feasible."
                                 )
     ROI:::add_status_code_to_db(solver,
                                 NA,
@@ -51,7 +51,7 @@
     ROI:::add_status_code_to_db(solver,
                                 NA,
                                 "MSK_SOL_STA_NEAR_PRIM_AND_DUAL_FEAS",
-                                "The solution is nearly both primal and dual feasible.",
+                                "The solution is nearly both primal and dual feasible."
                                 )
     ROI:::add_status_code_to_db(solver,
                                 NA,
@@ -72,7 +72,7 @@
     ROI:::add_status_code_to_db(solver,
                                 NA,
                                 "MSK_SOL_STA_PRIM_AND_DUAL_FEAS",
-                                "The solution is both primal and dual feasible.",
+                                "The solution is both primal and dual feasible."
                                 )
     ROI:::add_status_code_to_db(solver,
                                 NA,
