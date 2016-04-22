@@ -3,12 +3,12 @@
     if( ! pkgname %in% ROI_registered_solvers() ){
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
-        solver <- ROI:::get_solver_name( pkgname )
-        ROI:::ROI_register_solver_method( signatures = ROI:::ROI_make_QP_signatures(),
+        solver <- ROI::get_solver_name( pkgname )
+        ROI::ROI_register_solver_method( signatures = ROI::ROI_make_QP_signatures(),
                                           solver = solver,
                                           method =
             getFunction( "solve_QP", where = getNamespace(pkgname)) )
-        ROI:::ROI_register_solver_method( signatures = ROI:::ROI_make_LP_signatures(),
+        ROI::ROI_register_solver_method( signatures = ROI::ROI_make_LP_signatures(),
                                           solver = solver,
                                           method =
             getFunction( "solve_LP", where = getNamespace(pkgname)) )
@@ -18,5 +18,5 @@
 }
 
 #.onUnload <- function( libpath ){
-#    ROI:::ROI_deregister_solver_methods( solver = "glpk" )
+#    ROI::ROI_deregister_solver_methods( solver = "glpk" )
 #}

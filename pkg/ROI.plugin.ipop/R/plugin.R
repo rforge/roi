@@ -20,11 +20,11 @@ solve_QP <- function( x, control ) {
                            bounds = bounds(x),
                            max = x$maximum,
                            control = control )
-    ROI:::canonicalize_solution( solution = out$solution,
+    ROI::canonicalize_solution( solution = out$solution,
                                  optimum  = ifelse(is.na(out$solution), NA,
                                  objective(x)(out$solution)),
                                  status   = out$status,
-                                 solver   = ROI:::get_solver_name(getPackageName()),
+                                 solver   = ROI::get_solver_name(getPackageName()),
                                  control  = control,
                                  returnvalue = out$output )
 }
@@ -45,11 +45,11 @@ solve_LP <- function( x, control ) {
                            bounds = bounds(x),
                            max = x$maximum,
                            control = control )
-    ROI:::canonicalize_solution( solution = out$solution,
+    ROI::canonicalize_solution( solution = out$solution,
                                  optimum  = ifelse(is.na(out$solution), NA,
                                  objective(x)(out$solution)),
                                  status   = out$status,
-                                 solver   = ROI:::get_solver_name(getPackageName()),
+                                 solver   = ROI::get_solver_name(getPackageName()),
                                  control  = control,
                                  returnvalue = out$output)
 }
@@ -116,19 +116,19 @@ solve_LP <- function( x, control ) {
 ## STATUS CODES
 .add_status_codes <- function(){
     ## quadprog
-    solver <- ROI:::get_solver_name( getPackageName() )
-    ROI:::add_status_code_to_db(solver,
+    solver <- ROI::get_solver_name( getPackageName() )
+    ROI::add_status_code_to_db(solver,
                                 0L,
                                 "converged",
                                 "Solution is optimal",
                                 0L
                                 )
-    ROI:::add_status_code_to_db(solver,
+    ROI::add_status_code_to_db(solver,
                                 1L,
                                 "not converged",
                                 "No solution found."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    ROI::add_status_code_to_db(solver,
                                 2L,
                                 "error",
                                 "Solver error: No solution found."

@@ -6,6 +6,6 @@ Author: Stefan Theussl
 Maintainer: Stefan Theussl <stefan.theussl@wu.ac.at>
 Description: This package enhances the R Optimization Infrastructure (ROI) package 
 	     with the ipop solver of package kernlab.
-Imports: methods, ROI, kernlab
+Imports: methods, ROI, kernlab, slam
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
