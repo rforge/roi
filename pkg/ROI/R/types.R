@@ -1,4 +1,7 @@
 ## available types. the first element is the standard type
+##   1.  "B"  binary
+##   2.  "I"  integer
+##   3.  "C"  continuous
 available_types <- function( )
   c( "C", "I", "B" )
 

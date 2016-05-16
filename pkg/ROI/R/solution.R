@@ -22,14 +22,13 @@
         make_OP_solution( double(), NA_real_, 2L, solver = "ROI_NULL" )
 }
 
-make_OP_solution <- function(solution, objval, status, solver, ...)
+make_OP_solution <- function(solution, objval, status, solver, message=NULL, ...)
     structure( list(solution = solution,
-                    objval = objval,
-                    status = status),
-              meta = list(solver = solver, ...),
+                    objval   = objval,
+                    status   = status,
+                    message  = message),
+              meta  = list(solver = solver, ...),
               class = "OP_solution" )
-
-
 
 ################################################################################
 ## Methods on solution object
@@ -59,11 +58,26 @@ canonicalize_status <- function( status, solver ){
     list( code = msg$roi_code, msg = msg )
 }
 
-canonicalize_solution <- function( solution, optimum, status, solver, ... )
-{
+##  -----------------------------------------------------------
+##  canonicalize_solution
+##  =====================
+##' @title Canonicalize Solution
+##'
+##' @description Transform the solution to a standardized form.
+##' @param solution a numeric or integer vector giving 
+##'        the solution of the optimization problem.
+##' @param optimum a numeric giving the optimal value.
+##' @param status an integer giving the status code (exit flag).
+##' @param solver a character string giving the name of the solver.
+##' @param message an optional \R object giving the original solver message.
+##' @param ... further arguments to be stored in the solution object.
+##' @return an object of class \code{"OP_solution"}.
+##' @export
+canonicalize_solution <- function( solution, optimum, status, solver, message=NULL, ... ) {
     status <- canonicalize_status( status, solver )
     make_OP_solution( solution = solution,
-                      objval  = optimum,
+                      objval   = optimum,
                       status   = status,
-                      solver   = solver, ... )
+                      solver   = solver, 
+                      message  = message, ... )
 }

@@ -31,9 +31,10 @@ add_solver_db_schema <- function( solver_db ){
     solver_db$set_field( "objective",   type = "character", validity_FUN = function(x) x %in% names(available_objective_classes()), is_key = TRUE)
     solver_db$set_field( "constraints", type = "character", validity_FUN = function(x) x %in% names(available_constraint_classes()), is_key = TRUE)
     for( type in available_types() )
-        solver_db$set_field( type,      type = "logical", is_key = TRUE)
-    solver_db$set_field( "bounds",      type = "logical", is_key = TRUE)
-    solver_db$set_field( "maximum",     type = "logical", is_key = TRUE)
+        solver_db$set_field( type,      type = "logical",   is_key = TRUE)
+    solver_db$set_field( "bounds",      type = "character", validity_FUN = valid_bound, is_key = TRUE)
+    solver_db$set_field( "cones",       type = "character", validity_FUN = valid_cone, is_key = TRUE)
+    solver_db$set_field( "maximum",     type = "logical",   is_key = TRUE)
     solver_db$set_field( "FUN",         type = "function" )
     solver_db
 }
@@ -48,7 +49,7 @@ cross_validate_schema <- function( args, solver_db){
 schema_valid <- cross_validate_schema( names(formals(OP)), solver_db )
 
 .onLoad <- function( libname, pkgname ) {
-    if( ! "ROI.plugin.nlminb" %in% ROI_registered_solvers() ){
+    ## if( ! "ROI.plugin.nlminb" %in% ROI_registered_solvers() ){
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
         ## DISABLED! see R code (solution of QP from examples.R in work not same as quadprog)
@@ -59,14 +60,14 @@ schema_valid <- cross_validate_schema( names(formals(OP)), solver_db )
         #                            getFunction( ".solve_QP_nlminb", where = getNamespace(pkgname)) )
         ## Finally, for status code canonicalization add status codes to data base
         #.add_nlminb_status_codes()
-    }
+    ## }
 
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
     ## OPs is the default solver
     ROI_options("default_solver", "ROI_NULL")
 }
 
-.onAttach <- function( libname, pkgname ){
+.onAttach <- function( libname, pkgname ) {
     ## Search for all solvers in same library as ROI and register found solvers
     ## implicitely be running the corresponding .onLoad() function.
     solvers <- ROI_installed_solvers( lib.loc = libname )

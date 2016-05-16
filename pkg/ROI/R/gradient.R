@@ -28,7 +28,6 @@ G.F_objective <- function( x, ... ){
     g
 }
 
-## FIXME: as.numeric method for stms?
 G.L_objective <- function( x, ... ){
     L <- terms(x)$L
     function(x)
@@ -41,8 +40,3 @@ G.Q_objective <- function( x, ... ){
     function(x)
         c(slam::tcrossprod_simple_triplet_matrix(Q, t(x)) + L)
 }
-
-#G.function <- function(x)
-
-#G.default <- function(x)
-#    NULL

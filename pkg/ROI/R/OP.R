@@ -37,28 +37,47 @@
 ##' @author Stefan Theussl
 ##' @export
 OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
-  maximum = FALSE )
-    .check_OP_for_sanity( structure(list(objective = as.objective(objective),
-                                         constraints = as.constraint(constraints),
-                                         bounds = bounds,
-                                         types = as.types(types),
-                                         maximum = as.logical(maximum)), class = "OP")
-                         )
+                maximum = FALSE ) {
+    objective <- as.objective(objective)
+    constraints <- as.constraint(constraints)
+    types <- as.types(types)
+    maximum <- as.logical(maximum)
+    ## TODO: as.bounds
+    ## check objective: the length of the objective defines the length of the constraints
 
-.check_OP_for_sanity <- function( x ){
-    if( length(objective(x)) != dim(constraints(x))[2] )
-        stop( "dimensions of 'objective' and 'constraints' not conformable." )
-    len_types <- length(types)
+    ## check constraints
+    if ( (!is.null(constraints)) & (!is.F_constraint(constraints)) ) {
+        if ( length(objective) != ncol(constraints) )
+            stop( "dimensions of 'objective' and 'constraints' not conformable." )
+    }
+    ## check types
+    if ( !is.null(types) ) {
+        if ( length(objective) != length(types) )
+            stop( "dimensions of 'objective' and 'types' not conformable." )
+    }
+    ## check bounds
+    structure(list(objective = objective, constraints = constraints, bounds = bounds,
+                   types = types, maximum = maximum), class = "OP")
+}
+
+.check_OP_for_sanity <- function( x ) {
+    ## FIXME: FS
+    ## for F_constraints we shouldn't check the dimension
+    ## but how it is checked now can still go wrong!
+    if ( !is.F_constraint( constraints(x) ) ) {
+        if( length( objective(x) ) !=  dim(constraints(x))[2] )
+            stop( "dimensions of 'objective' and 'constraints' not conformable." )
+    }
+    len_types <- length( types(x) )
     if( len_types && (len_types > 1L) )
         if( length(objective(x)) != len_types )
             stop( "dimensions of 'objective' and 'types' not conformable." )
-    if( !is.null(bounds(x)) )
-        if( length(objective(x)) != bounds(x)$nobj )
-            stop( "dimensions of 'objective' and 'bounds' not conformable." )
+    ## TODO: FS
+    ## if( !is.null(bounds(x)) )
+    ##    if( length(objective(x)) != bounds(x)$nobj )
+    ##        stop( "dimensions of 'objective' and 'bounds' not conformable." )
     x
 }
-
-## FIXME: also consider objective function
 
 ##' @noRd
 ##' @export
@@ -77,7 +96,6 @@ print.OP <- function(x, ...){
     ## constraints
     types <- c( L_constraint = "linear",
                 Q_constraint = "quadratic",
-                C_constraint = "conic",
                 F_constraint = "nonlinear" )
     writeLines( sprintf("- %d constraints of type %s.",
                         length(constraints(x)),
@@ -123,11 +141,21 @@ as.OP.numeric <- function(x){
         maximum = FALSE )
 }
 
+## @noRd
+## @export
+## as.OP.default <- function(x, ...){
+##    stop("Method not implemented.")
+##}
+
 ##' @noRd
-##' @export
-as.OP.default <- function(x, ...){
-    stop("Method not implemented.")
+## since available_objective_classes are ordered I only need to take the first!
+get_objective_class <- function(x) {
+    b <- available_objective_classes() %in% class(x$objective)
+    names(available_objective_classes())[b][1]
 }
+
+## TODO:
+## get_constraint_class <- function(x)
 
 ## OP_class <- function( x ){
 ##     x <- as.OP( x )
@@ -151,16 +179,45 @@ as.OP.default <- function(x, ...){
 
 ## NOTE: objective(x) returns something which inherits from function and class(x).
 ##       this is why we need to derive the type of objective by taking the 2nd element.
+## NOTE (#FS): Did run into an error since objective from F_function returns and object of type function
 OP_signature <- function( x ){
     x <- as.OP( x )
-    uniq_types <- if( is.null(types(x)) )
-        available_types()[1]
-    else paste(unique(types(x)), collapse = "")
-    ROI_make_signature( objective = names( available_objective_classes() )[ available_objective_classes() %in% class(objective(x))[2] ],
-                        constraints = names( available_constraint_classes() )[ available_constraint_classes() %in% class(constraints(x))[1] ],
+    uniq_types <- if ( is.null(types(x)) ) { available_types()[1]
+                } else { paste(unique(types(x)), collapse = "") }
+
+    bound_mapping <- setNames(c("CV", "C", "V", "X"), c("bound", "C_bound", "V_bound", "NULL"))
+    boun <- bound_mapping[class(bounds(x))[1]]
+
+    constr <- names( available_constraint_classes() )[ available_constraint_classes() %in% class(constraints(x))[1] ]  
+    
+    if ( is.null(bounds(x)$cones) ) {
+        cone_types <- "free"
+    } else {
+        cone_types <- available_cone_types()[ available_cone_types() %in% names(bounds(x)$cones) ]
+    }
+
+    ROI_make_signature( objective = get_objective_class(x),
+                        constraints = constr,
                         types = uniq_types,
-                        bounds  = !is.null(bounds(x)),
+                        bounds  = boun,
+                        cones = cone_types,
                         maximum = x$maximum
                        )
 }
 
+#  -----------------------------------------------------------
+#  OP_applicable_solver
+#  ====================
+#' @title Applicable Solver
+#' @description 
+#'   Takes an object of class \code{"OP"} (optimization problem) 
+#'   and returns a character vector giving the names of all available 
+#'   and applicable solver.
+#' @param x an object of class \code{"OP"}
+#' @return A a character vector giving the giving the names of all available 
+#'   and applicable solver
+#' @export
+#  -----------------------------------------------------------
+OP_applicable_solver <- function( x ) {
+    unname( names(get_solver_methods( OP_signature(x) )) )
+}

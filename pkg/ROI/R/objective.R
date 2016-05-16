@@ -72,18 +72,15 @@ as.objective.function <- function( x ){
 
 ##' @noRd
 ##' @export
-as.objective.default <- function( x )
-  as.L_objective( x )
+as.objective.default <- function( x ) as.L_objective( x )
 
 ##' @noRd
 ##' @export
-as.objective.objective <-
-    identity
+as.objective.objective <- identity
 
 ##' @noRd
 ##' @export
-length.objective <- function( x )
-    attr( as.objective(x), "nobj" )
+length.objective <- function( x ) attr( as.objective(x), "nobj" )
 
 ##' @noRd
 ##' @export
@@ -215,6 +212,7 @@ as.L_objective.function <- function( x ){
 ##' @export
 Q_objective <- function( Q, L = NULL ) {
     L <- as.L_term(L)
+    ## FIXME: (check if Q ist quadratic!)
     if( !is.null(Q) )
         obj <- .objective( Q    = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
                            L    = L,
@@ -302,9 +300,11 @@ as.Q_objective.simple_triplet_matrix <- function( x )
 ##' @author Stefan Theussl
 ##' @export
 F_objective <- function( F, n, G = NULL ) {
+    ## TODO: check if F is really a function and n is an integer, for meaning full
+    ##       error messages!
     .check_function_for_sanity( F, n )
-    if( !is.null(G) )
-        .check_gradient_for_sanity( G, n )
+    ##if( !is.null(G) )
+    ##    .check_gradient_for_sanity( G, n )
     obj <- .objective( F = F, G = G, nobj = n )
     class( obj ) <- c( "F_objective", class(obj) )
     obj
@@ -345,7 +345,7 @@ as.F_objective.Q_objective <- function( x )
   F_objective( F = as.function(x), n = length(x), G = G(x) )
 
 .check_function_for_sanity <- function(F, n){
-    ans <- tryCatch( F(rep(n, 0)), error = identity )
+    ans <- tryCatch( F(rep.int(0, n)), error = identity )
     if( inherits(ans, "error") )
         stop(sprintf("cannot evaluate function 'F' using 'n' = %d parameters.", n))
     if( !is.numeric(ans) || (length(ans) != 1L) || !is.null(dim(ans)) )
@@ -353,12 +353,13 @@ as.F_objective.Q_objective <- function( x )
     invisible( ans )
 }
 
-.check_gradient_for_sanity <- function(F, n){
-    ans <- tryCatch( F(rep(n, 0)), error = identity )
-    if( inherits(ans, "error") )
-        stop(sprintf("cannot evaluate function 'F' using 'n' = %d parameters.", n))
-    if( !is.numeric(ans) || (length(ans) != n) || !is.null(dim(ans)) )
-        stop("function 'F' does not return a numeric vector of length 'n'.")
-    invisible( ans )
-}
+## TODO:
+##.check_gradient_for_sanity <- function(F, n){
+##    ans <- tryCatch( F(rep(n, 0)), error = identity )
+##    if( inherits(ans, "error") )
+##        stop(sprintf("cannot evaluate function 'F' using 'n' = %d parameters.", n))
+##    if( !is.numeric(ans) || (length(ans) != n) || !is.null(dim(ans)) )
+##        stop("function 'F' does not return a numeric vector of length 'n'.")
+##    invisible( ans )
+##}
 
