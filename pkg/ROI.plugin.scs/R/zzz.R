@@ -1,12 +1,23 @@
-## ROI plugin: ECOS
-## based on ecos interface
+## ROI plugin: SCS
+## based on scs interface
 
-make_ECOS_signatures <- function()
+##q("no")
+##R
+##library(ROI)
+##
+##dotargs <- list( objective = c("L"),
+##                 constraints = c("L"),
+##                 types = c("C"),
+##                 bounds = c("C"),
+##                 cones = c("free", "nonneg", "soc", "psd", "expp", "expd"),
+##                 maximum = c(TRUE, FALSE) )
+
+make_SCS_signatures <- function()
     ROI_make_signature( objective = c("L"),
                         constraints = c("L"),
-                        types = c("B", "I", "C"),
-                        bounds = c("C"),
-                        cones = c("free", "nonneg", "soc", "expp"),
+                        types = c("C"),
+                        bounds = c("X", "C"),
+                        cones = c("free", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd"),
                         maximum = c(TRUE, FALSE) )
 
 .onLoad <- function( libname, pkgname ) {
@@ -15,8 +26,8 @@ make_ECOS_signatures <- function()
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
         solver <- get_solver_name( pkgname )
-        ROI_register_solver_method(
-            signatures = make_ECOS_signatures(),
+        ROI_register_solver_method( 
+            signatures = make_SCS_signatures(),
             solver = solver,
             method = getFunction( "solve_OP", where = getNamespace(pkgname)) )
         ## Finally, for status code canonicalization add status codes to data base
