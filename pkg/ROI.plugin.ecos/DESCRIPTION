@@ -6,7 +6,7 @@ Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: This package enhances the R Optimization Infrastructure (ROI) package
 	     with the Embedded Conic Solver (ECOS) for solving conic optimization problems.
-Imports: methods, Matrix, ROI (>= 0.1-0), ECOSolveR (>= 0.2)
+Imports: methods, Matrix, ROI (>= 0.2-0), ECOSolveR (>= 0.2)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
 
