@@ -206,11 +206,6 @@ solve_OP <- function(x, control=list()) {
     if ( x$maximum ) obj <- -obj
     if ( is.null(control$verbose) ) control$verbose <- FALSE
     
-    if ( !is.null(control$DEBUG) ) {
-        model <- list(A=constraints(x)$L[ind,], b=constraints(x)$rhs[ind], obj=obj, cone=cone_dims)
-        assign("DEBUG.model", model, envir=.GlobalEnv)
-    }
-    
     out <- scs( A = constraints(x)$L[ind,],
                 b = constraints(x)$rhs[ind],
                 obj = obj,
