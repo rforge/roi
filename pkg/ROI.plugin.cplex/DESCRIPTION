@@ -1,12 +1,12 @@
 Package: ROI.plugin.cplex
-Version: 0.0-2
-Date: 2014-04-17
+Version: 0.0-3
+Date: 2016-05-19
 Title: ROI-plugin CPLEX
 Authors@R: c(person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"))
-Description: This package enhances the R Optimization Infrastructure (ROI) package 
-	     with the CPLEX commercial solver for solving mixed integer quadratically 
-	     constrained programming (MIQPQC) problems as well as all 
+Description: Enhances the R Optimization Infrastructure (ROI) package by registering
+	     the CPLEX commercial solver. It allows for solving mixed integer quadratically
+	     constrained programming (MIQPQC) problems as well as all
 	     variants/combinations of LP, QP, QCP, IP.
-Imports: methods, ROI (>= 0.1), Rcplex
+Imports: methods, ROI (>= 0.2), Rcplex, slam
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi

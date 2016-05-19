@@ -1,8 +1,10 @@
 ## ROI.plugin.cplex: solver interfaces
 ## Description: provides problem object <-> solver mappings
 
-solve_OP <- function( x, control )
-{
+solve_OP <- function( x, control ){
+    if(is.null(control))
+       control <- list()
+
     if( ! is.null(terms(objective(x))$Q) ) {
       ## Ensure that the coefficient matrix of the quadratic term is
       ## symmetric, required by Rcplex.
@@ -75,7 +77,7 @@ solve_OP <- function( x, control )
         mat$i <- mat$i[column_major_order]
         mat$j <- mat$j[column_major_order]
         mat$v <- mat$v[column_major_order]
-        
+
         tryCatch( Rcplex::Rcplex(Qmat = terms(objective(x))$Q,
                                 cvec = as.numeric(as.matrix(terms(objective(x))$L)),
                                 Amat = mat,
