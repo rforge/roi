@@ -55,3 +55,9 @@ idx_weeks <- endpoints( index(US500), on = "weeks" )
 US500 <- US500[idx_weeks, ]
 
 save( US500, file = "../data/US500.rda", compress = "bzip2"  )
+
+
+## data set for ROI package - monthly returns as a matrix
+US30 <-  US30[ endpoints(index(US30), on = "months"), ]
+US30 <-  as.matrix( ROC( US30, type = "discrete" )[-1,] )
+save( US30, file = "../../ROI/data/US30.rda", compress = "bzip2" )

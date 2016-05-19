@@ -1,0 +1,684 @@
+\documentclass[serif,mathserif]{beamer}
+\usepackage{amsmath, amsfonts, epsfig, xspace}
+\usepackage{algorithm,algorithmic}
+\usepackage{pstricks,pst-node}
+\usepackage{multimedia}
+\usepackage[normal,tight,center]{subfigure}
+\setlength{\subfigcapskip}{-.5em}
+\usepackage{beamerthemesplit}
+%% my added packages
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage{graphicx}
+%\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage{Sweave}
+\RequirePackage{fancyvrb}
+\RequirePackage{color}
+%% end my packages
+
+%% black-white theme from http://www.shawnlankton.com/2008/02/beamer-and-latex-with-keynote-theme/
+\usetheme{keynote}
+
+%% my makros
+\let\code=\texttt
+\newcommand{\pkg}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+\newcommand{\proglang}[1]{\textsf{#1}}
+\newcommand{\class}[1]{`\code{#1}'}
+
+%% better Sweave style
+\newenvironment{Schunk}{}{}
+
+\definecolor{Sinput}{rgb}{1,1,1}
+\definecolor{Scode}{rgb}{0,0,0.56}
+\definecolor{Soutput}{rgb}{0.9,0.9,0.9}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}
+{formatcom={\Zinput},fontsize=\scriptsize}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}
+{formatcom={\Zoutput},fontsize=\scriptsize}
+\DefineVerbatimEnvironment{Scode}{Verbatim}
+{formatcom={\Zcode},fontsize=\scriptsize}
+
+\newcommand{\Zoutput}{ \vspace*{-0.1cm} \color{Soutput}}
+\newcommand{\Zinput}{ \color{Sinput}}
+\newcommand{\Zcode}{ \color{Scode}}
+
+
+\author[Stefan Theu\ss{}l]{Stefan Theu\ss{}l}
+\title[ROI\hspace{2em}\insertframenumber/\inserttotalframenumber]{{\Large
+    The \pkg{ROI} Package in Action}\\{\large
+    Portfolio Optimization and Beyond}}
+
+%%\institute{Raiffeisen RESEARCH, Raiffeisen Bank International AG}
+\date{Rmetrics Workshop, June 26--28, 2014}
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maketitle
+
+%\begin{frame}
+%  \titlepage
+%\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% see
+%% http://www.zib.de/de/service/www-dienste/mathprog/references.html
+%% for references
+\section{Introduction}
+
+\subsection{Mathematical Optimization}
+
+\begin{frame}
+\frametitle{Optimization Problem}
+
+Following Boyd and Vandenberghe (2004), a mathematical optimization
+problem, or just \emph{optimization problem}, has the form
+
+\begin{eqnarray*}
+\min f(x) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\nonumber
+\\
+s.t. ~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~
+\nonumber
+\\
+g_i(x) \leq b_i; i = 1,\ldots{}, m. ~~~~~~~~~~~~~~~~~~~~~ ~~~
+\end{eqnarray*}
+
+where
+\begin{itemize}
+\item $x = (x_1,\ldots{}, x_n)$ is the \emph{optimization variable} of
+  the problem,
+\item the function $f : \mathbb{R}^n \rightarrow \mathbb{R}$ is the
+  \emph{objective function},
+\item the functions $g_i : \mathbb{R}^n \rightarrow \mathbb{R}, i = 1,
+  \ldots{}, m$, are the (inequality) constraint functions, and the
+  constants $b_1,\ldots{},b_m$ are the limits, or bounds, for the
+  constraints.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Solution}
+
+A vector $x^*$ is called \emph{optimal}, or a \emph{solution} of the above
+problem, if it has
+\begin{itemize}
+\item the smallest \emph{objective value} among all
+vectors that satisfy the constraints
+\item for any $z$ with $g_1(z) \leq b_1,\ldots{}, g_m(z) \leq b_m$, we
+  have $f(z) \geq f(x^*)$.
+\end{itemize}
+
+We generally consider families or \emph{classes of optimization
+  problems}, characterized by particular forms of the objective and
+constraint functions.
+
+\end{frame}
+
+%\begin{frame}
+%\frametitle{Linear vs. Nonlinear Optimization}
+
+
+%\end{frame}
+
+\subsection{Applications}
+
+\begin{frame}
+\frametitle{Motivation}
+
+Mean-Variance Portfolio Optimization (Markowitz, 1952)
+
+\begin{itemize}
+  \item Minimum Risk
+    \begin{eqnarray*}
+      \min_w ~~ w^{\top} ~ \hat{\Sigma} ~ w
+      \nonumber
+      \\
+      s.t. ~~~~~~~~~~ ~~~~~~~~~~
+      \\
+      Aw^{\top} \leq  b
+    \end{eqnarray*}
+  \item Maximum Return
+    \begin{eqnarray*}
+      \max_{w} ~~ w^{\top} \hat{\mu}
+    \nonumber
+    \\
+    s.t. ~~~~~~~~~~ ~~~~~~~~~~
+    \nonumber
+    \\
+    A w \leq b
+    \nonumber
+    \\
+    w^{\top} \hat{\Sigma} w \leq \sigma
+    \nonumber
+\end{eqnarray*}
+\end{itemize}
+
+\end{frame}
+
+\subsection{Problem Classes and Solvers}
+
+\begin{frame}
+\frametitle{Problem Classes}
+
+Given $N$ objective variables, $x_i, i = 1,\ldots{}, N$, to be
+optimized we can differentiate between
+
+\begin{itemize}
+\item Linear Programming (LP, $\min_x c^\top x$ s.t. $Ax = b$, $x \geq 0$)
+\item Quadratic Programming (QP, $\min_x x^\top Q x$ s.t. $Ax = b$, $x \geq 0$)
+\item Nonlinear Programming (NLP, $\min_x f(x)$ s.t. $x \in S$)
+\end{itemize}
+
+If variables have to be of \textit{type} integer, formally $x_j \in
+\mathbb{N}$ for $j = 1, \dots{}, p$, $1 \leq p \leq N$:
+\begin{itemize}
+\item Mixed Integer Linear Programming (MILP),
+\item Mixed Integer Quadratic Programming (MIQP),
+\item NonLinear Mixed INteger Programming (NLMINP)
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Solvers in \proglang{R}}
+
+  Subset of available solvers categorized by the capability to solve a given problem class:
+ \medskip
+ \begin{centering}
+   {\footnotesize
+ \begin{tabular}{l|c|c|c}
+     & LP             & QP         & NLP \\
+ \hline
+ LC  & Rglpk$^*$, lpSolve$^*$, Rsymphony$^*$ & quadprog, ipop  & optim(), nlminb()\\
+ \hline
+ QC  &                & Rcplex$^*$ & \\
+ \hline
+ NLC &                &           & donlp2, solnp
+ \end{tabular}
+ }
+ \end{centering}
+
+ \smallskip
+ {\tiny
+ $^*$ \ldots{} integer capability
+ }
+
+ \medskip For a full list of solvers see the CRAN task view
+ \textit{Optimization}
+ (\url{http://CRAN.R-Project.org/view=Optimization}).
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Overview of R-packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Solving Optimization Problems (1)}
+
+  \begin{itemize}
+  \item \pkg{lpSolve}:
+\begin{Schunk}
+\begin{Sinput}
+> args(lp)
+\end{Sinput}
+\begin{Soutput}
+function (direction = "min", objective.in, const.mat, const.dir,
+    const.rhs, transpose.constraints = TRUE, int.vec, presolve = 0,
+    compute.sens = 0, binary.vec, all.int = FALSE, all.bin = FALSE,
+    scale = 196, dense.const, num.bin.solns = 1, use.rw = FALSE)
+NULL
+\end{Soutput}
+\end{Schunk}
+  \item \pkg{quadprog}:
+\begin{Schunk}
+\begin{Sinput}
+> args(solve.QP)
+\end{Sinput}
+\begin{Soutput}
+function (Dmat, dvec, Amat, bvec, meq = 0, factorized = FALSE)
+NULL
+\end{Soutput}
+\end{Schunk}
+ \item \pkg{Rglpk}:
+\begin{Schunk}
+\begin{Sinput}
+> args(Rglpk_solve_LP)
+\end{Sinput}
+\begin{Soutput}
+function (obj, mat, dir, rhs, types = NULL, max = FALSE, bounds = NULL,
+    verbose = FALSE)
+NULL
+\end{Soutput}
+\end{Schunk}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+  \frametitle{Solving Optimization Problems (2)}
+
+  \begin{itemize}
+  \item \pkg{Rcplex}:
+\begin{Schunk}
+\begin{Sinput}
+> args(Rcplex)
+\end{Sinput}
+\begin{Soutput}
+function (cvec, Amat, bvec, Qmat = NULL, lb = 0, ub = Inf, control = list(),
+    objsense = c("min", "max"), sense = "L", vtype = NULL, n = 1)
+NULL
+\end{Soutput}
+\end{Schunk}
+  \item \code{optim()} from \pkg{stats}:
+\begin{Schunk}
+\begin{Sinput}
+> args(optim)
+\end{Sinput}
+\begin{Soutput}
+function (par, fn, gr = NULL, ..., method = c("Nelder-Mead",
+    "BFGS", "CG", "L-BFGS-B", "SANN"), lower = -Inf, upper = Inf,
+    control = list(), hessian = FALSE)
+NULL
+\end{Soutput}
+\end{Schunk}
+\item \code{nlminb()} from \pkg{stats}:
+\begin{Schunk}
+\begin{Sinput}
+> args(nlminb)
+\end{Sinput}
+\begin{Soutput}
+function (start, objective, gradient = NULL, hessian = NULL,
+    ..., scale = 1, control = list(), lower = -Inf, upper = Inf)
+NULL
+\end{Soutput}
+\end{Schunk}
+\end{itemize}
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Package Design
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Package Design}
+
+\subsection{Modeling Optimization Problems}
+
+\begin{frame}
+\frametitle{ROI Modeling (1)}
+
+%A general framework for optimization should be capable of handling
+%several different problem classes in a transparent and uniform way. We
+%define
+\pkg{ROI} optimization problems are \proglang{R} objects (S3)
+specified by
+
+\begin{itemize}
+\item a function $f(x)$ to be optimized: \emph{objective}
+  \begin{itemize}
+  \item linear: coefficients $c$ expressed as a \class{numeric} (a vector)
+  \item quadratic: a \class{matrix} $Q$ of coefficients representing
+    the quadratic form as well as a linear part $L$
+  \item nonlinear: an adequate (\proglang{R}) \class{function}
+  \end{itemize}
+\item \emph{constraints} $g(x)$ describing the
+  feasible set $S$
+  \begin{itemize}
+  \item linear: coefficients expressed as a \class{numeric} (a
+    vector), or several constraints as a (sparse) \class{matrix}
+  \item quadratic: a quadratic part $Q$ and a linear part $L$
+  \item nonlinear: a well-defined (\proglang{R}) \class{function}
+  \item equality (\code{"=="}) or inequality (\code{"<="},
+    \code{">="}, \code{">"}, etc.) constraints
+  \item bounds (the right hand side).
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{ROI Modeling (2)}
+
+Additional properties:
+\begin{itemize}
+\item variable \emph{bounds} (or so-called box constraints)
+\item variable \emph{types} (continuous, integer, binary, etc.)
+\item direction of optimization (search for minimum, \emph{maximum})
+\end{itemize}
+
+The problem constructor in \pkg{ROI} is named \code{OP()} and takes
+the following arguments:
+\begin{verbatim}
+function( objective, constraints = NULL, types = NULL,
+          bounds = NULL, maximum = FALSE )
+\end{verbatim}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{ROI signatures}
+
+Pre-defined optimization problem signatures:
+
+\begin{itemize}
+\item \code{ROI\_make\_<class>\_signatures()}
+\item where \code{<class>} is one of \code{LP}, \code{QP},
+  \code{MILP}, \code{MIQP}, \code{MIQCP}.
+\end{itemize}
+
+<<_ROI_plugin_load, echo = TRUE>>=
+ROI:::ROI_make_LP_signatures()
+dim( ROI:::ROI_make_MIQCP_signatures() )
+#ROI:::OP_signature()
+@
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: ROI and Constraints}
+
+<<roi_constraints, echo = TRUE>>=
+require( "ROI" )
+(constr1 <- L_constraint(c(1, 2), "<", 4))
+(constr2 <- L_constraint(matrix(c(1:4), ncol = 2), c("<", "<"), c(4, 5)))
+rbind(constr1, constr2)
+(constr3 <- Q_constraint(matrix(rep(2, 4), ncol = 2), c(1, 2), "<", 5))
+foo <- function(x) {
+    sum(x^3) - seq_along(x) %*% x
+}
+F_constraint(foo, "<", 5)
+@
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: Optimization Instances}
+
+<<roi_constraints, echo = TRUE>>=
+lp <- OP(objective = c(2, 4, 3), L_constraint(L = matrix(c(3,
+     2, 1, 4, 1, 3, 2, 2, 2), nrow = 3), dir = c("<=", "<=", "<="),
+     rhs = c(60, 40, 80)), maximum = TRUE)
+lp
+qp <- OP(Q_objective(Q = diag(1, 3), L = c(0, -5, 0)), L_constraint(L = matrix(c(-4,
+     -3, 0, 2, 1, 0, 0, -2, 1), ncol = 3, byrow = TRUE), dir = rep(">=",
+     3), rhs = c(-8, 2, 0)))
+qp
+qcp <- OP(Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5,
+     0, 11.5, -11), byrow = TRUE, ncol = 3), L = c(1, 2, 3)),
+     Q_constraint(Q = list(NULL, NULL, diag(1, nrow = 3)), L = matrix(c(-1,
+         1, 1, 1, -3, 1, 0, 0, 0), byrow = TRUE, ncol = 3), dir = rep("<=",
+         3), rhs = c(20, 30, 1)), maximum = TRUE)
+qcp
+@
+\end{frame}
+
+\subsection{ROI Solver Interface and Plug-ins}
+
+\begin{frame}
+  \frametitle{ROI Solver Interface}
+
+%  The R Optimization Infrastructure (ROI) package promotes the
+%  development and use of interoperable (open source) optimization
+%  problem solvers for \proglang{R}.
+
+  A given problem is solved via
+  \begin{itemize}
+  \item \code{ROI\_solve( problem, solver, control, ... )}
+  \end{itemize}
+  where
+  \begin{description}
+  \item[problem] represents an object containing the description of the
+    corresponding optimization problem
+  \item[solver] specifies the solver to be used (\code{"glpk"},
+    \code{"quadprog"}, \code{"symphony"}, etc.)
+  \item[control] is a list containing additional control arguments to the
+    corresponding solver
+  \item[\ldots{}] is a wildcard for additional control arguments
+  \end{description}
+
+  See \url{https://R-Forge.R-project.org/projects/roi/}.
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{ROI Plug-ins (1)}
+
+\begin{itemize}
+\item \pkg{ROI} is very easy to extend via ``plug-ins''
+  (\pkg{ROI.plugin.$<$solver$>$} packages)
+\item Link between ``API packages'' and \pkg{ROI}
+\item Capabilities registered in data base
+\item Solution canonicalization
+\item Status code canonicalization
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{ROI Plug-ins (2)}
+
+A plug-in is an R package with the following requirements
+\begin{itemize}
+\item A DESCRIPTION file which \textit{imports} \pkg{ROI} and
+  typically the API package (e.g., \pkg{Rglpk} for using the GLPK solver)
+\item A NAMESPACE file containing the following entries:\\
+\code{import("ROI")\\
+  import( \_API\_package\_ )\\
+  importFrom("methods", "getPackageName")\\
+  importFrom("methods", "getFunction")
+}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{ROI Plug-ins (3)}
+
+\begin{itemize}
+\item An \code{onLoad()} function registering the solver method for a
+  given signature:
+<<_ROI_plugin_load, echo = TRUE>>=
+.onLoad <- function( libname, pkgname ) {
+    ## Solver plugin name (based on package name)
+    if( ! pkgname %in% ROI_registered_solvers() ){
+        ## Register solver methods here.
+        ## One can assign several signatures a single solver method
+        solver <- ROI:::get_solver_name( pkgname )
+        ROI:::ROI_register_solver_method( signatures = ROI:::ROI_make_MILP_signatures(),
+                                          solver = solver,
+                                          method =
+                                          getFunction( "solve_OP", where = getNamespace(pkgname)) )
+        ## Finally, for status code canonicalization add status codes to data base
+        .add_status_codes()
+    }
+}
+@
+\item A Function (usually \code{solve\_OP()}) which extracts from the
+  optimization object necessary information and calls the solver
+\item Solution and status code canonicalization is done via a call to
+  \code{ROI:::canonicalize\_solution()}.
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+ \frametitle{ROI Plug-ins (4)}
+
+ The version which is published on CRAN can handle LP up to
+ MILP and MIQCP problems using the following supported solvers:
+
+ \begin{itemize}
+ \item \pkg{lpSolve} (soon)
+ \item \pkg{ipop} (R-Forge, not compatible with recent \pkg{ROI})
+ \item \pkg{quadprog}
+ \item \pkg{Rcplex} (R-Forge, on CRAN soon)
+ \item \pkg{Rglpk} (default)
+ \item \pkg{Rsymphony}
+ \end{itemize}
+
+Additional requirements to run \pkg{ROI}:
+ \begin{itemize}
+ \item \pkg{slam} for storing coefficients (constraints, objective) as
+   sparse matrices
+ \item \pkg{registry} providing a pure \proglang{R} data base system
+ \end{itemize}
+
+\end{frame}
+
+
+\subsection{Examples}
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: Solving LPs}
+
+<<roi_solve_lp, echo = TRUE>>=
+(sol <- ROI_solve(lp, solver = "glpk"))
+unclass( sol )
+@
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: Solving QCPs}
+
+\begin{Schunk}
+\begin{Sinput}
+> ROI_solve(qcp, solver = "cplex")
+\end{Sinput}
+\begin{Soutput}
+$solution
+[1] 0.1291236 0.5499528 0.8251539
+
+$objval
+         [,1]
+[1,] 2.002347
+
+$status
+$status$code
+[1] 0
+
+$status$msg
+  solver cplex
+    code 1
+  symbol CPX_STAT_OPTIMAL
+ message (Simplex or barrier): optimal solution.
+roi_code 0
+
+
+attr(,"class")
+[1] "MIP_solution"
+\end{Soutput}
+\end{Schunk}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Examples: Computations on Objects}
+
+\begin{Schunk}
+\begin{Sinput}
+> obj <- objective(qcp)
+> obj
+\end{Sinput}
+\begin{Soutput}
+function (x)
+crossprod(L, x) + 0.5 * .xtQx(Q, x)
+<environment: 0x29f34c8>
+attr(,"class")
+[1] "function"    "Q_objective" "objective"
+\end{Soutput}
+\begin{Sinput}
+> constr <- constraints(qcp)
+> length(constr)
+\end{Sinput}
+\begin{Soutput}
+[1] 3
+\end{Soutput}
+\begin{Sinput}
+> x <- ROI_solve(qcp, solver = "cplex")$solution
+> obj(x)
+\end{Sinput}
+\begin{Soutput}
+         [,1]
+[1,] 2.002347
+\end{Soutput}
+\end{Schunk}
+
+\end{frame}
+%$
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Applications
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Applications}
+
+\subsection{Portfolio Optimization}
+
+\begin{frame}[containsverbatim]
+\frametitle{Portfolio Optimization}
+
+See accompanying R code.
+
+\end{frame}
+
+
+%% \subsection{L1 Regression}
+
+%% \begin{frame}[containsverbatim]
+%% \frametitle{L1 Regression}
+
+%% See accompanying R code.
+
+%% \end{frame}
+
+
+\begin{frame}
+\frametitle{Thank you for your attention}
+
+\begin{flushleft}
+    Stefan Theu\ss{}l \\
+%%    Department of Finance, Accounting and Statistics \\
+%%    Institute for Statistics and Mathematics\\
+
+    email: \texttt{Stefan.Theussl@R-Project.org} \\
+    %%URL: \texttt{http://statmath.wu.ac.at/\~{}theussl}
+
+    \medskip
+
+%%    WU Wirtschaftsuniversit\"at Wien\\
+%%    Augasse 2--6, A-1090 Wien \\
+
+\end{flushleft}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% END OF PRESENTATION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}

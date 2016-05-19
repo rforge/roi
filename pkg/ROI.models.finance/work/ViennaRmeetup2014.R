@@ -201,6 +201,8 @@ ROI_solve( L1, solver = "glpk" )$solution
 ## compare to regression model implemented in package quantreg
 rq( stack.loss ~ stack.x, 0.5 ) # median (l1) regression  fit for the stackloss data
 
+
+
 ## which other solvers are installed
 ROI_installed_solvers()
 
