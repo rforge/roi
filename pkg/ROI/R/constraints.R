@@ -638,8 +638,18 @@ as.Q_term <- function(x, ...)
 
 ##' @rdname as.Q_term
 ##' @export
-as.Q_term.list <- function( x, ... )
-    lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
+as.Q_term.list <- function( x, ... ) {
+    dims <- list(...)
+    if ( all(c("nrow", "ncol") %in% names(dims)) ) {
+        as_Q_term_list <- function(x, nrow, ncol) {
+            if ( is.null(x) ) return( as.Q_term(x, nrow=nrow, ncol=ncol) )
+            return( as.simple_triplet_matrix(x) )
+        }
+        lapply(x, as_Q_term_list, nrow=dims$nrow, ncol=dims$ncol)
+    }
+    return(lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) ))
+}
+##    lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
 
 ##' @rdname as.Q_term
 ##' @export
