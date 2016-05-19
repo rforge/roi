@@ -251,7 +251,7 @@ ROI_make_signature <- function(...){
 ROI_meta <- function(x) attr(x, "meta")
 ROI_solver <- function(x) ROI_meta(x)$solver
 ROI_solution <- function(x) x$solution
-ROI_solution_dual <- function(x) x## FIXME: (muss man dann auch in die Solver aufnehmen!)
+ROI_solution_dual <- function(x) x ## FIXME: (muss man dann auch in die Solver aufnehmen!)
 ROI_objval <- function(x) x$objval
 ROI_message <- function(x) x$message
 ROI_sdp <- function(x) ROI_message(x)$sdp

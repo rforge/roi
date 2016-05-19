@@ -341,8 +341,9 @@ rbind_stm_by_names <- function(a, b, a_names, b_names) {
     a$dimnames <- NULL
     b$dimnames <- NULL
     b$ncol <- ncol(a)
+    tmp <- b$j
     for (i in seq_along(m)) {
-        b$j[b$j == i] <- m[i]
+        b$j[tmp == i] <- m[i]
     }
     rbind(a, b)
 }
@@ -638,7 +639,7 @@ as.Q_term <- function(x, ...)
 ##' @rdname as.Q_term
 ##' @export
 as.Q_term.list <- function( x, ... )
-    lapply( x, as.Q_term(x) )
+    lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
 
 ##' @rdname as.Q_term
 ##' @export
@@ -732,17 +733,17 @@ as.F_term <- function(x, ...)
 length.F_constraint <- function(x)
     attr( x, "n_F_constraints" )
 
-as.F_term.function <- function(x)
+as.F_term.function <- function(x, ...)
     list( x )
 
-as.F_term.list <- function(x)
+as.F_term.list <- function(x, ...)
     lapply( x, as.function )
 
 ## Jacobian
 as.J_term          <- function(x, ...) UseMethod( "as.J_term" )
-as.J_term.NULL     <- function(x)      list( NA )
-as.J_term.function <- function(x)      list( x )
-as.J_term.list     <- function(x) {
+as.J_term.NULL     <- function(x, ...)      list( NA )
+as.J_term.function <- function(x, ...)      list( x )
+as.J_term.list     <- function(x, ...) {
     as_J <- function(x) {
         if ( is.null(x) ) return( NA )
         if ( is.function(x) ) return( x )
