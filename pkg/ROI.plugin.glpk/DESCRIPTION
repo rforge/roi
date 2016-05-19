@@ -1,11 +1,11 @@
 Package: ROI.plugin.glpk
 Version: 0.0-3
-Date: 2013-11-26
+Date: 2016-05-19
 Title: ROI-plugin GLPK
 Authors@R: c(person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"))
-Description: This package enhances the R Optimization Infrastructure (ROI) package
-	     with the GLPK solver for solving mixed integer linear programming (MILP)
+Description: Enhances the R Optimization Infrastructure (ROI) package by registering
+	     the free GLPK solver. It allows for solving mixed integer linear programming (MILP)
 	     problems as well as all variants/combinations of LP, IP.
-Imports: methods, ROI (>= 0.1-0), Rglpk (>= 0.5-2)
+Imports: methods, ROI (>= 0.2-0), Rglpk (>= 0.5-2)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
