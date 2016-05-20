@@ -17,20 +17,20 @@
 ##' @return NULL
 ##' @examples
 ##' \dontrun{
-##' add_status_code_to_db("ecos", 0L, "ECOS_OPTIMAL", "Optimal solution found.", 0L)
-##' add_status_code_to_db(solver, -7L, "ECOS_FATAL", "Unknown problem in solver.", 1L)
-##' add_status_code_to_db(solver, 5L, "GLP_OPT", "Solution is optimal.", 0L)
-##' add_status_code_to_db(solver, 1L, "GLP_UNDEF", "Solution is undefined.", 1L)
+##' .ROI_plugin_add_status_code_to_db("ecos", 0L, "ECOS_OPTIMAL", "Optimal solution found.", 0L)
+##' .ROI_plugin_add_status_code_to_db(solver, -7L, "ECOS_FATAL", "Unknown problem in solver.", 1L)
+##' .ROI_plugin_add_status_code_to_db(solver, 5L, "GLP_OPT", "Solution is optimal.", 0L)
+##' .ROI_plugin_add_status_code_to_db(solver, 1L, "GLP_UNDEF", "Solution is undefined.", 1L)
 ##' }
 ##' @export
-add_status_code_to_db <- function(solver, code, symbol, message, roi_code = 1L){
+.ROI_plugin_add_status_code_to_db <- function(solver, code, symbol, message, roi_code = 1L){
     status_db$set_entry(solver = solver,
                         code = code,
                         symbol = symbol,
                         message = message,
                         roi_code = roi_code)
     ## return NULL else it returns the registry as list
-    invisible(NULL) 
+    invisible(NULL)
 }
 
 get_status_message_from_db <- function(solver, code){

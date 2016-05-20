@@ -54,7 +54,7 @@ schema_valid <- cross_validate_schema( names(formals(OP)), solver_db )
         ## One can assign several signatures a single solver method
         ## DISABLED! see R code (solution of QP from examples.R in work not same as quadprog)
         #solver <- "nlminb"
-        #ROI_register_solver_method( signatures = ROI_make_QP_signatures(),
+        #.ROI_plugin_register_solver_method( signatures = ROI_make_QP_signatures(),
         #                            solver = solver,
         #                            method =
         #                            getFunction( ".solve_QP_nlminb", where = getNamespace(pkgname)) )

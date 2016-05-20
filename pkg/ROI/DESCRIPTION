@@ -1,14 +1,16 @@
 Package: ROI
 Version: 0.2-1
-Date: 2016-05-07
+Date: 2016-05-20
 Title: R Optimization Infrastructure
 Authors@R: c( person("Kurt", "Hornik", role = "aut"),
               person("David", "Meyer", role = "aut"),
               person("Florian", "Schwendinger", role = "aut"),
               person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"),
               person("Diethelm", "Wuertz", role = "ctb") )
-Description: The R Optimization Infrastructure (ROI) package provides a
+Description: The R Optimization Infrastructure (ROI) provides a
     sophisticated framework for handling optimization problems in R.
+Depends:
+	R (>= 2.10)
 Imports:
     methods,
     registry,

@@ -10,11 +10,11 @@ ROI_applicable_solvers(op)
 \item{op}{an \pkg{ROI}-object of type \code{'OP'}.}
 }
 \value{
-An character vector giving the applicable solver, 
+An character vector giving the applicable solver,
   for a certain optimization problem.
 }
 \description{
-\code{ROI_applicable_solvers} takes as argument an 
+\code{ROI_applicable_solvers} takes as argument an
   optimization problem (object of class \code{'OP'}) and returns a vector
   giving the applicable solver. The set of applicable solver is restricted
   on the available solvers, which means if solver \code{"A"} and \code{"B"}

@@ -24,13 +24,13 @@ Solver_Order <- c("ecos", "glpk", "nloptr", "quadprog", "symphony", "ipop")
 ##  ROI_solve
 ##  =========
 ##' @title Solve an Optimization Problem
-##' @description 
-##'   Solve an given optimization problem. 
-##'   This function makes a given solver (or searches for an appropriate
-##'   solver) solve the supplied optimization problem.
-##' @param x an optimization problem of class \code{"OP"}
+##' @description
+##'   Solve a given optimization problem.
+##'   This function uses the given solver (or searches for an appropriate
+##'   solver) to solve the supplied optimization problem.
+##' @param x an optimization problem of class \code{"OP"}.
 ##' @param solver a character vector specifying the solver to use.
-##' @param control a list with additional control parameters for the solver. 
+##' @param control a list with additional control parameters for the solver.
 ##'   This is solver specific so please consult the corresponding documentation.
 ##' @param ... a list of control parameters (overruling those specified in \code{control}).
 ##' @return a list containing the solution and a message from the solver.
@@ -40,7 +40,7 @@ Solver_Order <- c("ecos", "glpk", "nloptr", "quadprog", "symphony", "ipop")
 ROI_solve <- function( x, solver="", control = list(), ... ){
 
     ## TODO: would be nice if we have an order if no solver is provided!
-    ## NOTE: nloptr can take additional parameters, 
+    ## NOTE: nloptr can take additional parameters,
     ##       we supply them by using control$args
     dots <- list(...)
     control[names(dots)] <- dots
@@ -61,18 +61,18 @@ ROI_solve <- function( x, solver="", control = list(), ... ){
         ## CASE: no method found for this signature
         sig <- OP_signature( x )
         stop( "no solver found for this signature:\n\t",
-              paste(paste(names(sig), sig, sep=": "), collapse="\n\t") )        
+              paste(paste(names(sig), sig, sep=": "), collapse="\n\t") )
     }
     if ( solver != "" ) {
         SOLVE <- methods[[ solver ]]
     } else {
         SOLVE <- methods[[ 1 ]]
     }
-    if ( !is.function(solve) ) { 
+    if ( !is.function(solve) ) {
         ## CASE: applicable solvers found but the solver name is wrong
         ##       => issue warning and fallback to the other solver
         SOLVE <- methods[[1]]
-        warning( "solver '", solver, "' not found or applicable, ROI uses '", 
+        warning( "solver '", solver, "' not found or applicable, ROI uses '",
                  names(methods)[1], "' instead" )
     }
     SOLVE( x, control )
@@ -90,7 +90,7 @@ ROI_solve <- function( x, solver="", control = list(), ... ){
 ##'   solvers that do not necessarily work,
 ##'   \code{ROI_registered_solvers()} lists all solvers that can be used
 ##'   to solve optimization problems.
-##' 
+##'
 ##' @param ... arguments passed on to \code{\link{installed.packages}}.
 ##' @return a named character vector.
 ##' @author Stefan Theussl
@@ -107,7 +107,7 @@ ROI_installed_solvers <- function( ... ) {
     if ( "lib.loc" %in% names(dots) ) lib.loc <- dots$lib.loc
     else lib.loc <- .libPaths()
     pkgs <- grep( .plugin_prefix(), unlist(lapply(lib.loc, dir)), value = TRUE )
-    structure( pkgs, names = get_solver_name(pkgs) )
+    structure( pkgs, names = .ROI_plugin_get_solver_name(pkgs) )
 }
 
 ##' @rdname ROI_registered_solvers
@@ -122,16 +122,16 @@ ROI_available_solvers <- function( ... ){
 ##  ======================
 ##
 ##' @title Obtain Applicable Solvers
-##' @description \code{ROI_applicable_solvers} takes as argument an 
+##' @description \code{ROI_applicable_solvers} takes as argument an
 ##'   optimization problem (object of class \code{'OP'}) and returns a vector
 ##'   giving the applicable solver. The set of applicable solver is restricted
 ##'   on the available solvers, which means if solver \code{"A"} and \code{"B"}
 ##'   would be applicable but a \code{ROI.plugin} is only installed for solver
 ##'   \code{"A"} only solver \code{"A"} would be listed as applicable solver.
 ##' @param op an \pkg{ROI}-object of type \code{'OP'}.
-##' @return An character vector giving the applicable solver, 
-##'   for a certain optimization problem. 
-##' 
+##' @return An character vector giving the applicable solver,
+##'   for a certain optimization problem.
+##'
 ##' @export
 ## ---------------------------------------------------------
 ROI_applicable_solvers <- function( op ){
@@ -177,7 +177,7 @@ get_solver_packages_from_db <- function ( ){
 
 
 ##  -----------------------------------------------------------
-##  ROI_register_solver_method
+##  .ROI_plugin_register_solver_method
 ##  ==========================
 ##' @title Register Solver Method
 ##'
@@ -187,7 +187,7 @@ get_solver_packages_from_db <- function ( ){
 ##' @param method a function registered as solver method.
 ##' @return TRUE on success
 ##' @export
-ROI_register_solver_method <- function( signatures, solver, method ){
+.ROI_plugin_register_solver_method <- function( signatures, solver, method ){
     for( i in 1:nrow(signatures) )
         do.call(solver_db$set_entry, c(as.list(signatures[i,]),
                                              list(solver = solver),
@@ -211,7 +211,7 @@ ROI_required_signature <- function()
 ##' @title Make Signatures
 ##' @param ... signature definitions
 ##' @return a data.frame with the supported signatures
-##' @examples 
+##' @examples
 ##' ## ROI_make_LP_signatures
 ##' lp_signature <- ROI_make_signature( objective = "L",
 ##'                                     constraints = "L",
@@ -244,30 +244,10 @@ ROI_make_signature <- function(...){
     .make_signature(do.call(ROI_expand, dotargs))
 }
 
-## ROI_sdp <- function() {
-## 
-## }
-
-ROI_meta <- function(x) attr(x, "meta")
-ROI_solver <- function(x) ROI_meta(x)$solver
-ROI_solution <- function(x) x$solution
-ROI_solution_dual <- function(x) x ## FIXME: (muss man dann auch in die Solver aufnehmen!)
-ROI_objval <- function(x) x$objval
-ROI_message <- function(x) x$message
-ROI_sdp <- function(x) ROI_message(x)$sdp
-## FIXME: ROI_get_message
-## FIXME: ROI_get_solution
-## FIXME: ROI_get_solution_dual
-## FIXME: ROI_get_meta
-## FIXME: ROI_get_objval
-
-ROI_expand <- function(...){
-    base::expand.grid(..., stringsAsFactors = FALSE)
-}
-
+##  ROI plugin convenience functions:
 ##  make a set of signatures based on problem class
 ##  ---------------------------------------------------------
-##  ROI_make_signatures
+##  .ROI_plugin_make_signatures
 ##  ======================
 ##  ---------------------------------------------------------
 ##' @title Make Signatures
@@ -276,7 +256,7 @@ ROI_expand <- function(...){
 ##'   put them into the plugins!
 ##' @return An R object containing the signature.
 ##' @export
-ROI_make_LP_signatures <- function()
+.ROI_plugin_make_LP_signatures <- function()
     ROI_make_signature( objective = "L",
                         constraints = c("X", "L"),
                         types = c("C"),
@@ -284,9 +264,9 @@ ROI_make_LP_signatures <- function()
                         cones = c("free"),
                         maximum = c(TRUE, FALSE) )
 
-##' @rdname ROI_make_LP_signatures
+##' @rdname .ROI_plugin_make_LP_signatures
 ##' @export
-ROI_make_QP_signatures <- function()
+.ROI_plugin_make_QP_signatures <- function()
     ROI_make_signature( objective = "Q",
                         constraints = c("X", "L"),
                         types = c("C"),
@@ -294,9 +274,9 @@ ROI_make_QP_signatures <- function()
                         cones = c("free"),
                         maximum = c(TRUE, FALSE) )
 
-##' @rdname ROI_make_LP_signatures
+##' @rdname .ROI_plugin_make_LP_signatures
 ##' @export
-ROI_make_MILP_signatures <- function()
+.ROI_plugin_make_MILP_signatures <- function()
     ROI_make_signature( objective = "L",
                         constraints = c("X", "L"),
                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
@@ -304,9 +284,9 @@ ROI_make_MILP_signatures <- function()
                         cones = c("free"),
                         maximum = c(TRUE, FALSE) )
 
-##' @rdname ROI_make_LP_signatures
+##' @rdname .ROI_plugin_make_LP_signatures
 ##' @export
-ROI_make_MIQP_signatures <- function()
+.ROI_plugin_make_MIQP_signatures <- function()
     ROI_make_signature( objective = c("L", "Q"),
                         constraints = c("X", "L"),
                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
@@ -314,9 +294,9 @@ ROI_make_MIQP_signatures <- function()
                         cones = c("free"),
                         maximum = c(TRUE, FALSE) )
 
-##' @rdname ROI_make_LP_signatures
+##' @rdname .ROI_plugin_make_LP_signatures
 ##' @export
-ROI_make_MIQCP_signatures <- function()
+.ROI_plugin_make_MIQCP_signatures <- function()
     ROI_make_signature( objective = c("L", "Q"),
                         constraints = c("X", "L", "Q"),
                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
@@ -348,3 +328,23 @@ ROI_make_MIQCP_signatures <- function()
     x[ordered]
 }
 
+## ROI_sdp <- function() {
+##
+## }
+
+ROI_meta <- function(x) attr(x, "meta")
+ROI_solver <- function(x) ROI_meta(x)$solver
+ROI_solution <- function(x) x$solution
+ROI_solution_dual <- function(x) x ## FIXME: (muss man dann auch in die Solver aufnehmen!)
+ROI_objval <- function(x) x$objval
+ROI_message <- function(x) x$message
+ROI_sdp <- function(x) ROI_message(x)$sdp
+## FIXME: ROI_get_message
+## FIXME: ROI_get_solution
+## FIXME: ROI_get_solution_dual
+## FIXME: ROI_get_meta
+## FIXME: ROI_get_objval
+
+ROI_expand <- function(...){
+    base::expand.grid(..., stringsAsFactors = FALSE)
+}

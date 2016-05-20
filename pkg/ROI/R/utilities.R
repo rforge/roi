@@ -2,7 +2,7 @@
 ## Package: ROI
 ## File:    utilities.R
 ## Author:  Stefan Theussl
-## Changed: 2011-10-04
+## Changed: 2016-05-20
 ################################################################################
 
 
@@ -197,6 +197,9 @@ as.no_V_bounds_OP.OP <- function( x ){
 .plugin_prefix <- function()
     "ROI.plugin"
 
+## NOTE: all plugin related functions must be prefixed with ".ROI_plugin_" and
+##       exported.
+
 ##  -----------------------------------------------------------
 ##  get_solver_name
 ##  ===============
@@ -206,7 +209,7 @@ as.no_V_bounds_OP.OP <- function( x ){
 ##' @param pkgname a string giving the package name.
 ##' @return Returns the name of the solver as character.
 ##' @export
-get_solver_name <- function( pkgname )
+.ROI_plugin_get_solver_name <- function( pkgname )
     sub(sprintf("%s.", .plugin_prefix()), "", as.character(pkgname))
 
 get_package_name <- function( solver )
@@ -217,7 +220,7 @@ get_package_name <- function( solver )
 ##  equal
 ##  =====
 ##' @title Compare two Objects
-##' @description The utility function \code{equal} can be used to compare two 
+##' @description The utility function \code{equal} can be used to compare two
 ##'   \pkg{ROI} objects and is mainly used for testing purposes.
 ##' @param x an \R object to be compared with object y.
 ##' @param y an \R object to be compared with object x.
@@ -318,7 +321,7 @@ equal.L_constraint <- function(x, y, ...) {
     if ( !equal(x$rhs, y$rhs) ) return(FALSE)
     if ( !equal(x$names, y$names) ) return(FALSE)
     if ( !equal(x$L, y$L) ) return(FALSE)
-    return(TRUE) 
+    return(TRUE)
 }
 
 ##' @rdname equal

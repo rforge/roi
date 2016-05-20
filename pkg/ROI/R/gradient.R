@@ -15,6 +15,8 @@
 G <- function( x, ... )
     UseMethod("G")
 
+## FIXME: HWB suggested (see mail from 25.4.) to allow for using different gradient functions, e.g. in pracma HWB uses the "central difference formula".
+##        st: Implement this via ROI_options?
 G.F_objective <- function( x, ... ){
     args <- list(...)
     args$func <- x$F

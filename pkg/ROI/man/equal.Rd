@@ -44,7 +44,7 @@ equal(x, y, ...)
 \code{TRUE} if \code{x} and \code{y} are equal \code{FALSE} otherwise.
 }
 \description{
-The utility function \code{equal} can be used to compare two 
+The utility function \code{equal} can be used to compare two
   \pkg{ROI} objects and is mainly used for testing purposes.
 }
 \examples{

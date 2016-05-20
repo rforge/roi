@@ -2,7 +2,7 @@
 ## Package: ROI
 ## File:    solution.R
 ## Author:  Stefan Theussl
-## Changed: 2011-10-05
+## Changed: 2016-05-20
 ################################################################################
 
 
@@ -59,12 +59,12 @@ canonicalize_status <- function( status, solver ){
 }
 
 ##  -----------------------------------------------------------
-##  canonicalize_solution
+##  Plug-in convenience function: canonicalize_solution
 ##  =====================
 ##' @title Canonicalize Solution
 ##'
 ##' @description Transform the solution to a standardized form.
-##' @param solution a numeric or integer vector giving 
+##' @param solution a numeric or integer vector giving
 ##'        the solution of the optimization problem.
 ##' @param optimum a numeric giving the optimal value.
 ##' @param status an integer giving the status code (exit flag).
@@ -73,11 +73,11 @@ canonicalize_status <- function( status, solver ){
 ##' @param ... further arguments to be stored in the solution object.
 ##' @return an object of class \code{"OP_solution"}.
 ##' @export
-canonicalize_solution <- function( solution, optimum, status, solver, message=NULL, ... ) {
+.ROI_plugin_canonicalize_solution <- function( solution, optimum, status, solver, message=NULL, ... ) {
     status <- canonicalize_status( status, solver )
     make_OP_solution( solution = solution,
                       objval   = optimum,
                       status   = status,
-                      solver   = solver, 
+                      solver   = solver,
                       message  = message, ... )
 }

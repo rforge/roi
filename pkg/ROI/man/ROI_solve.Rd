@@ -7,11 +7,11 @@
 ROI_solve(x, solver = "", control = list(), ...)
 }
 \arguments{
-\item{x}{an optimization problem of class \code{"OP"}}
+\item{x}{an optimization problem of class \code{"OP"}.}
 
 \item{solver}{a character vector specifying the solver to use.}
 
-\item{control}{a list with additional control parameters for the solver. 
+\item{control}{a list with additional control parameters for the solver.
 This is solver specific so please consult the corresponding documentation.}
 
 \item{...}{a list of control parameters (overruling those specified in \code{control}).}
@@ -20,9 +20,9 @@ This is solver specific so please consult the corresponding documentation.}
 a list containing the solution and a message from the solver.
 }
 \description{
-Solve an given optimization problem. 
-  This function makes a given solver (or searches for an appropriate
-  solver) solve the supplied optimization problem.
+Solve a given optimization problem.
+  This function uses the given solver (or searches for an appropriate
+  solver) to solve the supplied optimization problem.
 }
 \author{
 Stefan Theussl
