@@ -28,11 +28,11 @@ solve_QP <- function( x, control ) {
                               rhs = constraints(x)$rhs,
                               max = x$maximum,
                               control = control)
-    ROI:::canonicalize_solution( solution = out$sol,
-                                 optimum  = objective(x)(out$sol),
-                                 status   = out$ierr,
-                                 solver   = ROI:::get_solver_name(getPackageName()),
-                                 solver_return_object = out)
+    .ROI_plugin_canonicalize_solution( solution = out$sol,
+                                       optimum  = objective(x)(out$sol),
+                                       status   = out$ierr,
+                                       solver   = .ROI_plugin_get_solver_name(getPackageName()),
+                                       solver_return_object = out)
 }
 
 ## SOLVER SUBMETHODS
@@ -145,25 +145,25 @@ solve_QP <- function( x, control ) {
 ## STATUS CODES
 .add_status_codes <- function(){
     ## quadprog
-    solver <- ROI:::get_solver_name( getPackageName() )
-    ROI:::add_status_code_to_db(solver,
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    .ROI_plugin_add_status_code_to_db(solver,
                                 0L,
                                 "OPTIMAL",
                                 "Solution is optimal",
                                 0L
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 1L,
                                 "INCONSISTENT",
                                 "Constraints are inconsistent, no solution."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 2L,
                                 "NOT_POSITIVE_DEFINITE",
                                 "quadratic term in function is not positive definite."
                                 )
     ## FIXME: temporary status code until Fortran routine is called directly again
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 3L,
                                 "ROI_INTERFACE_ERROR",
                                 "contact the plugin maintainer."
