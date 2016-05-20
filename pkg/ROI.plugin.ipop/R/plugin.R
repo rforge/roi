@@ -20,11 +20,11 @@ solve_QP <- function( x, control ) {
                            bounds = bounds(x),
                            max = x$maximum,
                            control = control )
-    ROI::canonicalize_solution( solution = out$solution,
+    .ROI_plugin_canonicalize_solution( solution = out$solution,
                                  optimum  = ifelse(is.na(out$solution), NA,
                                  objective(x)(out$solution)),
                                  status   = out$status,
-                                 solver   = ROI::get_solver_name(getPackageName()),
+                                 solver   = .ROI_plugin_get_solver_name(getPackageName()),
                                  control  = control,
                                  returnvalue = out$output )
 }
@@ -45,11 +45,11 @@ solve_LP <- function( x, control ) {
                            bounds = bounds(x),
                            max = x$maximum,
                            control = control )
-    ROI::canonicalize_solution( solution = out$solution,
+    .ROI_plugin_canonicalize_solution( solution = out$solution,
                                  optimum  = ifelse(is.na(out$solution), NA,
                                  objective(x)(out$solution)),
                                  status   = out$status,
-                                 solver   = ROI::get_solver_name(getPackageName()),
+                                 solver   = .ROI_plugin_get_solver_name(getPackageName()),
                                  control  = control,
                                  returnvalue = out$output)
 }
@@ -58,7 +58,7 @@ solve_LP <- function( x, control ) {
 
 .ipop_solve_QP <- function( Q, L, mat, dir, rhs, bounds, max, control ){
 
-    N <- length( L )
+    N <- ifelse( !is.null(dim(L)), ncol(L), length(L) )
     ## no infinte value possible, thus setting to large number
     INF <- control$inf
 
@@ -89,7 +89,7 @@ solve_LP <- function( x, control ) {
         Q <- -Q
     }
 
-    out <- tryCatch( ipop(c = L,
+    out <- tryCatch( ipop(c = as.matrix(L), ## FIXME: for the time being dense representation
                           H = as.matrix(Q),
                           A = as.matrix(mat),
                           b = lhs,
@@ -116,19 +116,19 @@ solve_LP <- function( x, control ) {
 ## STATUS CODES
 .add_status_codes <- function(){
     ## quadprog
-    solver <- ROI::get_solver_name( getPackageName() )
-    ROI::add_status_code_to_db(solver,
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    .ROI_plugin_add_status_code_to_db(solver,
                                 0L,
                                 "converged",
                                 "Solution is optimal",
                                 0L
                                 )
-    ROI::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 1L,
                                 "not converged",
                                 "No solution found."
                                 )
-    ROI::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 2L,
                                 "error",
                                 "Solver error: No solution found."
