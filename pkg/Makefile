@@ -1,6 +1,6 @@
 PACKAGE=ROI
-##R=$(shell which R-devel)
-R=R
+R=$(shell which R-devel)
+#R=R
 
 all: pkg plugins
 

@@ -3,3 +3,5 @@ importFrom("kernlab", "ipop")
 importFrom("methods", "getPackageName")
 importFrom("methods", "getFunction")
 importFrom("slam", "simple_triplet_zero_matrix")
+importFrom("stats", "terms")
+

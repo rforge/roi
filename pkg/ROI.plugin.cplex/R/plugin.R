@@ -47,38 +47,37 @@ solve_OP <- function( x, control ){
         mat$v <- mat$v[column_major_order]
 
         ## we need to handle quadratic constraint
-        tryCatch( Rcplex:::Rcplex_solve_QCP(Qmat = terms(objective(x))$Q,
-                                            cvec = as.numeric(as.matrix(terms(objective(x))$L)), # these are STMs
-                                            QC = list(QC = list(Q = constraints(x)$Q[ qc ],
-                                                                L = .make_list_of_linear_constraints(
-                                                                  constraints(x)$L[ qc, ])),
-                                                      dir = .as_Rcplex_sense(constraints(x)$dir[ qc ]),
-                                                      b = constraints(x)$rhs[ qc ]),
-                                            Amat = mat,
-                                            sense = sense,
-                                            bvec = constraints(x)$rhs[ -qc ],
-                                            vtype = types,
-                                            lb = lb,
-                                            ub = ub,
-                                            objsense = if(x$maximum) "max" else "min",
-                                            control = list(trace = 0, round = 1),
-                                            n = nos
-                                            ),
-                  error = identity )
+        tryCatch( Rcplex_solve_QCP(Qmat = terms(objective(x))$Q,
+                                   cvec = as.numeric(as.matrix(terms(objective(x))$L)), # these are STMs
+                                   QC = list(QC = list(Q = constraints(x)$Q[ qc ],
+                                                       L = .make_list_of_linear_constraints(
+                                                           constraints(x)$L[ qc, ])),
+                                             dir = .as_Rcplex_sense(constraints(x)$dir[ qc ]),
+                                             b = constraints(x)$rhs[ qc ]),
+                                   Amat = mat,
+                                   sense = sense,
+                                   bvec = constraints(x)$rhs[ -qc ],
+                                   vtype = types,
+                                   lb = lb,
+                                   ub = ub,
+                                   objsense = if(x$maximum) "max" else "min",
+                                   control = list(trace = 0, round = 1),
+                                   n = nos
+                                   ),
+                 error = identity )
 
-        }
-    else {
-        mat <- constraints(x)$L
-        sense <- .as_Rcplex_sense(constraints(x)$dir)
-        ## Reorder indices as CPLEX needs a column major order
-        ## representation i.e., column indices j have to be in ascending
-        ## order.
-        column_major_order <- order(mat$j)
-        mat$i <- mat$i[column_major_order]
-        mat$j <- mat$j[column_major_order]
-        mat$v <- mat$v[column_major_order]
+           } else {
+               mat <- constraints(x)$L
+               sense <- .as_Rcplex_sense(constraints(x)$dir)
+               ## Reorder indices as CPLEX needs a column major order
+               ## representation i.e., column indices j have to be in ascending
+               ## order.
+               column_major_order <- order(mat$j)
+               mat$i <- mat$i[column_major_order]
+               mat$j <- mat$j[column_major_order]
+               mat$v <- mat$v[column_major_order]
 
-        tryCatch( Rcplex::Rcplex(Qmat = terms(objective(x))$Q,
+               tryCatch( Rcplex(Qmat = terms(objective(x))$Q,
                                 cvec = as.numeric(as.matrix(terms(objective(x))$L)),
                                 Amat = mat,
                                 sense = sense,
@@ -90,8 +89,9 @@ solve_OP <- function( x, control ){
                                 control = list(trace = 0, round = 1),
                                 n = nos
                                 ),
-                  error = identity )
-      }
+                        error = identity )
+           }
+    Rcplex.close()
     if(inherits(out, "error")) {
         ## Explicitly catch and rethrow CPLEX unavailability errors.
         msg <- conditionMessage(out)
