@@ -9,116 +9,116 @@
     ## (see e.e., http://www.decf.berkeley.edu/help/apps/ampl/cplex-doc/refcallablelibrary/index.html)
     ## FIXME: only a (relevant) subset from CPLEX status codes
 
-    solver <- ROI:::get_solver_name( getPackageName() )
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
 
     ## generic status codes
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 1L,
                                 "CPX_STAT_OPTIMAL",
                                 "(Simplex or barrier): optimal solution.",
                                 0L
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 2L,
                                 "CPX_STAT_UNBOUNDED",
                                 "(Simplex or Barrier): Problem is unbounded."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 3L,
                                 "CPX_STAT_INFEASIBLE",
                                 "(Simplex or Barrier): Problem has been proven infeasible."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 4L,
                                 "CPX_STAT_INForUNBD",
                                 "(Simplex or Barrier): Problem has been proven either infeasible or unbounded."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 5L,
                                 "CPX_STAT_OPTIMAL_INFEAS",
                                 "(Simplex or Barrier) Optimal solution is available, but with infeasibilities after unscaling"
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 11L,
                                 "CPX_STAT_ABORT_TIME_LIM",
                                 "(Simplex or Barrier): Stopped due to a time limit."
                                 )
     ## MIP status codes
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 101L,
                                 "CPXMIP_OPTIMAL",
                                 "(MIP): optimal integer solution.",
                                 0L
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 102L,
                                 "CPXMIP_OPTIMAL_TOL",
                                 "(MIP): optimal soluton with the tolerance defined by epgap or epagap has been found.",
                                 0L
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 103L,
                                 "CPXMIP_INFEASIBLE",
                                 "(MIP): Solution is integer infeasible."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 104L,
                                 "CPXMIP_SOL_LIM",
                                 "(MIP): The limit on mixed integer solutions has been reached."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 107L,
                                 "CPXMIP_TIME_LIM_FEAS",
                                 "(MIP): Time limit exceeded, but integer solution exists."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 108L,
                                 "CPXMIP_TIME_LIM_INFEAS",
                                 "(MIP): Time limit exceeded, no integer solution exists."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 109L,
                                 "CPXMIP_FAIL_FEAS",
                                 "(MIP): Terminated because of an error, but integer solution exists."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 110L,
                                 "CPXMIP_FAIL_INFEAS",
                                 "(MIP):Terminated because of an error; no integer solution."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 113L,
                                 "CPXMIP_ABORT_FEAS",
                                 "(MIP): Stopped, but an integer solution exists."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 114L,
                                 "CPXMIP_ABORT_INFEAS",
                                 "(MIP): Stopped, no integer solution found."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 115L,
                                 "CPXMIP_OPTIMAL_INFEAS",
                                 "(MIP): Problem is optimal with unscaled infeasibilities"
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 118L,
                                 "CPXMIP_UNBOUNDED",
                                 "(MIP): Problem is unbounded."
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 128L,
                                 "CPXMIP_POPULATESOL_LIM",
                                 "(MIP MultSols): The limit on optimal mixed integer solutions generated by populate has been reached.",
                                 0L
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 129L,
                                 "CPXMIP_OPTIMAL_POPULATED",
                                 "(MIP-MultSols): Populate has completed the enumeration of all solutions it could enumerate.",
                                 0L
                                 )
-    ROI:::add_status_code_to_db(solver,
+    .ROI_plugin_add_status_code_to_db(solver,
                                 130L,
                                 "CPXMIP_OPTIMAL_POPULATED_TOL",
                                 "(MIP-MultSols): similar to 129L but additionally objective value fits the tolerance specified by paramaters.",

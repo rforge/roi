@@ -104,20 +104,20 @@ solve_OP <- function( x, control ){
         objval <- NA_real_
         status <- 2                     # or whatever ...
         names(status) <- msg            # should be of length one ...
-        out <- ROI:::canonicalize_solution(solution, objval, status, ROI:::get_solver_name(getPackageName()) )
+        out <- .ROI_plugin_canonicalize_solution(solution, objval, status, .ROI_plugin_get_solver_name(getPackageName()) )
         if(value_is_list_of_solutions) out <- list(out)
     } else {
         class(out) <- c(class(x), class(out))
         out <- if(value_is_list_of_solutions)
-            lapply( out, ROI:::canonicalize_solution(solution = out$xopt,
-                                                      optimum  = objective(x)(out$xopt),
-                                                      status   = out$status,
-                                                      solver   = ROI:::get_solver_name(getPackageName())) )
+            lapply( out, .ROI_plugin_canonicalize_solution(solution = out$xopt,
+                                                           optimum  = objective(x)(out$xopt),
+                                                           status   = out$status,
+                                                           solver   = .ROI_plugin_get_solver_name(getPackageName())) )
         else
-            ROI:::canonicalize_solution( solution = out$xopt,
-                                         optimum  = objective(x)(out$xopt),
-                                         status   = out$status,
-                                         solver   = ROI:::get_solver_name(getPackageName()) )
+            .ROI_plugin_canonicalize_solution( solution = out$xopt,
+                                               optimum  = objective(x)(out$xopt),
+                                               status   = out$status,
+                                               solver   = .ROI_plugin_get_solver_name(getPackageName()) )
     }
     out
 }
