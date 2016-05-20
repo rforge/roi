@@ -9,8 +9,8 @@ rbind.constraint(..., use.names = FALSE, recursive = FALSE)
 \arguments{
 \item{...}{constraints objects to be concatenated.}
 
-\item{use.names}{a logical if \code{FALSE} the names of the constraints 
-are ignored when combining them, if \code{TRUE} the constraints are 
+\item{use.names}{a logical if \code{FALSE} the names of the constraints
+are ignored when combining them, if \code{TRUE} the constraints are
 combined based on their \code{variable.names}.}
 
 \item{recursive}{logical. Currently ignored (enable compatibility

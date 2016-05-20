@@ -21,8 +21,7 @@ solve_QP <- function( x, control ) {
                            max = x$maximum,
                            control = control )
     .ROI_plugin_canonicalize_solution( solution = out$solution,
-                                 optimum  = ifelse(is.na(out$solution), NA,
-                                 objective(x)(out$solution)),
+                                 optimum  = ifelse(!out$status, objective(x)(out$solution), NA),
                                  status   = out$status,
                                  solver   = .ROI_plugin_get_solver_name(getPackageName()),
                                  control  = control,
@@ -46,8 +45,7 @@ solve_LP <- function( x, control ) {
                            max = x$maximum,
                            control = control )
     .ROI_plugin_canonicalize_solution( solution = out$solution,
-                                 optimum  = ifelse(is.na(out$solution), NA,
-                                 objective(x)(out$solution)),
+                                 optimum  = ifelse(!out$status, objective(x)(out$solution), NA),
                                  status   = out$status,
                                  solver   = .ROI_plugin_get_solver_name(getPackageName()),
                                  control  = control,
@@ -108,7 +106,7 @@ solve_LP <- function( x, control ) {
               output = out)
     else
         list( solution = out@primal,
-              status = ifelse(is.na(out@primal), 1L, 0L),
+              status = ifelse(any(is.na(out@primal)), 1L, 0L),
               output = out)
     out
 }

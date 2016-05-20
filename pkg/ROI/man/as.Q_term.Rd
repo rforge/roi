@@ -32,12 +32,12 @@ an object of class \code{"simple_triplet_zero_matrix"}
 }
 \description{
 The \code{"Q_term"} object represents the quadratic term of the \code{"Q_constraint"}.
-  Objects from the following classes can be coerced to \code{"Q_term"}: 
-  \code{"NULL"}, \code{"numeric"}, \code{"matrix"}, \code{"simple_triplet_matrix"} 
+  Objects from the following classes can be coerced to \code{"Q_term"}:
+  \code{"NULL"}, \code{"numeric"}, \code{"matrix"}, \code{"simple_triplet_matrix"}
   and \code{"list"}.
 }
 \details{
-In the case of \code{lists} \code{"as.Q_term"} is applied to every element 
+In the case of \code{lists} \code{"as.Q_term"} is applied to every element
   of the list, for \code{NULL} one can supply the optional arguments \code{"nrow"}
   and \code{"ncol"} which will create a \code{"simple_triplet_zero_matrix"}
   with the specified dimension.

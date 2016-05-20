@@ -27,7 +27,7 @@ an object of class \code{"L_constraint"} which inherits
 from \code{"constraint"}.
 }
 \description{
-Linear constraints are typically of the form \eqn{Ax \leq b}. 
+Linear constraints are typically of the form \eqn{Ax \leq b}.
 \eqn{A} is a (sparse) matrix of coefficients to the objective
 variables \eqn{x}. \eqn{b} is called the right hand side of the
 constraints.

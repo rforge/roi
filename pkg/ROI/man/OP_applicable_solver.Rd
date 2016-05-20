@@ -10,12 +10,12 @@ OP_applicable_solver(x)
 \item{x}{an object of class \code{"OP"}}
 }
 \value{
-A a character vector giving the giving the names of all available 
+A a character vector giving the giving the names of all available
   and applicable solver
 }
 \description{
-Takes an object of class \code{"OP"} (optimization problem) 
-  and returns a character vector giving the names of all available 
+Takes an object of class \code{"OP"} (optimization problem)
+  and returns a character vector giving the names of all available
   and applicable solver.
 }
 

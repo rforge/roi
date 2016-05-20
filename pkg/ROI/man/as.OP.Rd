@@ -17,12 +17,10 @@ Coerces objects of type \code{"OP"}.
 }
 \details{
 Objects from the following classes can be coerced to \code{"OP"}:
-\code{"NULL"}, and \code{"numeric"}. The former represents an
-empty optimization problem, the latter an unconstrained linear
+\code{"numeric"}. This yields an unconstrained linear
 programming problem where the elements of a \code{"numeric"}
 vector \eqn{c} are treated as being objective variable
-coefficients in \eqn{c^\top x}).  inherits from class
-\code{"objective"}.
+coefficients in \eqn{c^\top x}.
 }
 \author{
 Stefan Theussl

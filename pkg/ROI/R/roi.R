@@ -34,6 +34,26 @@ Solver_Order <- c("ecos", "glpk", "nloptr", "quadprog", "symphony", "ipop")
 ##'   This is solver specific so please consult the corresponding documentation.
 ##' @param ... a list of control parameters (overruling those specified in \code{control}).
 ##' @return a list containing the solution and a message from the solver.
+##' @examples
+##' ## Portfolio optimization - minimum variance
+##' ## -----------------------------------------
+##' ## get monthly returns of 30 US stocks
+##' data( US30 )
+##' r <- na.omit( US30 )
+##' ## objective function to minimize
+##' obj <- Q_objective( 2*cov(r) )
+##' ## full investment constraint
+##' full_invest <- L_constraint( rep(1, ncol(US30)), "==", 1 )
+##' ## create optimization problem / long-only
+##' op <- OP( objective = obj, constraints = full_invest )
+##' ## solve the problem - only works if a QP solver is registered
+##' \dontrun{
+##' res <- ROI_solve( op )
+##' res
+##' sol <- res$solution
+##' names( sol ) <- colnames( US30 )
+##' round( sol[ which(sol > 1/10^6) ], 3 )
+##' }
 ##' @author Stefan Theussl
 ##' @export
 ##  -----------------------------------------------------------

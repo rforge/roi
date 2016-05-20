@@ -24,6 +24,27 @@ Solve a given optimization problem.
   This function uses the given solver (or searches for an appropriate
   solver) to solve the supplied optimization problem.
 }
+\examples{
+## Portfolio optimization - minimum variance
+## -----------------------------------------
+## get monthly returns of 30 US stocks
+data( US30 )
+r <- na.omit( US30 )
+## objective function to minimize
+obj <- Q_objective( 2*cov(r) )
+## full investment constraint
+full_invest <- L_constraint( rep(1, ncol(US30)), "==", 1 )
+## create optimization problem / long-only
+op <- OP( objective = obj, constraints = full_invest )
+## solve the problem - only works if a QP solver is registered
+\dontrun{
+res <- ROI_solve( op )
+res
+sol <- res$solution
+names( sol ) <- colnames( US30 )
+round( sol[ which(sol > 1/10^6) ], 3 )
+}
+}
 \author{
 Stefan Theussl
 }

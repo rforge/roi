@@ -20,7 +20,7 @@ from \code{"objective"}.
 }
 \description{
 A quadratic objective function is typically of the form
-\eqn{x^\top Qx + c^\top x} where \eqn{Q} is a (sparse) matrix
+\eqn{x^\top Qx + 1/2 c^\top x} where \eqn{Q} is a (sparse) matrix
 defining the quadratic part of the function and \eqn{c} is a
 (sparse) vector of coefficients to the \eqn{n} defining the linear
 part.

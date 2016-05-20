@@ -1,0 +1,8 @@
+
+Overview of ROI plug-in methods:
+
+.ROI_plugin_get_solver_name
+.ROI_plugin_register_solver_method
+.ROI_plugin_make_*_signatures
+.ROI_plugin_canonicalize_solution
+.ROI_plugin_add_status_code_to_db

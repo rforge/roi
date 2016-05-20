@@ -34,6 +34,33 @@
 ##' value otherwise}
 ##' \item{msg}{the status code and additional
 ##' information about the solution provided by the solver.}
+##' @examples
+##' ## Simple linear program.
+##' ## maximize:   2 x_1 + 4 x_2 + 3 x_3
+##' ## subject to: 3 x_1 + 4 x_2 + 2 x_3 <= 60
+##' ##             2 x_1 +   x_2 +   x_3 <= 40
+##' ##               x_1 + 3 x_2 + 2 x_3 <= 80
+##' ##               x_1, x_2, x_3 are non-negative real numbers
+##'
+##' LP <- OP( c(2, 4, 3),
+##'           L_constraint(L = matrix(c(3, 2, 1, 4, 1, 3, 2, 2, 2), nrow = 3),
+##'                        dir = c("<=", "<=", "<="),
+##'                        rhs = c(60, 40, 80)),
+##'           max = TRUE )
+##' LP
+##'
+##' ## Simple quadratic program.
+##' ## minimize:          - 5 x_2      + 1/2 (x_1^2 + x_2^2 + x_3^2)
+##' ## subject to: -4 x_1 - 3 x_2      >= -8
+##' ##              2 x_1 +   x_2       >= 2
+##' ##                    - 2 x_2 + x_3 >= 0
+##'
+##' QP <- OP( Q_objective (Q = diag(1, 3), L = c(0, -5, 0)),
+##'           L_constraint(L = matrix(c(-4,-3,0,2,1,0,0,-2,1),
+##'                                   ncol = 3, byrow = TRUE),
+##'                        dir = rep(">=", 3),
+##'                        rhs = c(-8,2,0)) )
+##' QP
 ##' @author Stefan Theussl
 ##' @export
 OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
@@ -113,15 +140,14 @@ print.OP <- function(x, ...){
     }
 }
 
+## FIXME: \code{"NULL"} not supported (represents an empty optimization problem)
 ##' Coerces objects of type \code{"OP"}.
 ##'
 ##' Objects from the following classes can be coerced to \code{"OP"}:
-##' \code{"NULL"}, and \code{"numeric"}. The former represents an
-##' empty optimization problem, the latter an unconstrained linear
+##' \code{"numeric"}. This yields an unconstrained linear
 ##' programming problem where the elements of a \code{"numeric"}
 ##' vector \eqn{c} are treated as being objective variable
-##' coefficients in \eqn{c^\top x}).  inherits from class
-##' \code{"objective"}.
+##' coefficients in \eqn{c^\top x}.
 ##' @title Optimization Problem Object
 ##' @param x an R object.
 ##' @return an object of class \code{"OP"}.
@@ -188,8 +214,8 @@ OP_signature <- function( x ){
     bound_mapping <- setNames(c("CV", "C", "V", "X"), c("bound", "C_bound", "V_bound", "NULL"))
     boun <- bound_mapping[class(bounds(x))[1]]
 
-    constr <- names( available_constraint_classes() )[ available_constraint_classes() %in% class(constraints(x))[1] ]  
-    
+    constr <- names( available_constraint_classes() )[ available_constraint_classes() %in% class(constraints(x))[1] ]
+
     if ( is.null(bounds(x)$cones) ) {
         cone_types <- "free"
     } else {
@@ -209,12 +235,12 @@ OP_signature <- function( x ){
 #  OP_applicable_solver
 #  ====================
 #' @title Applicable Solver
-#' @description 
-#'   Takes an object of class \code{"OP"} (optimization problem) 
-#'   and returns a character vector giving the names of all available 
+#' @description
+#'   Takes an object of class \code{"OP"} (optimization problem)
+#'   and returns a character vector giving the names of all available
 #'   and applicable solver.
 #' @param x an object of class \code{"OP"}
-#' @return A a character vector giving the giving the names of all available 
+#' @return A a character vector giving the giving the names of all available
 #'   and applicable solver
 #' @export
 #  -----------------------------------------------------------
