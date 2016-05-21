@@ -25,8 +25,8 @@ make_SCS_signatures <- function()
     if( ! pkgname %in% ROI_registered_solvers() ){
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
-        solver <- get_solver_name( pkgname )
-        ROI_register_solver_method( 
+        solver <- .ROI_plugin_get_solver_name( pkgname )
+        .ROI_plugin_register_solver_method( 
             signatures = make_SCS_signatures(),
             solver = solver,
             method = getFunction( "solve_OP", where = getNamespace(pkgname)) )

@@ -168,7 +168,7 @@ build_cone_dims <- function( roi_cones ) {
 }
 
 solve_OP <- function(x, control=list()) {
-    solver <- get_solver_name( getPackageName() )
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
 
     if ( any( constraints(x)$dir != "==" ) ) {
         stop("TODO in 'ROI.plugin.scs@solve_OP'\n\t", "ROI.plugin.scs currently only supports equality constraints!\n")
@@ -218,54 +218,54 @@ solve_OP <- function(x, control=list()) {
         sdp <- NULL
     }
 
-    canonicalize_solution( solution = out$x,
-                           optimum  = tryCatch( {as.numeric(out$x %*% obj)}, 
-                                                error=function(e) as.numeric(NA) ),
-                           status   = out[["info"]][["statusVal"]],
-                           solver   = solver,
-                           message  = out )
+    .ROI_plugin_canonicalize_solution( solution = out$x,
+                                       optimum  = tryCatch( {as.numeric(out$x %*% obj)}, 
+                                                             error=function(e) as.numeric(NA) ),
+                                        status   = out[["info"]][["statusVal"]],
+                                        solver   = solver,
+                                        message  = out )
 }
 
 .add_status_codes <- function() {
-    solver <- get_solver_name( getPackageName() )
-    add_status_code_to_db( solver,
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    .ROI_plugin_add_status_code_to_db( solver,
                            1L,
                            "SCS_SOLVED",
                            "Optimal solution found.",
                            0L )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            2L,
                            "SCS_SOLVED_INACCURATE",
                            "SCS_SOLVED_INACCURATE" )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            0L,
                            "SCS_UNFINISHED",
                            "SCS_UNFINISHED" )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            -1L,
                            "SCS_UNBOUNDED",
                            "SCS_UNBOUNDED" )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            -2L,
                            "SCS_INFEASIBLE",
                            "SCS_INFEASIBLE" )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            -3L,
                            "SCS_INDETERMINATE",
                            "SCS_INDETERMINATE" )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            -4L,
                            "SCS_FAILED",
                            "SCS_FAILED" )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            -5L,
                            "SCS_SIGINT",
                            "SCS_SIGINT" )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            -6L,
                            "SCS_UNBOUNDED_INACCURATE",
                            "SCS_UNBOUNDED_INACCURATE" )
-    add_status_code_to_db( solver,
+    .ROI_plugin_add_status_code_to_db( solver,
                            -7L,
                            "SCS_INFEASIBLE_INACCURATE",
                            "SCS_INFEASIBLE_INACCURATE" )
