@@ -37,7 +37,7 @@ c_V_bound <- function(...) {
                                  val = unlist(lapply(xb, function(x) x$lower$val))),
                     upper = list(ind = unlist(lapply(xb, function(x) x$upper$ind)), 
                                  val = unlist(lapply(xb, function(x) x$upper$val))),
-                    nobj = as.integer(sum(sapply(xb, "[[", "nobj")))),
+                    nobj = as.integer(max(sapply(xb, "[[", "nobj")))),
               class = c("V_bound", "bound") )
 }
 
@@ -55,29 +55,55 @@ c_C_bound <- function(...) {
     structure(list(cones=x), class = c("C_bound", "bound"))
 }
 
+c_2_cones <- function(x, y) {
+    cone <- list()
+    for (co in union(names(x), names(y))) {
+        cone[[co]] <- c(x[[co]], y[[co]])
+    }
+    return(cone)
+}
+
+c_2_bounds <- function(x, y) {
+    z <- list()
+    ## V_bound
+    z$lower$ind <- c(x$lower$ind, y$lower$ind)
+    z$lower$val <- c(x$lower$val, y$lower$val)
+    z$upper$ind <- c(x$upper$ind, y$upper$ind)
+    z$upper$val <- c(x$upper$val, y$upper$val)
+    nobj <- max(c(-1L, x$nobj, y$nobj))
+    z$nobj <- if (nobj < 0L) NULL else nobj
+    ## C_bound
+    z$cones <- c_2_cones(x$cones, y$cones)
+    return(z)
+}   
+
+## FIXME: This fails when c("bound", C_bound)
 ##' @noRd
 ##' @export
-c.bound <- function(...) {
-    xb <- list(...)
-    xb <- xb[!sapply(xb, is.null)]
-    if ( length(xb) == 0) return(xb)
-    ##return(xb)
-    which_V_bound <- sapply(xb, function(x) all(names(x) %in% c("lower", "upper", "nobj")))
-    which_C_bound <- sapply(xb, function(x) all(names(x) %in% c("cones")))
-    if ( any(which_V_bound) )
-        v_bounds <- do.call(c_V_bound, xb[which_V_bound])
-    if ( any(which_C_bound) )
-        c_bounds <- do.call(c_C_bound, xb[which_C_bound])
-    ## xclass <- c("NO_bound", "V_bound", "C_bound", "bound")[1 + any(which_V_bound) + 2 * any(which_C_bound)]
-    if ( ( any(which_V_bound) + any(which_C_bound) ) == 0 ) {
-        return( NULL )
-    } else if ( all(which_V_bound) ) {
-        return( v_bounds )
-    } else if ( all(which_C_bound) ) {
-        return( c_bounds )
-    }
-    structure(c(unclass(v_bounds), unclass(c_bounds)), class="bound")
-}
+c.bound <- function(...)  structure(Reduce(c_2_bounds, list(...)), class="bound")
+
+## c.bound <- function(...) {
+##     xb <- list(...)
+##     xb <- xb[!sapply(xb, is.null)]
+##     if ( length(xb) == 0) return(xb)
+##     ##return(xb)
+##     which_V_bound <- sapply(xb, function(x) all(names(x) %in% c("lower", "upper", "nobj")))
+##     which_C_bound <- sapply(xb, function(x) all(names(x) %in% c("cones")))
+##     v_bounds <- NULL
+##     if ( any(which_V_bound) )
+##         v_bounds <- do.call(c_V_bound, xb[which_V_bound])
+##     if ( any(which_C_bound) )
+##         c_bounds <- do.call(c_C_bound, xb[which_C_bound])
+##     ## xclass <- c("NO_bound", "V_bound", "C_bound", "bound")[1 + any(which_V_bound) + 2 * any(which_C_bound)]
+##     if ( ( any(which_V_bound) + any(which_C_bound) ) == 0 ) {
+##         return( NULL )
+##     } else if ( all(which_V_bound) ) {
+##         return( v_bounds )
+##     } else if ( all(which_C_bound) ) {
+##         return( c_bounds )
+##     }
+##     structure(c(unclass(v_bounds), unclass(c_bounds)), class="bound")
+## }
 
 ##' @noRd
 ##' @export
@@ -395,7 +421,7 @@ as.C_bound.C_bound <- identity
 
 ##' @noRd
 ##' @export
-as.C_bound.NULL <- function( x ) structure(list(), class="C_bound")
+as.C_bound.NULL <- function( x ) structure(list(cones=NULL), class=c("C_bound", "bound"))
 
 ##' @rdname C_bound
 ##' @export

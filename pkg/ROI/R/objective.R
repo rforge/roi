@@ -82,6 +82,16 @@ as.objective.objective <- identity
 ##' @export
 length.objective <- function( x ) attr( as.objective(x), "nobj" )
 
+##  NOTE: Since we override the length of the objective the str function which relies on length, 
+##        doesn't work anymore. The easy fix is to reimplement str.objective where I alter the
+##        class by adding a space at the end of the class.
+##' @noRd
+##' @export
+str.objective <- function(object, ...) {
+    class(object) <- sprintf("%s ", class(object))
+    str(object)
+}
+
 ##' @noRd
 ##' @export
 terms.function <- function( x, ... ){
