@@ -1,5 +1,6 @@
 import("ROI")
 import("ECOSolveR")
+importFrom("slam", "simple_triplet_matrix")
 importFrom("stats", "terms")
 importFrom("methods", "getPackageName")
 importFrom("methods", "getFunction")

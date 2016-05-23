@@ -5,7 +5,7 @@ make_ECOS_signatures <- function()
     ROI_make_signature( objective = c("L"),
                         constraints = c("L"),
                         types = c("B", "I", "C"),
-                        bounds = c("C"),
+                        bounds = c("X", "C", "V"),
                         cones = c("free", "nonneg", "soc", "expp"),
                         maximum = c(TRUE, FALSE) )
 
