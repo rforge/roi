@@ -180,15 +180,22 @@ which_scs_default_lower_bounds <- function(lower_bounds) {
     return(NULL)
 }
 
-#X# library(slam)
-#X# library(scs)
 as.bound <- function( x, ... ) UseMethod( "as.bound" )
 as.bound.bound <- identity
 as.bound.NULL <- function( x, ... ) structure(NULL, class="bound")
-#X# 
-#X# x <- lp
-#X# x <- lp2
-#X# control=list()
+
+if (FALSE) {
+library(slam)
+library(scs)
+
+
+x <- lp
+x <- lp2
+
+x <- prob$op
+control=list()
+}
+absmax <- function(x) max(abs(x))
 
 solve_OP <- function(x, control=list()) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
@@ -207,10 +214,10 @@ solve_OP <- function(x, control=list()) {
     if ( length(noeq) ) {
         nc0 <- ncol(cxL)
         b <- c(b, rep.int(0L, length(noeq)))
-        bo <- c(as.bound(bo), C_bound(nc0 + seq_len(length(noeq)), type="nonneg"))
+        bo <- c(as.bound(bo), C_bound(nrow(cxL) + seq_len(length(noeq)), type="nonneg"))
 
         slack_noeq <- simple_triplet_matrix(noeq, seq_along(noeq), rep.int(1L, length(noeq)), 
-                                            nrow=nrow(cxL), ncol=nc0)
+                                            nrow=nrow(cxL), ncol=length(noeq))
         cxL <- cbind(cxL, slack_noeq)
 
         nc <- ncol(cxL)
@@ -231,11 +238,21 @@ solve_OP <- function(x, control=list()) {
         }
     }
 
-    #X# ## FIXME:: Das combine von bounds hat einen Fehler!
-    #X# str(bo)
-    #X# ##str(c(bo, C_bound(lbi, type="nonneg")))
-    #X# str(c(bo, C_bound((nrow(cxL) + lbi), type="nonneg")))
-    #X# ##xb <- list(as.bound(bo), C_bound(lbi, type="nonneg"))
+    if (FALSE) {
+        ## FIXME:: Das combine von bounds hat einen Fehler!
+        str(bo)
+        
+        ##str(c(bo, C_bound(lbi, type="nonneg")))
+        str(c(bo, C_bound((nrow(cxL) + lbi), type="nonneg")))
+        ##xb <- list(as.bound(bo), C_bound(lbi, type="nonneg"))
+        duplicated(bo$cones$nonneg)
+        bo$cones$nonneg
+        str(bo$cones)
+        dim(cxL)
+        absmax <- function(x) max(abs(x))
+        apply(as.matrix(cxL), 2, absmax)
+        unname(rowSums(as.matrix(cxL)))
+    }
 
     ## ------------------------------
     ## V_bounds (ROI default is [0, Inf))
@@ -279,7 +296,7 @@ solve_OP <- function(x, control=list()) {
     ind <- unlist(c(roi_cones[setdiff(names(map), c("powp", "powd"))]), use.names=FALSE)
     ind <- c(ind, unlist(lapply(c(roi_cones[["powp"]], roi_cones[["powd"]]), "[[", 1), use.names=FALSE))
 
-    missing_indizes <- setdiff(seq_len(length(constraints(x)$rhs)), ind)
+    missing_indizes <- setdiff(seq_len(nrow(cxL)), ind)
     if ( length(missing_indizes) > 0 ) {
         ## If I give no warnig it can be used like every other solver.
         ## warning("  No cone was provided for the indices ", 
@@ -318,7 +335,7 @@ solve_OP <- function(x, control=list()) {
     } else {
         sdp <- NULL
     }
-    optimum <- tryCatch({as.numeric(out$x %*% obj)}, error=function(e) as.numeric(NA))
+    optimum <- tryCatch({as.numeric(out$x %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
     .ROI_plugin_canonicalize_solution( solution = out$x,  optimum  = optimum,
                                        status   = out[["info"]][["statusVal"]],
                                        solver   = solver, message  = out )
