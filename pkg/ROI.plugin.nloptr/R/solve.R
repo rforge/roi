@@ -66,7 +66,7 @@ get_algo_properties <- function() {
 ##        eval_g_ineq = NULL, eval_jac_g_ineq = NULL, eval_g_eq = NULL,
 ##        eval_jac_g_eq = NULL, opts = list(), ...)
 solve_nloptr <- function( x, control ) {
-    solver <- get_solver_name( getPackageName() )
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
     lb <- get_lb(x)
     ub <- get_ub(x)
 
@@ -113,11 +113,11 @@ solve_nloptr <- function( x, control ) {
         o <- eval(nloptr_call, envir=arglist)
     }
 
-    canonicalize_solution(solution  = o$solution,
-                          optimum   = o$objective,
-                          status    = o$status,
-                          solver    = solver,
-                          algorithm = control$algorithm )
+    .ROI_plugin_canonicalize_solution(  solution  = o$solution,
+                                        optimum   = o$objective,
+                                        status    = o$status,
+                                        solver    = solver,
+                                        algorithm = control$algorithm   )
 }
 
 ## NLOPT Algorithmen

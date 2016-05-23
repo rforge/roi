@@ -14,11 +14,11 @@ ROI_make_NLP_FXCV_signatures <- function()
     if( ! pkgname %in% ROI_registered_solvers() ){
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
-        solver <- get_solver_name( pkgname )
+        solver <- .ROI_plugin_get_solver_name( pkgname )
         ##solver <- "nloptr"
         ##pkgname <- "ROI.plugin.nloptr"
         ## obj: F    constr: X    types: C    bounds: V
-        ROI_register_solver_method( 
+        .ROI_plugin_register_solver_method( 
             signatures = ROI_make_NLP_FXCV_signatures(),
             solver = solver,
             method = getFunction( "solve_nloptr", where = getNamespace(pkgname)) )
