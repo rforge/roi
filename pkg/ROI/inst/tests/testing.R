@@ -1,6 +1,6 @@
 
 q("no")
-R
+Rdevel
 
 check <- function(x, y, eps=1e-5) {
     has.error <- !all( abs(x - y) < eps )
@@ -16,6 +16,7 @@ ROI_compare <- function(x, y, eps=1e-5) {
     !all( abs(x - y) < eps )
 }
 
+## install.packages("testthat")
 library( "testthat" )
 library( "ROI" )
 
@@ -26,6 +27,7 @@ setwd("/home/florian/work/Optimization/ROI/ROI/devel/ROI/inst/unit_test")
 
 SOLVER <- "ecos"
 SOLVER <- "scs"
+SOLVER <- "cplex"
 
 ## -------------------------------------
 ## Linear Programming
