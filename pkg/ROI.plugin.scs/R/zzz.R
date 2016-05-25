@@ -13,12 +13,12 @@
 ##                 maximum = c(TRUE, FALSE) )
 
 make_SCS_signatures <- function()
-    ROI_make_signature( objective = c("L"),
-                        constraints = c("L"),
-                        types = c("C"),
-                        bounds = c("X", "C", "V"),
-                        cones = c("free", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd"),
-                        maximum = c(TRUE, FALSE) )
+    .ROI_plugin_make_signature( objective = c("L"),
+                                constraints = c("L"),
+                                types = c("C"),
+                                bounds = c("X", "C", "V"),
+                                cones = c("free", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd"),
+                                maximum = c(TRUE, FALSE) )
 
 .onLoad <- function( libname, pkgname ) {
     ## Solver plugin name (based on package name)
