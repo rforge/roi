@@ -274,59 +274,59 @@ ROI_required_signature <- function()
 ##  .ROI_plugin_make_signatures
 ##  ======================
 ##  ---------------------------------------------------------
-##' @title Make Signatures
-##' @description A set of default signatures.
-##' @details TODO: Create one function with a parameter type or
-##'   put them into the plugins!
-##' @return An R object containing the signature.
-##' @export
-.ROI_plugin_make_LP_signatures <- function()
-    .ROI_plugin_make_signature( objective = "L",
-                        constraints = c("X", "L"),
-                        types = c("C"),
-                        bounds = c("X", "V"),
-                        cones = c("free"),
-                        maximum = c(TRUE, FALSE) )
-
-##' @rdname .ROI_plugin_make_LP_signatures
-##' @export
-.ROI_plugin_make_QP_signatures <- function()
-    .ROI_plugin_make_signature( objective = "Q",
-                        constraints = c("X", "L"),
-                        types = c("C"),
-                        bounds = c("X", "V"),
-                        cones = c("free"),
-                        maximum = c(TRUE, FALSE) )
-
-##' @rdname .ROI_plugin_make_LP_signatures
-##' @export
-.ROI_plugin_make_MILP_signatures <- function()
-    .ROI_plugin_make_signature( objective = "L",
-                        constraints = c("X", "L"),
-                        types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
-                        bounds = c("X", "V"),
-                        cones = c("free"),
-                        maximum = c(TRUE, FALSE) )
-
-##' @rdname .ROI_plugin_make_LP_signatures
-##' @export
-.ROI_plugin_make_MIQP_signatures <- function()
-    .ROI_plugin_make_signature( objective = c("L", "Q"),
-                        constraints = c("X", "L"),
-                        types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
-                        bounds = c("X", "V"),
-                        cones = c("free"),
-                        maximum = c(TRUE, FALSE) )
-
-##' @rdname .ROI_plugin_make_LP_signatures
-##' @export
-.ROI_plugin_make_MIQCP_signatures <- function()
-    .ROI_plugin_make_signature( objective = c("L", "Q"),
-                        constraints = c("X", "L", "Q"),
-                        types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
-                        bounds = c("X", "V"),
-                        cones = c("free"),
-                        maximum = c(TRUE, FALSE) )
+##  @title Make Signatures
+##  @description A set of default signatures.
+##  @details TODO: Create one function with a parameter type or
+##    put them into the plugins!
+##  @return An R object containing the signature.
+##  @export
+## .ROI_plugin_make_LP_signatures <- function()
+##     .ROI_plugin_make_signature( objective = "L",
+##                         constraints = c("X", "L"),
+##                         types = c("C"),
+##                         bounds = c("X", "V"),
+##                         cones = c("free"),
+##                         maximum = c(TRUE, FALSE) )
+## 
+## ##' @rdname .ROI_plugin_make_LP_signatures
+## ##' @export
+## .ROI_plugin_make_QP_signatures <- function()
+##     .ROI_plugin_make_signature( objective = "Q",
+##                         constraints = c("X", "L"),
+##                         types = c("C"),
+##                         bounds = c("X", "V"),
+##                         cones = c("free"),
+##                         maximum = c(TRUE, FALSE) )
+## 
+## ##' @rdname .ROI_plugin_make_LP_signatures
+## ##' @export
+## .ROI_plugin_make_MILP_signatures <- function()
+##     .ROI_plugin_make_signature( objective = "L",
+##                         constraints = c("X", "L"),
+##                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
+##                         bounds = c("X", "V"),
+##                         cones = c("free"),
+##                         maximum = c(TRUE, FALSE) )
+## 
+## ##' @rdname .ROI_plugin_make_LP_signatures
+## ##' @export
+## .ROI_plugin_make_MIQP_signatures <- function()
+##     .ROI_plugin_make_signature( objective = c("L", "Q"),
+##                         constraints = c("X", "L"),
+##                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
+##                         bounds = c("X", "V"),
+##                         cones = c("free"),
+##                         maximum = c(TRUE, FALSE) )
+## 
+## ##' @rdname .ROI_plugin_make_LP_signatures
+## ##' @export
+## .ROI_plugin_make_MIQCP_signatures <- function()
+##     .ROI_plugin_make_signature( objective = c("L", "Q"),
+##                         constraints = c("X", "L", "Q"),
+##                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
+##                         bounds = c("X", "V"),
+##                         cones = c("free"),
+##                         maximum = c(TRUE, FALSE) )
 
 .make_signature <- function( x ){
     required <- ROI_required_signature()
