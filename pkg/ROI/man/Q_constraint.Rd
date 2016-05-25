@@ -2,9 +2,15 @@
 % Please edit documentation in R/constraints.R
 \name{Q_constraint}
 \alias{Q_constraint}
+\alias{as.Q_constraint}
+\alias{is.Q_constraint}
 \title{Quadratic Constraints}
 \usage{
 Q_constraint(Q, L, dir, rhs, names = NULL)
+
+as.Q_constraint(x)
+
+is.Q_constraint(x)
 }
 \arguments{
 \item{Q}{a list of (sparse) matrices representing the quadratic
@@ -25,6 +31,11 @@ constraints. Each element must be one of \code{"<"}, \code{"<="},
 constraints.}
 
 \item{names}{an optional character vector giving the names of the \eqn{A} matrix.}
+
+\item{x}{an R object.}
+
+\item{...}{further arguments passed to or from other methods
+(currently ignored).}
 }
 \value{
 an object of class \code{"Q_constraint"} which inherits

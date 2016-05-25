@@ -5,7 +5,68 @@
 ## Changed: 2016-05-20
 ################################################################################
 
+## ---------------------------------------------------------
+## Extract Solutions
+## =================
+## ---------------------------------------------------------
 
+##  --------------------------------------------------------
+## 
+##  solution
+##  ========
+##' @title Extract Solution
+##' @description The solution can be accessed via the method \code{'solution'}.
+##' @param sol an object of type \code{'OP_solution'}.
+##' @return the extracted solution.
+##' @export
+solution <- function(sol) UseMethod( "solution")
+
+solution.default <- function(sol) {
+    sol$solution
+}
+
+##' @title Extract Dual Solution
+##' @description The dual solution can be accessed via the method \code{'solution_dual'}.
+##' @param sol an object of type \code{'OP_solution'}.
+##' @return the extracted solution.
+##' @export
+solution_dual <- function(sol) UseMethod("solution_dual")
+
+solution_dual.default <- function(sol) {
+    stop(sprintf("not available for solver '%s'", sol$solver))
+}
+
+##' @title Extract SDP Solution
+##' @description The matrix part of the solution from an semidefinite program can 
+##'   be accessed via the method \code{'solution_dual'}.
+##' @param sol an object of type \code{'OP_solution'}.
+##' @return the matrix part of the solution from an semidefinite program if 
+##'   available.
+##' @export
+solution_sdp <- function(sol) UseMethod("solution_sdp")
+
+solution_sdp.default <- function(sol) {
+    stop(sprintf("not available for solver '%s'", sol$solver))
+}
+
+solution_aux <- function(sol) UseMethod("solution_aux")
+
+solution_aux.default <- function(sol) {
+    stop(sprintf("not available for solver '%s'", sol$solver))
+}
+
+##' @title Extract Original Solver Solution
+##' @description The orginal soltion from the solver utilized by the ROI plugin,
+##'   can be accessed via the method \code{'solution_sdp'}.
+##' @param sol an object of type \code{'OP_solution'}.
+##' @return the matrix part of the solution from an semidefinite program if 
+##'   available.
+##' @export
+solution_solver <- function(sol) UseMethod("solution_solver")
+
+solution_solver.default <- function(sol) {
+    stop(sprintf("not available for solver '%s'", sol$solver))
+}
 
 ################################################################################
 ## Solution object
@@ -72,6 +133,8 @@ canonicalize_status <- function( status, solver ){
 ##' @param message an optional \R object giving the original solver message.
 ##' @param ... further arguments to be stored in the solution object.
 ##' @return an object of class \code{"OP_solution"}.
+##' @family plugin functions
+##' @rdname ROI_plugin_canonicalize_solution
 ##' @export
 .ROI_plugin_canonicalize_solution <- function( solution, optimum, status, solver, message=NULL, ... ) {
     status <- canonicalize_status( status, solver )

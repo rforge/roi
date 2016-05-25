@@ -26,20 +26,22 @@ available_constraint_classes <- function()
 ##' for extracting constraints from ROI objects of class \code{"OP"}.
 ##' @title Extract constraints
 ##' @param x an object used to select the method.
+##' @param value an R object.
 ##' @return the extracted constraints object.
 ##' @author Stefan Theussl
 ##' @export
 constraints <- function( x )
     UseMethod("constraints")
 
-##' Extract constraints from ROI objects of class \code{"OP"} and
-##' return them.
-##'
-##'
-##' @title Extract constraints
-##' @param x an object of class \code{"OP"}.
-##' @return an object inheriting from class \code{"constraints"}.
-##' @author Stefan Theussl
+##  Extract constraints from ROI objects of class \code{"OP"} and
+##  return them.
+## 
+## 
+##  @title Extract constraints
+##  @param x an object of class \code{"OP"}.
+##  @return an object inheriting from class \code{"constraints"}.
+##  @author Stefan Theussl
+##' @rdname constraints
 ##' @export
 constraints.OP <- function( x ){
     if( is.null(x$constraints) )
@@ -54,22 +56,23 @@ constraints.OP <- function( x ){
 ## 'constraints' replacement functions
 ################################################################################
 
-##' Replaces the constraints in R objects (typically ROI
-##' objects).
-##'
-##' Currently, there is no default method. Constraints in ROI objects
-##' of class \code{"OP"} given by the argument \code{x} are replaced
-##' with \code{value}, either being an object of class
-##' \code{"constraint"}, coercible to such, or \code{NULL}
-##' (unconstrained). The updated \code{"OP"} object will be returned.
-##' @title Replacement of constraints
-##' @name constraints-replace
-##' @aliases constraints<- constraints<-.OP
-##' @usage constraints(x) <- value
-##' @param x an R object.
-##' @param value an R object.
-##' @return the updated object.
-##' @author Stefan Theussl
+##  Replaces the constraints in R objects (typically ROI
+##  objects).
+## 
+##  Currently, there is no default method. Constraints in ROI objects
+##  of class \code{"OP"} given by the argument \code{x} are replaced
+##  with \code{value}, either being an object of class
+##  \code{"constraint"}, coercible to such, or \code{NULL}
+##  (unconstrained). The updated \code{"OP"} object will be returned.
+##  @title Replacement of constraints
+##  @name constraints-replace
+##  @aliases constraints<- constraints<-.OP
+##  @usage constraints(x) <- value
+##  @param x an R object.
+##  @param value an R object.
+##  @return the updated object.
+##  @author Stefan Theussl
+##' @rdname constraints
 ##' @export constraints<-
 'constraints<-' <- function( x, value )
     UseMethod("constraints<-")
@@ -140,6 +143,9 @@ rbind.constraint <- function(..., use.names=FALSE, recursive=FALSE) {
 ##' @title Class: \code{"NO_constraint"}
 ##' @param n_obj a numeric vector of length \code{1} representing the number
 ##' of objective variables.
+##' @param x an R object.
+##' @param ... further arguments passed to or from other methods
+##' (currently ignored).
 ##' @return an object of class \code{"NO_constraint"} which inherits
 ##' from \code{"L_constraint"} and \code{"constraint"}.
 ##' @author Stefan Theussl
@@ -153,19 +159,20 @@ NO_constraint <- function( n_obj ) {
                class = c("NO_constraint", "constraint") )
 }
 
-##' Coerces objects of type \code{"NO_constraint"}.
-##'
-##' (Almost) all objects inheriting from class \code{"constraint"} can be
-##' coerced to \code{"NO_constraint"}. It extracts the number of
-##' (objective) variables from the original constraints objects and
-##' returns the \code{"NO_constraint"} object.
-##' @title Coercing Constraints
-##' @param x an R object.
-##' @param ... further arguments passed to or from other methods
-##' (currently ignored).
-##' @return an object of class \code{"NO_constraint"} which inherits
-##' from \code{"constraint"}.
-##' @author Stefan Theussl
+##  Coerces objects of type \code{"NO_constraint"}.
+## 
+##  (Almost) all objects inheriting from class \code{"constraint"} can be
+##  coerced to \code{"NO_constraint"}. It extracts the number of
+##  (objective) variables from the original constraints objects and
+##  returns the \code{"NO_constraint"} object.
+##  @title Coercing Constraints
+##  @param x an R object.
+##  @param ... further arguments passed to or from other methods
+##  (currently ignored).
+##  @return an object of class \code{"NO_constraint"} which inherits
+##  from \code{"constraint"}.
+##  @author Stefan Theussl
+##' @rdname NO_constraint
 ##' @export
 as.NO_constraint <- function(x, ...)
     UseMethod( "as.NO_constraint" )
@@ -180,13 +187,14 @@ as.NO_constraint.NO_constraint <- function( x, ... )
 as.NO_constraint.L_constraint <- function( x, ... )
     NO_constraint( ncol(x$L) )
 
-##' Tests if an object is interpretable as being of class \code{"L_constraint"}.
-##'
-##' @title Class: \code{"NO_constraint"}
-##' @param x object to be tested.
-##' @return returns \code{TRUE} if its argument is of class
-##' \code{"NO_constraint"} and \code{FALSE} otherwise.
-##' @author Stefan Theussl
+##  Tests if an object is interpretable as being of class \code{"L_constraint"}.
+## 
+##  @title Class: \code{"NO_constraint"}
+##  @param x object to be tested.
+##  @return returns \code{TRUE} if its argument is of class
+##  \code{"NO_constraint"} and \code{FALSE} otherwise.
+##  @author Stefan Theussl
+##' @rdname NO_constraint
 ##' @export
 is.NO_constraint <- function( x ) {
     inherits( x, "NO_constraint" )
@@ -209,12 +217,13 @@ rbind_NO_constraint <- function( ..., recursive = FALSE ){
 c.NO_constraint <- function( ..., recursive = FALSE )
     rbind( ..., recursive = recursive )
 
-##' Get the number of constraints from a corresponding ROI object.
-##'
-##' @title Class: \code{"NO_constraint"}
-##' @param x constraints object.
-##' @return an integer.
-##' @author Stefan Theussl
+##  Get the number of constraints from a corresponding ROI object.
+## 
+##  @title Class: \code{"NO_constraint"}
+##  @param x constraints object.
+##  @return an integer.
+##  @author Stefan Theussl
+##  @rdname NO_constraint
 ##' @export
 length.NO_constraint <- function( x )
     attr(x, "n_constraints")
@@ -254,6 +263,9 @@ variable.names.L_constraint <- function(object, ...) {
 ##' \code{">"}, \code{">="}, \code{"=="} or \code{"!="}.
 ##' @param rhs a numeric vector with the right hand side of the constraints.
 ##' @param names an optional character vector giving the names of the \eqn{A} matrix.
+##' @param x an R object.
+##' @param ... further arguments passed to or from other methods
+##' (currently ignored).
 ##' @return an object of class \code{"L_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
@@ -277,22 +289,23 @@ L_constraint <- function( L, dir, rhs, names = NULL ) {
               class = c("L_constraint", "Q_constraint", "constraint") )
 }
 
-##' Coerces objects of type \code{"L_constraint"}.
-##'
-##' Objects from the following classes can be coerced to
-##' \code{"L_constraint"}: \code{"numeric"} and \code{"list"}. The
-##' elements of a \code{"numeric"} vector \eqn{a} are treated as
-##' objective variable coefficients of a single constraint in standard
-##' form (\eqn{ax \geq 0}). A \code{"list"} must contain three
-##' elements, the matrix \eqn{A}, the direction of constraints, and
-##' the right hand side defining a linear constraint \eqn{Ax \leq b}.
-##' @title Linear Constraints
-##' @param x an R object.
-##' @param ... further arguments passed to or from other methods
-##' (currently ignored).
-##' @return an object of class \code{"L_constraint"} which inherits
-##' from \code{"constraint"}.
-##' @author Stefan Theussl
+## Coerces objects of type \code{"L_constraint"}.
+##
+## Objects from the following classes can be coerced to
+## \code{"L_constraint"}: \code{"numeric"} and \code{"list"}. The
+## elements of a \code{"numeric"} vector \eqn{a} are treated as
+## objective variable coefficients of a single constraint in standard
+## form (\eqn{ax \geq 0}). A \code{"list"} must contain three
+## elements, the matrix \eqn{A}, the direction of constraints, and
+## the right hand side defining a linear constraint \eqn{Ax \leq b}.
+## @title Linear Constraints
+## @param x an R object.
+## @param ... further arguments passed to or from other methods
+## (currently ignored).
+## @return an object of class \code{"L_constraint"} which inherits
+## from \code{"constraint"}.
+## @author Stefan Theussl
+##' @rdname L_constraint
 ##' @export
 as.L_constraint <- function(x, ...)
     UseMethod("as.L_constraint")
@@ -321,13 +334,14 @@ as.L_constraint.NO_constraint<- function( x, ... )
     L_constraint( L = simple_triplet_zero_matrix(nrow = length(x), ncol = dim(x)[2]),
                   dir = NULL, rhs = NULL )
 
-##' Tests if an object is interpretable as being of class \code{"L_constraint"}.
-##'
-##' @title Linear Constraints
-##' @param x object to be tested.
-##' @return returns \code{TRUE} if its argument is of class
-##' \code{"L_constraint"} and \code{FALSE} otherwise.
-##' @author Stefan Theussl
+## Tests if an object is interpretable as being of class \code{"L_constraint"}.
+##
+## @title Linear Constraints
+## @param x object to be tested.
+## @return returns \code{TRUE} if its argument is of class
+## \code{"L_constraint"} and \code{FALSE} otherwise.
+## @author Stefan Theussl
+##' @rdname L_constraint
 ##' @export
 is.L_constraint <- function( x ) {
     inherits( x, "L_constraint" )
@@ -410,12 +424,13 @@ rbind_L_constraint <- function( constraints, use.names = FALSE) {
 c.L_constraint <- function( ..., recursive = FALSE )
     rbind( ..., recursive = recursive )
 
-##' Get the number of constraints from a corresponding ROI object.
-##'
-##' @title Linear Constraints
-##' @param x constraints object.
-##' @return an integer.
-##' @author Stefan Theussl
+##  Get the number of constraints from a corresponding ROI object.
+## 
+##  @title Linear Constraints
+##  @param x constraints object.
+##  @return an integer.
+##  @author Stefan Theussl
+##' @rdname L_constraint
 ##' @export
 length.L_constraint <- function( x )
     attr(x, "n_L_constraints")
@@ -494,6 +509,9 @@ as.L_term.NULL <- function( x, ... ) {
 ##' @param rhs a numeric vector with the right hand side of the
 ##' constraints.
 ##' @param names an optional character vector giving the names of the \eqn{A} matrix.
+##' @param x an R object.
+##' @param ... further arguments passed to or from other methods
+##' (currently ignored).
 ##' @return an object of class \code{"Q_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
@@ -531,21 +549,22 @@ Q_constraint <- function(Q, L, dir, rhs, names=NULL) {
                class = c("Q_constraint", "constraint") )
 }
 
-##' Coerces objects of type \code{"Q_constraint"}.
-##'
-##' Objects from the following classes can be coerced to
-##' \code{"Q_constraint"}: \code{"list"}. The \code{"list"} must
-##' contain four elements, a list of matrices \eqn{Q_m} representing
-##' the quadratic part of \eqn{m} constraints, the matrix \eqn{A}
-##' describing the linear part, the direction of the constraints, and
-##' the right hand side.
-##' @title Quadratic Constraints
-##' @param x an R object.
-##' @param ... further arguments passed to or from other methods
-##' (currently ignored).
-##' @return an object of class \code{"Q_constraint"} which inherits
-##' from \code{"constraint"}.
-##' @author Stefan Theussl
+##  Coerces objects of type \code{"Q_constraint"}.
+## 
+##  Objects from the following classes can be coerced to
+##  \code{"Q_constraint"}: \code{"list"}. The \code{"list"} must
+##  contain four elements, a list of matrices \eqn{Q_m} representing
+##  the quadratic part of \eqn{m} constraints, the matrix \eqn{A}
+##  describing the linear part, the direction of the constraints, and
+##  the right hand side.
+##  @title Quadratic Constraints
+##  @param x an R object.
+##  @param ... further arguments passed to or from other methods
+##  (currently ignored).
+##  @return an object of class \code{"Q_constraint"} which inherits
+##  from \code{"constraint"}.
+##  @author Stefan Theussl
+##' @rdname Q_constraint
 ##' @export
 as.Q_constraint <- function( x )
     UseMethod("as.Q_constraint")
@@ -571,13 +590,14 @@ as.Q_constraint.list <- function( x ){
     Q_constraint( Q = x$Q, L = x$L, dir = x$dir, rhs = x$rhs )
 }
 
-##' Tests if an object is interpretable as being of class \code{"Q_constraint"}.
-##'
-##' @title Quadratic Constraints
-##' @param x object to be tested.
-##' @return returns \code{TRUE} if its argument is of class
-##' \code{"Q_constraint"} and \code{FALSE} otherwise.
-##' @author Stefan Theussl
+##  Tests if an object is interpretable as being of class \code{"Q_constraint"}.
+## 
+##  @title Quadratic Constraints
+##  @param x object to be tested.
+##  @return returns \code{TRUE} if its argument is of class
+##  \code{"Q_constraint"} and \code{FALSE} otherwise.
+##  @author Stefan Theussl
+##' @rdname Q_constraint
 ##' @export
 is.Q_constraint <- function( x ) {
     inherits( x, "Q_constraint" )
@@ -706,6 +726,7 @@ as.Q_term.NULL <- function( x, ... ) {
 ##' \code{">"}, \code{">="}, \code{"=="} or \code{"!="}.
 ##' @param rhs a numeric vector with the right hand side of the constraints.
 ##' @param J an optional \code{function} holding the Jacobian of F.
+##' @param x object to be tested.
 ##' @return an object of class \code{"F_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
@@ -762,12 +783,14 @@ as.J_term.list     <- function(x, ...) {
     }
     unlist( lapply( x, as_J ), use.names = FALSE )
 }
-##' Tests if an object is interpretable as being of class \code{"F_constraint"}.
-##'
-##' @title Function Constraints
-##' @param x object to be tested.
-##' @return returns \code{TRUE} if its argument is of class
-##' \code{"F_constraint"} and \code{FALSE} otherwise.
+
+##  Tests if an object is interpretable as being of class \code{"F_constraint"}.
+## 
+##  @title Function Constraints
+##  @param x object to be tested.
+##  @return returns \code{TRUE} if its argument is of class
+##  \code{"F_constraint"} and \code{FALSE} otherwise.
+##' @rdname F_constraint
 ##' @export
 is.F_constraint <- function( x ) {
     inherits( x, "F_constraint" )

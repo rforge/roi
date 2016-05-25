@@ -2,12 +2,20 @@
 % Please edit documentation in R/constraints.R
 \name{constraints}
 \alias{constraints}
+\alias{constraints.OP}
+\alias{constraints<-}
 \title{Extract constraints}
 \usage{
 constraints(x)
+
+\method{constraints}{OP}(x)
+
+constraints(x) <- value
 }
 \arguments{
 \item{x}{an object used to select the method.}
+
+\item{value}{an R object.}
 }
 \value{
 the extracted constraints object.

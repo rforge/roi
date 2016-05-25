@@ -2,9 +2,12 @@
 % Please edit documentation in R/constraints.R
 \name{F_constraint}
 \alias{F_constraint}
+\alias{is.F_constraint}
 \title{Function Constraints}
 \usage{
 F_constraint(F, dir, rhs, J = NULL)
+
+is.F_constraint(x)
 }
 \arguments{
 \item{F}{a \code{function} or a list of \code{function}s of length
@@ -19,6 +22,8 @@ constraints. Each element must be one of \code{"<"}, \code{"<="},
 \item{rhs}{a numeric vector with the right hand side of the constraints.}
 
 \item{J}{an optional \code{function} holding the Jacobian of F.}
+
+\item{x}{object to be tested.}
 }
 \value{
 an object of class \code{"F_constraint"} which inherits

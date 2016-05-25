@@ -2,15 +2,20 @@
 % Please edit documentation in R/objective.R
 \name{L_objective}
 \alias{L_objective}
+\alias{as.L_objective}
 \title{Linear Objective Function}
 \usage{
 L_objective(L)
+
+as.L_objective(x)
 }
 \arguments{
 \item{L}{a numeric vector of length \eqn{n} or an object of class
 \code{"simple_triplet_matrix"} (or coercible to such) with dimension \eqn{1 \times n},
 where \eqn{n} is the number of objective variables. Names will be
 preserved and used e.g., in the print method.}
+
+\item{x}{an R object.}
 }
 \value{
 an object of class \code{"L_objective"} which inherits

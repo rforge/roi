@@ -25,6 +25,7 @@
 ##' optimization. \code{TRUE} means that the objective is to maximize
 ##' the objective function, \code{FALSE} (default) means to minimize
 ##' it.
+##' @param x an R object.
 ##' @return A list containing the optimal solution, with the following
 ##' components.
 ##' \item{solution}{the vector of optimal coefficients}
@@ -141,17 +142,18 @@ print.OP <- function(x, ...){
 }
 
 ## FIXME: \code{"NULL"} not supported (represents an empty optimization problem)
-##' Coerces objects of type \code{"OP"}.
-##'
-##' Objects from the following classes can be coerced to \code{"OP"}:
-##' \code{"numeric"}. This yields an unconstrained linear
-##' programming problem where the elements of a \code{"numeric"}
-##' vector \eqn{c} are treated as being objective variable
-##' coefficients in \eqn{c^\top x}.
-##' @title Optimization Problem Object
-##' @param x an R object.
-##' @return an object of class \code{"OP"}.
-##' @author Stefan Theussl
+##  Coerces objects of type \code{"OP"}.
+## 
+##  Objects from the following classes can be coerced to \code{"OP"}:
+##  \code{"numeric"}. This yields an unconstrained linear
+##  programming problem where the elements of a \code{"numeric"}
+##  vector \eqn{c} are treated as being objective variable
+##  coefficients in \eqn{c^\top x}.
+##  @title Optimization Problem Object
+##  @param x an R object.
+##  @return an object of class \code{"OP"}.
+##  @author Stefan Theussl
+##' @rdname OP
 ##' @export
 as.OP <- function(x)
     UseMethod("as.OP")
@@ -222,27 +224,27 @@ OP_signature <- function( x ){
         cone_types <- available_cone_types()[ available_cone_types() %in% names(bounds(x)$cones) ]
     }
 
-    ROI_make_signature( objective = get_objective_class(x),
-                        constraints = constr,
-                        types = uniq_types,
-                        bounds  = boun,
-                        cones = cone_types,
-                        maximum = x$maximum
-                       )
+    .ROI_plugin_make_signature( objective = get_objective_class(x),
+                                constraints = constr,
+                                types = uniq_types,
+                                bounds  = boun,
+                                cones = cone_types,
+                                maximum = x$maximum )
 }
 
 #  -----------------------------------------------------------
 #  OP_applicable_solver
+#  NOTE: is now named ROI_applicable_solvers
 #  ====================
-#' @title Applicable Solver
-#' @description
-#'   Takes an object of class \code{"OP"} (optimization problem)
-#'   and returns a character vector giving the names of all available
-#'   and applicable solver.
-#' @param x an object of class \code{"OP"}
-#' @return A a character vector giving the giving the names of all available
-#'   and applicable solver
-#' @export
+#  @title Applicable Solver
+#  @description
+#    Takes an object of class \code{"OP"} (optimization problem)
+#    and returns a character vector giving the names of all available
+#    and applicable solver.
+#  @param x an object of class \code{"OP"}
+#  @return A a character vector giving the giving the names of all available
+#    and applicable solver
+#  @export
 #  -----------------------------------------------------------
 OP_applicable_solver <- function( x ) {
     unname( names(get_solver_methods( OP_signature(x) )) )

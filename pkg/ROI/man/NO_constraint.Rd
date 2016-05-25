@@ -2,13 +2,24 @@
 % Please edit documentation in R/constraints.R
 \name{NO_constraint}
 \alias{NO_constraint}
+\alias{as.NO_constraint}
+\alias{is.NO_constraint}
 \title{Class: \code{"NO_constraint"}}
 \usage{
 NO_constraint(n_obj)
+
+as.NO_constraint(x, ...)
+
+is.NO_constraint(x)
 }
 \arguments{
 \item{n_obj}{a numeric vector of length \code{1} representing the number
 of objective variables.}
+
+\item{x}{an R object.}
+
+\item{...}{further arguments passed to or from other methods
+(currently ignored).}
 }
 \value{
 an object of class \code{"NO_constraint"} which inherits

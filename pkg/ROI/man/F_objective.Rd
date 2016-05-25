@@ -2,9 +2,12 @@
 % Please edit documentation in R/objective.R
 \name{F_objective}
 \alias{F_objective}
+\alias{as.F_objective}
 \title{General (Nonlinear) Objective Function}
 \usage{
 F_objective(F, n, G = NULL)
+
+as.F_objective(x)
 }
 \arguments{
 \item{F}{an R \code{"function"} taking a numeric vector \code{x} of length \eqn{n} as argument.}
@@ -12,6 +15,8 @@ F_objective(F, n, G = NULL)
 \item{n}{the number of objective variables.}
 
 \item{G}{an R \code{"function"} returning the gradient at \code{x}.}
+
+\item{x}{an R object.}
 }
 \value{
 an object of class \code{"F_objective"} which inherits

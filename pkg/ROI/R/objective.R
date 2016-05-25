@@ -50,12 +50,13 @@ objective <- function( x )
 objective.default <- function( x )
     as.function( x$objective )
 
-##' Coerces objects of type \code{"objective"}.
-##'
-##' @title Objective Function Utilities
-##' @param x an R object.
-##' @return an object of class \code{"objective"}.
-##' @author Stefan Theussl
+## Coerces objects of type \code{"objective"}.
+##
+## @title Objective Function Utilities
+## @param x an R object.
+## @return an object of class \code{"objective"}.
+## @author Stefan Theussl
+##' @rdname objective
 ##' @export
 as.objective <- function( x )
   UseMethod("as.objective")
@@ -82,15 +83,21 @@ as.objective.objective <- identity
 ##' @export
 length.objective <- function( x ) attr( as.objective(x), "nobj" )
 
+##' @noRd
+##' @export
+`[.L_objective` <- function(x, i) {
+    as.numeric(as.matrix(terms(x)$L[1, i]))
+}
+
 ##  NOTE: Since we override the length of the objective the str function which relies on length, 
 ##        doesn't work anymore. The easy fix is to reimplement str.objective where I alter the
 ##        class by adding a space at the end of the class.
-##' @noRd
-##' @export
-str.objective <- function(object, ...) {
-    class(object) <- sprintf("%s ", class(object))
-    str(object)
-}
+## noRd
+## export
+## str.objective <- function(object, ...) {
+##     class(object) <- sprintf("%s ", class(object))
+##     str(object)
+## }
 
 ##' @noRd
 ##' @export
@@ -131,6 +138,7 @@ terms.Q_objective <- function( x, ... )
 ##' \code{"simple_triplet_matrix"} (or coercible to such) with dimension \eqn{1 \times n},
 ##' where \eqn{n} is the number of objective variables. Names will be
 ##' preserved and used e.g., in the print method.
+##' @param x an R object.
 ##' @return an object of class \code{"L_objective"} which inherits
 ##' from  \code{"Q_objective"} and \code{"objective"}.
 ##' @author Stefan Theussl
@@ -151,22 +159,23 @@ as.function.L_objective <- function( x, ... ){
   out
 }
 
-##' Coerces objects of type \code{"L_objective"}.
-##'
-##' Objects from the following classes can be coerced to
-##' \code{"L_objective"}: \code{"NULL"}, \code{"numeric"},
-##' \code{"Q_objective"}, and \code{"function"}. The elements of a
-##' \code{"numeric"} vector \eqn{c} are treated as being objective
-##' variable coefficients in \eqn{c^\top x}). Coercing from
-##' \code{"Q_objective"} simply removes the quadratic part from the
-##' objective function. Coercing a \code{"function"} to
-##' \code{"L_objective"} is only possible if the function also
-##' inherits from class \code{"objective"}.
-##' @title Linear Objective Functions
-##' @param x an R object.
-##' @return an object of class \code{"L_objective"} which inherits
-##' from  \code{"Q_objective"} and \code{"objective"}.
-##' @author Stefan Theussl
+##  Coerces objects of type \code{"L_objective"}.
+## 
+##  Objects from the following classes can be coerced to
+##  \code{"L_objective"}: \code{"NULL"}, \code{"numeric"},
+##  \code{"Q_objective"}, and \code{"function"}. The elements of a
+##  \code{"numeric"} vector \eqn{c} are treated as being objective
+##  variable coefficients in \eqn{c^\top x}). Coercing from
+##  \code{"Q_objective"} simply removes the quadratic part from the
+##  objective function. Coercing a \code{"function"} to
+##  \code{"L_objective"} is only possible if the function also
+##  inherits from class \code{"objective"}.
+##  @title Linear Objective Functions
+##  @param x an R object.
+##  @return an object of class \code{"L_objective"} which inherits
+##  from  \code{"Q_objective"} and \code{"objective"}.
+##  @author Stefan Theussl
+##' @rdname L_objective
 ##' @export
 as.L_objective <- function( x )
     UseMethod( "as.L_objective" )
@@ -216,6 +225,7 @@ as.L_objective.function <- function( x ){
 ##' \code{"simple_triplet_matrix"} can be supplied.
 ##' @param L a numeric vector of length \eqn{n}, where \eqn{n} is the
 ##' number of objective variables.
+##' @param x an R object.
 ##' @return an object of class \code{"Q_objective"} which inherits
 ##' from \code{"objective"}.
 ##' @author Stefan Theussl
@@ -249,16 +259,17 @@ as.function.Q_objective <- function( x, ... ){
   out
 }
 
-##' Coerces objects of type \code{"Q_objective"}.
-##'
-##' Objects from the following classes can be coerced to
-##' \code{"Q_objective"}: \code{"function"}, \code{"matrix"}, and
-##' \code{"simple_triplet_matrix"}.
-##' @title Quadratic Objective Function
-##' @param x an R object.
-##' @return an object of class \code{"Q_objective"} which inherits
-##' from \code{"objective"}.
-##' @author Stefan Theussl
+##  Coerces objects of type \code{"Q_objective"}.
+## 
+##  Objects from the following classes can be coerced to
+##  \code{"Q_objective"}: \code{"function"}, \code{"matrix"}, and
+##  \code{"simple_triplet_matrix"}.
+##  @title Quadratic Objective Function
+##  @param x an R object.
+##  @return an object of class \code{"Q_objective"} which inherits
+##  from \code{"objective"}.
+##  @author Stefan Theussl
+##' @rdname Q_objective
 ##' @export
 as.Q_objective <- function( x )
   UseMethod("as.Q_objective")
@@ -305,6 +316,7 @@ as.Q_objective.simple_triplet_matrix <- function( x )
 ##' @param F an R \code{"function"} taking a numeric vector \code{x} of length \eqn{n} as argument.
 ##' @param G an R \code{"function"} returning the gradient at \code{x}.
 ##' @param n the number of objective variables.
+##' @param x an R object.
 ##' @return an object of class \code{"F_objective"} which inherits
 ##' from \code{"objective"}.
 ##' @author Stefan Theussl
@@ -325,16 +337,17 @@ F_objective <- function( F, n, G = NULL ) {
 as.function.F_objective <- function( x, ... )
   x$F
 
-##' Coerces objects of type \code{"F_objective"}.
-##'
-##' Objects from the following classes can be coerced to
-##' \code{"F_objective"}: \code{"function"}, \code{"L_objective"}, and
-##' \code{"Q_objective"}.
-##' @title General Objective Function
-##' @param x an R object.
-##' @return an object of class \code{"F_objective"} which inherits
-##' from \code{"objective"}.
-##' @author Stefan Theussl
+##  Coerces objects of type \code{"F_objective"}.
+## 
+##  Objects from the following classes can be coerced to
+##  \code{"F_objective"}: \code{"function"}, \code{"L_objective"}, and
+##  \code{"Q_objective"}.
+##  @title General Objective Function
+##  @param x an R object.
+##  @return an object of class \code{"F_objective"} which inherits
+##  from \code{"objective"}.
+##  @author Stefan Theussl
+##' @rdname F_objective
 ##' @export
 as.F_objective <- function( x )
   UseMethod("as.F_objective")

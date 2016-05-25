@@ -2,9 +2,12 @@
 % Please edit documentation in R/objective.R
 \name{Q_objective}
 \alias{Q_objective}
+\alias{as.Q_objective}
 \title{Quadratic Objective Function}
 \usage{
 Q_objective(Q, L = NULL)
+
+as.Q_objective(x)
 }
 \arguments{
 \item{Q}{a \eqn{n \times n} matrix with numeric entries representing the quadratic
@@ -13,6 +16,8 @@ part of objective function. Sparse matrices of class
 
 \item{L}{a numeric vector of length \eqn{n}, where \eqn{n} is the
 number of objective variables.}
+
+\item{x}{an R object.}
 }
 \value{
 an object of class \code{"Q_objective"} which inherits

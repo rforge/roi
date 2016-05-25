@@ -2,10 +2,13 @@
 % Please edit documentation in R/OP.R
 \name{OP}
 \alias{OP}
+\alias{as.OP}
 \title{Optimization Problem Constructor}
 \usage{
 OP(objective, constraints = NULL, types = NULL, bounds = NULL,
   maximum = FALSE)
+
+as.OP(x)
 }
 \arguments{
 \item{objective}{an object inheriting from class \code{"objective"}.}
@@ -27,6 +30,8 @@ each variable is a bound between 0 and \code{Inf}.}
 optimization. \code{TRUE} means that the objective is to maximize
 the objective function, \code{FALSE} (default) means to minimize
 it.}
+
+\item{x}{an R object.}
 }
 \value{
 A list containing the optimal solution, with the following

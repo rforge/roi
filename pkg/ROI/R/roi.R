@@ -206,6 +206,8 @@ get_solver_packages_from_db <- function ( ){
 ##' @param solver a character string giving the solver name.
 ##' @param method a function registered as solver method.
 ##' @return TRUE on success
+##' @family plugin functions
+##' @rdname ROI_plugin_register_solver_method
 ##' @export
 .ROI_plugin_register_solver_method <- function( signatures, solver, method ){
     for( i in 1:nrow(signatures) )
@@ -233,14 +235,16 @@ ROI_required_signature <- function()
 ##' @return a data.frame with the supported signatures
 ##' @examples
 ##' ## ROI_make_LP_signatures
-##' lp_signature <- ROI_make_signature( objective = "L",
+##' lp_signature <- .ROI_plugin_make_signature( objective = "L",
 ##'                                     constraints = "L",
 ##'                                     types = c("C"),
 ##'                                     bounds = c("X", "V"),
 ##'                                     cones = c("free"),
 ##'                                     maximum = c(TRUE, FALSE) )
+##' @family plugin functions
+##' @rdname ROI_plugin_make_signature
 ##' @export
-ROI_make_signature <- function(...){
+.ROI_plugin_make_signature <- function(...){
     dotargs <- list(...)
     required <- ROI_required_signature() ## names(formals(OP))
     if( length(dotargs) < 2 )
@@ -277,7 +281,7 @@ ROI_make_signature <- function(...){
 ##' @return An R object containing the signature.
 ##' @export
 .ROI_plugin_make_LP_signatures <- function()
-    ROI_make_signature( objective = "L",
+    .ROI_plugin_make_signature( objective = "L",
                         constraints = c("X", "L"),
                         types = c("C"),
                         bounds = c("X", "V"),
@@ -287,7 +291,7 @@ ROI_make_signature <- function(...){
 ##' @rdname .ROI_plugin_make_LP_signatures
 ##' @export
 .ROI_plugin_make_QP_signatures <- function()
-    ROI_make_signature( objective = "Q",
+    .ROI_plugin_make_signature( objective = "Q",
                         constraints = c("X", "L"),
                         types = c("C"),
                         bounds = c("X", "V"),
@@ -297,7 +301,7 @@ ROI_make_signature <- function(...){
 ##' @rdname .ROI_plugin_make_LP_signatures
 ##' @export
 .ROI_plugin_make_MILP_signatures <- function()
-    ROI_make_signature( objective = "L",
+    .ROI_plugin_make_signature( objective = "L",
                         constraints = c("X", "L"),
                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
                         bounds = c("X", "V"),
@@ -307,7 +311,7 @@ ROI_make_signature <- function(...){
 ##' @rdname .ROI_plugin_make_LP_signatures
 ##' @export
 .ROI_plugin_make_MIQP_signatures <- function()
-    ROI_make_signature( objective = c("L", "Q"),
+    .ROI_plugin_make_signature( objective = c("L", "Q"),
                         constraints = c("X", "L"),
                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
                         bounds = c("X", "V"),
@@ -317,7 +321,7 @@ ROI_make_signature <- function(...){
 ##' @rdname .ROI_plugin_make_LP_signatures
 ##' @export
 .ROI_plugin_make_MIQCP_signatures <- function()
-    ROI_make_signature( objective = c("L", "Q"),
+    .ROI_plugin_make_signature( objective = c("L", "Q"),
                         constraints = c("X", "L", "Q"),
                         types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
                         bounds = c("X", "V"),
@@ -347,23 +351,6 @@ ROI_make_signature <- function(...){
     ordered <- order(ord[x])
     x[ordered]
 }
-
-## ROI_sdp <- function() {
-##
-## }
-
-ROI_meta <- function(x) attr(x, "meta")
-ROI_solver <- function(x) ROI_meta(x)$solver
-ROI_solution <- function(x) x$solution
-ROI_solution_dual <- function(x) x ## FIXME: (muss man dann auch in die Solver aufnehmen!)
-ROI_objval <- function(x) x$objval
-ROI_message <- function(x) x$message
-ROI_sdp <- function(x) ROI_message(x)$sdp
-## FIXME: ROI_get_message
-## FIXME: ROI_get_solution
-## FIXME: ROI_get_solution_dual
-## FIXME: ROI_get_meta
-## FIXME: ROI_get_objval
 
 ROI_expand <- function(...){
     base::expand.grid(..., stringsAsFactors = FALSE)

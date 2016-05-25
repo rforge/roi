@@ -8,12 +8,12 @@
 ##  =====================
 ##' @title Add Status Code to the Status Database
 ##'
-##' @description Add status a code to the status database.
+##' @description Add a status code to the status database.
 ##' @param solver a character string giving the name of the solver.
-##' @param code a integer giving the status code of the solver.
+##' @param code an integer giving the status code of the solver.
 ##' @param symbol a character string giving the status symbol.
 ##' @param message a character string used as status message.
-##' @param roi_code a integer giving the ROI status code, 1L for failure and 0L for success.
+##' @param roi_code an integer giving the ROI status code, 1L for failure and 0L for success.
 ##' @return NULL
 ##' @examples
 ##' \dontrun{
@@ -22,6 +22,8 @@
 ##' .ROI_plugin_add_status_code_to_db(solver, 5L, "GLP_OPT", "Solution is optimal.", 0L)
 ##' .ROI_plugin_add_status_code_to_db(solver, 1L, "GLP_UNDEF", "Solution is undefined.", 1L)
 ##' }
+##' @family plugin functions
+##' @rdname ROI_plugin_add_status_code_to_db
 ##' @export
 .ROI_plugin_add_status_code_to_db <- function(solver, code, symbol, message, roi_code = 1L){
     status_db$set_entry(solver = solver,
