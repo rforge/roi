@@ -1,3 +1,12 @@
+make_QP_signatures <- function() {
+    .ROI_plugin_make_signature( objective = "Q",
+                        constraints = c("X", "L"),
+                        types = c("C"),
+                        bounds = c("X", "V"),
+                        cones = c("free"),
+                        maximum = c(TRUE, FALSE) )
+}
+
 .onLoad <- function( libname, pkgname ) {
   library.dynam( "quadprog", package = "quadprog", lib.loc = .libPaths() )
     ## Solver plugin name (based on package name)
@@ -5,7 +14,7 @@
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
         solver <- .ROI_plugin_get_solver_name( pkgname )
-        .ROI_plugin_register_solver_method( signatures = .ROI_plugin_make_QP_signatures(),
+        .ROI_plugin_register_solver_method( signatures = make_QP_signatures(),
                                             solver = solver,
                                             method =
             getFunction( "solve_QP", where = getNamespace(pkgname)) )
