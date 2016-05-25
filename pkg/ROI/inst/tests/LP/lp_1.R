@@ -9,11 +9,6 @@ context("LP")
 ## x_1, x_2, x_3 >= 0
 
 test_that("LP Example 1", {
-
-    cat("LP Example 1\n")
-    library( testthat )
-    library( ROI )
-
     mat <- matrix(c(3, 4, 2,
                     2, 1, 2,
                     1, 3, 2), nrow=3, byrow=TRUE)
@@ -23,18 +18,7 @@ test_that("LP Example 1", {
                                         rhs = c(60, 40, 80)),
              maximum = TRUE)
 
-    for ( SOLVER in OP_applicable_solver(lp) ) {
-
-        cat("\t", SOLVER)      
-        error <-  tryCatch({
-            opt <- ROI_solve(lp, solver = SOLVER, control=list(DEBUG=TRUE))
-            expect_that( opt$solution, equals( c(0, 20/3, 50/3) ) ) 
-            expect_that( opt$objval, equals( 230/3 ) )
-            FALSE}, error = function(e) TRUE)
-
-        if (error) cat(testthat:::colourise("\tERROR!\n", "error"))
-        else       cat(testthat:::colourise("\tOK!\n", "passed"))
-        
-    }
-      
+    opt <- ROI_solve(lp, solver = SOLVER, control=list(DEBUG=TRUE))
+    expect_true( equal(opt$solution, c(0, 20/3, 50/3), tol=1e-4) )
+    expect_true( equal(opt$objval, 230/3, tol=1e-4) )
 } )
