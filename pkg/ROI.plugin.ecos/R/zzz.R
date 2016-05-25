@@ -2,12 +2,12 @@
 ## based on ecos interface
 
 make_ECOS_signatures <- function()
-    ROI_make_signature( objective = c("L"),
-                        constraints = c("L"),
-                        types = c("B", "I", "C"),
-                        bounds = c("X", "C", "V"),
-                        cones = c("free", "nonneg", "soc", "expp"),
-                        maximum = c(TRUE, FALSE) )
+    .ROI_plugin_make_signature( objective = c("L"),
+               		            constraints = c("L"),
+               		            types = c("B", "I", "C"),
+               		            bounds = c("X", "C", "V"),
+               		            cones = c("free", "nonneg", "soc", "expp"),
+               		            maximum = c(TRUE, FALSE) )
 
 .onLoad <- function( libname, pkgname ) {
     ## Solver plugin name (based on package name)
