@@ -27,10 +27,6 @@ context("QP")
 ## deparse(sol$value)
 test_that("QP Example 1", {
 
-    cat("QP Example 1\n")
-    library( testthat )
-    library( ROI )
-
     A <- cbind(c(-4, -3, 0), 
                c( 2,  1, 0), 
                c( 0, -2, 1))
@@ -39,13 +35,9 @@ test_that("QP Example 1", {
                          dir = rep(">=", 3),
                          rhs = c(-8, 2, 0)))
 
-    for ( SOLVER in OP_applicable_solver(x) ) {
-        cat("  ", SOLVER)
-        opt <- ROI_solve(x, solver=SOLVER, control=list(eps=1e-12))
-        solution <- c(0.476190476190476, 1.04761904761905, 2.0952380952381)
-        check( opt$solution, solution )
-        check( opt$objval, -2.38095238095238 )
-        cat("\n")
-    }
+    opt <- ROI_solve(x, solver=SOLVER, control=list(eps=1e-12))
+    solution <- c(0.476190476190476, 1.04761904761905, 2.0952380952381)
+    expect_true( equal(opt$solution, solution) )
+    expect_true( equal(opt$objval, -2.38095238095238) )
 
 } )
