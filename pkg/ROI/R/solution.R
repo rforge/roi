@@ -11,7 +11,7 @@
 ## ---------------------------------------------------------
 
 ##  --------------------------------------------------------
-## 
+##
 ##  solution
 ##  ========
 ##' @title Extract Solution
@@ -37,10 +37,10 @@ solution_dual.default <- function(sol) {
 }
 
 ##' @title Extract SDP Solution
-##' @description The matrix part of the solution from an semidefinite program can 
+##' @description The matrix part of the solution from an semidefinite program can
 ##'   be accessed via the method \code{'solution_dual'}.
 ##' @param sol an object of type \code{'OP_solution'}.
-##' @return the matrix part of the solution from an semidefinite program if 
+##' @return the matrix part of the solution from an semidefinite program if
 ##'   available.
 ##' @export
 solution_sdp <- function(sol) UseMethod("solution_sdp")
@@ -59,7 +59,7 @@ solution_aux.default <- function(sol) {
 ##' @description The orginal soltion from the solver utilized by the ROI plugin,
 ##'   can be accessed via the method \code{'solution_sdp'}.
 ##' @param sol an object of type \code{'OP_solution'}.
-##' @return the matrix part of the solution from an semidefinite program if 
+##' @return the matrix part of the solution from an semidefinite program if
 ##'   available.
 ##' @export
 solution_solver <- function(sol) UseMethod("solution_solver")
@@ -106,41 +106,4 @@ print.OP_solution <- function(x, ...){
         writeLines( "Optimal solution found." )
     }
     writeLines( sprintf("The objective value is: %e", x$objval) )
-}
-
-
-
-################################################################################
-## CANONICALIZER
-################################################################################
-
-canonicalize_status <- function( status, solver ){
-    msg <- get_status_message_from_db( solver, status )
-    list( code = msg$roi_code, msg = msg )
-}
-
-##  -----------------------------------------------------------
-##  Plug-in convenience function: canonicalize_solution
-##  =====================
-##' @title Canonicalize Solution
-##'
-##' @description Transform the solution to a standardized form.
-##' @param solution a numeric or integer vector giving
-##'        the solution of the optimization problem.
-##' @param optimum a numeric giving the optimal value.
-##' @param status an integer giving the status code (exit flag).
-##' @param solver a character string giving the name of the solver.
-##' @param message an optional \R object giving the original solver message.
-##' @param ... further arguments to be stored in the solution object.
-##' @return an object of class \code{"OP_solution"}.
-##' @family plugin functions
-##' @rdname ROI_plugin_canonicalize_solution
-##' @export
-.ROI_plugin_canonicalize_solution <- function( solution, optimum, status, solver, message=NULL, ... ) {
-    status <- canonicalize_status( status, solver )
-    make_OP_solution( solution = solution,
-                      objval   = optimum,
-                      status   = status,
-                      solver   = solver,
-                      message  = message, ... )
 }

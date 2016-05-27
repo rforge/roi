@@ -186,34 +186,6 @@ as.no_V_bounds_OP.OP <- function( x ){
     }
 }
 
-
-
-################################################################################
-## Plugin and solver naming
-################################################################################
-
-## returns solver name based on package name
-## Convention: ROI.plugin.<solver> => <solver>
-.plugin_prefix <- function()
-    "ROI.plugin"
-
-## NOTE: all plugin related functions must be prefixed with ".ROI_plugin_" and
-##       exported.
-
-##  -----------------------------------------------------------
-##  get_solver_name
-##  ===============
-##' @title Get Solver Name
-##
-##' @description Get the name of the solver plugin.
-##' @param pkgname a string giving the package name.
-##' @return Returns the name of the solver as character.
-##' @family plugin functions
-##' @rdname ROI_plugin_get_solver_name
-##' @export
-.ROI_plugin_get_solver_name <- function( pkgname )
-    sub(sprintf("%s.", .plugin_prefix()), "", as.character(pkgname))
-
 get_package_name <- function( solver )
     paste(.plugin_prefix(), as.character(solver), sep = ".")
 
