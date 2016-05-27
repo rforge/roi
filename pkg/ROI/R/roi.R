@@ -288,8 +288,8 @@ ROI_required_signature <- function()
 ##                         cones = c("free"),
 ##                         maximum = c(TRUE, FALSE) )
 ## 
-## ##' @rdname .ROI_plugin_make_LP_signatures
-## ##' @export
+## ## @rdname .ROI_plugin_make_LP_signatures
+## ## @export
 ## .ROI_plugin_make_QP_signatures <- function()
 ##     .ROI_plugin_make_signature( objective = "Q",
 ##                         constraints = c("X", "L"),
@@ -298,8 +298,8 @@ ROI_required_signature <- function()
 ##                         cones = c("free"),
 ##                         maximum = c(TRUE, FALSE) )
 ## 
-## ##' @rdname .ROI_plugin_make_LP_signatures
-## ##' @export
+## ## @rdname .ROI_plugin_make_LP_signatures
+## ## @export
 ## .ROI_plugin_make_MILP_signatures <- function()
 ##     .ROI_plugin_make_signature( objective = "L",
 ##                         constraints = c("X", "L"),
@@ -308,8 +308,8 @@ ROI_required_signature <- function()
 ##                         cones = c("free"),
 ##                         maximum = c(TRUE, FALSE) )
 ## 
-## ##' @rdname .ROI_plugin_make_LP_signatures
-## ##' @export
+## ## @rdname .ROI_plugin_make_LP_signatures
+## ## @export
 ## .ROI_plugin_make_MIQP_signatures <- function()
 ##     .ROI_plugin_make_signature( objective = c("L", "Q"),
 ##                         constraints = c("X", "L"),
@@ -318,8 +318,8 @@ ROI_required_signature <- function()
 ##                         cones = c("free"),
 ##                         maximum = c(TRUE, FALSE) )
 ## 
-## ##' @rdname .ROI_plugin_make_LP_signatures
-## ##' @export
+## ## @rdname .ROI_plugin_make_LP_signatures
+## ## @export
 ## .ROI_plugin_make_MIQCP_signatures <- function()
 ##     .ROI_plugin_make_signature( objective = c("L", "Q"),
 ##                         constraints = c("X", "L", "Q"),

@@ -20,8 +20,6 @@ ROI_compare <- function(x, y, eps=1e-5) {
 library( "testthat" )
 library( "ROI" )
 
-ROI_available_solvers()
-
 getwd()
 setwd("/home/florian/work/Optimization/ROI/ROI/devel/ROI/inst/unit_test")
 
