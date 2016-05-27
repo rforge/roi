@@ -87,7 +87,7 @@ solve_OP <- function( x, control ){
     invisible(TRUE)
 }
 
-## STATUS CODES
+## SOLVER CONTROLS
 .add_controls <- function(){
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
     ## GLPK
