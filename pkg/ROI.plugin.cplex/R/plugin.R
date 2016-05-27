@@ -31,6 +31,11 @@ solve_OP <- function( x, control ){
     if(is.null(nos <- control$n)) nos <- 1L
       value_is_list_of_solutions <- !identical(as.integer(nos), 1L)
 
+    if( is.null(control$trace) )
+        control$trace <- 0
+    if( is.null(control$round) )
+        control$round <- 1
+
     out <- if( ! is.null(constraints(x)$Q) ) {
         ## which are the quadratic constraints
         qc <- which( ! sapply(constraints(x)$Q, .all_zero_in_simple_triplet_matrix_or_NULL) )
@@ -61,7 +66,7 @@ solve_OP <- function( x, control ){
                                    lb = lb,
                                    ub = ub,
                                    objsense = if(x$maximum) "max" else "min",
-                                   control = list(trace = 0, round = 1),
+                                   control = control,
                                    n = nos
                                    ),
                  error = identity )
@@ -86,7 +91,7 @@ solve_OP <- function( x, control ){
                                 lb = lb,
                                 ub = ub,
                                 objsense = if(x$maximum) "max" else "min",
-                                control = list(trace = 0, round = 1),
+                                control = control,
                                 n = nos
                                 ),
                         error = identity )

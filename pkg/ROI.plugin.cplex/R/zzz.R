@@ -17,7 +17,9 @@ make_MIQCP_signatures <- function() {
                                             solver = solver,
                                             method =
             getFunction( "solve_OP", where = getNamespace(pkgname)) )
-        ## Finally, for status code canonicalization add status codes to data base
+        ## For status code canonicalization add status codes to data base
         .add_status_codes()
+        ## Finally, for control argument canonicalization add controls to data base
+        .add_controls()
     }
 }

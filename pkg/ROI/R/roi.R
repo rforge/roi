@@ -106,14 +106,15 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     }
 
     if( length(control) )
-        if( all(!names(control) %in% get_solver_controls_from_db(solver)) )
+        if( all(!names(ROI_translate(control, solver)) %in% get_solver_controls_from_db(solver)) )
             warning( sprintf("some control arguments not available in solver '%s'.", solver) )
 
-    ## TODE: handle default ROI controls separately; translate ROI controls into solver controls
+    ## TODO: handle default ROI controls separately
+    ## FIXME: what if verbose and solver specific verbosity are set at the same time?
     control$verbose <- ifelse( length(control$verbose), control$verbose, FALSE )
     if( control$verbose )
         writeLines( "<SOLVER MSG>  ----" )
-    out <- SOLVE( x, control )
+    out <- SOLVE( x, ROI_translate(control, solver) )
     if( control$verbose )
         writeLines( "<!SOLVER MSG> ----" )
     out

@@ -45,6 +45,13 @@ get_solver_controls_from_db <- function( solver ){
     sapply( control_db$get_entries(solver), function(x) x[[ "control" ]] )
 }
 
+ROI_translate <- function( control, solver ){
+    trans <- sapply( control_db$get_entries(solver), function( x ) x[[ "roi_control" ]] )
+    idx_trans <- names( control ) %in% trans
+    if( any(idx_trans) )
+        names( control )[idx_trans] <- sapply( names( control )[idx_trans], function(item) control_db$get_entries(solver)[ item == trans  ][[1]]$control )
+    control
+}
 
 
 ################################################################################
