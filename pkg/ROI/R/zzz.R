@@ -60,7 +60,7 @@ schema_valid <- cross_validate_schema( names(formals(OP)), solver_db )
 ## create registry object for (partial) solver control argument canonicalization
 add_control_db_schema <- function( control_db ){
     control_db$set_field( "solver",      type = "character", is_key = TRUE )
-    control_db$set_field( "arg",         type = "character", is_key = TRUE )
+    control_db$set_field( "control",     type = "character", is_key = TRUE )
     control_db$set_field( "roi_control", type = "character", alternatives = ROI_available_solver_controls() )
     control_db
 }

@@ -2,7 +2,7 @@
 ## Package: ROI
 ## File:    roi.R
 ## Author:  Stefan Theussl
-## Changed: 2011-10-03
+## Changed: 2016-05-27
 ################################################################################
 
 ## Imports
@@ -21,19 +21,22 @@ Solver_Order <- c("ecos", "glpk", "nloptr", "quadprog", "symphony", "ipop")
 ################################################################################
 
 ##  -----------------------------------------------------------
-##  ROI_solve
-##  =========
+##  ROI_solve =========
 ##' @title Solve an Optimization Problem
-##' @description
-##'   Solve a given optimization problem.
-##'   This function uses the given solver (or searches for an appropriate
-##'   solver) to solve the supplied optimization problem.
+##' @description Solve a given optimization problem.  This function
+##'     uses the given solver (or searches for an appropriate solver)
+##'     to solve the supplied optimization problem.
 ##' @param x an optimization problem of class \code{"OP"}.
-##' @param solver a character vector specifying the solver to use.
-##' @param control a list with additional control parameters for the solver.
-##'   This is solver specific so please consult the corresponding documentation.
-##' @param ... a list of control parameters (overruling those specified in \code{control}).
-##' @return a list containing the solution and a message from the solver.
+##' @param solver a character vector specifying the solver to use. If
+##'     missing, then the default solver returned by
+##'     \code{\link{ROI_options}} is used.
+##' @param control a list with additional control parameters for the
+##'     solver.  This is solver specific so please consult the
+##'     corresponding documentation.
+##' @param ... a list of control parameters (overruling those
+##'     specified in \code{control}).
+##' @return a list containing the solution and a message from the
+##'     solver.
 ##' @examples
 ##' ## Portfolio optimization - minimum variance
 ##' ## -----------------------------------------
@@ -57,7 +60,11 @@ Solver_Order <- c("ecos", "glpk", "nloptr", "quadprog", "symphony", "ipop")
 ##' @author Stefan Theussl
 ##' @export
 ##  -----------------------------------------------------------
-ROI_solve <- function( x, solver="", control = list(), ... ){
+ROI_solve <- function( x, solver, control = list(), ... ){
+
+    ## if no second argument is supplied we use the default solver
+    if( missing(solver) )
+        solver <- ROI_options("default_solver")
 
     ## TODO: would be nice if we have an order if no solver is provided!
     ## NOTE: nloptr can take additional parameters,
@@ -83,19 +90,33 @@ ROI_solve <- function( x, solver="", control = list(), ... ){
         stop( "no solver found for this signature:\n\t",
               paste(paste(names(sig), sig, sep=": "), collapse="\n\t") )
     }
-    if ( solver != "" ) {
+    if ( solver != "auto" ) {
         SOLVE <- methods[[ solver ]]
     } else {
         SOLVE <- methods[[ 1 ]]
+        solver <- names( methods )[1]
     }
     if ( !is.function(solve) ) {
         ## CASE: applicable solvers found but the solver name is wrong
         ##       => issue warning and fallback to the other solver
         SOLVE <- methods[[1]]
         warning( "solver '", solver, "' not found or applicable, ROI uses '",
-                 names(methods)[1], "' instead" )
+                names(methods)[1], "' instead" )
+        solver <- names( methods )[1]
     }
-    SOLVE( x, control )
+
+    if( length(control) )
+        if( all(!names(control) %in% get_solver_controls_from_db(solver)) )
+            warning( sprintf("some control arguments not available in solver '%s'.", solver) )
+
+    ## TODE: handle default ROI controls separately; translate ROI controls into solver controls
+    control$verbose <- ifelse( length(control$verbose), control$verbose, FALSE )
+    if( control$verbose )
+        writeLines( "<SOLVER MSG>  ----" )
+    out <- SOLVE( x, control )
+    if( control$verbose )
+        writeLines( "<!SOLVER MSG> ----" )
+    out
 }
 
 ################################################################################

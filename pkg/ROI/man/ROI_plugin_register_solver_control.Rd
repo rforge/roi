@@ -4,12 +4,12 @@
 \alias{.ROI_plugin_register_solver_control}
 \title{Register Solver Controls}
 \usage{
-.ROI_plugin_register_solver_control(args, solver, roi_control = "X")
+.ROI_plugin_register_solver_control(solver, args, roi_control = "X")
 }
 \arguments{
-\item{args}{a character vector specifying with the supported signatures.}
-
 \item{solver}{a character string giving the solver name.}
+
+\item{args}{a character vector specifying with the supported signatures.}
 
 \item{roi_control}{a character vector specifying the corresponding ROI control argument.}
 }
