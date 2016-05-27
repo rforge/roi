@@ -1,5 +1,9 @@
-##' @noRd
-##' @import registry methods
+##' ROI Options
+##'
+##' Allow the user to set and examine a variety of ROI options like the default solver or the function used to compute the gradients.
+##' @param option any options can be defined, using 'key, value' pairs. If 'value' is missing the current set value is returned for the given 'option'. If both are missing. all set options are returned.
+##' @param value the corresponding value to set for the given option.
+##'@export
 ROI_options <-
 local({
     options <- list()
@@ -11,6 +15,10 @@ local({
             options[[option]] <<- value
     }
 })
+
+##' @noRd
+##' @import registry methods
+NULL
 
 ## STATUS_DB
 ## create registry object containing status codes
@@ -48,6 +56,17 @@ cross_validate_schema <- function( args, solver_db){
 
 schema_valid <- cross_validate_schema( names(formals(OP)), solver_db )
 
+## CONTROL_DB
+## create registry object for (partial) solver control argument canonicalization
+add_control_db_schema <- function( control_db ){
+    control_db$set_field( "solver",      type = "character", is_key = TRUE )
+    control_db$set_field( "arg",         type = "character", is_key = TRUE )
+    control_db$set_field( "roi_control", type = "character", alternatives = ROI_available_solver_controls() )
+    control_db
+}
+control_db <- registry( )
+control_db <- add_control_db_schema( control_db )
+
 .onLoad <- function( libname, pkgname ) {
     ## if( ! "ROI.plugin.nlminb" %in% ROI_registered_solvers() ){
         ## Register solver methods here.
@@ -64,7 +83,8 @@ schema_valid <- cross_validate_schema( names(formals(OP)), solver_db )
 
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
     ## OPs is the default solver
-    ROI_options("default_solver", "ROI_NULL")
+    ROI_options( "default_solver", "auto" )
+    ROI_options( "gradient", numDeriv::grad )
 }
 
 .onAttach <- function( libname, pkgname ) {
