@@ -4,10 +4,12 @@
 \alias{solution}
 \title{Extract Solution}
 \usage{
-solution(sol)
+solution(x, type = c("primal", "dual", "aux", "psd", "msg"))
 }
 \arguments{
-\item{sol}{an object of type \code{'OP_solution'}.}
+\item{x}{an object of type \code{'OP_solution'}.}
+
+\item{type}{sdfdf}
 }
 \value{
 the extracted solution.

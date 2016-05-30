@@ -35,9 +35,11 @@
 }
 
 ROI_available_solver_controls <- function(){
-    c( "X",               ## no corresponding ROI control
-       "verbose",         ## LOGICAL: turn on/off solver output on terminal
-       "verbosity_level"  ## INTEGER: level of output
+    c( "X",                ## no corresponding ROI control
+       "verbose",          ## LOGICAL: turn on/off solver output on terminal
+       "verbosity_level",  ## INTEGER: level of output
+       "max_iter",         ## INTEGER: maximum number of iterations
+       "tol"               ## NUMERIC: tolerance of termination criterion
       )
 }
 

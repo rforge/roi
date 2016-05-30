@@ -435,6 +435,14 @@ c.L_constraint <- function( ..., recursive = FALSE )
 length.L_constraint <- function( x )
     attr(x, "n_L_constraints")
 
+##' @noRd
+##' @export
+str.L_constraint <- function(object, ...) {
+    class(object) <- sprintf("%s ", class(object))
+    str(object)
+}
+
+
 ##  the linear term of the left hand side
 ##  ----------------------------------------------------------
 ##  as.L_term

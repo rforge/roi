@@ -1,6 +1,6 @@
 context("rbind")
 
-is_fuzzy_null <- function(x) {
+is_stm_zero_matrix <- function(x) {
     if ( is.null(x) ) return(TRUE)
     if ( slam::is.simple_triplet_matrix(x) ) {
         if ( length(x$i) == 0 ) return(TRUE)
@@ -41,7 +41,7 @@ test_that( "rbind Q_constraints", {
     qc_new <- rbind(qc1, qc2, qc3)
     expect_that( equal(qc$L, qc_new$L), equals( TRUE ) )
     expect_that( unique(unlist(lapply(qc_new$Q, dim))), equals(3) )
-    expect_that( equal(sapply(qc_new$Q, is_fuzzy_null), sapply(qc$Q, is.null)), equals( TRUE ) )
+    expect_that( equal(sapply(qc_new$Q, is_stm_zero_matrix), sapply(qc$Q, is.null)), equals( TRUE ) )
     expect_that( equal(qc$Q[[3]], qc_new$Q[[3]]), equals(TRUE) )
 
 } )
@@ -56,7 +56,7 @@ test_that( "rbind L_constraints and Q_constraints", {
     qc_new <- rbind(lc1, lc2, qc3)
     expect_that( equal(qc$L, qc_new$L), equals( TRUE ) )
     expect_that( unique(unlist(lapply(qc_new$Q, dim))), equals(3) )
-    expect_that( equal(sapply(qc_new$Q, is_fuzzy_null), sapply(qc$Q, is.null)), equals( TRUE ) )
+    expect_that( equal(sapply(qc_new$Q, is_stm_zero_matrix), sapply(qc$Q, is.null)), equals( TRUE ) )
     expect_that( equal(qc$Q[[3]], qc_new$Q[[3]]), equals(TRUE) )
 
 } )

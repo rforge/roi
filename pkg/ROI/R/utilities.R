@@ -328,3 +328,22 @@ flatten_constraints <- function(x, message=NULL, domain=NULL) {
     flatten_cons(x)
     return(..X..)
 }
+
+##  -----------------------------------------------------------
+##  vech (TODO: this could be done nicer!)
+##  ====
+##' @title Half Vectorization
+##' @description The utility function \code{vech} performs a 
+##'   half-vectorization on the given matrices.
+##'   \pkg{ROI} objects and is mainly used for testing purposes.
+##' @param ... one or more matrices to be half-vectorized.
+##' @return a matrix 
+##' @export
+#  -----------------------------------------------------------
+vech <- function(...) {
+    x <- list(...)
+    fun <- function(M) c(M[lower.tri(M, TRUE)])
+    do.call(cbind, lapply(x, fun))
+}
+
+

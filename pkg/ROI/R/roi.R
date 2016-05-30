@@ -10,6 +10,7 @@
 #' @importFrom "stats" "setNames"
 #' @importFrom "stats" "na.omit"
 #' @importFrom "stats" "terms"
+#' @importFrom "utils" "str"
 #' @import "slam"
 #
 

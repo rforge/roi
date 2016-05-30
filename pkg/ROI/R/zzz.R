@@ -84,7 +84,8 @@ control_db <- add_control_db_schema( control_db )
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
     ## OPs is the default solver
     ROI_options( "default_solver", "auto" )
-    ROI_options( "gradient", numDeriv::grad )
+    tryCatch({ROI_options( "gradient", numDeriv::grad )}, error=function(e) NULL)
+    return(invisible(NULL))
 }
 
 .onAttach <- function( libname, pkgname ) {

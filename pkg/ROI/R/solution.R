@@ -16,57 +16,55 @@
 ##  ========
 ##' @title Extract Solution
 ##' @description The solution can be accessed via the method \code{'solution'}.
-##' @param sol an object of type \code{'OP_solution'}.
+##' @param x an object of type \code{'OP_solution'}.
+##' @param type sdfdf
 ##' @return the extracted solution.
 ##' @export
-solution <- function(sol) UseMethod( "solution")
-
-solution.default <- function(sol) {
-    sol$solution
+solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg")) {
+    type <- type[1]
+    switch(type, 
+           primal = .ROI_plugin_solution_prim(x), 
+           dual   = .ROI_plugin_solution_dual(x), 
+           aux    = .ROI_plugin_solution_aux(x) , 
+           psd    = .ROI_plugin_solution_psd(x) , 
+           msg    = .ROI_plugin_solution_msg(x)  )
 }
 
-##' @title Extract Dual Solution
-##' @description The dual solution can be accessed via the method \code{'solution_dual'}.
-##' @param sol an object of type \code{'OP_solution'}.
-##' @return the extracted solution.
+##' @noRd
 ##' @export
-solution_dual <- function(sol) UseMethod("solution_dual")
+.ROI_plugin_solution_prim <- function(x) UseMethod(".ROI_plugin_solution_prim")
+.ROI_plugin_solution_prim.OP_solution <- function(x) x$solution
 
-solution_dual.default <- function(sol) {
-    stop(sprintf("not available for solver '%s'", sol$solver))
-}
-
-##' @title Extract SDP Solution
-##' @description The matrix part of the solution from an semidefinite program can
-##'   be accessed via the method \code{'solution_dual'}.
-##' @param sol an object of type \code{'OP_solution'}.
-##' @return the matrix part of the solution from an semidefinite program if
-##'   available.
+##  @title Extract Dual Solution
+##  @description The dual solution can be accessed via the method \code{'solution_dual'}.
+##  @param x an object of type \code{'OP_solution'}.
+##  @return the extracted solution.
+##' @noRd
 ##' @export
-solution_sdp <- function(sol) UseMethod("solution_sdp")
+.ROI_plugin_solution_dual <- function(x) UseMethod(".ROI_plugin_solution_dual")
+.ROI_plugin_solution_dual.OP_solution <- function(x) NA
 
-solution_sdp.default <- function(sol) {
-    stop(sprintf("not available for solver '%s'", sol$solver))
-}
-
-solution_aux <- function(sol) UseMethod("solution_aux")
-
-solution_aux.default <- function(sol) {
-    stop(sprintf("not available for solver '%s'", sol$solver))
-}
-
-##' @title Extract Original Solver Solution
-##' @description The orginal soltion from the solver utilized by the ROI plugin,
-##'   can be accessed via the method \code{'solution_sdp'}.
-##' @param sol an object of type \code{'OP_solution'}.
-##' @return the matrix part of the solution from an semidefinite program if
-##'   available.
+##' @noRd
 ##' @export
-solution_solver <- function(sol) UseMethod("solution_solver")
+.ROI_plugin_solution_aux <- function(x) UseMethod(".ROI_plugin_solution_aux")
+.ROI_plugin_solution_aux.OP_solution <- function(x) NA
 
-solution_solver.default <- function(sol) {
-    stop(sprintf("not available for solver '%s'", sol$solver))
-}
+## @title Extract Positive Semi-Definite Matrices
+## @description The matrix part of the solution from an semidefinite program can
+##   be accessed via the method \code{'solution_psd'}.
+## @param sol an object of type \code{'OP_solution'}.
+## @return the matrix part of the solution from an semidefinite program if
+##   available.
+##' @noRd
+##' @export
+.ROI_plugin_solution_psd <- function(x) UseMethod(".ROI_plugin_solution_psd")
+.ROI_plugin_solution_psd.OP_solution <- function(x) NA
+
+##' @noRd
+##' @export
+.ROI_plugin_solution_msg <- function(x) UseMethod(".ROI_plugin_solution_msg")
+.ROI_plugin_solution_msg.OP_solution <- function(x) x$message
+
 
 ################################################################################
 ## Solution object
@@ -89,7 +87,7 @@ make_OP_solution <- function(solution, objval, status, solver, message=NULL, ...
                     status   = status,
                     message  = message),
               meta  = list(solver = solver, ...),
-              class = "OP_solution" )
+              class = c(sprintf("%s_solution", solver), "OP_solution") )
 
 ################################################################################
 ## Methods on solution object
