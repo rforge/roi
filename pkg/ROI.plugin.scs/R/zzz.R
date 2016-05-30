@@ -8,6 +8,16 @@ make_SCS_signatures <- function()
                                 cones = c("free", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd"),
                                 maximum = c(TRUE, FALSE) )
 
+
+## SOLVER CONTROLS
+.add_controls <- function(solver) {
+    ## SCS
+    .ROI_plugin_register_solver_control( solver, "verbose", "verbose" )
+    .ROI_plugin_register_solver_control( solver, "max_iters", "max_iter" )
+    .ROI_plugin_register_solver_control( solver, "eps", "tol" ) ## convergence tolerence
+    invisible( TRUE )
+}
+
 .onLoad <- function( libname, pkgname ) {
     ## Solver plugin name (based on package name)
     if( ! pkgname %in% ROI_registered_solvers() ){
@@ -20,6 +30,7 @@ make_SCS_signatures <- function()
             method = getFunction( "solve_OP", where = getNamespace(pkgname)) )
         ## Finally, for status code canonicalization add status codes to data base
         .add_status_codes()
+        .add_controls( solver )
     }
 }
 
