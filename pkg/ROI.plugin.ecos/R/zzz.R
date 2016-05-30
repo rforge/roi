@@ -3,11 +3,20 @@
 
 make_ECOS_signatures <- function()
     .ROI_plugin_make_signature( objective = c("L"),
-               		            constraints = c("L"),
-               		            types = c("B", "I", "C"),
-               		            bounds = c("X", "C", "V"),
-               		            cones = c("free", "nonneg", "soc", "expp"),
-               		            maximum = c(TRUE, FALSE) )
+                                constraints = c("L"),
+                                types = c("B", "I", "C"),
+                                bounds = c("X", "C", "CV"),
+                                cones = c("free", "nonneg", "soc", "expp"),
+                                maximum = c(TRUE, FALSE) )
+
+## SOLVER CONTROLS
+.add_controls <- function(solver) {
+    ## ECOS
+    .ROI_plugin_register_solver_control( solver, "verbose", "verbose" )
+    .ROI_plugin_register_solver_control( solver, "maxit", "max_iter" )
+    .ROI_plugin_register_solver_control( solver, "feastol", "tol" ) ## tolerance on the primal and dual residual
+    invisible( TRUE )
+}
 
 .onLoad <- function( libname, pkgname ) {
     ## Solver plugin name (based on package name)
@@ -21,6 +30,7 @@ make_ECOS_signatures <- function()
             method = getFunction( "solve_OP", where = getNamespace(pkgname)) )
         ## Finally, for status code canonicalization add status codes to data base
         .add_status_codes()
+        .add_controls( solver )
     }
 }
 

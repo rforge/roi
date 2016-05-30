@@ -20,7 +20,7 @@ test_that("Example 2", {
     G <- diag(x=-1, 6)
     h <- rep(0, 6)
     cones <- list("free"=c(1, 2), "soc"=list(3:5, 6:8))
-    bound <- as.C_bound(cones)
+    bound <-  c(as.C_bound(cones), V_bound(li=1:6, lb=rep.int(-Inf, 6)))
 
     x <- OP(objective = obj,
             constraints = L_constraint(L = rbind(A, G), dir=rep("==", length(c(b, h))), rhs = c(b, h)),

@@ -8,8 +8,6 @@
 ##      solver, essentially y and z are switched.
 ##
 ## -----------------------------------------------------------------------------
-## TODO: V_bound
-
 as_dgCMatrix <- function( x, ... ) 
     sparseMatrix(i=x$i, j=x$j, x=x$v, dims=c(x$nrow, x$ncol))
 
@@ -38,17 +36,17 @@ as.bound <- function( x, ... ) UseMethod( "as.bound" )
 as.bound.bound <- identity
 as.bound.NULL <- function( x, ... ) structure(NULL, class="bound")
 
-if ( FALSE ) {
-    
-    library(ECOSolveR)
-    library( Matrix )  
-    library(slam)
-
-    x <- lp
-    control <- list()
-    solver <- "ecos"
-
-}
+## if ( FALSE ) {
+## 
+##     library(ECOSolveR)
+##     library( Matrix )  
+##     library(slam)
+## 
+##     x <- lp
+##     control <- list()
+##     solver <- "ecos"
+## 
+## }
 
 ## BASIC SOLVER METHOD
 solve_OP <- function(x, control=list()){
@@ -159,14 +157,19 @@ solve_OP <- function(x, control=list()){
                        bool_vars = which( types(x) == "B" ),                     
                        int_vars  = which( types(x) == "I" ),
                        control   = sanitize_control(control) )
-    out$x <- out$x[seq_len(len_objective)]
-    out$y <- out$y[seq_len(len_dual_objective)]
-    out$s <- out$s[seq_len(len_dual_objective)]
-    optimum <- tryCatch({as.numeric(out$x %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
+    x_sol <- out$x[seq_len(len_objective)]
+    out$len_objective <- len_objective
+    out$len_dual_objective <- len_dual_objective
 
-    .ROI_plugin_canonicalize_solution( solution = out$x, optimum  = optimum,
+    optimum <- (-1)^x$maximum * tryCatch({as.numeric(x_sol %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
+
+    .ROI_plugin_canonicalize_solution( solution = x_sol, optimum  = optimum,
                                        status   = out[["retcodes"]]["exitFlag"],
                                        solver   = solver, message = out )
+}
+
+.ROI_plugin_solution_dual.scs_solution <- function(x) {
+    x$message$y[seq_len(x$message$len_dual_objective)]
 }
 
 ## STATUS CODES
