@@ -20,13 +20,6 @@ test_that("Example 1", {
         library( ROI )
     }
 
-    ## this function or something similar should go into ROI
-    vectorize_psd <- function(...) {
-        x <- list(...)
-        fun <- function(M) c(M[lower.tri(M, TRUE)])
-        do.call(cbind, lapply(x, fun))
-    }
-
     obj <- c(1, -1, 1)
     A1 <- matrix(c(-7, -11, -11,  3), 2)
     A2 <- matrix(c( 7, -18, -18,  8), 2)
@@ -38,12 +31,13 @@ test_that("Example 1", {
     b  <- matrix(c( 14,   9,  40,  9,  91,  10,  40,  10,15), 3)
 
     ## PSD matrices have to be vectorized
-    G1 <- vectorize_psd(A1, A2, A3)
-    h1 <- vectorize_psd(a)
-    G2 <- vectorize_psd(B1, B2, B3)
-    h2 <- vectorize_psd(b)
+    G1 <- vech(A1, A2, A3)
+    h1 <- vech(a)
+    G2 <- vech(B1, B2, B3)
+    h2 <- vech(b)
     h <- c(h1, h2)
     bounds <- c(C_bound(1:3, type="psd"), C_bound(3+1:6, type="psd"))
+    bounds <- c(bounds, V_bound(li=1:3, lb=rep.int(-Inf, 3)))
 
     x <- OP(objective = obj,
             constraints = L_constraint(L = rbind(G1, G2), dir=rep("==", length(h)), rhs = h),
@@ -51,25 +45,24 @@ test_that("Example 1", {
             bounds =  bounds,
             maximum = FALSE)
 
-    opt <- ROI_solve(x, solver = "scs", control=list(eps=1e-9))
-    
-    ROI_psd <- function(x) attributes(x)$meta$psd
+    opt <- ROI_solve(x)
     
     ## NOTE: The solutions I compare with are from cvxopt where I used the default settings,
     ##       therefore it is possible that scs just provides a solution with a smaler eps
 
-    expect_that( c(obj %*% opt$solution) <= c(obj %*% c(-0.367666090041563, 1.89832827158511, -0.887550426343585)), equals(TRUE) )
-    
+    expect_that( c(obj %*% solution(opt)) <= c(obj %*% c(-0.367666090041563, 1.89832827158511, -0.887550426343585)), equals(TRUE) )
+    expect_true(length(solution(opt, "dual")) == nrow(G1) + nrow(G2))
+
     ## solution from cvxopt
     ## [-3.68e-01 1.90e+00 -8.88e-01]
     ## oder c(-0.367666090041563, 1.89832827158511, -0.887550426343585)
-    expect_that( sum(abs(opt$solution - c(-0.367666090041563, 1.89832827158511, -0.887550426343585))) < 1e-3, equals( TRUE ) )   
+    expect_that( sum(abs(solution(opt) - c(-0.367666090041563, 1.89832827158511, -0.887550426343585))) < 1e-3, equals( TRUE ) )   
 
     ## [ 3.96e-03 -4.34e-03]
     ## [-4.34e-03  4.75e-03]
     ## c(0.00396107103000518, -0.00433836779348354, -0.00433836779348354,  0.00475162592559036) 
     expect_true( 
-                sum(abs( as.numeric(as.matrix(ROI_psd(opt)[[1]]))
+                sum(abs( as.numeric(as.matrix(solution(opt, "psd")[[1]]))
                         - c( 0.00396107103000518, -0.00433836779348354, 
                             -0.00433836779348354,  0.00475162592559036) )) < 1e-5 )
     
@@ -80,11 +73,9 @@ test_that("Example 1", {
     ##   0.000104021271556218, -0.00104543254168053,  0.0242146296992217, -0.00104543254168053, 
     ##   0.0105078600239678) 
     expect_that( 
-                sum(abs( as.numeric(as.matrix(ROI_psd(opt)[[2]]))
+                sum(abs( as.numeric(as.matrix(solution(opt, "psd")[[2]]))
                         - c( 0.0558011514407859, -0.00240909203896524, 0.0242146296992217,  
                             -0.00240909203896524, 0.000104021271556218, -0.00104543254168053,  
                             0.0242146296992217, -0.00104543254168053, 0.0105078600239678) )) < 1e-5, equals(TRUE) )
 
 } )
-
-

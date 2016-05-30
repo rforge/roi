@@ -36,6 +36,6 @@ test_that("Example 1", {
 
     opt <- ROI_solve(x, solver=SOLVER, control=list(eps=1e-12))
     expect_equal( opt$solution, c(4, 4, 4) )
-    expect_equal( opt$objval, -12 )
+    expect_equal( opt$objval, 12 )
       
 } )

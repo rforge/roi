@@ -188,13 +188,14 @@ x <- lp2
 x <- prob$op
 control=list()
 }
+
 absmax <- function(x) max(abs(x))
 
 solve_OP <- function(x, control=list()) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
 
     len_objective <- length(objective(x))
-    len_dual_objective <- ncol(constraints(x)$L)
+    len_dual_objective <- nrow(constraints(x)$L)
     bo <- bounds(x)
     b <- constraints(x)$rhs
 
@@ -281,7 +282,7 @@ solve_OP <- function(x, control=list()) {
             psd_j[[i]] <- roi_cones$psd[[i]][scale_which( psd_dim )]
             k <- cxL$i %in% psd_j[[i]]
             cxL$v[k] <- sqrt(2) * cxL$v[k]
-            constraints(x)$rhs[psd_j[[i]]] <- sqrt(2) * constraints(x)$rhs[psd_j[[i]]]
+            b[psd_j[[i]]] <- sqrt(2) * b[psd_j[[i]]]
         }
     }
 
@@ -318,18 +319,29 @@ solve_OP <- function(x, control=list()) {
     if ( is.null(control$verbose) ) control$verbose <- FALSE
     if ( is.null(control$eps) ) control$eps <- 1e-6
 
+    ## return(list(A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control))
     out <- scs(A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control)
-    out$x <- out$x[seq_len(len_objective)]
-    out$y <- out$y[seq_len(len_dual_objective)]
-    out$s <- out$s[seq_len(len_dual_objective)]
+    x_sol <- out$x[seq_len(len_objective)]
+    out$len_objective <- len_objective
+    out$len_dual_objective <- len_dual_objective
+    ## out$y <- out$y[seq_len(len_dual_objective)]
+    ## out$s <- out$s[seq_len(len_dual_objective)]
 
     if ( "s" %in% names(cone_dims)  ) {
-        out$sdp <- lapply(roi_cones$psd, function(j) unvech(out$y[j]))
+        out$psd <- lapply(roi_cones$psd, function(j) unvech(out$y[j]))
     } else {
         sdp <- NULL
     }
-    optimum <- (-1)^x$maximum * tryCatch({as.numeric(out$x %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
-    .ROI_plugin_canonicalize_solution( solution = out$x,  optimum  = optimum,
+    optimum <- (-1)^x$maximum * tryCatch({as.numeric(x_sol %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
+    .ROI_plugin_canonicalize_solution( solution = x_sol,  optimum  = optimum,
                                        status   = out[["info"]][["statusVal"]],
                                        solver   = solver, message  = out )
+}
+
+.ROI_plugin_solution_dual.scs_solution <- function(x) {
+    x$message$y[seq_len(x$message$len_dual_objective)]
+}
+
+.ROI_plugin_solution_psd.scs_solution <- function(x) {
+    x$message$psd
 }

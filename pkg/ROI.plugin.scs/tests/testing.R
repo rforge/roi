@@ -1,6 +1,6 @@
 
 q("no")
-R
+Rdevel
 
 getwd()
 ##setwd("/home/florian/work/Optimization/ROI/ROI/devel/ROI.plugin.ecos/tests")
@@ -32,7 +32,6 @@ source( files[5] )
 files[6]
 source( files[6] )
 
-## TODO: Bindings need to be updated!
 files[7]
 source( files[7] )
 
