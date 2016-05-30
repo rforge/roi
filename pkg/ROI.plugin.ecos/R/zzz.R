@@ -3,9 +3,9 @@
 
 make_ECOS_signatures <- function()
     .ROI_plugin_make_signature( objective = c("L"),
-                                constraints = c("L"),
-                                types = c("B", "I", "C"),
-                                bounds = c("X", "C", "CV"),
+                                constraints = c("X", "L"),
+                                types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
+                                bounds = c("X", "C", "V", "CV"),
                                 cones = c("free", "nonneg", "soc", "expp"),
                                 maximum = c(TRUE, FALSE) )
 
