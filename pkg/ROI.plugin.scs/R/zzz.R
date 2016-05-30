@@ -2,7 +2,7 @@
 ## based on scs interface
 make_SCS_signatures <- function()
     .ROI_plugin_make_signature( objective = c("L"),
-                                constraints = c("L"),
+                                constraints = c("X", "L"),
                                 types = c("C"),
                                 bounds = c("X", "C", "V", "CV"),
                                 cones = c("free", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd"),

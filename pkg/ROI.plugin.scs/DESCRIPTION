@@ -6,7 +6,6 @@ Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: This package enhances the R Optimization Infrastructure (ROI) package
 	     with the SCS solver for solving convex cone problems.
 Imports: stats, methods, Matrix, slam, ROI (>= 0.2-0), scs (>= 1.0.0)
-Suggests: testthat
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
 
