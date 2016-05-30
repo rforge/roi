@@ -1,6 +1,6 @@
 
 q("no")
-R
+Rdevel
 
 source("/home/florian/work/Optimization/ROI/ROI/devel/ROI.plugin.nloptr/R/constraints.R")
 
@@ -9,7 +9,7 @@ setwd("/home/florian/work/Optimization/ROI/ROI/devel/ROI.plugin.nloptr/tests")
 
 library(testthat)
 library(ROI)
-library(nloptr)
+## library(nloptr)
 
 folder <- "testthat"
 files <- file.path(folder, dir(folder))

@@ -9,6 +9,14 @@ ROI_make_NLP_FXCV_signatures <- function()
                                 cones = c("free"),
                                 maximum = c(TRUE, FALSE) )
 
+## SOLVER CONTROLS
+.add_controls <- function(solver) {
+    ## NLOPTR
+    .ROI_plugin_register_solver_control( solver, "maxeval", "max_iter" )
+    .ROI_plugin_register_solver_control( solver, "xtol_rel", "tol" )
+    invisible( TRUE )
+}
+
 .onLoad <- function( libname, pkgname ) {
     ## Solver plugin name (based on package name)
     if( ! pkgname %in% ROI_registered_solvers() ){
@@ -23,5 +31,6 @@ ROI_make_NLP_FXCV_signatures <- function()
             solver = solver,
             method = getFunction( "solve_nloptr", where = getNamespace(pkgname)) )
         .add_status_codes()
+        .add_controls( solver )
     }
 }

@@ -117,6 +117,7 @@ solve_nloptr <- function( x, control ) {
                                         optimum   = o$objective,
                                         status    = o$status,
                                         solver    = solver,
+                                        message   = o,
                                         algorithm = control$algorithm   )
 }
 
