@@ -22,11 +22,11 @@
 ##' @export
 solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg")) {
     type <- type[1]
-    switch(type, 
-           primal = .ROI_plugin_solution_prim(x), 
-           dual   = .ROI_plugin_solution_dual(x), 
-           aux    = .ROI_plugin_solution_aux(x) , 
-           psd    = .ROI_plugin_solution_psd(x) , 
+    switch(type,
+           primal = .ROI_plugin_solution_prim(x),
+           dual   = .ROI_plugin_solution_dual(x),
+           aux    = .ROI_plugin_solution_aux(x) ,
+           psd    = .ROI_plugin_solution_psd(x) ,
            msg    = .ROI_plugin_solution_msg(x)  )
 }
 
@@ -82,8 +82,11 @@ solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg")) {
 }
 
 make_OP_solution <- function(solution, objval, status, solver, message=NULL, ...)
-    structure( list(solution = solution,
-                    objval   = objval,
+    structure( list(solution = if( !status$code )
+                                   solution
+                               else
+                                   rep(NA_real_, length(solution)),
+                    objval   = ifelse( !status$code, objval, NA_real_ ),
                     status   = status,
                     message  = message),
               meta  = list(solver = solver, ...),

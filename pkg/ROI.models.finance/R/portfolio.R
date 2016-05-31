@@ -116,6 +116,7 @@
 ##' @export
 ##' @import ROI
 ##' @import slam
+##' @importFrom zoo coredata
 ##' @examples
 ##' ## daily returns (discrete) of 30 US stocks from 2008-03-20 to 2013-12-31
 ##' data( US30 )

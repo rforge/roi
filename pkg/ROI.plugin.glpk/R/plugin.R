@@ -28,7 +28,8 @@ solve_OP <- function( x, control ){
     .ROI_plugin_canonicalize_solution( solution = out$solution,
                                        optimum = out$optimum,
                                        status = out$status,
-                                       solver = solver )
+                                       solver = solver,
+                                       message = out)
 }
 
 .solve_MILP <- function( x, control ) {
@@ -44,7 +45,8 @@ solve_OP <- function( x, control ){
     .ROI_plugin_canonicalize_solution( solution = out$solution,
                                        optimum = out$optimum,
                                        status = out$status,
-                                       solver = solver )
+                                       solver = solver,
+                                       message = out)
 }
 
 ## STATUS CODES
@@ -95,4 +97,14 @@ solve_OP <- function( x, control ){
                                         "verbose",
                                         "verbose" )
     invisible( TRUE )
+}
+
+## SOLUTION EXTRACTORS
+.ROI_plugin_solution_dual.glpk_solution <- function( x ){
+    x$message$solution_dual
+}
+
+## FIXME: final structure of return value not yet decided
+.ROI_plugin_solution_aux.glpk_solution <- function ( x ){
+    x$message$auxiliary
 }

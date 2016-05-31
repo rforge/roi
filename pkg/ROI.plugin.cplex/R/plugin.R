@@ -112,18 +112,25 @@ solve_OP <- function( x, control ){
         out <- .ROI_plugin_canonicalize_solution(solution, objval, status, .ROI_plugin_get_solver_name(getPackageName()) )
         if(value_is_list_of_solutions) out <- list(out)
     } else {
-        class(out) <- c(class(x), class(out))
+        #class(out) <- c(class(x), class(out))
         out <- if(value_is_list_of_solutions)
             lapply( out, .ROI_plugin_canonicalize_solution(solution = out$xopt,
                                                            optimum  = objective(x)(out$xopt),
                                                            status   = out$status,
-                                                           solver   = .ROI_plugin_get_solver_name(getPackageName())) )
+                                                           solver   = .ROI_plugin_get_solver_name(getPackageName()),
+                                                           message = out) )
         else
             .ROI_plugin_canonicalize_solution( solution = out$xopt,
                                                optimum  = objective(x)(out$xopt),
                                                status   = out$status,
-                                               solver   = .ROI_plugin_get_solver_name(getPackageName()) )
+                                               solver   = .ROI_plugin_get_solver_name(getPackageName()),
+                                               message  = out)
     }
     out
 }
 
+## solution extractor functions
+.ROI_plugin_solution_aux.cplex_solution <- function( x ){
+    list( primal = x$message$extra$slack,
+          dual = x$message$extra$lambda )
+}

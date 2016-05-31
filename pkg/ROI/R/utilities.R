@@ -41,6 +41,7 @@ as.no_V_bounds_OP <- function( x )
 ##' @export
 as.no_V_bounds_OP.no_V_bounds <- identity
 
+## Assumption: unbounded variables mean that they can be assigned values from -Inf to Inf
 ##' @noRd
 ##' @export
 as.no_V_bounds_OP.OP <- function( x ){
@@ -68,13 +69,18 @@ as.no_V_bounds_OP.OP <- function( x ){
                                         nrow = n_obj,
                                         ncol = n_obj )
 
-    ## if lower indices are not set, we need to set them here
+    ## if lower indices are not all set, we need to set them here
     ## otherwise the constraints will not be built
-    if( !length(x$lower$ind) ){
+    if( length(x$lower$ind) != n_obj){
+        li <- x$lower$ind
+        lb <- x$lower$val
         ## FIXME: shouldn't this also include a "reverse" argument?
         box <- .make_default_box_constraints( n_obj )
         x$lower$ind <- box$L$i
         x$lower$val <- box$rhs
+        if( length(li) ){
+            x$lower$val[li] <- lb
+        }
     }
 
     ## create lhs lower bound
@@ -333,11 +339,11 @@ flatten_constraints <- function(x, message=NULL, domain=NULL) {
 ##  vech (TODO: this could be done nicer!)
 ##  ====
 ##' @title Half Vectorization
-##' @description The utility function \code{vech} performs a 
+##' @description The utility function \code{vech} performs a
 ##'   half-vectorization on the given matrices.
 ##'   \pkg{ROI} objects and is mainly used for testing purposes.
 ##' @param ... one or more matrices to be half-vectorized.
-##' @return a matrix 
+##' @return a matrix
 ##' @export
 #  -----------------------------------------------------------
 vech <- function(...) {
