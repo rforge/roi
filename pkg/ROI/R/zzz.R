@@ -1,7 +1,10 @@
 ##' ROI Options
 ##'
-##' Allow the user to set and examine a variety of ROI options like the default solver or the function used to compute the gradients.
-##' @param option any options can be defined, using 'key, value' pairs. If 'value' is missing the current set value is returned for the given 'option'. If both are missing. all set options are returned.
+##' Allow the user to set and examine a variety of ROI options like the default 
+##' solver or the function used to compute the gradients.
+##' @param option any options can be defined, using 'key, value' pairs. 
+##'   If 'value' is missing the current set value is returned for the given 'option'. 
+##'   If both are missing. all set options are returned.
 ##' @param value the corresponding value to set for the given option.
 ##'@export
 ROI_options <-
@@ -84,7 +87,16 @@ control_db <- add_control_db_schema( control_db )
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
     ## OPs is the default solver
     ROI_options( "default_solver", "auto" )
+    ## NOTE: tryCatch since numDeriv has to be installed!
     tryCatch({ROI_options( "gradient", numDeriv::grad )}, error=function(e) NULL)
+    ROI_options("solver_selection_table", list(default = c("glpk", "ecos", "cplex", "quadprog", "nlminb"),
+                                               LP=c("glpk", "ecos", "cplex"),
+                                               QP=c("quadprog", "cplex", "ipop"),
+                                               CP=c("ecos", "scs"),
+                                               MILP=c("glpk", "ecos", "cplex"),
+                                               MIQP=c("cplex"),
+                                               MICP=c("ecos"),
+                                               NLP=c("nlmib", "nloptr")))
     return(invisible(NULL))
 }
 

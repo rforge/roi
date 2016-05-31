@@ -14,9 +14,6 @@
 #' @import "slam"
 #
 
-## TODO: create a solver ranking based on simulations.
-Solver_Order <- c("ecos", "glpk", "nloptr", "quadprog", "symphony", "ipop")
-
 ################################################################################
 ## MAIN FUNCTION TO SOLVE OPTIMIZATION PROBLEMS USING ROI
 ################################################################################
@@ -93,17 +90,18 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     }
     if ( solver != "auto" ) {
         SOLVE <- methods[[ solver ]]
+        if ( !is.function(SOLVE) ) {
+            ## CASE: applicable solvers found but the solver provided is wrong
+            ##       => issue warning and fallback to the other solver
+            SOLVE <- methods[[1]]
+            warning( "solver '", solver, "' not found or applicable, ROI uses '",
+                     names(methods)[1], "' instead" )
+            solver <- names( methods )[1]
+        }
     } else {
-        SOLVE <- methods[[ 1 ]]
-        solver <- names( methods )[1]
-    }
-    if ( !is.function(solve) ) {
-        ## CASE: applicable solvers found but the solver name is wrong
-        ##       => issue warning and fallback to the other solver
-        SOLVE <- methods[[1]]
-        warning( "solver '", solver, "' not found or applicable, ROI uses '",
-                names(methods)[1], "' instead" )
-        solver <- names( methods )[1]
+        SOLVE <- select_solver(x, methods)
+        solver <- names( SOLVE )[1]
+        SOLVE <- SOLVE[[1]]
     }
 
     if( length(control) )
@@ -119,6 +117,50 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     if( control$verbose )
         writeLines( "<!SOLVER MSG> ----" )
     out
+}
+
+which_op_type <- function(x) {
+    if ( any(x$C) ) {
+        if ( all(x$cones == "free") ) {
+            if ( all(x[,c('objective', 'constraints')] == "L") ) { ## LP
+                return("LP")
+            } else { ## QP
+                return("QP")
+            }
+        } else { ## CONIC PROBLEM
+            return("CP")
+        }
+    } else { ## MIXED INTEGER
+        if ( all(x$cones == "free") ) {
+            if ( all(x[,c('objective', 'constraints')] == "L") ) { ## LP
+                return("MILP")
+            } else { ## QP
+                return("MIQP")
+            }
+        } else { ## CONIC PROBLEM
+            return("MICP")
+        }
+    }
+    return("NLP")
+}
+
+## select_solver gets an optimization problem "x" and the applicable methods
+## "methods" and returns a solver.
+select_solver <- function(x, methods) {
+    signature <- OP_signature(x)
+    type <- which_op_type(signature)
+    solver_selection_table <- ROI_options("solver_selection_table")
+    b <- solver_selection_table[[type]] %in% names(methods)
+    if ( sum(b) > 0) {
+        solver <- solver_selection_table[[type]][which(b)[1]]
+        return( methods[solver] )
+    }
+    b <- solver_selection_table[["default"]] %in% names(methods)
+    if ( sum(b) ) {
+        solver <- solver_selection_table[["default"]][which(b)[1]]
+        return( methods[solver] )
+    }
+    return( methods[1] )
 }
 
 ################################################################################
