@@ -81,7 +81,9 @@ solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg")) {
         make_OP_solution( double(), NA_real_, 2L, solver = "ROI_NULL" )
 }
 
-make_OP_solution <- function(solution, objval, status, solver, message=NULL, ...)
+make_OP_solution <- function(solution, objval, status, solver, message = NULL, ...){
+    if( is.null(status$code) ) ## a status code for the solution is a necessary condition.
+        stop( sprintf("unknown solver status code. Please contact the ROI.plugin.%s maintainer.", solver) )
     structure( list(solution = if( !status$code )
                                    solution
                                else
@@ -91,7 +93,7 @@ make_OP_solution <- function(solution, objval, status, solver, message=NULL, ...
                     message  = message),
               meta  = list(solver = solver, ...),
               class = c(sprintf("%s_solution", solver), "OP_solution") )
-
+}
 ################################################################################
 ## Methods on solution object
 ################################################################################
