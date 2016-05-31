@@ -91,7 +91,10 @@ control_db <- add_control_db_schema( control_db )
 .onAttach <- function( libname, pkgname ) {
     ## Search for all solvers in same library as ROI and register found solvers
     ## implicitely be running the corresponding .onLoad() function.
-    solvers <- ROI_installed_solvers( lib.loc = libname )
+    if( Sys.getenv("_R_ROI_NO_CHECK_SOLVERS_") != "" )
+        solvers <- NULL
+    else
+        solvers <- ROI_installed_solvers( lib.loc = libname )
     lapply( solvers, function( pkgname ){ nmspc <- tryCatch(getNamespace(pkgname), error = identity)
                                           if( !inherits(nmspc, "error") ){
                                               load <- methods::getFunction( ".onLoad", where = nmspc )
