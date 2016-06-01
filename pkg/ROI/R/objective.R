@@ -68,7 +68,9 @@ as.objective.function <- function( x ){
         return( as.Q_objective( x ) )
     if( inherits(x, "L_objective", which = TRUE) == 2 )
         return( as.L_objective( x ) )
-    stop("Not implemented.")
+    if( inherits(x, "F_objective", which = TRUE) == 2 )
+        return( as.F_objective( x ) )
+    stop( "not implemented." )
 }
 
 ##' @noRd

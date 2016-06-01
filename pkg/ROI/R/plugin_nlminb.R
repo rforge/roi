@@ -64,50 +64,55 @@ get_ub <- function(x) {
     rhs <- constraints(x)$rhs
 
     idx_eq <- dir == "=="
+    if( length(dir) > sum(idx_eq) )
+        warning( "only equality constraints supported with nlminb, ignoring others." )
+
     # Set Linear and Function Equality Constraints:
     if ( any(idx_eq) ) {
         eqfun <- function(x){
+            ans <- double(sum(idx_eq))
             for (i in 1:sum(idx_eq))
-                    ans <- c(ans, eqFun[idx_eq][[i]](x) - rhs[i])
+                    ans[i] <- FC[idx_eq][[i]](x) - rhs[i]
             return(as.double(eval(ans, env))) }
     } else {
         eqfun <- NULL
     }
 
-    # Set Linear and Function Inequality Constraints:
-    if (!is.null(ineqA) || length(ineqFun) > 0) {
-        leqfun <- function(x) {
-            ans <- NULL
-            if(!is.null(ineqA))
-                ans <- c(ans, +ineqA %*% x - ineqA.upper)
-            if(!is.null(ineqA))
-                ans <- c(ans, -ineqA %*% x + ineqA.lower)
-            if (length(ineqFun) > 0)
-                for (i in 1:length(ineqFun))
-                    ans <- c(ans, +ineqFun[[i]](x) - ineqFun.upper[i])
-            if (length(ineqFun) > 0)
-                for (i in 1:length(ineqFun))
-                    ans <- c(ans, -ineqFun[[i]](x) + ineqFun.lower[i])
-            return(as.double(eval(ans, env))) }
-    } else {
+    ## # Set Linear and Function Inequality Constraints:
+    ## if (!is.null(ineqA) || length(ineqFun) > 0) {
+    ##     leqfun <- function(x) {
+    ##         ans <- NULL
+    ##         if(!is.null(ineqA))
+    ##             ans <- c(ans, +ineqA %*% x - ineqA.upper)
+    ##         if(!is.null(ineqA))
+    ##             ans <- c(ans, -ineqA %*% x + ineqA.lower)
+    ##         if (length(ineqFun) > 0)
+    ##             for (i in 1:length(ineqFun))
+    ##                 ans <- c(ans, +ineqFun[[i]](x) - ineqFun.upper[i])
+    ##         if (length(ineqFun) > 0)
+    ##             for (i in 1:length(ineqFun))
+    ##                 ans <- c(ans, -ineqFun[[i]](x) + ineqFun.lower[i])
+    ##         return(as.double(eval(ans, env))) }
+    ## } else {
         leqfun <- NULL
-    }
+    ## }
 
     ## now run nlminb2 solver
-    out <- nlminb2( start = control$start,
+    out <- ROI:::nlminb2( start = control$start,
                     objective = objective(x),
                     eqFun = eqfun,
-                    leqFun = leqfun,
+                    leqFun = NULL, #FIXME: leqfun,
                     upper = ub,
                     lower = lb,
                     gradient = G(objective(x)),
                     hessian = control$hessian,
                     control = control )
-    .ROI_plugin_canonicalize_solution( solution = out$solution,
-                                       optimum = objective(x)(out$solution),
-                                       status = out$convergence,
-                                       solver = solver,
-                                       message = out )
+    ## .ROI_plugin_canonicalize_solution( solution = out$solution,
+    ##                                    optimum = objective(x)(out$solution),
+    ##                                    status = out$convergence,
+    ##                                    solver = solver,
+    ##                                    message = out )
+out
 }
 
 
