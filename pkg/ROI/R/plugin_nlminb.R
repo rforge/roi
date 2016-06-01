@@ -2,104 +2,73 @@
 ## based on MySolver Template
 ## DISABLED - need to find literature first
 
+
+################################################################################
+## Utility Functions
+################################################################################
+
+## get_lb, get_ub taken from Florians nloptr plugins
+## get_lb
+## ======
+##
+## get lower bound constraints
+get_lb <- function(x) {
+    ##if( !length(bounds(x)$lower$val) ) {
+    ##    lb <- NULL
+    ##} else {
+        lb <- numeric( length(x$objective) )
+        lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
+    ##}
+    return(lb)
+}
+
+## get_ub
+## ======
+##
+## get upper bound constraints
+get_ub <- function(x) {
+    ##if( !length(bounds(x)$upper$val) ) {
+    ##    ub <- NULL
+    ##} else {
+        ub <- rep.int(Inf, length(x$objective))
+        ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
+    ##}
+    return(ub)
+}
+
+
+
+################################################################################
 ## SOLVER METHODS
-
-## we need for each problem class a separate solver method
-
-.solve_QP_nlminb <- function( x, control ) {
-    ## if needed, add constraints made from variable bounds
-    ##if( length(bounds(x)) )
-    ##  constraints(x) <- rbind(constraints(x),
-    ##                         .make_box_constraints_from_bounds(bounds(x),
-    ##                                     dim(terms(objective(x))$Q)[1]) )
-
-    solver <- "nlminb"
-    ## solve the QP
-    ## adjust arguments depending on problem class
-    out <- .nlminb_solve_QP( Q = terms(objective(x))$Q,
-                             L = terms(objective(x))$L,
-                             mat = constraints(x)$L,
-                             dir = constraints(x)$dir,
-                             rhs = constraints(x)$rhs,
-                             bounds = bounds(x),
-                             max = x$maximum,
-                             control = control )
-    .ROI_plugin_canonicalize_solution( solution = out$solution,
-                           optimum = objective(x)(out$solution),
-                           status = out$convergence,
-                           solver = solver )
-}
-
-.nlminb_solve_QP <- function(Q, L, mat, dir, rhs, bounds, max, control = list()) {
-
-    # nlminb does not directly support constraints
-    # we need to translate Ax ~ b constraints to lower, upper bounds
-    ## FIXME: what about variable bounds????
-    stopifnot( is.null(bounds) )
-
-    A <- solve(t(mat))
-    n_obj <- ifelse( !is.null(Q),
-                     dim(Q)[1],
-                     length(L) )
-
-    ## start
-    start <- as.numeric( control$start )
-    if( !length(start) )
-        start <- slam::tcrossprod_simple_triplet_matrix( mat, matrix(rep(1/n_obj, n_obj), nrow = 1))
-    stopifnot( length(start) == n_obj )
-
-    lower <- rhs
-    upper <- c(Inf, Inf, Inf)
-
-    ## possibly transformed objective function
-    foo <- function(x, L, A, Q) {
-        X = A %*% x
-        Objective = - slam::tcrossprod_simple_triplet_matrix(L, t(X)) + 0.5 * ( t(X) %*% slam::tcrossprod_simple_triplet_matrix(Q, t(X)))
-        Objective[[1]]
-    }
-    ## FIXME: SPARSE!!! control list handling ok? what about "scale" parameter?
-    out <- nlminb(start, foo, gradient = control$gradient, hessian = control$hessian,
-                  L = L, A = A, Q = Q,
-                  control = control, lower = lower, upper = upper)
-    out$solution <- as.numeric(A %*% out$par)
-
-    # Return Value:
-    out
-}
-
-
+################################################################################
 
 .solve_NLP_nlminb <- function( x, control ) {
 
+    ## since this is contributed with ROI we have to specify the solver name directly
     solver <- "nlminb"
+
     ## solve the NLP
     ## adjust arguments depending on problem class
 
     ## from nlminb2NLP() by Diethelm Wuertz
 
     ## Set Box Constraints:
-    if( !length(bounds(x)$lower$val) ){
-        lb <- 0
-    } else {
-        lb <- numeric(length(objective( x )))
-        lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
-    }
-    if( !length(bounds(x)$upper$val) ){
-        ub <- Inf
-    } else {
-        ub <- numeric(length(objective( x )))
-        ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
-    }
+    ## FIXME: use as.no_V_bound() instead?
+    lb <- get_lb(x)
+    ub <- get_ub(x)
+
+    env <- parent.frame()
 
     FC <- constraints(x)$F
     dir <- constraints(x)$dir
+    rhs <- constraints(x)$rhs
 
+    idx_eq <- dir == "=="
     # Set Linear and Function Equality Constraints:
-    if ( any(dir == "==") ) {
+    if ( any(idx_eq) ) {
         eqfun <- function(x){
-
-            for (i in 1:length(eqFun))
-                    ans <- c(ans, eqFun[[i]](x) - eqFun.bound[i])
+            for (i in 1:sum(idx_eq))
+                    ans <- c(ans, eqFun[idx_eq][[i]](x) - rhs[i])
             return(as.double(eval(ans, env))) }
     } else {
         eqfun <- NULL
@@ -131,14 +100,28 @@
                     leqFun = leqfun,
                     upper = ub,
                     lower = lb,
-                    gradient = control$gradiant,
+                    gradient = G(objective(x)),
                     hessian = control$hessian,
                     control = control )
     .ROI_plugin_canonicalize_solution( solution = out$solution,
-                           optimum = objective(x)(out$solution),
-                           status = out$convergence,
-                           solver = solver )
+                                       optimum = objective(x)(out$solution),
+                                       status = out$convergence,
+                                       solver = solver,
+                                       message = out )
 }
+
+
+################################################################################
+## NOTE: this is work by Diethelm Wuertz taken out of the Rnlminb2
+## package available at R-Forge:
+## https://r-forge.r-project.org/scm/viewvc.php/pkg/Rnlminb2/
+################################################################################
+
+################################################################################
+# FUNCTION:                DESCRIPTION:
+#  nlminb2                  Nonlinear programming with nonlinear constraints
+#  .Log                     Returns log taking care of negative values
+################################################################################
 
 
 ##' Nonlinear programming with nonlinear constraints.
@@ -164,10 +147,21 @@
 ##' \code{"scale"} is set here in contrast to
 ##' \code{\link[stats]{nlminb}()} .
 ##' @author Diethelm Wuertz
+##' @examples
+##' ## Equal constraint function
+##' eval_g0_eq <- function( x, params = c(1,1,-1)) {
+##'        return( params[1]*x^2 + params[2]*x + params[3] )
+##'    }
+##' eval_f0 <- function( x, ... ) {
+##'        return( 1 )
+##'    }
+##'
+##'
 ##' @return list()
 nlminb2 <- function( start, objective, eqFun = NULL, leqFun = NULL,
                      lower = -Inf, upper = Inf, gradient = NULL,
-                     hessian = NULL, control = list() ) {
+                    hessian = NULL, control = list() ) {
+
     ## Details:
     ##                        min f(x)
     ##    s.t.
@@ -175,7 +169,29 @@ nlminb2 <- function( start, objective, eqFun = NULL, leqFun = NULL,
     ##                       h_i(x)  = 0
     ##                       g_i(x) <= 0
 
+    # Arguments:
+    #   start - numeric vector of start values
+    #   objective - objective function to be minimized f(x)
+    #   eqFun - equal constraint functions h_i(x) = 0
+    #   leqFun - less equal constraint functions g_i(x) <= 0
+    #   lower, upper - lower and upper bounds
+    #   gradient - optional gradient of f(x)
+    #   hessian - optional hessian of f(x)
+    #   scale - control parameter
+    #   control - control list
+    #       eval.max - maximum number of evaluations (200)
+    #       iter.max - maximum number of iterations (150)
+    #       trace - value of the objective function and the parameters
+    #           is printed every trace'th iteration (0)
+    #       abs.tol - absolute tolerance (1e-20)
+    #       rel.tol - relative tolerance (1e-10)
+    #       x.tol - X tolerance (1.5e-8)
+    #       step.min - minimum step size (2.2e-14)
+
     ## TODO:  R, N and alpha should become part of the control list.
+
+    ## FIXME: is it possible to set default start values (like 1/n)
+    stopifnot( is.numeric(start) )
 
     ## Control list:
     ctrl <- .make_nlminb2_control_defaults()
@@ -184,68 +200,80 @@ nlminb2 <- function( start, objective, eqFun = NULL, leqFun = NULL,
             ctrl[[ name ]] <- control[[ name ]]
     control <- ctrl
 
-    ## Composed Objective Function:
-    if( is.null(eqFun) ){
-        ## type: "leq"
-        fun <- function( x, r ){
-            objective( x ) - r * sum( .Log(-leqFun(x)) ) }
-    } else if( is.null(leqFun) ){
-        ## type: "eq"
-        fun <- function( x, r ){
-            objective( x ) + sum( (eqFun(x))^2 / r ) }
-    } else {
-        ## type: "both"
-        fun <- function( x, r ){
-            objective( x ) + sum( (eqFun(x))^2 / r ) - r * sum( .Log(-leqFun(x)) ) }
-    }
-
     # Minimization:
+    steps.tol <- control$steps.tol
     R <- control$R
-    beta.tol <- control$beta.tol
-    beta.step <- control$beta.step
-    beta <- ( beta.tol )^( 1/beta.step )
+    beta <- control$beta
     scale <- control$scale
 
-    # Reset Control:
-    control.nlminb <- control
-    control.nlminb$R <- NULL
-    control.nlminb$beta.tol <- NULL
-    control.nlminb$beta.step <- NULL
-
     # Trace:
-    trace <- control$trace
-    if( trace > 0 )
-        TRACE <- TRUE
-    else TRACE <- FALSE
+    TRACE <- control$trace > 0
 
-    iterations <- Inf
-    nIterations <- 0
-    for( i in 1:beta.step ){
-        if( iterations > 1 ){
-            if( TRACE )
-                cat( "\n\nIteration step:", i, "  R:", R, "\n" )
-            ans <- nlminb( start = start, objective = fun,
-                           gradient = gradient, hessian = hessian,
-                           scale = scale, control = control.nlminb,
-                           lower = lower, upper = upper, r = R)
+    # Reset Control:
+    control2 <- control
+    control2[["R"]] <- NULL
+    control2[["beta"]] <- NULL
+    control2[["steps.max"]] <- NULL
+    control2[["steps.tol"]] <- NULL
+    control2[["scale"]] <- NULL
+
+    ## Unconstrained problem (inserted by st):
+    is_unconstrained <- is.null(eqFun) && is.null(leqFun)
+
+    if( is_unconstrained ){
+        ans <- nlminb( start = start, objective = objective,
+                       gradient = gradient, hessian = hessian,
+                       scale = scale, control = control2,
+                       lower = lower, upper = upper )
+    } else {
+        ##
+        ## Composed Objective Function:
+        if( !is.null(gradient) ){
+            ## FIXME: we could use default ROI option gradient?
+            gradient <- NULL
+            warning( "gradient not recognized in constrained NLPs for solver 'nlminb'." )
+        }
+        gradient <- NULL
+        if( is.null(eqFun) ){
+            ## type: "leq"
+            fun <- function( x, r ){
+                objective( x ) - r * sum( .Log(-leqFun(x)) ) }
+        } else if( is.null(leqFun) ){
+            ## type: "eq"
+            fun <- function( x, r ){
+                objective( x ) + sum( (eqFun(x))^2 / r ) }
+        } else {
+            ## type: "both"
+            fun <- function( x, r ){
+                objective( x ) + sum( (eqFun(x))^2 / r ) - r * sum( .Log(-leqFun(x)) ) }
+        }
+
+        counts <- 0
+        test <- 0
+        while (counts < control$steps.max && test == 0) {
+            counts <- counts + 1
+            ans <- nlminb(
+                start = start, objective = fun,
+                gradient = gradient, hessian = hessian,
+                scale = scale, control = control2, lower = lower, upper = upper,
+                r = R )
             start <- ans$par
-            iterations <- ans$iterations
-            if( TRACE ) {
-                cat("Iterations:", ans$iterations)
-                cat("\nConvergence:", ans$convergence)
-                cat("\n Message:", ans$message)
-                cat("\nSolution:", ans$par)
-                cat("\nR - Objective:       ", fun(start, R))
-                cat("\nFunction - Objective:", objective(start))
+            tol <- abs((fun(ans$par, R) - objective(ans$par))/objective(ans$par))
+            if (!is.na(tol))
+                if (tol < steps.tol) test <- 1
+            if (TRACE) {
+                cat("Iterations:  ", counts)
+                cat("\nConvergence: ", ans$convergence)
+                cat("\nMessage:     ", ans$message)
+                cat("\nSolution:    ", ans$par)
+                cat("\nR-Objective: ", fun(start, R))
+                cat("\nFunction-Obj:", objective(start))
                 cat("\n")
             }
             R <- beta * R
-            nIterations <- nIterations + iterations
-            ans$iterations <- nIterations
         }
     }
-
-    # Return value (plain return of nlminb())
+    # Return Value (plain return of nlminb()):
     ans
 }
 
@@ -264,9 +292,9 @@ nlminb2 <- function( start, objective, eqFun = NULL, leqFun = NULL,
           step.min = 2.2e-14,
           scale = 1,
           R = 1,
-          beta.tol = 1.0e-20,
-          beta.step = 20 )
-
+          beta = 0.01,
+         steps.max = 10,
+         steps.tol = 1e-6 )
 
 ##' Returns log taking care of negative values.
 ##' @param x a numeric from which to calculate the log.
@@ -281,15 +309,83 @@ function(x)
     # Return Value:
     log(x)
 }
+# ------------------------------------------------------------------------------
 
 
+
+################################################################################
+## FIXME: we need for each problem class a separate solver method
+## the following QP function is currently defunct.
+.solve_QP_nlminb <- function( x, control ) {
+    ## if needed, add constraints made from variable bounds
+    ##if( length(bounds(x)) )
+    ##  constraints(x) <- rbind(constraints(x),
+    ##                         .make_box_constraints_from_bounds(bounds(x),
+    ##                                     dim(terms(objective(x))$Q)[1]) )
+
+    solver <- "nlminb"
+    ## solve the QP
+    ## adjust arguments depending on problem class
+    out <- .nlminb_solve_QP( Q = terms(objective(x))$Q,
+                             L = terms(objective(x))$L,
+                             mat = constraints(x)$L,
+                             dir = constraints(x)$dir,
+                             rhs = constraints(x)$rhs,
+                             bounds = bounds(x),
+                             max = x$maximum,
+                             gradient = G(objective(x)),
+                             #hessian = control$hessian,
+                             control = control )
+    .ROI_plugin_canonicalize_solution( solution = out$solution,
+                                       optimum = objective(x)(out$solution),
+                                       status = out$convergence,
+                                       solver = solver,
+                                       message = out )
+}
+
+.nlminb_solve_QP <- function(Q, L, mat, dir, rhs, bounds, max, gradient, control = list()) {
+
+    # nlminb does not directly support constraints
+    # we need to translate Ax ~ b constraints to lower, upper bounds
+    ## FIXME: what about variable bounds????
+    stopifnot( is.null(bounds) )
+
+    A <- solve(t(mat))
+    n_obj <- ifelse( !is.null(Q),
+                     dim(Q)[1],
+                     length(L) )
+
+    ## start
+    start <- as.numeric( control$start )
+    if( !length(start) )
+        start <- slam::tcrossprod_simple_triplet_matrix( mat, matrix(rep(1/n_obj, n_obj), nrow = 1))
+    stopifnot( length(start) == n_obj )
+
+    lower <- rhs
+    upper <- c(Inf, Inf, Inf)
+
+    ## possibly transformed objective function
+    foo <- function(x, L, A, Q) {
+        X = A %*% x
+        Objective = - slam::tcrossprod_simple_triplet_matrix(L, t(X)) + 0.5 * ( t(X) %*% slam::tcrossprod_simple_triplet_matrix(Q, t(X)))
+        Objective[[1]]
+    }
+    ## FIXME: SPARSE!!! control list handling ok? what about "scale" parameter?
+    out <- nlminb(start, foo, gradient = gradient, hessian = control$hessian,
+                  L = L, A = A, Q = Q,
+                  control = control, lower = lower, upper = upper)
+    out$solution <- as.numeric(A %*% out$par)
+
+    # Return Value:
+    out
+}
 ################################################################################
 
 
 
-
-
+################################################################################
 ## STATUS CODES
+################################################################################
 
 .add_nlminb_status_codes <- function(){
     ## add all status codes generated by the solver to db

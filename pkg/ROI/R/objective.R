@@ -89,7 +89,7 @@ length.objective <- function( x ) attr( as.objective(x), "nobj" )
     as.numeric(as.matrix(terms(x)$L[1, i]))
 }
 
-##  NOTE: Since we override the length of the objective the str function which relies on length, 
+##  NOTE: Since we override the length of the objective the str function which relies on length,
 ##        doesn't work anymore. The easy fix is to reimplement str.objective where I alter the
 ##        class by adding a space at the end of the class.
 ## noRd
@@ -106,6 +106,8 @@ terms.function <- function( x, ... ){
         return( terms(as.L_objective(x)) )
     if( inherits(x, "Q_objective") )
         return( terms(as.Q_objective(x)) )
+    if( inherits(x, "F_objective") )
+        return( terms(as.F_objective(x)) )
     NA
 }
 
@@ -119,6 +121,10 @@ terms.L_objective <- function( x, ... )
 terms.Q_objective <- function( x, ... )
   list( Q = x$Q, L = x$L )
 
+##' @noRd
+##' @export
+terms.F_objective <- function( x, ... )
+    list( F = x$F, G = x$G )
 
 
 
@@ -160,7 +166,7 @@ as.function.L_objective <- function( x, ... ){
 }
 
 ##  Coerces objects of type \code{"L_objective"}.
-## 
+##
 ##  Objects from the following classes can be coerced to
 ##  \code{"L_objective"}: \code{"NULL"}, \code{"numeric"},
 ##  \code{"Q_objective"}, and \code{"function"}. The elements of a
@@ -260,7 +266,7 @@ as.function.Q_objective <- function( x, ... ){
 }
 
 ##  Coerces objects of type \code{"Q_objective"}.
-## 
+##
 ##  Objects from the following classes can be coerced to
 ##  \code{"Q_objective"}: \code{"function"}, \code{"matrix"}, and
 ##  \code{"simple_triplet_matrix"}.
@@ -334,11 +340,19 @@ F_objective <- function( F, n, G = NULL ) {
 
 ##' @noRd
 ##' @export
-as.function.F_objective <- function( x, ... )
-  x$F
+as.function.F_objective <- function( x, ... ){
+    F <- x$F
+    G <- x$G
+    nobj <- attr(x, "nobj")
+    out <- function(x){
+        F(x)
+    }
+    class(out) <- c(class(out), class(x))
+    out
+}
 
 ##  Coerces objects of type \code{"F_objective"}.
-## 
+##
 ##  Objects from the following classes can be coerced to
 ##  \code{"F_objective"}: \code{"function"}, \code{"L_objective"}, and
 ##  \code{"Q_objective"}.
@@ -366,6 +380,17 @@ as.F_objective.L_objective <- function( x )
 ##' @export
 as.F_objective.Q_objective <- function( x )
   F_objective( F = as.function(x), n = length(x), G = G(x) )
+
+##' @noRd
+##' @export
+as.F_objective.function <- function( x ){
+    F <- get("F", environment(x))
+    n <- get("nobj", environment(x))
+    G <- get("G", environment(x))
+    if( !inherits(x, "objective") )
+        stop("'x' must be a function which inherits from 'objective'")
+    F_objective( F = x, n = n, G = G )
+}
 
 .check_function_for_sanity <- function(F, n){
     ans <- tryCatch( F(rep.int(0, n)), error = identity )

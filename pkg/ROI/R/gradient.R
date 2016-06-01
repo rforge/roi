@@ -17,11 +17,11 @@ G <- function( x, ... )
 
 ## FIXME: HWB suggested (see mail from 25.4.) to allow for using different gradient functions, e.g. in pracma HWB uses the "central difference formula". st: Implemented via ROI_options. sould be documented how this works
 ##' @noRd
-##' @export    
+##' @export
 G.F_objective <- function( x, ... ){
     args <- list(...)
-    args$func <- x$F
-    g <- x$G
+    args$func <- terms(x)$F
+    g <- terms(x)$G
     if(is.null(g))
         g <- function(x){
             args$x <- x
@@ -30,7 +30,8 @@ G.F_objective <- function( x, ... ){
     stopifnot( is.function(g) )
     g
 }
-
+##' @noRd
+##' @export
 ##' @noRd
 ##' @export
 G.L_objective <- function( x, ... ){
