@@ -7,14 +7,12 @@
 ##'   types of bounds: 
 ##'   \itemize{
 ##'   	\item No Bounds \code{NO_bound} 
-##'       (NO_bound is currently not explicitly implemented but 
-##'        represented by \code{NULL})
 ##'   	\item Variable Bounds \code{\link{V_bound}}
 ##'   	\item Conic Bounds \code{\link{C_bound}}
 ##'   }
-##' @details \pkg{ROI} offers provides the methods \code{NO_bound}, 
-##'   \code{\link{C_bound}} and \code{\link{C_bound}} to be used as constructors
-##'   for the corresponding bounds.
+##' @details \pkg{ROI} provides the methods \code{\link{V_bound}} and 
+##'   \code{\link{C_bound}} to be used as constructors for the corresponding bounds.
+##'   \code{NO_bound} is not explicitly implemented but represented by \code{NULL}.
 ##' @name Bounds (Constructor)
 ##' @rdname ROI_Bounds
 ## ---------------------------------------------------------
@@ -77,33 +75,9 @@ c_2_bounds <- function(x, y) {
     return(z)
 }   
 
-## FIXME: This fails when c("bound", C_bound)
 ##' @noRd
 ##' @export
 c.bound <- function(...)  structure(Reduce(c_2_bounds, list(...)), class="bound")
-
-## c.bound <- function(...) {
-##     xb <- list(...)
-##     xb <- xb[!sapply(xb, is.null)]
-##     if ( length(xb) == 0) return(xb)
-##     ##return(xb)
-##     which_V_bound <- sapply(xb, function(x) all(names(x) %in% c("lower", "upper", "nobj")))
-##     which_C_bound <- sapply(xb, function(x) all(names(x) %in% c("cones")))
-##     v_bounds <- NULL
-##     if ( any(which_V_bound) )
-##         v_bounds <- do.call(c_V_bound, xb[which_V_bound])
-##     if ( any(which_C_bound) )
-##         c_bounds <- do.call(c_C_bound, xb[which_C_bound])
-##     ## xclass <- c("NO_bound", "V_bound", "C_bound", "bound")[1 + any(which_V_bound) + 2 * any(which_C_bound)]
-##     if ( ( any(which_V_bound) + any(which_C_bound) ) == 0 ) {
-##         return( NULL )
-##     } else if ( all(which_V_bound) ) {
-##         return( v_bounds )
-##     } else if ( all(which_C_bound) ) {
-##         return( c_bounds )
-##     }
-##     structure(c(unclass(v_bounds), unclass(c_bounds)), class="bound")
-## }
 
 ##' @noRd
 ##' @export
@@ -450,20 +424,3 @@ as.C_bound.list <- function( x, ... ) {
 ##' @noRd
 ##' @export
 as.list.C_bound <- function( x, ... ) unclass( x )
-
-## as.data.frame.C_bound <- function( x, ... ) {
-##     df <- data.frame(A_i=integer(), cone_type=integer(),
-##                      cone_id=integer(), pow_cone_a=numeric())
-##     id <- 1
-##     for ( k in seq_along( available_cone_types() ) ) {
-##         co <- cones[k]
-##         for ( cone in x[[co]] ) {
-##             a <- if ( co %in% c("pow") ) cone$a else as.numeric(NA)
-##             A_row_index <- if (co %in% c("pow")) cone$i else cone
-##             df <- rbind(df, data.frame(A_i=A_row_index, cone_type=k,
-##                                        cone_id=id, pow_cone_a=a))
-##             id <- id + 1
-##         }
-##     }
-##     return( df )
-## }

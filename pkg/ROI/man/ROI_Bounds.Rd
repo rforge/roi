@@ -8,15 +8,13 @@
   types of bounds: 
   \itemize{
   	\item No Bounds \code{NO_bound} 
-      (NO_bound is currently not explicitly implemented but 
-       represented by \code{NULL})
   	\item Variable Bounds \code{\link{V_bound}}
   	\item Conic Bounds \code{\link{C_bound}}
   }
 }
 \details{
-\pkg{ROI} offers provides the methods \code{NO_bound}, 
-  \code{\link{C_bound}} and \code{\link{C_bound}} to be used as constructors
-  for the corresponding bounds.
+\pkg{ROI} provides the methods \code{\link{V_bound}} and 
+  \code{\link{C_bound}} to be used as constructors for the corresponding bounds.
+  \code{NO_bound} is not explicitly implemented but represented by \code{NULL}.
 }
 
