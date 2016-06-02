@@ -76,9 +76,9 @@ solve_nloptr <- function( x, control ) {
     ## TODO: If no algorithm provided choose a algorithm based on the 
     ##       problem and the JSS paper
 
-    if ( is.null(control$start) ) 
-        stop("no start value, please provide a start value via control$start!")
-    j <- na.exclude(match(c("gradient", "nl.info", "start"), names(control)))
+    if ( is.null(control$x0) ) 
+        stop("no start value, please provide a start value via control$x0")
+    j <- na.exclude(match(c("gradient", "nl.info", "x0"), names(control)))
     if ( is.null(control$xtol_rel) ) control[['xtol_rel']] <- nloptr_defaults('xtol_rel')
     if ( is.null(control$tol_constraints_ineq) ) 
         control[['tol_constraints_ineq']] <- nloptr_defaults("tol_constraints_ineq")
@@ -86,7 +86,7 @@ solve_nloptr <- function( x, control ) {
         control[['tol_constraints_eq']] <- nloptr_defaults("tol_constraints_eq")
 
     if ( is.null(control$args) ) {
-        o <- nloptr(x0 = control$start, 
+        o <- nloptr(x0 = control$x0, 
                     eval_f = objective(x),
                     eval_grad_f = x$objective$G, 
                     lb = lb, 
@@ -97,7 +97,7 @@ solve_nloptr <- function( x, control ) {
                     eval_jac_g_eq = build_jacobian_equality_constraints(x, control$tol_constraints_eq), 
                     opts = control[-j] )
     } else {
-        arglist <- c(list(x0 = control$start, 
+        arglist <- c(list(x0 = control$x0, 
                           eval_f = objective(x),
                           eval_grad_f = x$objective$G, 
                           lb = lb, 

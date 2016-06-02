@@ -25,12 +25,9 @@ test_that("Test Rosenbrock Banana optimization with objective and gradient in se
     library( testthat )
     library( ROI )
         
-    control <- list( algorithm   = "NLOPT_LD_LBFGS",
-                     xtol_rel    = 1.0e-8,
+    control <- list( xtol_rel    = 1.0e-8,
                      print_level = 0 )
-    ## initial values
-    control$start <- c( -1.2, 1 )
-    
+
     ## Rosenbrock Banana function and gradient in separate functions
     f_objective <- function(x) 100 * (x[2] - x[1] * x[1])^2 + (1 - x[1])^2
     f_gradient <- function(x) {
@@ -41,8 +38,7 @@ test_that("Test Rosenbrock Banana optimization with objective and gradient in se
              bounds = V_bound(1:2, 1:2, rep(-Inf, 2), rep(Inf, 2)) )
 
     ## Solve Rosenbrock Banana function.
-    res <- ROI_solve( x, solver="nloptr", control )
-    ## str(res)
+    res <- ROI_solve( x, solver="nloptr", control=control, start=c( -1.2, 1 ), method="NLOPT_LD_LBFGS")
 
     ## Check results.
     expect_that( res$objval, equals( 0.0 ) )

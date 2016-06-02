@@ -14,6 +14,23 @@ ROI_make_NLP_FXCV_signatures <- function()
     ## NLOPTR
     .ROI_plugin_register_solver_control( solver, "maxeval", "max_iter" )
     .ROI_plugin_register_solver_control( solver, "xtol_rel", "tol" )
+    .ROI_plugin_register_solver_control( solver, "algorithm", "method" )
+    .ROI_plugin_register_solver_control( solver, "x0", "start" )
+    .ROI_plugin_register_solver_control( solver, "stopval", "X" )
+    .ROI_plugin_register_solver_control( solver, "ftol_rel", "X" )
+    .ROI_plugin_register_solver_control( solver, "ftol_abs", "X" )
+    .ROI_plugin_register_solver_control( solver, "xtol_abs", "X" )
+    .ROI_plugin_register_solver_control( solver, "maxtime", "X" )
+    .ROI_plugin_register_solver_control( solver, "tol_constraints_ineq", "X" )
+    .ROI_plugin_register_solver_control( solver, "tol_constraints_eq", "X" )
+    .ROI_plugin_register_solver_control( solver, "print_level", "X" )
+    .ROI_plugin_register_solver_control( solver, "check_derivatives", "X" )
+    .ROI_plugin_register_solver_control( solver, "check_derivatives_tol", "X" )
+    .ROI_plugin_register_solver_control( solver, "check_derivatives_print", "X" )
+    .ROI_plugin_register_solver_control( solver, "print_options_doc", "X" )
+    .ROI_plugin_register_solver_control( solver, "population", "X" )
+    .ROI_plugin_register_solver_control( solver, "ranseed", "X" )
+
     invisible( TRUE )
 }
 
