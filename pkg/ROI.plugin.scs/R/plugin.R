@@ -203,6 +203,7 @@ solve_OP <- function(x, control=list()) {
     ## Constraints dir    <  <=  >  >=
     ## -------------------------------
     cxL <- constraints(x)$L
+    if ( is.null(cxL) ) cxL <- simple_triplet_zero_matrix(0, len_objective)
     noeq <- which(constraints(x)$dir %in% c("<", "<=", ">", ">="))
 
     if ( length(noeq) ) {
