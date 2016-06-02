@@ -75,6 +75,8 @@ solve_nloptr <- function( x, control ) {
 
     ## TODO: If no algorithm provided choose a algorithm based on the 
     ##       problem and the JSS paper
+    ## FIXME: maximum is not implemented jet
+    if (x$maximum) stop("maximum is not implemented jet!")
 
     if ( is.null(control$x0) ) 
         stop("no start value, please provide a start value via control$x0")
@@ -88,7 +90,7 @@ solve_nloptr <- function( x, control ) {
     if ( is.null(control$args) ) {
         o <- nloptr(x0 = control$x0, 
                     eval_f = objective(x),
-                    eval_grad_f = x$objective$G, 
+                    eval_grad_f = x$objective$G,
                     lb = lb, 
                     ub = ub,
                     eval_g_ineq = build_inequality_constraints(x, control$tol_constraints_ineq), 

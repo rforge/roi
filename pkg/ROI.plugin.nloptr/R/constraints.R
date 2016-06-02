@@ -43,8 +43,9 @@ get_ub <- function(x) {
 ##'
 ##' get the callable part of a function
 get_callable <- function(f) {
-    fl <- as.list(f)
-    fl[sapply(fl, class) != "name"][[1]]
+    ### fl <- as.list(f)
+    ## fl[sapply(fl, class) != "name"][[1]]
+    body(f)
 }
 
 
