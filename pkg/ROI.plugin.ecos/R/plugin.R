@@ -64,6 +64,7 @@ solve_OP <- function(x, control=list()){
     ## Constraints dir    <  <=  >  >=
     ## -------------------------------
     cxL <- constraints(x)$L
+    if ( is.null(cxL) ) cxL <- simple_triplet_zero_matrix(0, len_objective)
     noeq <- which(constraints(x)$dir %in% c("<", "<=", ">", ">="))
 
     if ( length(noeq) ) {
@@ -154,7 +155,7 @@ solve_OP <- function(x, control=list()){
                            e = length(cones$expp) ),
                        A = if (length(rowsA) > 0) as_dgCMatrix(cxL[rowsA,]) else NULL,
                        b = if (length(rowsA) > 0) b[rowsA] else numeric(0),
-                       bool_vars = which( types(x) == "B" ),                     
+                       bool_vars = which( types(x) == "B" ),
                        int_vars  = which( types(x) == "I" ),
                        control   = sanitize_control(control) )
     x_sol <- out$x[seq_len(len_objective)]
