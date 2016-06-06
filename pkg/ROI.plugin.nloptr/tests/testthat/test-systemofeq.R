@@ -61,6 +61,8 @@ test_that( "Solve system of equations using NLOPT_LD_MMA with local optimizer NL
              constraints = F_constraint(F=eval_g0_eq, dir="==", rhs=0, J=eval_jac_g0_eq),
              bounds = V_bound(1, 1, -Inf, Inf) )
 
+    x$objective$F
+
     res <- ROI_solve( x, solver="nloptr", control )
     
     # Run some checks on the optimal solution.

@@ -1,4 +1,9 @@
 
+if(FALSE) {
+    library(nloptr)
+    attach(getNamespace("ROI.plugin.nloptr"))    
+}
+
 nloptr_defaults <- function(x=NULL) {
     d <- nloptr.get.default.options()
     ## set variables needed to evaluate the default values
@@ -80,39 +85,64 @@ solve_nloptr <- function( x, control ) {
 
     if ( is.null(control$x0) ) 
         stop("no start value, please provide a start value via control$x0")
-    j <- na.exclude(match(c("gradient", "nl.info", "x0"), names(control)))
+    j <- na.exclude(match(c("gradient", "nl.info", "x0", "args"), names(control)))
     if ( is.null(control$xtol_rel) ) control[['xtol_rel']] <- nloptr_defaults('xtol_rel')
     if ( is.null(control$tol_constraints_ineq) ) 
         control[['tol_constraints_ineq']] <- nloptr_defaults("tol_constraints_ineq")
     if ( is.null(control$tol_constraints_eq) ) 
         control[['tol_constraints_eq']] <- nloptr_defaults("tol_constraints_eq")
 
+    ## objective(x)(c(1, 1, 1))
+    ## traceback()
+    ## 
+    ## f <- objective(x)
+    ## class(f) <- "function"
+    ## environment(f)$x
+    ## f(c(1, 1, 1))
+    ## control$x0 <- control$start
+    ## str(constraints(x))
+    eval_g_ineq <- build_inequality_constraints(x, control$tol_constraints_ineq)
+    eval_jac_g_ineq <- build_jacobian_inequality_constraints(x, control$tol_constraints_ineq)
+    eval_g_eq <- build_equality_constraints(x, control$tol_constraints_eq)
+    eval_jac_g_eq <- build_jacobian_equality_constraints(x, control$tol_constraints_eq)
+
     if ( is.null(control$args) ) {
-        o <- nloptr(x0 = control$x0, 
-                    eval_f = objective(x),
-                    eval_grad_f = x$objective$G,
-                    lb = lb, 
-                    ub = ub,
-                    eval_g_ineq = build_inequality_constraints(x, control$tol_constraints_ineq), 
-                    eval_jac_g_ineq = build_jacobian_inequality_constraints(x, control$tol_constraints_ineq), 
-                    eval_g_eq = build_equality_constraints(x, control$tol_constraints_eq), 
-                    eval_jac_g_eq = build_jacobian_equality_constraints(x, control$tol_constraints_eq), 
-                    opts = control[-j] )
+        o <- nloptr(x0 = control$x0, eval_f = objective(x), eval_grad_f = x$objective$G,
+                    lb = lb, ub = ub, eval_g_ineq = eval_g_ineq, eval_jac_g_ineq = eval_jac_g_ineq,
+                    eval_g_eq = eval_g_eq, eval_jac_g_eq = eval_jac_g_eq, opts = control[-j] )
     } else {
         arglist <- c(list(x0 = control$x0, 
+                          eval_f = x$objective$F,
+                          eval_grad_f = x$objective$G, 
+                          lb = lb, 
+                          ub = ub,
+                          eval_g_ineq = eval_g_ineq,
+                          eval_jac_g_ineq = eval_jac_g_ineq,
+                          eval_g_eq = eval_g_eq,
+                          eval_jac_g_eq = eval_jac_g_eq,
+                          opts = control[-j]),
+                    control$args)
+        ca <- match.call(nloptr, call("nloptr", x0 = control$x0, 
                           eval_f = objective(x),
                           eval_grad_f = x$objective$G, 
                           lb = lb, 
                           ub = ub,
-                          eval_g_ineq = build_inequality_constraints(x, control$tol_constraints_ineq), 
-                          eval_jac_g_ineq = build_jacobian_inequality_constraints(x, control$tol_constraints_ineq), 
-                          eval_g_eq = build_equality_constraints(x, control$tol_constraints_eq), 
-                          eval_jac_g_eq = build_jacobian_equality_constraints(x, control$tol_constraints_eq), 
-                          opts = control[-j]),
-                    control$args)
+                          eval_g_ineq = eval_g_ineq,
+                          eval_jac_g_ineq = eval_jac_g_ineq,
+                          eval_g_eq = eval_g_eq,
+                          eval_jac_g_eq = eval_jac_g_eq,
+                          opts = control[-j], ...=control$args))
+        eval(ca)
         args <- paste(paste(names(arglist), names(arglist), sep=" = "), collapse=", ")
         nloptr_call <- parse(text=sprintf("nloptr(%s)", args))        
         o <- eval(nloptr_call, envir=arglist)
+## 
+        nloptr_call <- c(nloptr, arglist)
+        str(nloptr_call)
+        ##nloptr_call$eval_f(nloptr_call$x0, nloptr_call$params)
+        mode(nloptr_call) <- "call"
+        o <- eval(nloptr_call)
+        o$solution
     }
 
     .ROI_plugin_canonicalize_solution(  solution  = o$solution,

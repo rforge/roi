@@ -56,7 +56,7 @@ solution.opt <- c( 1/3, 8/27 )
 test_that( "Test NLopt tutorial example with NLOPT_LD_MMA with gradient information.", {
 
     control <- list( xtol_rel = 1e-4, algorithm = "NLOPT_LD_MMA",
-                     start = c( 1.234, 5.678 ))
+                     x0 = c( 1.234, 5.678 ))
     control$args <- list(a=a, b=b)
 
     ## Solve using NLOPT_LD_MMA with gradient information supplied in separate function
