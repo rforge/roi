@@ -16,11 +16,11 @@ context("Simple polynomial with additional data.")
 
 test_that( "Test simple polyonmial where parameters are supplied as additional data.", {
     ## Objective function and gradient in terms of parameters.
-    eval_f <- function(x, params) { 
+    eval_f <- function(x) { 
         return( params[1]*x^2 + params[2]*x + params[3] ) 
     }
     
-    eval_grad_f <- function(x, params) { 
+    eval_grad_f <- function(x) { 
         return( 2*params[1]*x + params[2] ) 
     }
 
@@ -41,8 +41,8 @@ test_that( "Test simple polyonmial where parameters are supplied as additional d
     ## Solve using algebra
     ## Minimize f(x) = ax^2 + bx + c.
     ## Optimal value for control is -b/(2a).
-    expect_that( res$solution, equals( -params[2]/(2*params[1]), tolerance = 1e-7 ) )
+    expect_true( equal(res$solution, -params[2]/(2*params[1])) )
 
     # With value of the objective function f(-b/(2a)).
-    expect_that( res$objval, equals( eval_f( -params[2]/(2*params[1]), params ) ) )
+    expect_true( equal(res$objval, eval_f( -params[2]/(2*params[1]))) )
 } )

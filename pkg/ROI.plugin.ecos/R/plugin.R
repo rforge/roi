@@ -145,6 +145,19 @@ solve_OP <- function(x, control=list()){
 
     if ( x$maximum ) obj <- -obj
     dimq <- as.integer(unlist(lapply(cones$soc, length), use.names=FALSE))
+    if ( !is.null(control$DEBUG) ) 
+        return(list(c = obj, 
+                    G = if (length(rowsG) > 0) as_dgCMatrix(cxL[rowsG,]) else NULL,
+                    h = if (length(rowsG) > 0) b[rowsG] else numeric(0),
+                    dims = list(
+                        l = length(cones$nonneg),
+                        q = dimq,
+                        e = length(cones$expp) ),
+                    A = if (length(rowsA) > 0) as_dgCMatrix(cxL[rowsA,]) else NULL,
+                    b = if (length(rowsA) > 0) b[rowsA] else numeric(0),
+                    bool_vars = which( types(x) == "B" ),                     
+                    int_vars  = which( types(x) == "I" ),
+                    control   = sanitize_control(control)))
     
     out <- ECOS_csolve(c = obj, 
                        G = if (length(rowsG) > 0) as_dgCMatrix(cxL[rowsG,]) else NULL,

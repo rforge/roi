@@ -1,9 +1,3 @@
-
-if(FALSE) {
-    library(nloptr)
-    attach(getNamespace("ROI.plugin.nloptr"))    
-}
-
 nloptr_defaults <- function(x=NULL) {
     d <- nloptr.get.default.options()
     ## set variables needed to evaluate the default values
@@ -44,7 +38,7 @@ get_algorithms <- function(global=NULL, derivatives=NULL) {
     d <- nloptr.get.default.options()
     rownames(d) <- d[,"name"]
     a <- unlist(strsplit(d["algorithm", "possible_values"], ",\\s*"))
-    algo <- data.frame(a, stringsAsFactors = FALSE)
+    algo <- data.frame(algorithm=a, stringsAsFactors = FALSE)
     ## first is Global "G" vs Local "L"
     algo$global <- substr(a, 7, 7) == "G"
     ## secound Derivate "D" vs No Derivate "N"
@@ -62,6 +56,10 @@ get_algo_properties <- function() {
     get_algorithms()
 }
 
+is_derivate_free_algorithm <- function(x) {
+    any(grepl("(_GN_|_LN_)", x))
+}
+
 ## nloptr
 ## ======
 ##
@@ -70,21 +68,41 @@ get_algo_properties <- function() {
 ## nloptr(x0, eval_f, eval_grad_f = NULL, lb = NULL, ub = NULL,
 ##        eval_g_ineq = NULL, eval_jac_g_ineq = NULL, eval_g_eq = NULL,
 ##        eval_jac_g_eq = NULL, opts = list(), ...)
+if(FALSE) {
+    library(nloptr)
+    attach(getNamespace("ROI.plugin.nloptr"))    
+}
+
 solve_nloptr <- function( x, control ) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
     lb <- get_lb(x)
     ub <- get_ub(x)
 
-    ## useGlobal <- #TODO
-    ## use_derivatives <- 
+    objective_fun <- objective(x)
+    if ( is.null(control$algorithm) ) { 
+        control$algorithm <- "NLOPT_LD_AUGLAG_EQ"
+    }
+    if ( !is_derivate_free_algorithm(control$algorithm) ) {
+        gradient_fun <- G(objective(x))
+    } else {
+        gradient_fun <-  NULL
+    }
+    x$constraints <- as.F_constraint(x$constraints)
 
-    ## TODO: If no algorithm provided choose a algorithm based on the 
-    ##       problem and the JSS paper
-    ## FIXME: maximum is not implemented jet
-    if (x$maximum) stop("maximum is not implemented jet!")
+    if ( x$maximum ) {
+        OBJ_FUN <- objective_fun
+        objective_fun <- function(x) -(OBJ_FUN(x))
+        if ( !is.null(gradient_fun) ) {
+            GRAD_FUN <- gradient_fun
+            gradient_fun <- function(x) -(GRAD_FUN(x))
+        }
+    }
 
-    if ( is.null(control$x0) ) 
-        stop("no start value, please provide a start value via control$x0")
+    if ( is.null(control$x0) & is.null(control$start) ) {
+        stop("no start value, please provide a start value")
+    } else if ( is.null(control$x0) ) {
+        control$x0 <- control$start
+    }
     j <- na.exclude(match(c("gradient", "nl.info", "x0", "args"), names(control)))
     if ( is.null(control$xtol_rel) ) control[['xtol_rel']] <- nloptr_defaults('xtol_rel')
     if ( is.null(control$tol_constraints_ineq) ) 
@@ -92,61 +110,19 @@ solve_nloptr <- function( x, control ) {
     if ( is.null(control$tol_constraints_eq) ) 
         control[['tol_constraints_eq']] <- nloptr_defaults("tol_constraints_eq")
 
-    ## objective(x)(c(1, 1, 1))
-    ## traceback()
-    ## 
-    ## f <- objective(x)
-    ## class(f) <- "function"
-    ## environment(f)$x
-    ## f(c(1, 1, 1))
-    ## control$x0 <- control$start
-    ## str(constraints(x))
     eval_g_ineq <- build_inequality_constraints(x, control$tol_constraints_ineq)
     eval_jac_g_ineq <- build_jacobian_inequality_constraints(x, control$tol_constraints_ineq)
     eval_g_eq <- build_equality_constraints(x, control$tol_constraints_eq)
     eval_jac_g_eq <- build_jacobian_equality_constraints(x, control$tol_constraints_eq)
 
-    if ( is.null(control$args) ) {
-        o <- nloptr(x0 = control$x0, eval_f = objective(x), eval_grad_f = x$objective$G,
-                    lb = lb, ub = ub, eval_g_ineq = eval_g_ineq, eval_jac_g_ineq = eval_jac_g_ineq,
-                    eval_g_eq = eval_g_eq, eval_jac_g_eq = eval_jac_g_eq, opts = control[-j] )
-    } else {
-        arglist <- c(list(x0 = control$x0, 
-                          eval_f = x$objective$F,
-                          eval_grad_f = x$objective$G, 
-                          lb = lb, 
-                          ub = ub,
-                          eval_g_ineq = eval_g_ineq,
-                          eval_jac_g_ineq = eval_jac_g_ineq,
-                          eval_g_eq = eval_g_eq,
-                          eval_jac_g_eq = eval_jac_g_eq,
-                          opts = control[-j]),
-                    control$args)
-        ca <- match.call(nloptr, call("nloptr", x0 = control$x0, 
-                          eval_f = objective(x),
-                          eval_grad_f = x$objective$G, 
-                          lb = lb, 
-                          ub = ub,
-                          eval_g_ineq = eval_g_ineq,
-                          eval_jac_g_ineq = eval_jac_g_ineq,
-                          eval_g_eq = eval_g_eq,
-                          eval_jac_g_eq = eval_jac_g_eq,
-                          opts = control[-j], ...=control$args))
-        eval(ca)
-        args <- paste(paste(names(arglist), names(arglist), sep=" = "), collapse=", ")
-        nloptr_call <- parse(text=sprintf("nloptr(%s)", args))        
-        o <- eval(nloptr_call, envir=arglist)
-## 
-        nloptr_call <- c(nloptr, arglist)
-        str(nloptr_call)
-        ##nloptr_call$eval_f(nloptr_call$x0, nloptr_call$params)
-        mode(nloptr_call) <- "call"
-        o <- eval(nloptr_call)
-        o$solution
-    }
+    o <- nloptr(x0 = control$x0, eval_f = objective_fun, eval_grad_f = gradient_fun,
+                lb = lb, ub = ub, eval_g_ineq = eval_g_ineq, eval_jac_g_ineq = eval_jac_g_ineq,
+                eval_g_eq = eval_g_eq, eval_jac_g_eq = eval_jac_g_eq, opts = control[-j] )
+
+    optimum <- (-1)^x$maximum * o$objective
 
     .ROI_plugin_canonicalize_solution(  solution  = o$solution,
-                                        optimum   = o$objective,
+                                        optimum   = optimum,
                                         status    = o$status,
                                         solver    = solver,
                                         message   = o,
@@ -155,7 +131,11 @@ solve_nloptr <- function( x, control ) {
 
 ## NLOPT Algorithmen
 ## =================
-##
+## These constants are mostly of the form NLOPT_{G,L}{N,D}_xxxx, where 
+## G/L denotes global/local optimization and 
+## N/D denotes derivative-free/gradient-based algorithms, respectively.
+## GN ... global derivate-free
+## LN ... local derivate-free
 ## NLOPT_GN_DIRECT
 ## NLOPT_GN_DIRECT_L
 ## NLOPT_GN_DIRECT_L_RAND
@@ -193,3 +173,4 @@ solve_nloptr <- function( x, control ) {
 ## NLOPT_LD_AUGLAG_EQ
 ## NLOPT_LN_BOBYQA
 ## NLOPT_GN_ISRES
+

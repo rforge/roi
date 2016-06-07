@@ -1,6 +1,7 @@
 PACKAGE=ROI
 R=$(shell which R-devel)
 #R=R
+RR=/home/florian/bin/R_dev/bin/R
 
 all: pkg plugins
 
@@ -38,3 +39,152 @@ submit: clean all install check
 	echo 'scp $(PACKAGE)*.tar.gz cran.wu.ac.at:/srv/ftp/incoming/'
 	echo 'ssh cran.wu.ac.at "chgrp cranadmin /srv/ftp/incoming/$(PACKAGE)*"'
 	echo 'ssh cran.wu.ac.at "chmod g+w /srv/ftp/incoming/$(PACKAGE)*"'
+
+######
+
+## archive
+archive.plugins:
+	mv ROI.plugin*.tar.gz archive/
+
+clean.Rchecks:
+	rm -rf *.Rcheck
+
+## ROI
+## ===
+ROI.namespace:
+	$(RR) -e "library(roxygen2); roxygenise(package.dir='ROI', roclets=c('rd', 'namespace'))"
+
+ROI.build:
+	$(RR) -e "library(roxygen2); roxygenise(package.dir='ROI', roclets=c('rd'))"
+	$(RR) CMD build ROI
+
+ROI.check: ROI.build 
+	$(RR) CMD check ROI_*.tar.gz \\
+	cp ROI.Rcheck/ROI-manual.pdf ROI-manual.pdf
+
+ROI.install: ROI.build 
+	$(RR) CMD INSTALL ROI_*.tar.gz
+
+## ecos
+## ====
+ecos.build:
+	$(RR) CMD build ROI.plugin.ecos
+
+ecos.check: ecos.build 
+	$(RR) CMD check ROI.plugin.ecos*.tar.gz
+
+ecos.install: ecos.build
+	$(RR) CMD INSTALL ROI.plugin.ecos*.tar.gz
+
+## glpk
+## ====
+glpk.build:
+	$(RR) CMD build ROI.plugin.glpk
+
+glpk.check: glpk.build 
+	$(RR) CMD check ROI.plugin.glpk*.tar.gz
+
+glpk.install: glpk.build
+	$(RR) CMD INSTALL ROI.plugin.glpk*.tar.gz
+
+## ipop
+## ====
+ipop.build:
+	$(RR) CMD build ROI.plugin.ipop
+
+ipop.check: ipop.build 
+	$(RR) CMD check ROI.plugin.ipop*.tar.gz
+
+ipop.install: ipop.build
+	$(RR) CMD INSTALL ROI.plugin.ipop*.tar.gz
+
+## mosek
+## =====
+mosek.build:
+	$(RR) CMD build ROI.plugin.mosek
+
+mosek.check: mosek.build 
+	$(RR) CMD check ROI.plugin.mosek*.tar.gz
+
+mosek.install: mosek.build
+	$(RR) CMD INSTALL ROI.plugin.mosek*.tar.gz
+
+## nloptr
+## ======
+nloptr.build:
+	$(RR) CMD build ROI.plugin.nloptr
+
+nloptr.check: nloptr.build
+	$(RR) CMD check ROI.plugin.nloptr*.tar.gz
+
+nloptr.install: nloptr.build 
+	$(RR) CMD INSTALL ROI.plugin.nloptr*.tar.gz
+
+## quadprog
+## ========
+quadprog.build:
+	$(RR) CMD build ROI.plugin.quadprog
+
+quadprog.check: quadprog.build 
+	$(RR) CMD check ROI.plugin.quadprog*.tar.gz
+
+quadprog.install: quadprog.build
+	$(RR) CMD INSTALL ROI.plugin.quadprog*.tar.gz
+
+## scs
+## ===
+scs.build:
+	$(RR) CMD build ROI.plugin.scs
+
+scs.check: scs.build
+	$(RR) CMD check ROI.plugin.scs*.tar.gz
+
+scs.install: scs.build
+	$(RR) CMD INSTALL ROI.plugin.scs*.tar.gz
+
+## symphony
+## ========
+symphony.build:
+	$(RR) CMD build ROI.plugin.symphony
+
+symphony.check: symphony.build
+	$(RR) CMD check ROI.plugin.symphony*.tar.gz
+
+symphony.install: symphony.build 
+	$(RR) CMD INSTALL ROI.plugin.symphony*.tar.gz
+
+check.plugins: clean.Rchecks ecos.check glpk.check ipop.check nloptr.check quadprog.check scs.check symphony.check
+
+
+## Testing
+## =======
+test.cplex:
+	$(RR) CMD check ROI.plugin.cplex
+
+test.ecos:
+	$(RR) CMD check ROI.plugin.ecos
+
+test.glpk: glpk.install
+	$(RR) -e "setwd('ROI.plugin.glpk/tests'); source('run-all.R')"
+
+test.ipop: ipop.install
+	$(RR) -e "setwd('ROI.plugin.ipop/tests'); source('run-all.R')"
+
+test.mosek:
+	$(RR) CMD check ROI.plugin.mosek
+
+test.nloptr:
+	$(RR) CMD check ROI.plugin.nloptr
+
+test.quadprog: quadprog.install
+	$(RR) -e "setwd('ROI.plugin.quadprog/tests'); source('run-all.R')"
+
+test.scs:
+	$(RR) CMD check ROI.plugin.scs
+
+test.symphony: symphony.install
+	$(RR) -e "setwd('ROI.plugin.symphony/tests'); source('run-all.R')"
+
+## not all but all available
+test.all: test.ecos test.glpk test.ipop test.nloptr test.quadprog test.scs test.symphony
+

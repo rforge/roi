@@ -371,7 +371,7 @@ as.F_objective <- function( x )
 ##' @noRd
 ##' @export
 as.F_objective.F_objective <- function( x )
-    identity( x )
+    return( x )
 
 ##' @noRd
 ##' @export

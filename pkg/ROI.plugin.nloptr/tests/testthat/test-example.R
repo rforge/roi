@@ -26,22 +26,22 @@
 context("Example-NLoptTutorial")
 
 ## objective function
-eval_f0 <- function( x, a, b ) { 
+eval_f0 <- function( x ) { 
     return( sqrt(x[2]) )
 }
 
 ## constraint function
-eval_g0 <- function( x, a, b ) {
+eval_g0 <- function( x ) {
     return( (a*x[1] + b)^3 - x[2] )
 }
 
 ## gradient of objective function
-eval_grad_f0 <- function( x, a, b ){ 
+eval_grad_f0 <- function( x ){ 
     return( c( 0, .5/sqrt(x[2]) ) )
 }
 
 ## jacobian of constraint
-eval_jac_g0 <- function( x, a, b ) {
+eval_jac_g0 <- function( x ) {
     return( rbind( c( 3*a[1]*(a[1]*x[1] + b[1])^2, -1.0 ), 
                    c( 3*a[2]*(a[2]*x[1] + b[2])^2, -1.0 ) ) )
 }
@@ -57,7 +57,6 @@ test_that( "Test NLopt tutorial example with NLOPT_LD_MMA with gradient informat
 
     control <- list( xtol_rel = 1e-4, algorithm = "NLOPT_LD_MMA",
                      x0 = c( 1.234, 5.678 ))
-    control$args <- list(a=a, b=b)
 
     ## Solve using NLOPT_LD_MMA with gradient information supplied in separate function
     x <- OP(objective = F_objective(F=eval_f0, n=2L, G=eval_grad_f0), 
@@ -79,7 +78,6 @@ test_that( "Test NLopt tutorial example with NLOPT_LN_COBYLA with gradient infor
 
     control$algorithm <- "NLOPT_LN_COBYLA"
     control$xtol_rel <- 1e-6
-    control$args <- list(a=a, b=b)
 
     ## Solve using NLOPT_LN_COBYLA with gradient information supplied in separate function
     x <- OP(objective = F_objective(F=eval_f0, n=2L), 
@@ -88,9 +86,6 @@ test_that( "Test NLopt tutorial example with NLOPT_LN_COBYLA with gradient infor
 
     ## Solve Rosenbrock Banana function.
     res1 <- ROI_solve( x, solver="nloptr", control )
-
-    sapply(constraints(x)$J, is.na)
-        
-    expect_that( res1$solution, equals( solution.opt ) )
+    expect_true( equal(res1$solution, solution.opt) )
 } )
 

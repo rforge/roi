@@ -21,10 +21,7 @@
 context("Banana")
 
 test_that("Test Rosenbrock Banana optimization with objective and gradient in separate functions.", {
-
-    library( testthat )
-    library( ROI )
-        
+      
     control <- list( xtol_rel    = 1.0e-8,
                      print_level = 0 )
 

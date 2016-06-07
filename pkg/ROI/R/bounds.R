@@ -404,18 +404,18 @@ is.C_bound <- function(x) inherits(x, "C_bound")
 ##' @noRd
 ##' @export
 as.C_bound.list <- function( x, ... ) {
-    y <- NULL
+    y <- as.C_bound(NULL)
     for ( cone in available_cone_types() ) {
         if ( cone %in% c("soc", "psd", "expp", "expd") ) {
             for ( soc in x[[cone]] ) {
-                y <- c(C_bound( soc , type=cone), y)
+                y <- c(y, C_bound( soc , type=cone))
             }
         } else if ( cone %in% c("powp", "powd") ) {
             for ( pow in x[[cone]] ) {
-                y <- c(C_bound(unlist(pow[-which(names(pow)=="a")]), a=pow$a , type=cone), y)
+                y <- c(y, C_bound(unlist(pow[-which(names(pow)=="a")]), a=pow$a , type=cone))
             }
         } else {
-            y <- c(C_bound( x[[cone]] , type=cone), y)
+            y <- c(y, C_bound( x[[cone]] , type=cone))
         }
     }
     structure(y, class=c("C_bound", "bound"))

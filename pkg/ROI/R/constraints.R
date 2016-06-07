@@ -334,6 +334,17 @@ as.L_constraint.NO_constraint<- function( x, ... )
     L_constraint( L = simple_triplet_zero_matrix(nrow = length(x), ncol = dim(x)[2]),
                   dir = NULL, rhs = NULL )
 
+##' @noRd
+##' @export
+as.function.L_constraint <- function( x, ... ) {
+    fun <- function(i) {
+        g <- as.matrix(x$L[i,])
+        function(x) as.numeric(g %*% x)
+    }
+    lapply(seq_len(NROW(x$L)), fun)
+}
+
+
 ## Tests if an object is interpretable as being of class \code{"L_constraint"}.
 ##
 ## @title Linear Constraints
@@ -670,14 +681,13 @@ as.Q_term.list <- function( x, ... ) {
     dims <- list(...)
     if ( all(c("nrow", "ncol") %in% names(dims)) ) {
         as_Q_term_list <- function(x, nrow, ncol) {
-            if ( is.null(x) ) return( as.Q_term(x, nrow=nrow, ncol=ncol) )
+            if ( is.null(x) ) return( simple_triplet_zero_matrix(dims[['ncol']]) )
             return( as.simple_triplet_matrix(x) )
         }
-        lapply(x, as_Q_term_list, nrow=dims$nrow, ncol=dims$ncol)
+        return(lapply(x, as_Q_term_list, nrow=dims$nrow, ncol=dims$ncol))
     }
     return(lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) ))
 }
-##    lapply( x, function(x) if( !is.null(x) ) as.simple_triplet_matrix(x) )
 
 ##' @rdname as.Q_term
 ##' @export
@@ -735,17 +745,16 @@ as.Q_term.NULL <- function( x, ... ) {
 ##' @param rhs a numeric vector with the right hand side of the constraints.
 ##' @param J an optional \code{function} holding the Jacobian of F.
 ##' @param x object to be tested.
+##' @param \ldots further arguments passed to or from other methods (currently ignored).
 ##' @return an object of class \code{"F_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
 ##' @export
-## NOTE: use NA since the J is not available and
-##       unlist( list(NA, list(function)) ) => list(NA, function) O.K.
-##       unlist( list(NULL, list(function)) ) => list(function)   BAD!
 F_constraint <- function(F, dir, rhs, J=NULL){
+    stopifnot( row_sense_is_feasible(dir) )
+    stopifnot( (length(F) == length(J)) | is.null(J) )
     F     <- as.F_term( F )
     J     <- as.J_term( J )
-    stopifnot( row_sense_is_feasible(dir) )
     rhs   <- as.rhs( rhs )
     n_F   <- length( F )
     n_dir <- length( dir )
@@ -760,10 +769,6 @@ F_constraint <- function(F, dir, rhs, J=NULL){
               class = c("F_constraint", "constraint"))
 }
 
-## FIXME: there are still F_constraint methods to implement
-as.F_constraint <- function(x, ...)
-    UseMethod( "as.F_constraint")
-
 as.F_term <- function(x, ...)
     UseMethod( "as.F_term" )
 
@@ -775,21 +780,24 @@ length.F_constraint <- function(x)
 as.F_term.function <- function(x, ...)
     list( x )
 
-as.F_term.list <- function(x, ...)
+as.F_term.list <- function(x, ...) {
+    if ( inherits(x, "constraint") ) {
+        return (x)
+    }
     lapply( x, as.function )
+}
 
 ## Jacobian
 as.J_term          <- function(x, ...) UseMethod( "as.J_term" )
-as.J_term.NULL     <- function(x, ...)      list( NA )
-as.J_term.function <- function(x, ...)      list( x )
+as.J_term.NULL     <- function(x, ...) NULL
+as.J_term.function <- function(x, ...) list( x )
 as.J_term.list     <- function(x, ...) {
-    as_J <- function(x) {
-        if ( is.null(x) ) return( NA )
-        if ( is.function(x) ) return( x )
-        if ( is.na(x) ) return( NA )
-        return( as.J_term(x) )
-    }
-    unlist( lapply( x, as_J ), use.names = FALSE )
+    if ( inherits(x, "jacobian") )
+        return(x)
+    if ( !all(sapply(x, is.function)) )
+        stop("TYPE_MISMATCH J has to be a function or a list of funtions")
+    class(x) <- c(class(x), "jacobian")
+    return(x)
 }
 
 ##  Tests if an object is interpretable as being of class \code{"F_constraint"}.
@@ -897,10 +905,97 @@ dim.constraint <- function( x ){
     else if( inherits(x, "L_constraint") )
         c( length(x), ncol(x$L))
     else if( inherits(x, "Q_constraint") )
-        c( length(x), unique(unlist(lapply( x$Q, dim ))) )
+        tryCatch({c( length(x), ncol(x$L))}, error=function(e) DEBUG <<- x)
     else if( inherits(x, "F_constraint") ){
         c( length(x), 1 )
     }
     out
+}
+
+
+## ---------------------------
+## terms
+## ---------------------------
+##' @noRd
+##' @export
+terms.L_constraint <- function( x, ... ) {
+    list( L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
+}
+
+##' @noRd
+##' @export
+terms.Q_constraint <- function( x, ... ) {
+    list( Q = x$Q, L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
+}
+    
+##' @noRd
+##' @export
+terms.F_constraint <- function( x, ... ) {
+    list( F = x$F, G = x$J, dir=x$dir, rhs=x$rhs )
+}
+
+
+## ---------------------------
+## as.function.constraint
+## ---------------------------
+##' @noRd
+##' @export
+as.function.constraint <- function(x, ...) {
+    if( inherits(x, "L_constraint") ) {
+        return( as_function_L_constraint(x, ...) )
+    }
+    if( inherits(x, "Q_constraint") ) {
+        return( as_function_Q_constraint(x, ...) )
+    }
+    stop("not implemented")
+}
+
+as_function_L_constraint <- function( x, ... ) {
+    fun <- function(L) {        
+        f <- function(x) c(tcrossprod(L_row_i, t(x)))
+        class(f) <- c(class(f), class(x))
+        return(f)
+    }
+    ## NOTE: rowapply_simple_triplet_matrix doesn't save L_row_i
+    ## return(rowapply_simple_triplet_matrix(terms(x)[['L']], fun))
+    out <- apply(terms(x)[['L']], 1, fun)
+    structure(out, class=c("list", "constraint"))
+}
+
+as_function_Q_constraint <- function(x, ...) {
+    fun <- function(i) {
+        L <- terms(x)[['L']][i,]
+        Q <- terms(x)[['Q']][[i]]
+        f <- function (x) {    
+            c(tcrossprod_simple_triplet_matrix(L, t(x)) + 0.5 * .xtQx(Q, x))
+        }
+        class(f) <- c(class(f), class(x))
+        return(f)
+    }
+    out <- lapply(seq_len(NROW(x)), fun)
+    structure(out, class=c("list", "constraint"))
+}
+
+
+## ---------------------------
+## as.F_constraint
+## ---------------------------
+##  FIXME: there are still F_constraint methods to implement
+##' @rdname F_constraint
+##' @export
+as.F_constraint <- function(x, ...) UseMethod( "as.F_constraint" )
+
+##' @rdname F_constraint
+##' @export
+as.F_constraint.NULL <- function(x, ...) x
+
+##' @rdname F_constraint
+##' @export
+as.F_constraint.constraint <- function(x, ...) {
+    if( inherits(x, "Q_constraint") )
+        return( F_constraint(as.function(x), x$dir, x$rhs, J(x)) )
+    if( inherits(x, "F_constraint") )
+        return( x )
+    stop("not implemented")
 }
 
