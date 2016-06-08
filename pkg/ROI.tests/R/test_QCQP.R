@@ -12,7 +12,6 @@ test_qcqp_01 <- function(solver) {
     ## local_opts <- list( algorithm = "NLOPT_LD_LBFGS", xtol_rel  = 1e-4 )
     ## opt <- ROI_solve(x, solver="nloptr", start=c(2, 2), method="NLOPT_LD_MMA")
 
-    solution <- c(0.476190476190476, 1.04761904761905, 2.0952380952381)
     check("QCQP-01@01", equal(opt$solution, c(1, 0)) )
     check("QCQP-01@02", equal(opt$objval, 1/2) )
 }
