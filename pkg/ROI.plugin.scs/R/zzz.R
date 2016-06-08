@@ -14,7 +14,13 @@ make_SCS_signatures <- function()
     ## SCS
     .ROI_plugin_register_solver_control( solver, "verbose", "verbose" )
     .ROI_plugin_register_solver_control( solver, "max_iters", "max_iter" )
-    .ROI_plugin_register_solver_control( solver, "eps", "tol" ) ## convergence tolerence
+    .ROI_plugin_register_solver_control( solver, "eps", "tol" )
+
+    .ROI_plugin_register_solver_control( solver, "normalize", "X" )
+    .ROI_plugin_register_solver_control( solver, "cg_rate", "X" )
+    .ROI_plugin_register_solver_control( solver, "scale", "X" )
+    .ROI_plugin_register_solver_control( solver, "rho_x", "X" )
+    .ROI_plugin_register_solver_control( solver, "alpha", "X" )
     invisible( TRUE )
 }
 

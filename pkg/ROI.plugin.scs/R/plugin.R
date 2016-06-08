@@ -177,20 +177,6 @@ as.bound <- function( x, ... ) UseMethod( "as.bound" )
 as.bound.bound <- identity
 as.bound.NULL <- function( x, ... ) structure(NULL, class="bound")
 
-if (FALSE) {
-library(slam)
-library(scs)
-
-
-x <- lp
-x <- lp2
-
-x <- prob$op
-control=list()
-}
-
-absmax <- function(x) max(abs(x))
-
 solve_OP <- function(x, control=list()) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
 
@@ -231,22 +217,6 @@ solve_OP <- function(x, control=list()) {
             cxL <- rbind(cxL, simple_triplet_matrix(i, j, v=rep.int(1L, length(goeq)),
                                                     nrow=length(goeq), ncol=nc) )
         }
-    }
-
-    if (FALSE) {
-        ## FIXME:: Das combine von bounds hat einen Fehler!
-        str(bo)
-        
-        ##str(c(bo, C_bound(lbi, type="nonneg")))
-        str(c(bo, C_bound((nrow(cxL) + lbi), type="nonneg")))
-        ##xb <- list(as.bound(bo), C_bound(lbi, type="nonneg"))
-        duplicated(bo$cones$nonneg)
-        bo$cones$nonneg
-        str(bo$cones)
-        dim(cxL)
-        absmax <- function(x) max(abs(x))
-        apply(as.matrix(cxL), 2, absmax)
-        unname(rowSums(as.matrix(cxL)))
     }
 
     ## ------------------------------
