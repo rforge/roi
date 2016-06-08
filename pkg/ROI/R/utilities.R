@@ -230,6 +230,7 @@ equal.logical <- function(x, y, ...) {
     if (length(class(x)) != length(class(y))) return(FALSE)
     if ( any(class(x) != class(y)) ) return(FALSE)
     if (length(x) != length(y)) return(FALSE)
+    if ( any(is.finite(x) != is.finite(y)) ) return(FALSE)
     if ( any(x != y) ) return(FALSE)
     return(TRUE)
 }
@@ -240,6 +241,7 @@ equal.integer <- function(x, y, ...) {
     if (length(class(x)) != length(class(y))) return(FALSE)
     if ( any(class(x) != class(y)) ) return(FALSE)
     if (length(x) != length(y)) return(FALSE)
+    if ( any(is.finite(x) != is.finite(y)) ) return(FALSE)
     if ( any(x != y) ) return(FALSE)
     return(TRUE)
 }
@@ -252,6 +254,7 @@ equal.numeric <- function(x, y, ...) {
     if (length(class(x)) != length(class(y))) return(FALSE)
     if ( any(class(x) != class(y)) ) return(FALSE)
     if (length(x) != length(y)) return(FALSE)
+    if ( any(is.finite(x) != is.finite(y)) ) return(FALSE)
     if ( any( abs(x - y) > args$tol ) ) return(FALSE)
     return(TRUE)
 }
@@ -262,6 +265,7 @@ equal.character <- function(x, y, ...) {
     if (length(class(x)) != length(class(y))) return(FALSE)
     if ( any(class(x) != class(y)) ) return(FALSE)
     if (length(x) != length(y)) return(FALSE)
+    if ( any(is.finite(x) != is.finite(y)) ) return(FALSE)
     if ( any(x != y) ) return(FALSE)
     return(TRUE)
 }

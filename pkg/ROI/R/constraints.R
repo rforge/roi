@@ -905,7 +905,7 @@ dim.constraint <- function( x ){
     else if( inherits(x, "L_constraint") )
         c( length(x), ncol(x$L))
     else if( inherits(x, "Q_constraint") )
-        tryCatch({c( length(x), ncol(x$L))}, error=function(e) DEBUG <<- x)
+        c( length(x), ncol(x$L) )
     else if( inherits(x, "F_constraint") ){
         c( length(x), 1 )
     }
