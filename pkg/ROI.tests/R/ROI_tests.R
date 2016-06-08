@@ -1,8 +1,13 @@
 
 TESTS <- new.env(parent=emptyenv(), size=200)
+SOLVER_TESTS <- new.env(parent=emptyenv(), size=200)
 
 new_test <- function(x, value) {
     assign(x, value, envir=base::getNamespace("ROI.tests")$TESTS)
+}
+
+new_solver_test <- function(x, value) {
+    assign(x, value, envir=base::getNamespace("ROI.tests")$SOLVER_TESTS)
 }
 
 ## http://misc.flogisoft.com/bash/tip_colors_and_formatting
@@ -60,6 +65,10 @@ check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
 mksig <- function(objective="L", constraints="L", types="C", bounds="V", cones="free", maximum=FALSE) {
     .ROI_plugin_make_signature(objective = objective, constraints = constraints,
         types = types, bounds = bounds, cones = cones, maximum = maximum)
+}
+
+register_solver_test <- function(signature, name, fun) {
+    new_solver_test(name, list(signature=signature, test=fun))
 }
 
 register_test <- function(signature, name, fun) {

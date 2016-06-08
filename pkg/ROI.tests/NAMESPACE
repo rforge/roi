@@ -1,4 +1,5 @@
 import("ROI")
 importFrom("methods", "getPackageName")
 importFrom("methods", "getFunction")
+importFrom("stats", "terms")
 exportPattern("^[[:alpha:]]+")
