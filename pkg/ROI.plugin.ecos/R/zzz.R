@@ -12,9 +12,22 @@ make_ECOS_signatures <- function()
 ## SOLVER CONTROLS
 .add_controls <- function(solver) {
     ## ECOS
-    .ROI_plugin_register_solver_control( solver, "verbose", "verbose" )
-    .ROI_plugin_register_solver_control( solver, "maxit", "max_iter" )
-    .ROI_plugin_register_solver_control( solver, "feastol", "tol" ) ## tolerance on the primal and dual residual
+    .ROI_plugin_register_solver_control( solver, "VERBOSE", "verbose" )
+    .ROI_plugin_register_solver_control( solver, "MAXIT", "max_iter" )
+    .ROI_plugin_register_solver_control( solver, "FEASTOL", "tol" ) ## tolerance on the primal and dual residual
+    ## .ROI_plugin_register_solver_control( solver, "MAXIT", "X" )
+    ## .ROI_plugin_register_solver_control( solver, "FEASTOL", "X" )
+    .ROI_plugin_register_solver_control( solver, "RELTOL", "X" )
+    .ROI_plugin_register_solver_control( solver, "ABSTOL", "X" )
+    .ROI_plugin_register_solver_control( solver, "FEASTOL_INACC", "X" )
+    .ROI_plugin_register_solver_control( solver, "ABSTOL_INACC", "X" )
+    .ROI_plugin_register_solver_control( solver, "RELTOL_INACC", "X" )
+    ## .ROI_plugin_register_solver_control( solver, "VERBOSE", "X" )
+    .ROI_plugin_register_solver_control( solver, "MI_MAX_ITERS", "X" )
+    .ROI_plugin_register_solver_control( solver, "MI_INT_TOL", "X" )
+    .ROI_plugin_register_solver_control( solver, "MI_ABS_EPS", "X" )
+    .ROI_plugin_register_solver_control( solver, "MI_REL_EPS", "X" )
+
     invisible( TRUE )
 }
 

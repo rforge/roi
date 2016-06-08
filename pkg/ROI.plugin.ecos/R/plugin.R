@@ -29,24 +29,17 @@ sanitize_control <- function(control) {
     cont <- ecos.control()
     key <- names(control)[names(control) %in% names(cont)]
     cont[key] <- control[key]
+    if ( is.numeric(cont$VERBOSE) & (length(cont$VERBOSE) == 1) ) {
+        cont$VERBOSE <- if ( is.finite(cont$VERBOSE) ) as.integer(cont$VERBOSE) else 0L
+    } else {
+        cont$VERBOSE <- 0L
+    }
     cont
 }
 
 as.bound <- function( x, ... ) UseMethod( "as.bound" )
 as.bound.bound <- identity
 as.bound.NULL <- function( x, ... ) structure(NULL, class="bound")
-
-## if ( FALSE ) {
-## 
-##     library(ECOSolveR)
-##     library( Matrix )  
-##     library(slam)
-## 
-##     x <- lp
-##     control <- list()
-##     solver <- "ecos"
-## 
-## }
 
 ## BASIC SOLVER METHOD
 solve_OP <- function(x, control=list()){
