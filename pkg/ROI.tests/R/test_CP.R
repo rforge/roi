@@ -70,7 +70,7 @@ test_cp_03 <- function(solver) {
     x <- OP(objective = obj, constraints = lc, types = rep("C", 3),
             bounds =  bound, maximum = FALSE)
 
-	opt <- ROI_solve(x, solver=solver)
+    opt <- ROI_solve(x, solver=solver)
     check("CP-03@01", equal(opt$solution , c(1, 2, 2*exp(1/2))))
 }
 
@@ -129,7 +129,7 @@ test_cp_05 <- function(solver) {
 ## EXPD - Example - 1
 ## min:  u + v + w
 ## s.t.
-## 		-u * e^(v/u) <= e * w; u < 0; v >= 0; w >= 0
+##      -u * e^(v/u) <= e * w; u < 0; v >= 0; w >= 0
 ##      u == -1
 ##      v ==  1
 ##
@@ -142,7 +142,7 @@ test_cp_06 <- function(solver) {
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
     cones <- list("free"=c(1, 2), "expd"=list(3:5))
-    bound <- as.C_bound(cones)
+    bound <- c(V_bound(li=1:3, lb=rep(-Inf, 3)), as.C_bound(cones))
 
     lc <- L_constraint(L = rbind(A, G), dir=rep("==", length(c(b, h))), rhs = c(b, h))
     x <- OP(objective = obj, constraints = lc, types = rep("C", 3),
@@ -153,7 +153,7 @@ test_cp_06 <- function(solver) {
 }
 
 ## POWP - Example - 1
-## min:  x + y + z
+## max:  x + y + z
 ## s.t.
 ##      x^a * y ^ (1-a) >= |z|
 ##      x == 4
@@ -177,7 +177,7 @@ test_cp_07 <- function(solver) {
 
     opt <- ROI_solve(x, solver=solver)
     check("CP-07@01", equal(opt$solution, c(4, 4, 4)))
-    check("CP-07@01", equal(opt$objval, -12 ))
+    check("CP-07@02", equal(opt$objval, 12 ))
 }
 
 ## POWD - Example - 1
@@ -219,12 +219,6 @@ test_cp_08 <- function(solver) {
 ## or http://cvxopt.org/userguide/coneprog.html
 test_cp_09 <- function(solver) {
     ## this function or something similar should go into ROI
-    vectorize_psd <- function(...) {
-        x <- list(...)
-        fun <- function(M) c(M[lower.tri(M, TRUE)])
-        do.call(cbind, lapply(x, fun))
-    }
-
     obj <- c(1, -1, 1)
     A1 <- matrix(c(-7, -11, -11,  3), 2)
     A2 <- matrix(c( 7, -18, -18,  8), 2)
@@ -236,12 +230,13 @@ test_cp_09 <- function(solver) {
     b  <- matrix(c( 14,   9,  40,  9,  91,  10,  40,  10,15), 3)
 
     ## PSD matrices have to be vectorized
-    G1 <- vectorize_psd(A1, A2, A3)
-    h1 <- vectorize_psd(a)
-    G2 <- vectorize_psd(B1, B2, B3)
-    h2 <- vectorize_psd(b)
+    G1 <- vech(A1, A2, A3)
+    h1 <- vech(a)
+    G2 <- vech(B1, B2, B3)
+    h2 <- vech(b)
     h <- c(h1, h2)
-    bounds <- c(C_bound(1:3, type="psd"), C_bound(3+1:6, type="psd"))
+    bounds <- c(V_bound(li=1:3, lb=rep(-Inf, 3)), 
+                C_bound(1:3, type="psd"), C_bound(3+1:6, type="psd"))
 
     x <- OP(objective = obj,
             constraints = L_constraint(L = rbind(G1, G2), dir=rep("==", length(h)), rhs = h),
@@ -249,26 +244,26 @@ test_cp_09 <- function(solver) {
             bounds =  bounds,
             maximum = FALSE)
 
-    opt <- ROI_solve(x, solver = solver)
-    
-    ROI_psd <- function(x) attributes(x)$meta$psd
+    opt <- ROI_solve(x, solver = solver)  
     
     ## NOTE: The solutions I compare with are from cvxopt where I used the default settings,
     ##       therefore it is possible that scs just provides a solution with a smaler eps
     sol <- c(-0.367666090041563, 1.89832827158511, -0.887550426343585)
-    check("CP-09@01", isTRUE(c(obj %*% opt$solution) <= c(obj %*% sol)))
+    check("CP-09@01", isTRUE(c(obj %*% solution(opt)) <= c(obj %*% sol)))
     
     ## solution from cvxopt
     ## [-3.68e-01 1.90e+00 -8.88e-01]
     ## or c(-0.367666090041563, 1.89832827158511, -0.887550426343585)
-    check("CP-09@02", isTRUE(sum(abs(opt$solution - sol)) < 1e-3))
+    check("CP-09@02", isTRUE(sum(abs(solution(opt) - sol)) < 1e-3))
 
     ## [ 3.96e-03 -4.34e-03]
     ## [-4.34e-03  4.75e-03]
     ## c(0.00396107103000518, -0.00433836779348354, -0.00433836779348354,  0.00475162592559036) 
     sol_psd_1 <- c( 0.00396107103000518, -0.00433836779348354, 
                    -0.00433836779348354,  0.00475162592559036)
-    check("CP-09@03", isTRUE(sum(abs(as.numeric(as.matrix(ROI_psd(opt)[[1]])) - sol_psd_1)) < 1e-5))
+
+    opt_sol_psd_1 <- as.numeric(as.matrix(solution(opt, "psd")[[1]]))
+    check("CP-09@03", isTRUE(sum(abs(opt_sol_psd_1 - sol_psd_1)) < 1e-5))
     
     ## [ 5.58e-02 -2.41e-03  2.42e-02]
     ## [-2.41e-03  1.04e-04 -1.05e-03]
@@ -279,5 +274,6 @@ test_cp_09 <- function(solver) {
     sol_psd_2 <- c( 0.0558011514407859, -0.00240909203896524,   0.0242146296992217,  
                    -0.00240909203896524, 0.000104021271556218, -0.00104543254168053,  
                     0.0242146296992217, -0.00104543254168053,   0.0105078600239678)
-    check("CP-09@04", isTRUE(sum(abs(as.numeric(as.matrix(ROI_psd(opt)[[2]])) - sol_psd_2)) < 1e-5))
+    opt_sol_psd_2 <- as.numeric(as.matrix(solution(opt, "psd")[[2]]))
+    check("CP-09@04", isTRUE(sum(abs(opt_sol_psd_2 - sol_psd_2)) < 1e-5))
 }

@@ -85,6 +85,10 @@ test_solver <- function(solver) {
     }
 }
 
+get_test <- function(x) {
+    TESTS[[x]]
+}
+
 
 ## ROI:::ROI_required_signature()
 ##     .ROI_plugin_make_signature( objective = c("L", "Q", "F"),
