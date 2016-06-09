@@ -54,7 +54,7 @@ solve_OP <- function( x, control ){
         ## we need to handle quadratic constraint
         tryCatch( Rcplex_solve_QCP(Qmat = terms(objective(x))$Q,
                                    cvec = as.numeric(as.matrix(terms(objective(x))$L)), # these are STMs
-                                   QC = list(QC = list(Q = constraints(x)$Q[ qc ],
+                                   QC = list(QC = list(Q = lapply( constraints(x)$Q[ qc ], function(Q) 1/2*Q), # in contrast to standard formulation ROI uses s.t. x'Qx + c'x <= b, thus dividing by 2
                                                        L = .make_list_of_linear_constraints(
                                                            constraints(x)$L[ qc, ])),
                                              dir = .as_Rcplex_sense(constraints(x)$dir[ qc ]),

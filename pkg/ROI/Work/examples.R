@@ -272,12 +272,12 @@ qp_results
 ## maximize:     x_1 + 2 x_2 + 3 x_3 - 1/2 (33 x_1^2 + 22 x_2^2 + 11 x_3^2) + 6 x_1 x_2 + 11.5 x_2 x_3
 ## subject to: - x_1 +   x_2 +   x_3   <= 20
 ##               x_1 - 3 x_2 +   x_3   <= 30
-##               x_1^2 + x_2^2 + x_3^2 <= 1
+##               1/2 (2 x_1^2 + 2 x_2^2 + 2 x_3^2) <= 1
 
 ex7_qcp <- OP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
                             byrow = TRUE, ncol = 3),
                           L = c(1, 2, 3)),
-              Q_constraint(Q = list(NULL, NULL, diag(1, nrow = 3)),
+              Q_constraint(Q = list(NULL, NULL, diag(2, nrow = 3)),
                            L = matrix(c(-1, 1, 1, 1, -3, 1, 0, 0, 0),
                              byrow = TRUE, ncol = 3),
                            dir = rep("<=", 3),
