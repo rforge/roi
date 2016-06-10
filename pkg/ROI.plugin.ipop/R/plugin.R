@@ -87,13 +87,20 @@ solve_LP <- function( x, control ) {
         Q <- -Q
     }
 
+    A <- as.matrix(mat)
+    b <- A %*% lower
+    r <- A %*% upper - b
+    BR <- cbind(b, r)
+    b <- apply(BR, 1, min)
+    r <- apply(BR, 1, max)
+
     out <- tryCatch( ipop(c = as.matrix(L), ## FIXME: for the time being dense representation
                           H = as.matrix(Q),
-                          A = as.matrix(mat),
-                          b = lhs,
+                          A = A,
+                          b = b,
                           l = lower,
                           u = upper,
-                          r = rhs - lhs,
+                          r = r,
                           sigf = control$sigf,
                           maxiter = control$maxiter,
                           margin = control$margin,
