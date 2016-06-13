@@ -3,9 +3,12 @@
 \name{F_objective}
 \alias{F_objective}
 \alias{as.F_objective}
+\alias{terms.F_objective}
 \title{General (Nonlinear) Objective Function}
 \usage{
 F_objective(F, n, G = NULL)
+
+\method{terms}{F_objective}(x, ...)
 
 as.F_objective(x)
 }
@@ -17,6 +20,8 @@ as.F_objective(x)
 \item{G}{an R \code{"function"} returning the gradient at \code{x}.}
 
 \item{x}{an R object.}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \value{
 an object of class \code{"F_objective"} which inherits

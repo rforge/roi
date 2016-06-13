@@ -345,7 +345,6 @@ flatten_constraints <- function(x, message=NULL, domain=NULL) {
 ##' @title Half Vectorization
 ##' @description The utility function \code{vech} performs a
 ##'   half-vectorization on the given matrices.
-##'   \pkg{ROI} objects and is mainly used for testing purposes.
 ##' @param ... one or more matrices to be half-vectorized.
 ##' @return a matrix
 ##' @export

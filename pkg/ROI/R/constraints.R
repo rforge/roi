@@ -4,9 +4,30 @@
 ## Author:  Stefan Theussl
 ## Changed: 2016-05-20
 ################################################################################
-
 ## NOTE: probably support "range" constraints in order to improve efficiency
 ## (lhs ~ f(x) ~ rhs)
+
+## ---------------------------------------------------------
+##
+##  Constraint
+##  ==========
+##' @title constraint
+##' @description \pkg{ROI} distinguishes between 4 different 
+##'   types of constraint: 
+##'   \itemize{
+##'     \item No Constraint \code{\link{NO_constraint}} (inherits from \code{"constraint"})
+##'     \item Linear Constraint \code{\link{L_constraint}} (inherits from \code{"constraint"})
+##'     \item Quadratic Constraint \code{\link{Q_constraint}} (inherits from \code{"constraint"})
+##'     \item Function Constraint \code{\link{F_constraint}} (inherits from \code{"constraint"})
+##'   }
+##' @param x an object to be coerced or tested.
+##' @param \ldots objects to be combined.
+##' @param recursive a logical, giving if the arguments should be combined recursively.
+##' @name constraint (Constructors)
+##' @rdname ROI_constraint
+## ---------------------------------------------------------
+NULL
+
 
 ################################################################################
 ## 'constraints' helper functions
@@ -99,8 +120,7 @@ constraints.OP <- function( x ){
 ##' @param use.names a logical if \code{FALSE} the names of the constraints
 ##'   are ignored when combining them, if \code{TRUE} the constraints are
 ##'   combined based on their \code{variable.names}.
-##' @param recursive logical. Currently ignored (enable compatibility
-##' with \code{c()} operator).
+##' @param recursive a logical, if TRUE, rbind .
 ##' @return an object of a class depending on the input which also
 ##' inherits from \code{"constraint"}. See \bold{Details}.
 ##' @author Stefan Theussl
@@ -129,6 +149,10 @@ rbind.constraint <- function(..., use.names=FALSE, recursive=FALSE) {
     return( rbind_NO_constraint(constraints) )
 }
 
+##' @rdname ROI_constraint
+##' @export
+c.constraint <- function( ..., recursive = FALSE )
+    rbind( ..., recursive = recursive )
 
 ################################################################################
 ## No constraints (class 'NO_constraint')
@@ -234,18 +258,6 @@ length.NO_constraint <- function( x )
 ## Ax ~ b
 ################################################################################
 
-##' @noRd
-##' @export
-variable.names.Q_constraint <- function(object, ...) {
-    object$names
-}
-
-##' @noRd
-##' @export
-variable.names.L_constraint <- function(object, ...) {
-    object$names
-}
-
 ##' Linear constraints are typically of the form \eqn{Ax \leq b}.
 ##' \eqn{A} is a (sparse) matrix of coefficients to the objective
 ##' variables \eqn{x}. \eqn{b} is called the right hand side of the
@@ -287,6 +299,13 @@ L_constraint <- function( L, dir, rhs, names = NULL ) {
                     names = names),
               n_L_constraints = n_L_constraints,
               class = c("L_constraint", "Q_constraint", "constraint") )
+}
+
+##' @rdname L_constraint
+##' @param object ant R object.
+##' @export
+variable.names.L_constraint <- function(object, ...) {
+    object$names
 }
 
 ## Coerces objects of type \code{"L_constraint"}.
@@ -448,9 +467,11 @@ length.L_constraint <- function( x )
 
 ##' @noRd
 ##' @export
-str.L_constraint <- function(object, ...) {
-    class(object) <- sprintf("%s ", class(object))
-    str(object)
+##  c("n_constraints", "n_L_constraints", "n_Q_constraints", "n_F_constraints")
+str.constraint <- function(object, ...) {
+    i <- grep("n_.*constraints", names(attributes(qc)))
+    attributes(qc)[[i]] <- length(unclass(object))
+    str_default(object)
 }
 
 
@@ -568,6 +589,13 @@ Q_constraint <- function(Q, L, dir, rhs, names=NULL) {
                class = c("Q_constraint", "constraint") )
 }
 
+##' @rdname Q_constraint
+##' @param object ant R object.
+##' @export
+variable.names.Q_constraint <- function(object, ...) {
+    object$names
+}
+
 ##  Coerces objects of type \code{"Q_constraint"}.
 ## 
 ##  Objects from the following classes can be coerced to
@@ -649,6 +677,7 @@ rbind_Q_constraint <- function( constraints, use.names=FALSE) {
 c.Q_constraint <- function( ..., recursive = FALSE )
     rbind( ..., recursive = recursive )
 
+##' @rdname Q_constraint
 length.Q_constraint <- function(x)
     attr(x, "n_Q_constraints")
 
@@ -668,8 +697,7 @@ length.Q_constraint <- function(x)
 ##'   and \code{"ncol"} which will create a \code{"simple_triplet_zero_matrix"}
 ##'   with the specified dimension.
 ##' @param x an R object.
-##' @param ... further arguments passed to or from other methods
-##' (currently ignored).
+##' @param ... further arguments
 ##' @return an object of class \code{"simple_triplet_zero_matrix"}
 ##' @export
 as.Q_term <- function(x, ...)
@@ -846,12 +874,13 @@ as.rhs.numeric <- identity
 as.rhs.NULL <- function( x )
     numeric(0)
 
-##' Coerces objects of type \code{"constraint"}.
-##'
-##' @title Constraint Utilities
-##' @param x an R object.
-##' @return an object inheriting from \code{"constraint"}.
-##' @author Stefan Theussl
+##  Coerces objects of type \code{"constraint"}.
+## 
+##  @title Constraint Utilities
+##  @param x an R object.
+##  @return an object inheriting from \code{"constraint"}.
+##  @author Stefan Theussl
+##' @rdname ROI_constraint
 ##' @export
 as.constraint <- function( x )
     UseMethod("as.constraint")
@@ -878,6 +907,10 @@ as.constraint.F_constraint <- identity
 as.constraint.numeric <- function( x )
     as.L_constraint( x )
 
+##' @rdname ROI_constraint
+##' @export
+is.constraint <- function(x) inherits(x, "constraint")
+
 ##' @noRd
 ##' @export
 print.constraint <- function( x, ... ){
@@ -896,7 +929,7 @@ print.constraint <- function( x, ... ){
     invisible(x)
 }
 
-##' @noRd
+##' @rdname ROI_constraint
 ##' @export
 dim.constraint <- function( x ){
     ## FIXME: we should actually save both dimensions in constraint object
@@ -912,23 +945,22 @@ dim.constraint <- function( x ){
     out
 }
 
-
 ## ---------------------------
 ## terms
 ## ---------------------------
-##' @noRd
+##' @rdname L_constraint
 ##' @export
 terms.L_constraint <- function( x, ... ) {
     list( L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
 }
 
-##' @noRd
+##' @rdname Q_constraint
 ##' @export
 terms.Q_constraint <- function( x, ... ) {
     list( Q = x$Q, L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
 }
     
-##' @noRd
+##' @rdname F_constraint
 ##' @export
 terms.F_constraint <- function( x, ... ) {
     list( F = x$F, G = x$J, dir=x$dir, rhs=x$rhs )
@@ -941,17 +973,14 @@ terms.F_constraint <- function( x, ... ) {
 ##' @noRd
 ##' @export
 as.function.constraint <- function(x, ...) {
-    if( inherits(x, "L_constraint") ) {
-        return( as_function_L_constraint(x, ...) )
-    }
-    if( inherits(x, "Q_constraint") ) {
-        return( as_function_Q_constraint(x, ...) )
-    }
-    stop("not implemented")
+    if ( inherits(x, "L_constraint") ) return(as_function_L_constraint(x, ...))
+    if ( inherits(x, "Q_constraint") ) return(as_function_Q_constraint(x, ...))
+    if ( inherits(x, "F_constraint") )
+    stop("'x' must be of type L_constraint, Q_constraint or F_constraint, was ", shQuote(typeof(x)))
 }
 
 as_function_L_constraint <- function( x, ... ) {
-    fun <- function(L) {        
+    fun <- function(L_row_i) {        
         f <- function(x) c(tcrossprod(L_row_i, t(x)))
         class(f) <- c(class(f), class(x))
         return(f)
@@ -992,10 +1021,9 @@ as.F_constraint.NULL <- function(x, ...) x
 ##' @rdname F_constraint
 ##' @export
 as.F_constraint.constraint <- function(x, ...) {
-    if( inherits(x, "Q_constraint") )
+    if ( inherits(x, "Q_constraint") ) 
         return( F_constraint(as.function(x), x$dir, x$rhs, J(x)) )
-    if( inherits(x, "F_constraint") )
-        return( x )
-    stop("not implemented")
+    if ( inherits(x, "F_constraint") ) return( x )
+    stop("'x' must be of type L_constraint, Q_constraint or F_constraint, was ", shQuote(typeof(x)))
 }
 

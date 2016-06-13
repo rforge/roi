@@ -5,15 +5,21 @@
 \alias{as.L_constraint}
 \alias{is.L_constraint}
 \alias{length.L_constraint}
+\alias{terms.L_constraint}
+\alias{variable.names.L_constraint}
 \title{Linear Constraints}
 \usage{
 L_constraint(L, dir, rhs, names = NULL)
+
+\method{variable.names}{L_constraint}(object, ...)
 
 as.L_constraint(x, ...)
 
 is.L_constraint(x)
 
 \method{length}{L_constraint}(x)
+
+\method{terms}{L_constraint}(x, ...)
 }
 \arguments{
 \item{L}{a numeric vector of length \eqn{n} (a single constraint)
@@ -31,10 +37,12 @@ constraints. Each element must be one of \code{"<"}, \code{"<="},
 
 \item{names}{an optional character vector giving the names of the \eqn{A} matrix.}
 
-\item{x}{an R object.}
+\item{object}{ant R object.}
 
 \item{...}{further arguments passed to or from other methods
 (currently ignored).}
+
+\item{x}{an R object.}
 }
 \value{
 an object of class \code{"L_constraint"} which inherits

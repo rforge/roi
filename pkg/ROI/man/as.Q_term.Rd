@@ -24,8 +24,7 @@ as.Q_term(x, ...)
 \arguments{
 \item{x}{an R object.}
 
-\item{...}{further arguments passed to or from other methods
-(currently ignored).}
+\item{...}{further arguments}
 }
 \value{
 an object of class \code{"simple_triplet_zero_matrix"}

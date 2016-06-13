@@ -4,13 +4,22 @@
 \alias{Q_constraint}
 \alias{as.Q_constraint}
 \alias{is.Q_constraint}
+\alias{length.Q_constraint}
+\alias{terms.Q_constraint}
+\alias{variable.names.Q_constraint}
 \title{Quadratic Constraints}
 \usage{
 Q_constraint(Q, L, dir, rhs, names = NULL)
 
+\method{variable.names}{Q_constraint}(object, ...)
+
 as.Q_constraint(x)
 
 is.Q_constraint(x)
+
+\method{length}{Q_constraint}(x)
+
+\method{terms}{Q_constraint}(x, ...)
 }
 \arguments{
 \item{Q}{a list of (sparse) matrices representing the quadratic
@@ -32,10 +41,12 @@ constraints.}
 
 \item{names}{an optional character vector giving the names of the \eqn{A} matrix.}
 
-\item{x}{an R object.}
+\item{object}{ant R object.}
 
 \item{...}{further arguments passed to or from other methods
 (currently ignored).}
+
+\item{x}{an R object.}
 }
 \value{
 an object of class \code{"Q_constraint"} which inherits

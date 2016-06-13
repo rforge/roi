@@ -14,7 +14,8 @@ Depends:
 Imports:
     methods,
     registry,
-    slam
+    slam,
+    utils
 Suggests:
     ROI.plugin.glpk,
     ROI.plugin.symphony,

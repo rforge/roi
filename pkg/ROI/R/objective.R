@@ -70,7 +70,7 @@ as.objective.function <- function( x ){
         return( as.L_objective( x ) )
     if( inherits(x, "F_objective", which = TRUE) == 2 )
         return( as.F_objective( x ) )
-    stop( "not implemented." )
+    stop("'x' must be of type L_objective, Q_objective or F_objective, was ", shQuote(typeof(x)))
 }
 
 ##' @noRd
@@ -91,15 +91,17 @@ length.objective <- function( x ) attr( as.objective(x), "nobj" )
     as.numeric(as.matrix(terms(x)$L[1, i]))
 }
 
-##  NOTE: Since we override the length of the objective the str function which relies on length,
-##        doesn't work anymore. The easy fix is to reimplement str.objective where I alter the
-##        class by adding a space at the end of the class.
-## noRd
-## export
-## str.objective <- function(object, ...) {
-##     class(object) <- sprintf("%s ", class(object))
-##     str(object)
-## }
+str_default <- function(object, ...) getNamespace("utils")$str.default(object, ...)
+
+##  NOTE: Since we override the length of the objective the str function which 
+##        relies on length, doesn't work anymore.
+##' @noRd
+##' @export
+str.objective <- function(object, ...) {
+    attributes(object)$nobj <- length(unclass(object))
+    str_default(object)
+}
+
 
 ##' @noRd
 ##' @export
@@ -112,22 +114,6 @@ terms.function <- function( x, ... ){
         return( terms(as.F_objective(x)) )
     NA
 }
-
-##' @noRd
-##' @export
-terms.L_objective <- function( x, ... )
-  list( L = x$L )
-
-##' @noRd
-##' @export
-terms.Q_objective <- function( x, ... )
-  list( Q = x$Q, L = x$L )
-
-##' @noRd
-##' @export
-terms.F_objective <- function( x, ... )
-    list( F = x$F, G = x$G )
-
 
 
 ###############################################################
@@ -166,6 +152,13 @@ as.function.L_objective <- function( x, ... ){
   class(out) <- c(class(out), class(x))
   out
 }
+
+##' @rdname L_objective
+##' @param ... further arguments passed to or from other methods
+##' @export
+terms.L_objective <- function( x, ... )
+  list( L = x$L )
+
 
 ##  Coerces objects of type \code{"L_objective"}.
 ##
@@ -222,7 +215,7 @@ as.L_objective.function <- function( x ){
 ###############################################################
 
 ##' A quadratic objective function is typically of the form
-##' \eqn{x^\top Qx + 1/2 c^\top x} where \eqn{Q} is a (sparse) matrix
+##' \eqn{\frac{1}{2} x^\top Qx + c^\top x} where \eqn{Q} is a (sparse) matrix
 ##' defining the quadratic part of the function and \eqn{c} is a
 ##' (sparse) vector of coefficients to the \eqn{n} defining the linear
 ##' part.
@@ -266,6 +259,12 @@ as.function.Q_objective <- function( x, ... ){
   class(out) <- c(class(out), class(x))
   out
 }
+
+##' @rdname Q_objective
+##' @param ... further arguments passed to or from other methods
+##' @export
+terms.Q_objective <- function( x, ... )
+  list( Q = x$Q, L = x$L )
 
 ##  Coerces objects of type \code{"Q_objective"}.
 ##
@@ -352,6 +351,12 @@ as.function.F_objective <- function( x, ... ){
     class(out) <- c(class(out), class(x))
     out
 }
+
+##' @rdname F_objective
+##' @param ... further arguments passed to or from other methods
+##' @export
+terms.F_objective <- function( x, ... )
+    list( F = x$F, G = x$G )
 
 ##  Coerces objects of type \code{"F_objective"}.
 ##

@@ -1,20 +1,22 @@
 ## ---------------------------------------------------------
 ##
-##  Bounds
-##  ======
-##' @title Bounds
+##  bound
+##  =====
+##' @title bound
 ##' @description \pkg{ROI} distinguishes between 3 different 
 ##'   types of bounds: 
 ##'   \itemize{
 ##'   	\item No Bounds \code{NO_bound} 
-##'   	\item Variable Bounds \code{\link{V_bound}}
-##'   	\item Conic Bounds \code{\link{C_bound}}
+##'   	\item Variable Bounds \code{\link{V_bound}} (inherits from \code{"bound"})
+##'   	\item Conic Bounds \code{\link{C_bound}} (inherits from \code{"bound"})
 ##'   }
+##' @param x object to be tested
+##' @param \ldots arguments (inheriting from bound) to be combined
 ##' @details \pkg{ROI} provides the methods \code{\link{V_bound}} and 
 ##'   \code{\link{C_bound}} to be used as constructors for the corresponding bounds.
 ##'   \code{NO_bound} is not explicitly implemented but represented by \code{NULL}.
-##' @name Bounds (Constructor)
-##' @rdname ROI_Bounds
+##' @name bound (Constructors)
+##' @rdname ROI_bound
 ## ---------------------------------------------------------
 NULL
 
@@ -75,9 +77,13 @@ c_2_bounds <- function(x, y) {
     return(z)
 }   
 
-##' @noRd
+##' @rdname ROI_bound
 ##' @export
 c.bound <- function(...)  structure(Reduce(c_2_bounds, list(...)), class="bound")
+
+##' @rdname ROI_bound
+##' @export
+is.bound <- function(x) inherits(x, "bound")
 
 ##' @noRd
 ##' @export
@@ -88,14 +94,6 @@ print.bound <- function(x, ...){
         print.C_bound(x, ...)
     }
 }
-
-##' @noRd
-##' @export
-c.V_bound <- c.bound
-
-##' @noRd
-##' @export
-c.C_bound <- c.bound
 
 ################################################################################
 ## 'bounds'
@@ -116,6 +114,7 @@ c.C_bound <- c.bound
 ##' @param ub a numeric vector with upper bounds.
 ##' @param nobj an integer representing the number of objective variables
 ##' @param x object to be coerced or tested.
+##' @param \ldots objects to be combined.
 ##' @return An S3 object of class \code{"V_bound"} containing lower and
 ##' upper bounds of the objective variables.
 ##' @examples
@@ -170,6 +169,10 @@ V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
                     nobj = as.integer(nobj)),
               class = c("V_bound", "bound") )
 }
+
+##' @rdname V_bound
+##' @export
+c.V_bound <- c.bound
 
 ##  V_bound
 ##
@@ -226,7 +229,7 @@ print.V_bound <- function(x, ...){
 ##'   (normally \code{'\link{V_bound}'} or \code{'\link{C_bound}'}).
 ##' @return the extracted bounds object on get and the altered \code{'\link{OP}'}
 ##'   object on set.
-##' @name Bounds (Set/Get)
+##' @name bounds (Set/Get)
 ##' @rdname Bounds_Accessor_Mutator
 ##' @examples
 ##' \dontrun{
@@ -314,11 +317,28 @@ bounds.OP <- function( x ) x$bounds
 ## ---------------------------------------------------------
 ##' @title Conic Bounds
 ##' @description Construct a conic bounds object.
-##' @param ... arguments which give the row index in the A matrix.
+##' @details 
+##'   The \pkg{ROI} cone formulation sticks closely to the formulation
+##'   used by the solvers CVXOPT, ECOS and SCS.
+##'   \deqn{minimize \ c^\top x \ \ \ s.t. \ A x + s  = b \ \ \ s \in K \ \ x \in R^n}
+##' @references 
+##'   \code{[CVXOPT]}  Andersen, Martin S and Dahl, Joachim and Vandenberghe, Lieven (2016)
+##'   CVXOPT: A Python package for convex optimization, version 1.1.8,
+##'   \url{http://cvxopt.org/}
+##'   \cr \cr
+##'   \code{[ECOS]}  Domahidi, A. and Chu, E. and Boyd, S. (2013) 
+##'   {ECOS}: {A}n {SOCP} solver for embedded systems. 
+##'   European Control Conference (ECC), 3071-3076
+##'   \cr \cr
+##'   \code{[SCS]}  O'Donoghue, Brendan and Chu, Eric and Parikh, Neal and Boyd, Stephen (2016)
+##'   Conic Optimization via Operator Splitting and Homogeneous Self-Dual Embedding
+##'   Journal of Optimization Theory and Applications, 1-27
+##' @param ... arguments which give the row index in the A matrix or 
+##'   objects to be combined.
 ##' @param type an character giving the type of the bound, 
 ##'   valid types are \code{"free"}, \code{"nonneg"}, \code{"soc"}, \code{"psd"}, 
 ##'   \code{"expp"}, \code{"expd"}, \code{"powp"} and \code{"powd"}.
-##' @param x object to be coerced or tested.
+##' @param x an object to be coerced or tested.
 ##' @return An S3 object of class \code{"C_bound"} containing the conic
 ##'         bounds.
 ##' @examples
@@ -364,6 +384,11 @@ C_bound <- function(..., type=c("free", "nonneg", "soc", "psd", "expp", "expd", 
     }
     return( structure(list(cones=x), class=c("C_bound", "bound")) )
 }
+
+##' @rdname C_bound
+##' @export
+c.C_bound <- c.bound
+
 
 ##' @noRd
 ##' @export

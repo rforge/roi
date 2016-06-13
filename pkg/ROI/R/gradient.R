@@ -30,6 +30,7 @@ G.F_objective <- function( x, ... ){
     stopifnot( is.function(g) )
     g
 }
+
 ##' @noRd
 ##' @export
 ##' @noRd

@@ -3,10 +3,13 @@
 \name{V_bound}
 \alias{V_bound}
 \alias{as.V_bound}
+\alias{c.V_bound}
 \alias{is.V_bound}
 \title{Objective Variable Bounds}
 \usage{
 V_bound(li, ui, lb, ub, nobj = max(li, ui))
+
+\method{c}{V_bound}(...)
 
 as.V_bound(x)
 
@@ -26,6 +29,8 @@ is.V_bound(x)
 \item{nobj}{an integer representing the number of objective variables}
 
 \item{x}{object to be coerced or tested.}
+
+\item{\ldots}{objects to be combined.}
 }
 \value{
 An S3 object of class \code{"V_bound"} containing lower and

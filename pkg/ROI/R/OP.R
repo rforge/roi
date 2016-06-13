@@ -141,7 +141,6 @@ print.OP <- function(x, ...){
     }
 }
 
-## FIXME: \code{"NULL"} not supported (represents an empty optimization problem)
 ##  Coerces objects of type \code{"OP"}.
 ## 
 ##  Objects from the following classes can be coerced to \code{"OP"}:

@@ -6,11 +6,14 @@
 \alias{as.F_constraint.NULL}
 \alias{as.F_constraint.constraint}
 \alias{is.F_constraint}
+\alias{terms.F_constraint}
 \title{Function Constraints}
 \usage{
 F_constraint(F, dir, rhs, J = NULL)
 
 is.F_constraint(x)
+
+\method{terms}{F_constraint}(x, ...)
 
 as.F_constraint(x, ...)
 

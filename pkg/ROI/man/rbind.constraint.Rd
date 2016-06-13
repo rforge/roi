@@ -13,8 +13,7 @@ rbind.constraint(..., use.names = FALSE, recursive = FALSE)
 are ignored when combining them, if \code{TRUE} the constraints are
 combined based on their \code{variable.names}.}
 
-\item{recursive}{logical. Currently ignored (enable compatibility
-with \code{c()} operator).}
+\item{recursive}{a logical, if TRUE, rbind .}
 }
 \value{
 an object of a class depending on the input which also

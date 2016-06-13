@@ -81,8 +81,10 @@ ROI_translate <- function( control, solver ){
 ##' @return NULL
 ##' @examples
 ##' \dontrun{
-##' .ROI_plugin_add_status_code_to_db("ecos", 0L, "ECOS_OPTIMAL", "Optimal solution found.", 0L)
+##' solver <- "ecos"
+##' .ROI_plugin_add_status_code_to_db(solver, 0L, "ECOS_OPTIMAL", "Optimal solution found.", 0L)
 ##' .ROI_plugin_add_status_code_to_db(solver, -7L, "ECOS_FATAL", "Unknown problem in solver.", 1L)
+##' solver <- "glpk"
 ##' .ROI_plugin_add_status_code_to_db(solver, 5L, "GLP_OPT", "Solution is optimal.", 0L)
 ##' .ROI_plugin_add_status_code_to_db(solver, 1L, "GLP_UNDEF", "Solution is undefined.", 1L)
 ##' }
@@ -165,25 +167,26 @@ ROI_required_signature <- function()
 ##' @family plugin functions
 ##' @rdname ROI_plugin_make_signature
 ##' @export
-.ROI_plugin_make_signature <- function(...){
+.ROI_plugin_make_signature <- function(...){    
     dotargs <- list(...)
     required <- ROI_required_signature() ## names(formals(OP))
     if( length(dotargs) < 2 )
         stop( sprintf("Signature element for '%s' and '%s' need to be given.",
                       required[1], required[2]) )
     length(dotargs) <- length(required)
-    if( is.null(names(dotargs)) )
+    if( is.null(names(dotargs)) ) {
         names(dotargs) <- required
-    else {
+    } else {
         nam <- names(dotargs)
         nam[nam == ""] <- required[!(required %in% nam)]
         names(dotargs) <- nam
     }
     stopifnot( all(names(dotargs) %in% required) )
 
-    ## FIXME: handle NULL case
-    #.sort_types(unique(dotargs$types))
-    #out <- dotargs[ names(dotargs)[-which(names(dotargs) == "types")] ]
+    signature_default <- list(objective="L", constraints="L", types="C", bounds="C", 
+                              cones="free", maximum=FALSE)
+    set_defaults <- function(name, x) if (is.null(x)) signature_default[[name]] else x
+    dotargs <- mapply(set_defaults, names(dotargs), dotargs, SIMPLIFY=FALSE)
 
     dotargs <- lapply(dotargs, function(x) if( is.null(x) ) FALSE else x)
     .make_signature(do.call(ROI_expand, dotargs))
@@ -191,13 +194,16 @@ ROI_required_signature <- function()
 
 .make_signature <- function( x ){
     required <- ROI_required_signature()
+    m <- match(colnames(x), required)
+    x <- x[,m]
     if ( !identical(colnames(x), required) ) {
         ## hint <- "It seems, the signature is missing the entries or has to much entries!"
         hint1 <- sprintf("Required entries are: '%s'", paste(required, collapse="', '"))
         hint2 <- sprintf("Given entries are: '%s'", paste(colnames(x), collapse="', '"))
         hint <- sprintf("%s\n\t%s", hint1, hint2)
-        error( "MISSPECIFIED_SIGNATURE", "The signature doesn't match the required signature!",
-               ".make_signature", hint=hint, call=NULL )
+        msg <- "The signature doesn't match the required signature!"
+        msg <- sprintf("%s\n\t%s", msg, hint)
+        error( "MISSPECIFIED_SIGNATURE", msg, ".make_signature", call=NULL )
     }
     types <- strsplit(as.character(x[["types"]]), "")
     types <- do.call(rbind, lapply( types, function(t) available_types() %in% t) )

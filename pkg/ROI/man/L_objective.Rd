@@ -3,9 +3,12 @@
 \name{L_objective}
 \alias{L_objective}
 \alias{as.L_objective}
+\alias{terms.L_objective}
 \title{Linear Objective Function}
 \usage{
 L_objective(L)
+
+\method{terms}{L_objective}(x, ...)
 
 as.L_objective(x)
 }
@@ -16,6 +19,8 @@ where \eqn{n} is the number of objective variables. Names will be
 preserved and used e.g., in the print method.}
 
 \item{x}{an R object.}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \value{
 an object of class \code{"L_objective"} which inherits
