@@ -96,6 +96,12 @@ solve_OP <- function( x, control ){
     .ROI_plugin_register_solver_control( solver,
                                         "verbose",
                                         "verbose" )
+    .ROI_plugin_register_solver_control( solver,
+                                        "presolve",
+                                        "presolve" )
+    .ROI_plugin_register_solver_control( solver,
+                                        "tm_limit",
+                                        "max_time" )
     invisible( TRUE )
 }
 

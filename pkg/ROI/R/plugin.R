@@ -37,8 +37,10 @@
 ROI_available_solver_controls <- function(){
     c( "X",                ## no corresponding ROI control
        "verbose",          ## LOGICAL: turn on/off solver output on terminal
+       "presolve",         ## LOGICAL: turn on/off presolve
        "verbosity_level",  ## INTEGER: level of output
        "max_iter",         ## INTEGER: maximum number of iterations
+       "max_time",         ## INTEGER: maximum time spent solving the problem in milliseconds before abort is triggered
        "tol",              ## NUMERIC: tolerance of termination criterion
        "method",           ## CHARACTER: giving the algorithm
        "start"             ## NUMERIC: a numeric vector giving the start values
@@ -167,7 +169,7 @@ ROI_required_signature <- function()
 ##' @family plugin functions
 ##' @rdname ROI_plugin_make_signature
 ##' @export
-.ROI_plugin_make_signature <- function(...){    
+.ROI_plugin_make_signature <- function(...){
     dotargs <- list(...)
     required <- ROI_required_signature() ## names(formals(OP))
     if( length(dotargs) < 2 )
@@ -183,7 +185,7 @@ ROI_required_signature <- function()
     }
     stopifnot( all(names(dotargs) %in% required) )
 
-    signature_default <- list(objective="L", constraints="L", types="C", bounds="C", 
+    signature_default <- list(objective="L", constraints="L", types="C", bounds="C",
                               cones="free", maximum=FALSE)
     set_defaults <- function(name, x) if (is.null(x)) signature_default[[name]] else x
     dotargs <- mapply(set_defaults, names(dotargs), dotargs, SIMPLIFY=FALSE)
