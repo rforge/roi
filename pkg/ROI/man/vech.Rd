@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{vech}
 \alias{vech}
-\title{Half Vectorization}
+\title{Half-Vectorization}
 \usage{
 vech(...)
 }

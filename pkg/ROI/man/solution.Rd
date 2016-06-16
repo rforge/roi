@@ -9,7 +9,7 @@ solution(x, type = c("primal", "dual", "aux", "psd", "msg"))
 \arguments{
 \item{x}{an object of type \code{'OP_solution'}.}
 
-\item{type}{sdfdf}
+\item{type}{a character giving the name of the solution to be extracted.}
 }
 \value{
 the extracted solution.

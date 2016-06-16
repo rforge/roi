@@ -17,7 +17,7 @@
 ##' @title Extract Solution
 ##' @description The solution can be accessed via the method \code{'solution'}.
 ##' @param x an object of type \code{'OP_solution'}.
-##' @param type sdfdf
+##' @param type a character giving the name of the solution to be extracted.
 ##' @return the extracted solution.
 ##' @export
 solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg")) {

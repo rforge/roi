@@ -765,7 +765,7 @@ as.Q_term.NULL <- function( x, ... ) {
 ##' @title Function Constraints
 ##' @param F a \code{function} or a list of \code{function}s of length
 ##' \eqn{m}. Each \code{function} takes \eqn{n} parameters as input
-##' and must return a skalar. Thus, \eqn{n} is the number of objective
+##' and must return a scalar. Thus, \eqn{n} is the number of objective
 ##' variables and \eqn{m} is the number of constraints.
 ##' @param dir a character vector with the directions of the
 ##' constraints. Each element must be one of \code{"<"}, \code{"<="},
@@ -823,7 +823,7 @@ as.J_term.list     <- function(x, ...) {
     if ( inherits(x, "jacobian") )
         return(x)
     if ( !all(sapply(x, is.function)) )
-        stop("TYPE_MISMATCH J has to be a function or a list of funtions")
+        stop("TYPE_MISMATCH J has to be a function or a list of functions")
     class(x) <- c(class(x), "jacobian")
     return(x)
 }

@@ -354,7 +354,7 @@ C_bound <- function(..., type=c("free", "nonneg", "soc", "psd", "expp", "expd", 
         x <- c(...)
         if ( type %in% c("soc", "psd", "expp", "expd") ) {
             if ( !all(sapply(x, is.numeric)) )
-            stop("type missmatch a vector of type integer or numeric or a list ",
+            stop("type mismatch a vector of type integer or numeric or a list ",
                  "of numeric vectors is required  ", 
                  "to create conic bounds of type '", type, "'!")
             if ( is.list(x) ) {
@@ -365,7 +365,7 @@ C_bound <- function(..., type=c("free", "nonneg", "soc", "psd", "expp", "expd", 
             x <- setNames(list(x), type)
         } else {
             if ( !is.numeric(x) )
-            stop("type missmatch a vector of type integer or numeric is required",
+            stop("type mismatch a vector of type integer or numeric is required",
                  " to create conic bounds of type '", type, "'!")
             x <- setNames(list(as.integer(x)), type)
         }

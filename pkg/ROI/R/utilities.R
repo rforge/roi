@@ -340,9 +340,9 @@ flatten_constraints <- function(x, message=NULL, domain=NULL) {
 }
 
 ##  -----------------------------------------------------------
-##  vech (TODO: this could be done nicer!)
+##  vech
 ##  ====
-##' @title Half Vectorization
+##' @title Half-Vectorization
 ##' @description The utility function \code{vech} performs a
 ##'   half-vectorization on the given matrices.
 ##' @param ... one or more matrices to be half-vectorized.

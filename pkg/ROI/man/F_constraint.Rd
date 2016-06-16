@@ -24,7 +24,7 @@ as.F_constraint(x, ...)
 \arguments{
 \item{F}{a \code{function} or a list of \code{function}s of length
 \eqn{m}. Each \code{function} takes \eqn{n} parameters as input
-and must return a skalar. Thus, \eqn{n} is the number of objective
+and must return a scalar. Thus, \eqn{n} is the number of objective
 variables and \eqn{m} is the number of constraints.}
 
 \item{dir}{a character vector with the directions of the
