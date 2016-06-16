@@ -133,7 +133,7 @@ solve_OP <- function(x, control=list()){
         obj <- c(obj, rep.int(0L, ncol(cxL) - length(obj)))
     }
     if (length(b) != sum(c(length(rowsA), length(rowsG)))) ## this shouldn't happen
-        stop("LENGTH_MISSMATCH in 'ROI.plugin.scs$solve_OP'\n",
+        stop("LENGTH_MISMATCH in 'ROI.plugin.scs$solve_OP'\n",
              "\tthe dimensions of the 'rhs' and it's permutation vector don't match!")
 
     if ( x$maximum ) obj <- -obj
