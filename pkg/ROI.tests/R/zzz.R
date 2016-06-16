@@ -19,7 +19,8 @@
 
     ## QO-LC
     register_test(mksig("Q", "L", "C", "V", "free", FALSE), "QP-01", test_qp_01)
-
+    register_test(mksig("Q", "L", "C", "V", "free", FALSE), "QP-02", test_qp_02)
+    
     ## QO-QC
     register_test(mksig("Q", "Q", "C", "V", "free", FALSE), "QCQP-01", test_qcqp_01)
 

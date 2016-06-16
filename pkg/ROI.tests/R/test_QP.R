@@ -39,3 +39,27 @@ test_qp_01 <- function(solver) {
     check("QP-01@02", equal(opt$objval, -2.38095238095238) )
 
 }
+
+## This Test detects non-conform objective functions.
+## minimize 0.5 x^2 - 2 x + y
+## s.t. x <= 3
+## Type 1:   0.5 x'Qx + c'Lx => c(2, 0)  objval=-2
+## Type 2:       x'Qx + c'Lx => c(3, 0)  objval=-3.75
+test_qp_02 <- function(solver) {
+
+    zero <- .Machine$double.eps * 100
+    qo <- Q_objective(Q=rbind(c(1, 0), c(0, zero)), L=c(-2, 1))
+    lc1 <- L_constraint(L=matrix(c(1, 0), nrow=1), dir="<=", rhs=3)
+    lc2 <- L_constraint(L=matrix(c(1, 0), nrow=1), dir=">=", rhs=0)
+    x <- OP(qo, c(lc1, lc2))
+
+    opt <- ROI_solve(x, solver=solver)
+    solution <- c(2, 0)
+    check("QP-02@01", equal(opt$solution, solution) )
+    check("QP-02@02", equal(opt$objval, -2) )
+
+}
+
+
+
+

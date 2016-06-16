@@ -11,8 +11,6 @@ test_solver("glpk")
 test_solver("quadprog")
 test_solver("ipop")
 test_solver("symphony")
-
-
 test_solver("nloptr")
 
 ROI_registered_solvers()
