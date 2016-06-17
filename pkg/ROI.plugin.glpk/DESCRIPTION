@@ -1,5 +1,5 @@
 Package: ROI.plugin.glpk
-Version: 0.2-1
+Version: 0.2-2
 Date: 2016-06-17
 Title: ROI Plug-in GLPK
 Authors@R: c(person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"))
