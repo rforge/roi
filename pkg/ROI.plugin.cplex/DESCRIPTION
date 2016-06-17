@@ -7,6 +7,6 @@ Description: Enhances the R Optimization Infrastructure (ROI) package by registe
 	     the CPLEX commercial solver. It allows for solving mixed integer quadratically
 	     constrained programming (MIQPQC) problems as well as all
 	     variants/combinations of LP, QP, QCP, IP.
-Imports: methods, ROI (>= 0.2-1), Rcplex, slam
+Imports: methods, ROI (>= 0.2-1), Rcplex (>= 0.3-3), slam
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
