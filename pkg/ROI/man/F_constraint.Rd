@@ -7,9 +7,12 @@
 \alias{as.F_constraint.constraint}
 \alias{is.F_constraint}
 \alias{terms.F_constraint}
+\alias{variable.names.F_constraint}
 \title{Function Constraints}
 \usage{
-F_constraint(F, dir, rhs, J = NULL)
+F_constraint(F, dir, rhs, J = NULL, names = NULL)
+
+\method{variable.names}{F_constraint}(object, ...)
 
 is.F_constraint(x)
 
@@ -33,6 +36,10 @@ constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}
 \item{rhs}{a numeric vector with the right hand side of the constraints.}
 
 \item{J}{an optional \code{function} holding the Jacobian of F.}
+
+\item{names}{an optional character vector giving the names of x.}
+
+\item{object}{an R object.}
 
 \item{x}{object to be tested.}
 

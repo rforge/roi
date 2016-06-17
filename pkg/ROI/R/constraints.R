@@ -302,7 +302,7 @@ L_constraint <- function( L, dir, rhs, names = NULL ) {
 }
 
 ##' @rdname L_constraint
-##' @param object ant R object.
+##' @param object an R object.
 ##' @export
 variable.names.L_constraint <- function(object, ...) {
     object$names
@@ -592,7 +592,7 @@ Q_constraint <- function(Q, L, dir, rhs, names=NULL) {
 }
 
 ##' @rdname Q_constraint
-##' @param object ant R object.
+##' @param object an R object.
 ##' @export
 variable.names.Q_constraint <- function(object, ...) {
     object$names
@@ -773,13 +773,14 @@ as.Q_term.NULL <- function( x, ... ) {
 ##' constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}.
 ##' @param rhs a numeric vector with the right hand side of the constraints.
 ##' @param J an optional \code{function} holding the Jacobian of F.
+##' @param names an optional character vector giving the names of x.
 ##' @param x object to be tested.
 ##' @param \ldots further arguments passed to or from other methods (currently ignored).
 ##' @return an object of class \code{"F_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
 ##' @export
-F_constraint <- function(F, dir, rhs, J=NULL){
+F_constraint <- function(F, dir, rhs, J=NULL, names=NULL){
     stopifnot( row_sense_is_feasible(dir) )
     stopifnot( (length(F) == length(J)) | is.null(J) )
     F     <- as.F_term( F )
@@ -793,9 +794,17 @@ F_constraint <- function(F, dir, rhs, J=NULL){
     structure( list(F   = F,
                     dir = dir,
                     rhs = rhs,
-                    J   = J),
+                    J   = J,
+                    names = names),
               n_F_constraints = n_F_constraints,
               class = c("F_constraint", "constraint"))
+}
+
+##' @rdname F_constraint
+##' @param object an R object.
+##' @export
+variable.names.F_constraint <- function(object, ...) {
+    object$names
 }
 
 as.F_term <- function(x, ...)

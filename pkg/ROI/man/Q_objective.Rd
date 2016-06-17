@@ -4,6 +4,7 @@
 \alias{Q_objective}
 \alias{as.Q_objective}
 \alias{terms.Q_objective}
+\alias{variable.names.Q_objective}
 \title{Quadratic Objective Function}
 \usage{
 Q_objective(Q, L = NULL, names = NULL)
@@ -11,6 +12,8 @@ Q_objective(Q, L = NULL, names = NULL)
 \method{terms}{Q_objective}(x, ...)
 
 as.Q_objective(x)
+
+\method{variable.names}{Q_objective}(object, ...)
 }
 \arguments{
 \item{Q}{a \eqn{n \times n} matrix with numeric entries representing the quadratic
@@ -26,6 +29,8 @@ number of objective variables.}
 \item{x}{an R object.}
 
 \item{...}{further arguments passed to or from other methods}
+
+\item{object}{an R object.}
 }
 \value{
 an object of class \code{"Q_objective"} which inherits

@@ -37,7 +37,7 @@ constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}
 \item{names}{an optional character vector giving the names of \eqn{x} 
 (column names of \eqn{A}).}
 
-\item{object}{ant R object.}
+\item{object}{an R object.}
 
 \item{...}{further arguments passed to or from other methods
 (currently ignored).}

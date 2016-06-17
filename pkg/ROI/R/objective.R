@@ -149,6 +149,7 @@ L_objective <- function( L, names = NULL ) {
 ##' @export
 as.function.L_objective <- function( x, ... ){
   L <- terms(x)[["L"]]
+  names <- terms(x)[["names"]]
   out <- function(x)
       structure( c(slam::tcrossprod_simple_triplet_matrix(L, t(x))), names = rownames(L) )
   class(out) <- c(class(out), class(x))
@@ -159,7 +160,7 @@ as.function.L_objective <- function( x, ... ){
 ##' @param ... further arguments passed to or from other methods
 ##' @export
 terms.L_objective <- function( x, ... )
-  list( L = x$L )
+  list( L = x$L, names = x$names )
 
 
 ##  Coerces objects of type \code{"L_objective"}.
@@ -207,7 +208,7 @@ as.L_objective.Q_objective <- function( x )
 as.L_objective.function <- function( x ){
     if( !inherits(x, "objective") )
         stop("'x' must be a function which inherits from 'objective'")
-    L_objective( get("L", environment(x)) )
+    L_objective( get("L", environment(x)), get("names", environment(x)) )
 }
 
 
@@ -257,6 +258,7 @@ as.function.Q_objective <- function( x, ... ){
       L <- slam::simple_triplet_zero_matrix(ncol = length(x), nrow = 1L)
 
   Q <- terms(x)[["Q"]]
+  names <- terms(x)[["names"]]
   ## FIXME: what about objective function names?
   out <- function(x)
       structure( c(slam::tcrossprod_simple_triplet_matrix(L, t(x)) + 0.5 * .xtQx(Q, x)), names = NULL )
@@ -268,7 +270,7 @@ as.function.Q_objective <- function( x, ... ){
 ##' @param ... further arguments passed to or from other methods
 ##' @export
 terms.Q_objective <- function( x, ... )
-  list( Q = x$Q, L = x$L )
+  list( Q = x$Q, L = x$L, names = x$names )
 
 ##  Coerces objects of type \code{"Q_objective"}.
 ##
@@ -290,9 +292,9 @@ as.Q_objective <- function( x )
 as.Q_objective.function <- function( x ){
   if( !inherits(x, "objective") )
     stop( "'x' must be a function which inherits from 'objective'" )
-  L_objective( get("L", environment(x)) )
   Q_objective( L = get("L", environment(x)),
-               Q = get("Q", environment(x)) )
+               Q = get("Q", environment(x)),
+               names = get("names", environment(x)) )
 }
 
 ##' @noRd
@@ -327,8 +329,7 @@ as.Q_objective.simple_triplet_matrix <- function( x )
 ##' @param F an R \code{"function"} taking a numeric vector \code{x} of length \eqn{n} as argument.
 ##' @param G an R \code{"function"} returning the gradient at \code{x}.
 ##' @param n the number of objective variables.
-##' @param names an optional character vector giving the names of \eqn{F}
-##         (\code{length(names)} should be equal to n).
+##' @param names an optional character vector giving the names of x.
 ##' @return an object of class \code{"F_objective"} which inherits
 ##' from \code{"objective"}.
 ##' @author Stefan Theussl
@@ -348,6 +349,7 @@ as.function.F_objective <- function( x, ... ){
     F <- x$F
     G <- x$G
     nobj <- attr(x, "nobj")
+    names <- terms(x)[["names"]]
     out <- function(x){
         F(x)
     }
@@ -360,7 +362,7 @@ as.function.F_objective <- function( x, ... ){
 ##' @param ... further arguments passed to or from other methods
 ##' @export
 terms.F_objective <- function( x, ... )
-    list( F = x$F, G = x$G )
+    list( F = x$F, G = x$G, names = x$names )
 
 ##  Coerces objects of type \code{"F_objective"}.
 ##
@@ -385,12 +387,12 @@ as.F_objective.F_objective <- function( x )
 ##' @noRd
 ##' @export
 as.F_objective.L_objective <- function( x )
-    F_objective( F = as.function(x), n = length(x), G = G(x) )
+    F_objective( F = as.function(x), n = length(x), G = G(x), names = variable.names(x) )
 
 ##' @noRd
 ##' @export
 as.F_objective.Q_objective <- function( x )
-  F_objective( F = as.function(x), n = length(x), G = G(x) )
+  F_objective( F = as.function(x), n = length(x), G = G(x), names = variable.names(x) )
 
 ##' @noRd
 ##' @export
@@ -398,9 +400,10 @@ as.F_objective.function <- function( x ){
     F <- get("F", environment(x))
     n <- get("nobj", environment(x))
     G <- get("G", environment(x))
+    names <- get("names", environment(x))
     if( !inherits(x, "objective") )
         stop("'x' must be a function which inherits from 'objective'")
-    F_objective( F = x, n = n, G = G )
+    F_objective( F = x, n = n, G = G, names = names )
 }
 
 .check_function_for_sanity <- function(F, n){
@@ -413,6 +416,40 @@ as.F_objective.function <- function( x ){
         stop("function 'F' does not return a numeric vector of length 1.")
     invisible( ans )
 }
+
+##' @rdname L_objective
+##' @param object an R object.
+##' @export
+variable.names.L_objective <- function(object, ...) {
+    object$names
+}
+
+##' @rdname Q_objective
+##' @param object an R object.
+##' @export
+variable.names.Q_objective <- function(object, ...) {
+    object$names
+}
+
+##' @rdname F_objective
+##' @param object an R object.
+##' @export
+variable.names.F_objective <- function(object, ...) {
+    object$names
+}
+
+##' @noRd
+##' @export
+variable.names.function <- function(object, ...) {
+    if ( inherits(object, "L_objective"))
+        return(as.L_objective(object)$names)
+    if ( inherits(object, "Q_objective"))
+        return(as.Q_objective(object)$names)
+    if ( inherits(object, "F_objective"))
+        return(as.F_objective(object)$names)
+    NULL
+}
+
 
 ## TODO:
 ##.check_gradient_for_sanity <- function(F, n){

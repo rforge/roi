@@ -4,6 +4,7 @@
 \alias{F_objective}
 \alias{as.F_objective}
 \alias{terms.F_objective}
+\alias{variable.names.F_objective}
 \title{General (Nonlinear) Objective Function}
 \usage{
 F_objective(F, n, G = NULL, names = NULL)
@@ -11,6 +12,8 @@ F_objective(F, n, G = NULL, names = NULL)
 \method{terms}{F_objective}(x, ...)
 
 as.F_objective(x)
+
+\method{variable.names}{F_objective}(object, ...)
 }
 \arguments{
 \item{F}{an R \code{"function"} taking a numeric vector \code{x} of length \eqn{n} as argument.}
@@ -19,11 +22,13 @@ as.F_objective(x)
 
 \item{G}{an R \code{"function"} returning the gradient at \code{x}.}
 
-\item{names}{an optional character vector giving the names of \eqn{F}}
+\item{names}{an optional character vector giving the names of x.}
 
 \item{x}{an R object.}
 
 \item{...}{further arguments passed to or from other methods}
+
+\item{object}{an R object.}
 }
 \value{
 an object of class \code{"F_objective"} which inherits

@@ -41,7 +41,7 @@ constraints.}
 \item{names}{an optional character vector giving the names of \eqn{x}
 (row/column names of \eqn{Q}, column names of \eqn{A}).}
 
-\item{object}{ant R object.}
+\item{object}{an R object.}
 
 \item{...}{further arguments passed to or from other methods
 (currently ignored).}

@@ -4,6 +4,7 @@
 \alias{L_objective}
 \alias{as.L_objective}
 \alias{terms.L_objective}
+\alias{variable.names.L_objective}
 \title{Linear Objective Function}
 \usage{
 L_objective(L, names = NULL)
@@ -11,6 +12,8 @@ L_objective(L, names = NULL)
 \method{terms}{L_objective}(x, ...)
 
 as.L_objective(x)
+
+\method{variable.names}{L_objective}(object, ...)
 }
 \arguments{
 \item{L}{a numeric vector of length \eqn{n} or an object of class
@@ -24,6 +27,8 @@ preserved and used e.g., in the print method.}
 \item{x}{an R object.}
 
 \item{...}{further arguments passed to or from other methods}
+
+\item{object}{an R object.}
 }
 \value{
 an object of class \code{"L_objective"} which inherits

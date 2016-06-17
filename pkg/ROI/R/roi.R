@@ -113,8 +113,19 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     out <- SOLVE( x, ROI_translate(control, solver) )
     if( control$verbose )
         writeLines( "<!SOLVER MSG> ----" )
-    if ( is.null(variable.names(constraints(x))) ) {
-        
+    if ( any(!c(is.null(variable.names(constraints(x))), is.null(variable.names(objective(x))))) ) {
+        if ( is.null(variable.names(constraints(x))) ) {
+            if ( length(out$solution) == length(variable.names(objective(x))) )
+                names(out$solution) <- variable.names(objective(x))
+        } else if ( is.null(variable.names(objective(x))) ) {
+            if ( length(out$solution) == length(variable.names(constraints(x))) )
+                names(out$solution) <- variable.names(constraints(x))
+        } else {
+            if ( identical(variable.names(objective(x)), variable.names(constraints(x))) & 
+                 (length(out$solution) == length(variable.names(objective(x)))) ) {
+                names(out$solution) <- variable.names(objective(x))
+            }
+        }
     }
     out
 }
