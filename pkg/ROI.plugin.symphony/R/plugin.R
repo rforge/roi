@@ -161,3 +161,30 @@ solve_OP <- function( x, control ){
                                 )
     invisible(TRUE)
 }
+
+## SOLVER CONTROLS
+.add_controls <- function(){
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    ## ROI + SYMPHONY
+    .ROI_plugin_register_solver_control( solver,
+                                        "presolve",
+                                        "presolve" )
+    .ROI_plugin_register_solver_control( solver,
+                                        "time_limit",
+                                        "max_time" )
+    ## SYMPHONY ONLY
+    ## FIXME: translation of verbosity level to verbose needed or how to set default level?
+    .ROI_plugin_register_solver_control( solver,
+                                        "verbosity",
+                                        "X" )
+    .ROI_plugin_register_solver_control( solver,
+                                         "node_limit",
+                                         "X" )
+    .ROI_plugin_register_solver_control( solver,
+                                         "gap_limit",
+                                         "X" )
+    .ROI_plugin_register_solver_control( solver,
+                                         "first_feasible",
+                                         "X" )
+    invisible( TRUE )
+}

@@ -65,7 +65,7 @@ get_ub <- function(x) {
     if( length(dir) > sum(idx_eq) )
         warning( "only equality constraints supported with nlminb, ignoring others." )
 
-    # Set Linear and Function Equality Constraints:
+    ## Set Linear and Function Equality Constraints:
     if ( any(idx_eq) ) {
         eqfun <- function(x){
             ans <- double(sum(idx_eq))
@@ -76,38 +76,37 @@ get_ub <- function(x) {
         eqfun <- NULL
     }
 
-    ## # Set Linear and Function Inequality Constraints:
+    ## TODO: Inequality Constraints (we assume that linear and quadratic terms have been coesced to F_constraints)
     ## if (!is.null(ineqA) || length(ineqFun) > 0) {
-    ##     leqfun <- function(x) {
-    ##         ans <- NULL
-    ##         if(!is.null(ineqA))
-    ##             ans <- c(ans, +ineqA %*% x - ineqA.upper)
-    ##         if(!is.null(ineqA))
-    ##             ans <- c(ans, -ineqA %*% x + ineqA.lower)
-    ##         if (length(ineqFun) > 0)
-    ##             for (i in 1:length(ineqFun))
-    ##                 ans <- c(ans, +ineqFun[[i]](x) - ineqFun.upper[i])
-    ##         if (length(ineqFun) > 0)
-    ##             for (i in 1:length(ineqFun))
-    ##                 ans <- c(ans, -ineqFun[[i]](x) + ineqFun.lower[i])
-    ##         return(as.double(eval(ans, env))) }
+    ## leqfun <- function(x) {
+    ##     ans <- NULL
+    ##     if( length(ineqFun) > 0 )
+    ##         for( i in 1:length(ineqFun) )
+    ##             ans <- c(ans, ineqFun[[i]](x) - ineqFun.upper[i])
+    ##     if (length(ineqFun) > 0)
+    ##         for (i in 1:length(ineqFun))
+    ##             ans <- c(ans, -ineqFun[[i]](x) + ineqFun.lower[i])
+    ##     return( as.double(eval(ans, env)) )
+    ##}
     ## } else {
         leqfun <- NULL
     ## }
 
     start <- control$start
-    control2[[ "start" ]] <- NULL
+    hessian <- control$hessian
+    control[[ "start" ]] <- NULL
+    control[[ "hessian" ]] <- NULL
 
     ## now run nlminb2 solver
     out <- nlminb2( start = start,
                     objective = objective(x),
                     eqFun = eqfun,
-                    leqFun = NULL, #FIXME: leqfun,
+                    leqFun = leqfun,
                     upper = ub,
                     lower = lb,
                     gradient = G(objective(x)),
-                    hessian = control$hessian,
-                   control = control )
+                    hessian = hessian,
+                    control = control )
     .ROI_plugin_canonicalize_solution( solution  = out$par,
                                        optimum   = objective(x)(out$solution),
                                        status    = out$convergence,
@@ -424,8 +423,8 @@ function(x)
 
 ## based on nloptr interface
 ROI_make_NLP_FXCV_signatures <- function()
-    .ROI_plugin_make_signature( objective   = c("L", "Q", "F"),
-                                constraints = c("X", "L", "Q", "F"),
+    .ROI_plugin_make_signature( objective   = c("F"), # FIXME: c("L", "Q", "F"),
+                                constraints = c("X", "F"), # FIXME: c("X", "L", "Q", "F"),
                                 types       = c("C"),
                                 bounds      = c("X", "V"),
                                 cones       = c("free"),
@@ -443,6 +442,7 @@ ROI_make_NLP_FXCV_signatures <- function()
     .ROI_plugin_register_solver_control( "nlminb", "rel.tol", "tol" )
     .ROI_plugin_register_solver_control( "nlminb", "start", "start" )
     ## nlminb only
+    .ROI_plugin_register_solver_control( "nlminb", "hessian", "X" )
     .ROI_plugin_register_solver_control( "nlminb", "eval.max", "X" )
     .ROI_plugin_register_solver_control( "nlminb", "abs.tol", "X" )
     .ROI_plugin_register_solver_control( "nlminb", "x.tol", "X" )

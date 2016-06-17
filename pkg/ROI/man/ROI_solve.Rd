@@ -45,7 +45,8 @@ g <- function(x) {
 b <- V_bound(li = 1:2, ui = 1:2, lb = c(-3, -3), ub = c(3, 3))
 op <- OP( objective = F_objective(f, n = 1L, G = g),
           bounds = b )
-
+res <- ROI_solve( op, solver = "nlminb", control = list(start = c( -1.2, 1 )) )
+solution( res )
 ## Portfolio optimization - minimum variance
 ## -----------------------------------------
 ## get monthly returns of 30 US stocks
@@ -61,7 +62,7 @@ op <- OP( objective = obj, constraints = full_invest )
 \dontrun{
 res <- ROI_solve( op )
 res
-sol <- res$solution
+sol <- solution( res )
 names( sol ) <- colnames( US30 )
 round( sol[ which(sol > 1/10^6) ], 3 )
 }

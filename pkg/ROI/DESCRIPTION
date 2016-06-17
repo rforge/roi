@@ -1,13 +1,13 @@
 Package: ROI
 Version: 0.2-1
-Date: 2016-05-20
+Date: 2016-06-17
 Title: R Optimization Infrastructure
 Authors@R: c( person("Kurt", "Hornik", role = "aut"),
               person("David", "Meyer", role = "aut"),
               person("Florian", "Schwendinger", role = "aut"),
               person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"),
               person("Diethelm", "Wuertz", role = "ctb") )
-Description: The R Optimization Infrastructure (ROI) provides a
+Description: The R Optimization Infrastructure (ROI) is a
     sophisticated framework for handling optimization problems in R.
 Depends:
 	R (>= 2.10)
@@ -21,6 +21,8 @@ Suggests:
     ROI.plugin.symphony,
     ROI.plugin.quadprog,
     numDeriv
+Enhances:
+   ROI.plugin.cplex
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
 RoxygenNote: 5.0.1
