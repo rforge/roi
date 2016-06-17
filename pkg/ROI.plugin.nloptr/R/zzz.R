@@ -16,11 +16,11 @@ ROI_make_NLP_FXCV_signatures <- function()
     .ROI_plugin_register_solver_control( solver, "xtol_rel", "tol" )
     .ROI_plugin_register_solver_control( solver, "algorithm", "method" )
     .ROI_plugin_register_solver_control( solver, "x0", "start" )
+    .ROI_plugin_register_solver_control( solver, "maxtime", "max_time" )
     .ROI_plugin_register_solver_control( solver, "stopval", "X" )
     .ROI_plugin_register_solver_control( solver, "ftol_rel", "X" )
     .ROI_plugin_register_solver_control( solver, "ftol_abs", "X" )
     .ROI_plugin_register_solver_control( solver, "xtol_abs", "X" )
-    .ROI_plugin_register_solver_control( solver, "maxtime", "X" )
     .ROI_plugin_register_solver_control( solver, "tol_constraints_ineq", "X" )
     .ROI_plugin_register_solver_control( solver, "tol_constraints_eq", "X" )
     .ROI_plugin_register_solver_control( solver, "print_level", "X" )
@@ -43,7 +43,7 @@ ROI_make_NLP_FXCV_signatures <- function()
         ##solver <- "nloptr"
         ##pkgname <- "ROI.plugin.nloptr"
         ## obj: F    constr: X    types: C    bounds: V
-        .ROI_plugin_register_solver_method( 
+        .ROI_plugin_register_solver_method(
             signatures = ROI_make_NLP_FXCV_signatures(),
             solver = solver,
             method = getFunction( "solve_nloptr", where = getNamespace(pkgname)) )
