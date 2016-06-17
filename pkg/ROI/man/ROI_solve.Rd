@@ -30,6 +30,22 @@ Solve a given optimization problem.  This function
     to solve the supplied optimization problem.
 }
 \examples{
+## Rosenbrock Banana Function
+## -----------------------------------------
+## objective
+f <- function(x) {
+   return( 100 * (x[2] - x[1] * x[1])^2 + (1 - x[1])^2 )
+}
+## gradient
+g <- function(x) {
+   return( c( -400 * x[1] * (x[2] - x[1] * x[1]) - 2 * (1 - x[1]),
+             200 * (x[2] - x[1] * x[1])) )
+}
+## bounds
+b <- V_bound(li = 1:2, ui = 1:2, lb = c(-3, -3), ub = c(3, 3))
+op <- OP( objective = F_objective(f, n = 1L, G = g),
+          bounds = b )
+
 ## Portfolio optimization - minimum variance
 ## -----------------------------------------
 ## get monthly returns of 30 US stocks

@@ -7,14 +7,14 @@
 ROI_options(option, value)
 }
 \arguments{
-\item{option}{any options can be defined, using 'key, value' pairs. 
-If 'value' is missing the current set value is returned for the given 'option'. 
+\item{option}{any options can be defined, using 'key, value' pairs.
+If 'value' is missing the current set value is returned for the given 'option'.
 If both are missing. all set options are returned.}
 
 \item{value}{the corresponding value to set for the given option.}
 }
 \description{
-Allow the user to set and examine a variety of ROI options like the default 
+Allow the user to set and examine a variety of ROI options like the default
 solver or the function used to compute the gradients.
 }
 

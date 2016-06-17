@@ -300,3 +300,75 @@ for(solver in qcpsolvers){
 }
 
 qcp_results
+
+## Example 8: NLP
+## Rosenbrock Banana objective function
+
+eval_f <- function(x) {
+    return( 100 * (x[2] - x[1] * x[1])^2 + (1 - x[1])^2 )
+}
+
+eval_grad_f <- function(x) {
+    return( c( -400 * x[1] * (x[2] - x[1] * x[1]) - 2 * (1 - x[1]),
+              200 * (x[2] - x[1] * x[1])) )
+}
+
+## initial values
+x0 <- c( -1.2, 1 )
+
+## lower and upper bounds
+lb <- c( -3, -3 )
+ub <- c(  3,  3 )
+
+control <- list(start = x0)
+
+ex8_nlp <- OP( objective = F_objective(eval_f, n = 1L, G = eval_grad_f),
+               bounds = V_bound(li = 1:2, ui = 1:2, lb = lb, ub = ub) )
+
+ROI:::OP_signature( ex8_nlp )
+
+nlpsolvers <- ROI_applicable_solvers( ex8_nlp )
+
+## Solve Rosenbrock Banana function.
+res <- ROI_solve(ex8_nlp, solver = "nlminb", control)
+
+solution( res )
+round( objective(ex8_nlp)(solution(res)), 3 )
+
+## Example 9: NLP
+## Solve system of equations
+
+## Objective function
+eval_f0 <- function( x ) {
+    return( 1 )
+}
+
+## Gradient of objective function.
+eval_grad_f0 <- function( x ) {
+    return( 0 )
+}
+
+## Equality constraint function.
+eval_g0_eq <- function( x, params = c(1, 1, -1) ) {
+    return( params[1]*x^2 + params[2]*x + params[3] )
+}
+
+## Jacobian of constraint.
+eval_jac_g0_eq <- function( x, params = c(1, 1, -1) ) {
+    return( 2*params[1]*x + params[2] )
+}
+
+## Define vector with addiitonal data.
+params <- c(1, 1, -1)
+
+ex9_nlp <- OP( objective = F_objective(F = eval_f0, n = 1L, G = eval_grad_f0),
+               constraints = F_constraint(F=eval_g0_eq, dir="==", rhs=0, J=eval_jac_g0_eq),
+               bounds = V_bound(1, 1, -Inf, Inf) )
+
+control <- list( start = -5 )
+
+res <- ROI_solve( ex9_nlp, solver = "nlminb", control )
+
+## -1.61803398875
+solution( res )
+

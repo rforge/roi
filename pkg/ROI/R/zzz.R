@@ -1,9 +1,9 @@
 ##' ROI Options
 ##'
-##' Allow the user to set and examine a variety of ROI options like the default 
+##' Allow the user to set and examine a variety of ROI options like the default
 ##' solver or the function used to compute the gradients.
-##' @param option any options can be defined, using 'key, value' pairs. 
-##'   If 'value' is missing the current set value is returned for the given 'option'. 
+##' @param option any options can be defined, using 'key, value' pairs.
+##'   If 'value' is missing the current set value is returned for the given 'option'.
 ##'   If both are missing. all set options are returned.
 ##' @param value the corresponding value to set for the given option.
 ##'@export
@@ -71,18 +71,25 @@ control_db <- registry( )
 control_db <- add_control_db_schema( control_db )
 
 .onLoad <- function( libname, pkgname ) {
-    ## if( ! "ROI.plugin.nlminb" %in% ROI_registered_solvers() ){
+    if( ! "ROI.plugin.nlminb" %in% ROI_registered_solvers() ){
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
         ## DISABLED! see R code (solution of QP from examples.R in work not same as quadprog)
-        #solver <- "nlminb"
+         solver <- "nlminb"
+         .ROI_plugin_register_solver_method(
+             signatures = ROI_make_NLP_FXCV_signatures(),
+             solver = solver,
+             method = getFunction( ".solve_NLP_nlminb", where = getNamespace(pkgname)) )
+         .add_nlminb_controls()
+         ## Finally, for status code canonicalization add status codes to data base
+         .add_nlminb_status_codes()
+
+
         #.ROI_plugin_register_solver_method( signatures = ROI_make_QP_signatures(),
         #                            solver = solver,
         #                            method =
         #                            getFunction( ".solve_QP_nlminb", where = getNamespace(pkgname)) )
-        ## Finally, for status code canonicalization add status codes to data base
-        #.add_nlminb_status_codes()
-    ## }
+    }
 
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
     ## OPs is the default solver
@@ -90,13 +97,13 @@ control_db <- add_control_db_schema( control_db )
     ## NOTE: tryCatch since numDeriv has to be installed!
     tryCatch({ROI_options( "gradient", numDeriv::grad )}, error=function(e) NULL)
     ROI_options("solver_selection_table", list(default = c("glpk", "ecos", "cplex", "quadprog", "nlminb"),
-                                               LP=c("glpk", "ecos", "cplex"),
-                                               QP=c("quadprog", "cplex", "ipop"),
-                                               CP=c("ecos", "scs"),
-                                               MILP=c("glpk", "ecos", "cplex"),
-                                               MIQP=c("cplex"),
-                                               MICP=c("ecos"),
-                                               NLP=c("nlmib", "nloptr")))
+                                                 LP = c("glpk", "ecos", "cplex"),
+                                                 QP = c("quadprog", "cplex", "ipop"),
+                                                 CP = c("ecos", "scs"),
+                                               MILP = c("glpk", "ecos", "cplex"),
+                                               MIQP = c("cplex"),
+                                               MICP = c("ecos"),
+                                                NLP = c("nlminb", "nloptr")))
     return(invisible(NULL))
 }
 

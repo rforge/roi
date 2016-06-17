@@ -1,6 +1,4 @@
 ## ROI plugin: nlminb
-## based on MySolver Template
-## DISABLED - need to find literature first
 
 
 ################################################################################
@@ -97,8 +95,11 @@ get_ub <- function(x) {
         leqfun <- NULL
     ## }
 
+    start <- control$start
+    control2[[ "start" ]] <- NULL
+
     ## now run nlminb2 solver
-    out <- ROI:::nlminb2( start = control$start,
+    out <- nlminb2( start = start,
                     objective = objective(x),
                     eqFun = eqfun,
                     leqFun = NULL, #FIXME: leqfun,
@@ -106,13 +107,17 @@ get_ub <- function(x) {
                     lower = lb,
                     gradient = G(objective(x)),
                     hessian = control$hessian,
-                    control = control )
+                   control = control )
+    .ROI_plugin_canonicalize_solution( solution  = out$par,
+                                       optimum   = objective(x)(out$solution),
+                                       status    = out$convergence,
+                                       solver    = solver,
+                                       message   = out )
     ## .ROI_plugin_canonicalize_solution( solution = out$solution,
     ##                                    optimum = objective(x)(out$solution),
     ##                                    status = out$convergence,
     ##                                    solver = solver,
     ##                                    message = out )
-out
 }
 
 
@@ -163,9 +168,10 @@ out
 ##'
 ##'
 ##' @return list()
+##' @importFrom "stats" "nlminb"
 nlminb2 <- function( start, objective, eqFun = NULL, leqFun = NULL,
                      lower = -Inf, upper = Inf, gradient = NULL,
-                    hessian = NULL, control = list() ) {
+                     hessian = NULL, control = list() ) {
 
     ## Details:
     ##                        min f(x)
@@ -236,7 +242,7 @@ nlminb2 <- function( start, objective, eqFun = NULL, leqFun = NULL,
         if( !is.null(gradient) ){
             ## FIXME: we could use default ROI option gradient?
             gradient <- NULL
-            warning( "gradient not recognized in constrained NLPs for solver 'nlminb'." )
+            warning( "gradient not applicable for *constrained* NLPs for solver 'nlminb'." )
         }
         gradient <- NULL
         if( is.null(eqFun) ){
@@ -286,7 +292,7 @@ nlminb2 <- function( start, objective, eqFun = NULL, leqFun = NULL,
 ##'
 ##' A function contributed by Diethelm Wuertz.
 ##' @return a list of control parameters.
-##' ##' @noRd
+##' @noRd
 .make_nlminb2_control_defaults <- function()
     list( eval.max = 500,
           iter.max = 400,
@@ -410,3 +416,41 @@ function(x)
     invisible(TRUE)
 }
 
+
+
+################################################################################
+## SIGNATURES
+################################################################################
+
+## based on nloptr interface
+ROI_make_NLP_FXCV_signatures <- function()
+    .ROI_plugin_make_signature( objective   = c("L", "Q", "F"),
+                                constraints = c("X", "L", "Q", "F"),
+                                types       = c("C"),
+                                bounds      = c("X", "V"),
+                                cones       = c("free"),
+                                maximum     = c(TRUE, FALSE) )
+
+
+
+################################################################################
+## SOLVER CONTROLS
+################################################################################
+.add_nlminb_controls <- function() {
+    ## ROI + nlminb
+    .ROI_plugin_register_solver_control( "nlminb", "trace", "verbose" )
+    .ROI_plugin_register_solver_control( "nlminb", "iter.max", "max_iter" )
+    .ROI_plugin_register_solver_control( "nlminb", "rel.tol", "tol" )
+    .ROI_plugin_register_solver_control( "nlminb", "start", "start" )
+    ## nlminb only
+    .ROI_plugin_register_solver_control( "nlminb", "eval.max", "X" )
+    .ROI_plugin_register_solver_control( "nlminb", "abs.tol", "X" )
+    .ROI_plugin_register_solver_control( "nlminb", "x.tol", "X" )
+    .ROI_plugin_register_solver_control( "nlminb", "xf.tol", "X" )
+    .ROI_plugin_register_solver_control( "nlminb", "step.min", "X" )
+    .ROI_plugin_register_solver_control( "nlminb", "sing.tol", "X" )
+    .ROI_plugin_register_solver_control( "nlminb", "scale.init", "X" )
+    .ROI_plugin_register_solver_control( "nlminb", "diff.g", "X" )
+
+    invisible( TRUE )
+}
