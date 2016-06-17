@@ -33,13 +33,13 @@ constraints. Matrices can be of class
 constraints.}
 
 \item{dir}{a character vector with the directions of the
-constraints. Each element must be one of \code{"<"}, \code{"<="},
-\code{">"}, \code{">="}, \code{"=="} or \code{"!="}.}
+constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}.}
 
 \item{rhs}{a numeric vector with the right hand side of the
 constraints.}
 
-\item{names}{an optional character vector giving the names of the \eqn{A} matrix.}
+\item{names}{an optional character vector giving the names of \eqn{x}
+(row/column names of \eqn{Q}, column names of \eqn{A}).}
 
 \item{object}{ant R object.}
 
@@ -54,11 +54,13 @@ from \code{"constraint"}.
 }
 \description{
 Quadratic constraints are typically of the form
-\eqn{\frac{1}{2}x^{\top}Qx + c^{\top}x \leq b}. \eqn{A} is a
-(sparse) matrix of coefficients to the objective variables \eqn{x}
-of the quadratic part and \eqn{c} is the vector of coefficients of
-the linear part of a given constraint. \eqn{b} is called the right
-hand side of the constraints.
+\deqn{\frac{1}{2}x^{\top}Q_ix + L_i x \leq rhs_i}
+where \eqn{Q_i} is the \eqn{i}th of \eqn{m} (sparse) matrices 
+(all of dimension \eqn{n \times n}) giving the coefficients of the quadratic
+part of the equation. The \eqn{m \times n} (sparse) matrix \eqn{L}
+holds the coefficients of the linear part of the equation and \eqn{L_i} 
+refers to the \eqn{i}th row. The right hand side of the constraints 
+is represented by the vector \eqn{rhs}.
 }
 \author{
 Stefan Theussl

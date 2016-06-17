@@ -63,10 +63,10 @@ LP <- OP( c(2, 4, 3),
 LP
 
 ## Simple quadratic program.
-## minimize:          - 5 x_2      + 1/2 (x_1^2 + x_2^2 + x_3^2)
-## subject to: -4 x_1 - 3 x_2      >= -8
-##              2 x_1 +   x_2       >= 2
-##                    - 2 x_2 + x_3 >= 0
+## minimize: - 5 x_2 + 1/2 (x_1^2 + x_2^2 + x_3^2)
+## subject to: -4 x_1 - 3 x_2       >= -8
+##              2 x_1 +   x_2       >=  2
+##                    - 2 x_2 + x_3 >=  0
 
 QP <- OP( Q_objective (Q = diag(1, 3), L = c(0, -5, 0)),
           L_constraint(L = matrix(c(-4,-3,0,2,1,0,0,-2,1),

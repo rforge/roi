@@ -6,7 +6,7 @@
 \alias{terms.L_objective}
 \title{Linear Objective Function}
 \usage{
-L_objective(L)
+L_objective(L, names = NULL)
 
 \method{terms}{L_objective}(x, ...)
 
@@ -18,6 +18,9 @@ as.L_objective(x)
 where \eqn{n} is the number of objective variables. Names will be
 preserved and used e.g., in the print method.}
 
+\item{names}{an optional character vector giving the names of \eqn{x}
+(column names of \eqn{L}).}
+
 \item{x}{an R object.}
 
 \item{...}{further arguments passed to or from other methods}
@@ -27,7 +30,7 @@ an object of class \code{"L_objective"} which inherits
 from  \code{"Q_objective"} and \code{"objective"}.
 }
 \description{
-A linear objective function is typically of the form \eqn{c^\top
+A linear objective function is typically of the form \deqn{c^\top
 x} where \eqn{c} is a (sparse) vector of coefficients to the
 \eqn{n} objective variables \eqn{x}.
 }

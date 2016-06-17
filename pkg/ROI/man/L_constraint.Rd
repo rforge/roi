@@ -30,12 +30,12 @@ constraints. Matrices can be of class
 constraints.}
 
 \item{dir}{a character vector with the directions of the
-constraints. Each element must be one of \code{"<"}, \code{"<="},
-\code{">"}, \code{">="}, \code{"=="} or \code{"!="}.}
+constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}.}
 
 \item{rhs}{a numeric vector with the right hand side of the constraints.}
 
-\item{names}{an optional character vector giving the names of the \eqn{A} matrix.}
+\item{names}{an optional character vector giving the names of \eqn{x} 
+(column names of \eqn{A}).}
 
 \item{object}{ant R object.}
 
@@ -49,10 +49,10 @@ an object of class \code{"L_constraint"} which inherits
 from \code{"constraint"}.
 }
 \description{
-Linear constraints are typically of the form \eqn{Ax \leq b}.
-\eqn{A} is a (sparse) matrix of coefficients to the objective
-variables \eqn{x}. \eqn{b} is called the right hand side of the
-constraints.
+Linear constraints are typically of the form \deqn{Lx \leq rhs}
+where \eqn{L} is a \eqn{m \times n} (sparse) matrix of coefficients 
+to the objective variables \eqn{x} and the right hand side \eqn{rhs} 
+is a vector of length \eqn{m}.
 }
 \author{
 Stefan Theussl

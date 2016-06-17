@@ -112,7 +112,7 @@ constraints.OP <- function( x ){
 ##' by rows, i.e., putting several constraints together.
 ##'
 ##' The output type is determined from the highest type of the
-##' components in the hierarchy \code{"L_constraint"} <
+##' components in the hierarchy \cr \code{"L_constraint"} <
 ##' \code{"Q_constraint"} < \code{"F_constraint"}.
 ##'
 ##' @title Linear Constraints
@@ -258,10 +258,10 @@ length.NO_constraint <- function( x )
 ## Ax ~ b
 ################################################################################
 
-##' Linear constraints are typically of the form \eqn{Ax \leq b}.
-##' \eqn{A} is a (sparse) matrix of coefficients to the objective
-##' variables \eqn{x}. \eqn{b} is called the right hand side of the
-##' constraints.
+##' Linear constraints are typically of the form \deqn{Lx \leq rhs}
+##' where \eqn{L} is a \eqn{m \times n} (sparse) matrix of coefficients 
+##' to the objective variables \eqn{x} and the right hand side \eqn{rhs} 
+##' is a vector of length \eqn{m}.
 ##'
 ##' @title Linear Constraints
 ##' @param L a numeric vector of length \eqn{n} (a single constraint)
@@ -271,10 +271,10 @@ length.NO_constraint <- function( x )
 ##' \code{"simple_triplet_matrix"} to allow a sparse representation of
 ##' constraints.
 ##' @param dir a character vector with the directions of the
-##' constraints. Each element must be one of \code{"<"}, \code{"<="},
-##' \code{">"}, \code{">="}, \code{"=="} or \code{"!="}.
+##' constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}.
 ##' @param rhs a numeric vector with the right hand side of the constraints.
-##' @param names an optional character vector giving the names of the \eqn{A} matrix.
+##' @param names an optional character vector giving the names of \eqn{x} 
+##'        (column names of \eqn{A}).
 ##' @param x an R object.
 ##' @param ... further arguments passed to or from other methods
 ##' (currently ignored).
@@ -528,11 +528,13 @@ as.L_term.NULL <- function( x, ... ) {
 ################################################################################
 
 ##' Quadratic constraints are typically of the form
-##' \eqn{\frac{1}{2}x^{\top}Qx + c^{\top}x \leq b}. \eqn{A} is a
-##' (sparse) matrix of coefficients to the objective variables \eqn{x}
-##' of the quadratic part and \eqn{c} is the vector of coefficients of
-##' the linear part of a given constraint. \eqn{b} is called the right
-##' hand side of the constraints.
+##' \deqn{\frac{1}{2}x^{\top}Q_ix + L_i x \leq rhs_i}
+##' where \eqn{Q_i} is the \eqn{i}th of \eqn{m} (sparse) matrices 
+##' (all of dimension \eqn{n \times n}) giving the coefficients of the quadratic
+##' part of the equation. The \eqn{m \times n} (sparse) matrix \eqn{L}
+##' holds the coefficients of the linear part of the equation and \eqn{L_i} 
+##' refers to the \eqn{i}th row. The right hand side of the constraints 
+##' is represented by the vector \eqn{rhs}.
 ##'
 ##' @title Quadratic Constraints
 ##' @param Q a list of (sparse) matrices representing the quadratic
@@ -544,14 +546,14 @@ as.L_term.NULL <- function( x, ... ) {
 ##' \code{"simple_triplet_matrix"} to allow a sparse representation of
 ##' constraints.
 ##' @param dir a character vector with the directions of the
-##' constraints. Each element must be one of \code{"<"}, \code{"<="},
-##' \code{">"}, \code{">="}, \code{"=="} or \code{"!="}.
+##' constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}.
 ##' @param rhs a numeric vector with the right hand side of the
 ##' constraints.
-##' @param names an optional character vector giving the names of the \eqn{A} matrix.
+##' @param names an optional character vector giving the names of \eqn{x}
+##'        (row/column names of \eqn{Q}, column names of \eqn{A}).
 ##' @param x an R object.
 ##' @param ... further arguments passed to or from other methods
-##' (currently ignored).
+##'        (currently ignored).
 ##' @return an object of class \code{"Q_constraint"} which inherits
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
@@ -757,7 +759,7 @@ as.Q_term.NULL <- function( x, ... ) {
 ################################################################################
 
 ##' Function (or generally speaking nonlinear) constraints are
-##' typically of the form \eqn{f(x) \leq b}. \eqn{f()} is a
+##' typically of the form \deqn{f(x) \leq b} where \eqn{f()} is a
 ##' well-defined R function taking the objective variables \eqn{x}
 ##' (typically a numeric vector) as arguments. \eqn{b} is called the
 ##' right hand side of the constraints.
@@ -768,8 +770,7 @@ as.Q_term.NULL <- function( x, ... ) {
 ##' and must return a scalar. Thus, \eqn{n} is the number of objective
 ##' variables and \eqn{m} is the number of constraints.
 ##' @param dir a character vector with the directions of the
-##' constraints. Each element must be one of \code{"<"}, \code{"<="},
-##' \code{">"}, \code{">="}, \code{"=="} or \code{"!="}.
+##' constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}.
 ##' @param rhs a numeric vector with the right hand side of the constraints.
 ##' @param J an optional \code{function} holding the Jacobian of F.
 ##' @param x object to be tested.

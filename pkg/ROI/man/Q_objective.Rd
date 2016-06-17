@@ -6,7 +6,7 @@
 \alias{terms.Q_objective}
 \title{Quadratic Objective Function}
 \usage{
-Q_objective(Q, L = NULL)
+Q_objective(Q, L = NULL, names = NULL)
 
 \method{terms}{Q_objective}(x, ...)
 
@@ -20,6 +20,9 @@ part of objective function. Sparse matrices of class
 \item{L}{a numeric vector of length \eqn{n}, where \eqn{n} is the
 number of objective variables.}
 
+\item{names}{an optional character vector giving the names of \eqn{x}
+(row/column names of \eqn{Q}, column names of \eqn{L}).}
+
 \item{x}{an R object.}
 
 \item{...}{further arguments passed to or from other methods}
@@ -30,7 +33,7 @@ from \code{"objective"}.
 }
 \description{
 A quadratic objective function is typically of the form
-\eqn{\frac{1}{2} x^\top Qx + c^\top x} where \eqn{Q} is a (sparse) matrix
+\deqn{\frac{1}{2} x^\top Qx + c^\top x} where \eqn{Q} is a (sparse) matrix
 defining the quadratic part of the function and \eqn{c} is a
 (sparse) vector of coefficients to the \eqn{n} defining the linear
 part.

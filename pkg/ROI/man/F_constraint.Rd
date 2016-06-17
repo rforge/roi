@@ -28,8 +28,7 @@ and must return a scalar. Thus, \eqn{n} is the number of objective
 variables and \eqn{m} is the number of constraints.}
 
 \item{dir}{a character vector with the directions of the
-constraints. Each element must be one of \code{"<"}, \code{"<="},
-\code{">"}, \code{">="}, \code{"=="} or \code{"!="}.}
+constraints. Each element must be one of \code{"<="}, \code{">="} or \code{"=="}.}
 
 \item{rhs}{a numeric vector with the right hand side of the constraints.}
 
@@ -45,7 +44,7 @@ from \code{"constraint"}.
 }
 \description{
 Function (or generally speaking nonlinear) constraints are
-typically of the form \eqn{f(x) \leq b}. \eqn{f()} is a
+typically of the form \deqn{f(x) \leq b} where \eqn{f()} is a
 well-defined R function taking the objective variables \eqn{x}
 (typically a numeric vector) as arguments. \eqn{b} is called the
 right hand side of the constraints.

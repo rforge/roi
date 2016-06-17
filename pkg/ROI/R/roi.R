@@ -64,9 +64,6 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     if( missing(solver) )
         solver <- ROI_options("default_solver")
 
-    ## TODO: would be nice if we have an order if no solver is provided!
-    ## NOTE: nloptr can take additional parameters,
-    ##       we supply them by using control$args
     dots <- list(...)
     control[names(dots)] <- dots
 
@@ -88,7 +85,7 @@ ROI_solve <- function( x, solver, control = list(), ... ){
         stop( "no solver found for this signature:\n\t",
               paste(paste(names(sig), sig, sep=": "), collapse="\n\t") )
     }
-    if ( solver != "auto" ) {
+    if ( isTRUE(solver != "auto") ) {
         SOLVE <- methods[[ solver ]]
         if ( !is.function(SOLVE) ) {
             ## CASE: applicable solvers found but the solver provided is wrong
@@ -116,6 +113,9 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     out <- SOLVE( x, ROI_translate(control, solver) )
     if( control$verbose )
         writeLines( "<!SOLVER MSG> ----" )
+    if ( is.null(variable.names(constraints(x))) ) {
+        
+    }
     out
 }
 

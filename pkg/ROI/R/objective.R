@@ -123,7 +123,7 @@ terms.function <- function( x, ... ){
 ## Linear objective function (class 'L_objective')
 ## of type c^\top x, where c is a vector of coefficients
 
-##' A linear objective function is typically of the form \eqn{c^\top
+##' A linear objective function is typically of the form \deqn{c^\top
 ##' x} where \eqn{c} is a (sparse) vector of coefficients to the
 ##' \eqn{n} objective variables \eqn{x}.
 ##'
@@ -133,12 +133,14 @@ terms.function <- function( x, ... ){
 ##' where \eqn{n} is the number of objective variables. Names will be
 ##' preserved and used e.g., in the print method.
 ##' @param x an R object.
+##' @param names an optional character vector giving the names of \eqn{x}
+##'        (column names of \eqn{L}).
 ##' @return an object of class \code{"L_objective"} which inherits
 ##' from  \code{"Q_objective"} and \code{"objective"}.
 ##' @author Stefan Theussl
 ##' @export
-L_objective <- function( L ) {
-    obj <- Q_objective( Q = NULL, L = L )
+L_objective <- function( L, names = NULL ) {
+    obj <- Q_objective( Q = NULL, L = L, names=names )
     class( obj ) <- c( "L_objective", class(obj) )
     obj
 }
@@ -193,7 +195,7 @@ as.L_objective.NULL <- function( x )
 ##' @noRd
 ##' @export
 as.L_objective.numeric <- function( x )
-    L_objective( x )
+    L_objective( x, names = names(x) )
 
 ##' @noRd
 ##' @export
@@ -215,7 +217,7 @@ as.L_objective.function <- function( x ){
 ###############################################################
 
 ##' A quadratic objective function is typically of the form
-##' \eqn{\frac{1}{2} x^\top Qx + c^\top x} where \eqn{Q} is a (sparse) matrix
+##' \deqn{\frac{1}{2} x^\top Qx + c^\top x} where \eqn{Q} is a (sparse) matrix
 ##' defining the quadratic part of the function and \eqn{c} is a
 ##' (sparse) vector of coefficients to the \eqn{n} defining the linear
 ##' part.
@@ -226,20 +228,22 @@ as.L_objective.function <- function( x ){
 ##' \code{"simple_triplet_matrix"} can be supplied.
 ##' @param L a numeric vector of length \eqn{n}, where \eqn{n} is the
 ##' number of objective variables.
+##' @param names an optional character vector giving the names of \eqn{x}
+##'        (row/column names of \eqn{Q}, column names of \eqn{L}).
 ##' @param x an R object.
 ##' @return an object of class \code{"Q_objective"} which inherits
 ##' from \code{"objective"}.
 ##' @author Stefan Theussl
 ##' @export
-Q_objective <- function( Q, L = NULL ) {
+Q_objective <- function( Q, L = NULL, names = NULL ) {
     L <- as.L_term(L)
     ## FIXME: (check if Q ist quadratic!)
     if( !is.null(Q) )
         obj <- .objective( Q    = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
-                           L    = L,
-                           nobj = dim(Q)[1] )
+                           L    = L, names = names,
+                           nobj = dim(Q)[1])
     else
-        obj <- .objective( L = L, nobj = ncol(L) )
+        obj <- .objective( L = L, names = names, nobj = ncol(L) )
     class(obj) <- c( "Q_objective", class(obj) )
     obj
 }
@@ -323,18 +327,17 @@ as.Q_objective.simple_triplet_matrix <- function( x )
 ##' @param F an R \code{"function"} taking a numeric vector \code{x} of length \eqn{n} as argument.
 ##' @param G an R \code{"function"} returning the gradient at \code{x}.
 ##' @param n the number of objective variables.
-##' @param x an R object.
+##' @param names an optional character vector giving the names of \eqn{F}
+##         (\code{length(names)} should be equal to n).
 ##' @return an object of class \code{"F_objective"} which inherits
 ##' from \code{"objective"}.
 ##' @author Stefan Theussl
 ##' @export
-F_objective <- function( F, n, G = NULL ) {
-    ## TODO: check if F is really a function and n is an integer, for meaning full
-    ##       error messages!
+F_objective <- function( F, n, G = NULL, names=NULL ) {
     .check_function_for_sanity( F, n )
     ##if( !is.null(G) )
     ##    .check_gradient_for_sanity( G, n )
-    obj <- .objective( F = F, G = G, nobj = n )
+    obj <- .objective( F = F, G = G, names = names, nobj = n )
     class( obj ) <- c( "F_objective", class(obj) )
     obj
 }
@@ -353,6 +356,7 @@ as.function.F_objective <- function( x, ... ){
 }
 
 ##' @rdname F_objective
+##' @param x an R object.
 ##' @param ... further arguments passed to or from other methods
 ##' @export
 terms.F_objective <- function( x, ... )
@@ -400,6 +404,8 @@ as.F_objective.function <- function( x ){
 }
 
 .check_function_for_sanity <- function(F, n){
+    ## TODO: check if F is really a function and n is an integer, for meaning full
+    ##       error messages!
     ans <- tryCatch( F(rep.int(0, n)), error = identity )
     if( inherits(ans, "error") )
         stop(sprintf("cannot evaluate function 'F' using 'n' = %d parameters.", n))

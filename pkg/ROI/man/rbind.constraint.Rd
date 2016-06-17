@@ -25,7 +25,7 @@ by rows, i.e., putting several constraints together.
 }
 \details{
 The output type is determined from the highest type of the
-components in the hierarchy \code{"L_constraint"} <
+components in the hierarchy \cr \code{"L_constraint"} <
 \code{"Q_constraint"} < \code{"F_constraint"}.
 }
 \author{
