@@ -851,17 +851,16 @@ is.F_constraint <- function( x ) {
 }
 
 rbind_F_constraint <- function( constraints ) {
-    ## check if all ihnherit from constraint
-    b <- sapply(constraints , inherits, what="F_constraint" )
-    if ( any(!b) ) stop("object ", paste(which(!b), collapse=", "),
-                        "doesn't inherit from F_constraint!")
+    ## check if all inherit from constraint
+    constraints <- lapply(constraints, as.F_constraint)
     fun <- unlist(lapply(constraints, "[[", "F"), use.names=FALSE)
     dir <- unlist(lapply(constraints, "[[", "dir"), use.names=FALSE)
     rhs <- unlist(lapply(constraints, "[[", "rhs"), use.names=FALSE)
     jac <- unlist(lapply(constraints, "[[", "J"), use.names=FALSE)
+    names <- 
     ## NOTE: should we check the dims? I currently don't since it should be correct
     ##       as a result of the checks before
-    F_constraint(F=fun, dir=dir, rhs=rhs, J=jac)
+    F_constraint(F=fun, dir=dir, rhs=rhs, J=jac, names=names)
 }
 
 ##' @noRd
@@ -973,7 +972,7 @@ terms.Q_constraint <- function( x, ... ) {
 ##' @rdname F_constraint
 ##' @export
 terms.F_constraint <- function( x, ... ) {
-    list( F = x$F, G = x$J, dir=x$dir, rhs=x$rhs )
+    list( F = x$F, G = x$J, dir=x$dir, rhs=x$rhs, names=x$names )
 }
 
 
@@ -985,7 +984,7 @@ terms.F_constraint <- function( x, ... ) {
 as.function.constraint <- function(x, ...) {
     if ( inherits(x, "L_constraint") ) return(as_function_L_constraint(x, ...))
     if ( inherits(x, "Q_constraint") ) return(as_function_Q_constraint(x, ...))
-    if ( inherits(x, "F_constraint") )
+    if ( inherits(x, "F_constraint") ) return(terms(x)[['F']])
     stop("'x' must be of type L_constraint, Q_constraint or F_constraint, was ", shQuote(typeof(x)))
 }
 
