@@ -32,6 +32,7 @@ make_LP_signatures <- function() {
             getFunction( "solve_LP", where = getNamespace(pkgname)) )
         ## Finally, for status code canonicalization add status codes to data base
         .add_status_codes()
+        .add_controls()
     }
 }
 

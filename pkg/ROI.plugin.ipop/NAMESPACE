@@ -1,7 +1,9 @@
 import("ROI")
 importFrom("kernlab", "ipop")
+importFrom("kernlab", "dual")
+importFrom("kernlab", "primal")
 importFrom("methods", "getPackageName")
 importFrom("methods", "getFunction")
 importFrom("slam", "simple_triplet_zero_matrix")
 importFrom("stats", "terms")
-
+S3method(".ROI_plugin_solution_dual", "ipop_solution")

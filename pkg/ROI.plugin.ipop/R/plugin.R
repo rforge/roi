@@ -21,11 +21,10 @@ solve_QP <- function( x, control ) {
                            max = x$maximum,
                            control = control )
     .ROI_plugin_canonicalize_solution( solution = out$solution,
-                                 optimum  = ifelse(!out$status, objective(x)(out$solution), NA),
-                                 status   = out$status,
-                                 solver   = .ROI_plugin_get_solver_name(getPackageName()),
-                                 control  = control,
-                                 returnvalue = out$output )
+                                       optimum  = ifelse(!out$status, objective(x)(out$solution), NA),
+                                       status   = out$status,
+                                       solver   = .ROI_plugin_get_solver_name(getPackageName()),
+                                       message  = out$output )
 }
 
 solve_LP <- function( x, control ) {
@@ -45,11 +44,10 @@ solve_LP <- function( x, control ) {
                            max = x$maximum,
                            control = control )
     .ROI_plugin_canonicalize_solution( solution = out$solution,
-                                 optimum  = ifelse(!out$status, objective(x)(out$solution), NA),
-                                 status   = out$status,
-                                 solver   = .ROI_plugin_get_solver_name(getPackageName()),
-                                 control  = control,
-                                 returnvalue = out$output)
+                                       optimum  = ifelse(!out$status, objective(x)(out$solution), NA),
+                                       status   = out$status,
+                                       solver   = .ROI_plugin_get_solver_name(getPackageName()),
+                                       message  = out$output)
 }
 
 ## SOLVER SUBMETHODS
@@ -88,11 +86,13 @@ solve_LP <- function( x, control ) {
     }
 
     A <- as.matrix(mat)
-    b <- A %*% lower
-    r <- A %*% upper - b
-    BR <- cbind(b, r)
-    b <- apply(BR, 1, min)
-    r <- apply(BR, 1, max)
+    ## r <- A %*% rhs - b#upper - b
+    ## BR <- cbind(b, r)
+    ## b <- apply(BR, 1, min)
+    ## r <- apply(BR, 1, max)
+    ## old
+    b <- lhs
+    r <- rhs - lhs
 
     out <- tryCatch( ipop(c = as.matrix(L), ## FIXME: for the time being dense representation
                           H = as.matrix(Q),
@@ -107,15 +107,20 @@ solve_LP <- function( x, control ) {
                           bound = control$bound,
                           verb = control$verb),
                     error = identity )
-    out <- if( inherits(out, "error") )
+    if( inherits(out, "error") ){
         list( solution = NA,
-              status = 2L,
-              output = out)
-    else
-        list( solution = out@primal,
-              status = ifelse(any(is.na(out@primal)), 1L, 0L),
-              output = out)
-    out
+             status = 2L,
+             output = out)
+    } else {
+        if( any(primal(out) < lower) || any(primal(out) > upper))
+            list( solution = NA,
+                 status = 3L,
+                 output = out)
+        else
+            list( solution = primal(out),
+                  status = ifelse(any(is.na(primal(out))), 1L, 0L),
+                  output = out)
+    }
 }
 
 ## STATUS CODES
@@ -138,6 +143,11 @@ solve_LP <- function( x, control ) {
                                 "error",
                                 "Solver error: No solution found."
                                 )
+    .ROI_plugin_add_status_code_to_db(solver,
+                                3L,
+                                "bounds violated",
+                                "Problem is most likely unbounded."
+                                )
     invisible(TRUE)
 }
 
@@ -159,3 +169,34 @@ ipop_default_control <- function()
           bound = 10,
           verb = 0,
           inf = 1e+12 )
+
+## SOLVER CONTROLS
+.add_controls <- function(){
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    ## ROI + ipop
+    .ROI_plugin_register_solver_control( solver,
+                                         "verb",
+                                         "verbose" )
+    .ROI_plugin_register_solver_control( solver,
+                                         "maxiter",
+                                         "max_iter" )
+    ## ipop only
+    .ROI_plugin_register_solver_control( solver,
+                                         "sigf",
+                                         "X" )
+    .ROI_plugin_register_solver_control( solver,
+                                         "margin",
+                                         "X" )
+    .ROI_plugin_register_solver_control( solver,
+                                         "bound",
+                                         "X" )
+    .ROI_plugin_register_solver_control( solver,
+                                         "inf",
+                                         "X" )
+    invisible( TRUE )
+}
+
+## SOLUTION EXTRACTORS
+.ROI_plugin_solution_dual.ipop_solution <- function( x ){
+    dual( x$message )
+}

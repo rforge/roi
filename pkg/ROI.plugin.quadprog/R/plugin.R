@@ -32,7 +32,7 @@ solve_QP <- function( x, control ) {
                                        optimum  = objective(x)(out$sol),
                                        status   = out$ierr,
                                        solver   = .ROI_plugin_get_solver_name(getPackageName()),
-                                       solver_return_object = out)
+                                       message = out)
 }
 
 ## SOLVER SUBMETHODS

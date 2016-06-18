@@ -372,3 +372,64 @@ res <- ROI_solve( ex9_nlp, solver = "nlminb", control )
 ## -1.61803398875
 solution( res )
 
+## unbounded QP
+zero <- .Machine$double.eps * 100
+qo <- Q_objective(Q=rbind(c(1, 0), c(0, 0)), L=c(-2, 1))
+lc <- L_constraint(L=matrix(c(1, 0), nrow=1), dir="<=", rhs=3)
+op <- OP(qo, lc, maximum = TRUE)
+res <- ROI_solve(op, "ipop")
+res <- ROI_solve(op, "quadprog")
+res <- ROI_solve(op, "cplex")
+
+## Example 10: QP
+## Solve the portfolio optimization problem
+
+## portfolio optimization
+data( US30 )
+r <- na.omit( US30 )
+## objective function to minimize
+obj <- Q_objective( 2*cov(r) )
+## full investment constraint
+full_invest <- L_constraint( rep(1, ncol(US30)), "==", 1 )
+## create optimization problem / long-only
+ex10_qp <- OP( objective = obj, constraints = full_invest )
+## solve the problem - only works if a QP solver is registered
+
+ROI:::OP_signature( ex10_qp )
+qpsolvers <- ROI_applicable_solvers( ex10_qp )
+qp_results <- data.frame(objval = rep(NA, length.out = length(qpsolvers)),
+                           timing = NA)
+rownames(qp_results) <- qpsolvers
+
+## FIXME: QP not working with both solvers
+for(solver in qpsolvers){
+  qp_results[solver, ] <- c(NA, NA)
+  timing <- system.time(res <- tryCatch(ROI_solve(ex10_qp, solver = solver),
+                                        error = identity))["elapsed"]
+  if(!inherits(res, "error"))
+    qp_results[solver, ] <- c(res$objval, timing)
+}
+
+qp_results
+
+res <- ROI_solve( op )
+res
+## add weight constraint
+b <- V_bound( ui = 1:ncol(r), ub = rep(0.25, ncol(r)) )
+ex10a_qp <- OP( objective = obj, constraints = c(full_invest),
+               bounds = b)
+
+qp_results <- data.frame(objval = rep(NA, length.out = length(qpsolvers)),
+                           timing = NA)
+rownames(qp_results) <- qpsolvers
+
+## FIXME: QP not working with both solvers
+for(solver in qpsolvers){
+  qp_results[solver, ] <- c(NA, NA)
+  timing <- system.time(res <- tryCatch(ROI_solve(ex10a_qp, solver = solver),
+                                        error = identity))["elapsed"]
+  if(!inherits(res, "error"))
+    qp_results[solver, ] <- c(res$objval, timing)
+}
+
+qp_results

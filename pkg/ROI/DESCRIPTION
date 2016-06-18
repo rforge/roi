@@ -18,11 +18,12 @@ Imports:
     utils
 Suggests:
     ROI.plugin.glpk,
+    ROI.plugin.ipop,
     ROI.plugin.symphony,
     ROI.plugin.quadprog,
     numDeriv
 Enhances:
-   ROI.plugin.cplex
+    ROI.plugin.cplex
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
 RoxygenNote: 5.0.1
