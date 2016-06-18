@@ -51,6 +51,12 @@
         
           
         
+          
+        
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -61,7 +67,9 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <h1 id="linear-programming-with-roi">Linear Programming with ROI</h1>
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<h1 id="linear-programming-with-roi">Linear Programming with ROI</h1>
 
 <h2 id="example-1">Example 1</h2>
 
@@ -73,73 +81,74 @@
 ## Default solver: auto.
 </span></code></pre>
 </div>
-
-<p><script type="math/tex">\text{maximize } \ \ 2 x_1 + 4 x_2 + 3 x_3</script>
-<script type="math/tex">% <![CDATA[
-\begin{array}{rrrrrrr}
+<div>
+$$\text{maximize } \ \ 2 x_1 + 4 x_2 + 3 x_3$$
+$$\begin{array}{rrrrrrr}
 subject \ to 
-& 3 x_1 & + & 4 x_2 & + & 2 x_3 & \leq 60 \\
-& 2 x_1 & + &   x_2 & + & 2 x_3 & \leq 40 \\
-&   x_1 & + & 3 x_2 & + & 2 x_3 & \leq 80 
-\end{array} %]]></script>
-<script type="math/tex">x_1, x_2, x_3 \geq 0</script></p>
+&amp; 3 x_1 &amp; + &amp; 4 x_2 &amp; + &amp; 2 x_3 &amp; \leq 60 \\
+&amp; 2 x_1 &amp; + &amp;   x_2 &amp; + &amp; 2 x_3 &amp; \leq 40 \\
+&amp;   x_1 &amp; + &amp; 3 x_2 &amp; + &amp; 2 x_3 &amp; \leq 80 
+\end{array}
+$$
+$$x_1, x_2, x_3 \geq 0$$
+</div>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">R</span><span class="o">&gt;</span> <span class="n">mat</span> <span class="o">&lt;-</span> <span class="n">matrix</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span>
-<span class="n">R</span><span class="o">&gt;</span>                 <span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span>
-<span class="n">R</span><span class="o">&gt;</span>                 <span class="m">1</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">),</span> <span class="n">nrow</span><span class="o">=</span><span class="m">3</span><span class="p">,</span> <span class="n">byrow</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>
-<span class="n">R</span><span class="o">&gt;</span> <span class="n">lp</span> <span class="o">&lt;-</span> <span class="n">OP</span><span class="p">(</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">3</span><span class="p">),</span>
-<span class="n">R</span><span class="o">&gt;</span>          <span class="n">constraints</span> <span class="o">=</span> <span class="n">L_constraint</span><span class="p">(</span><span class="n">L</span> <span class="o">=</span> <span class="n">mat</span><span class="p">,</span>
-<span class="n">R</span><span class="o">&gt;</span>                                     <span class="n">dir</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="s2">"&lt;="</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">),</span>
-<span class="n">R</span><span class="o">&gt;</span>                                     <span class="n">rhs</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="m">60</span><span class="p">,</span> <span class="m">40</span><span class="p">,</span> <span class="m">80</span><span class="p">)),</span>
-<span class="n">R</span><span class="o">&gt;</span>          <span class="n">maximum</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">)</span>
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">mat</span> <span class="o">&lt;-</span> <span class="n">matrix</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span>
+                <span class="m">2</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span>
+                <span class="m">1</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">2</span><span class="p">),</span> <span class="n">nrow</span><span class="o">=</span><span class="m">3</span><span class="p">,</span> <span class="n">byrow</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>
+<span class="n">lp</span> <span class="o">&lt;-</span> <span class="n">OP</span><span class="p">(</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">4</span><span class="p">,</span> <span class="m">3</span><span class="p">),</span>
+         <span class="n">constraints</span> <span class="o">=</span> <span class="n">L_constraint</span><span class="p">(</span><span class="n">L</span> <span class="o">=</span> <span class="n">mat</span><span class="p">,</span>
+                                    <span class="n">dir</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="s2">"&lt;="</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">,</span> <span class="s2">"&lt;="</span><span class="p">),</span>
+                                    <span class="n">rhs</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="m">60</span><span class="p">,</span> <span class="m">40</span><span class="p">,</span> <span class="m">80</span><span class="p">)),</span>
+         <span class="n">maximum</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">)</span>
 </code></pre>
 </div>
 
-<p>List the applicable solvers,</p>
+<p>List the applicable solvers.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">R</span><span class="o">&gt;</span> <span class="n">ROI_applicable_solvers</span><span class="p">(</span><span class="n">lp</span><span class="p">)</span>
-<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="s2">"nlminb"</span>   <span class="s2">"ecos"</span>     <span class="s2">"glpk"</span>     <span class="s2">"ipop"</span>     <span class="s2">"scs"</span>   <span class="s2">"symphony"</span>
-</code></pre>
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">ROI_applicable_solvers</span><span class="p">(</span><span class="n">lp</span><span class="p">)</span>
+<span class="c1">## [1] "nlminb"   "ecos"     "glpk"     "ipop"     "scs"   "symphony"
+</span></code></pre>
 </div>
 
 <p>Solve the problem.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>R&gt; sol &lt;- ROI_solve(lp, solver = "glpk")
-R&gt; sol
-Optimal solution found.
-The objective value is: 7.666667e+01
-</code></pre>
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sol</span> <span class="o">&lt;-</span> <span class="n">ROI_solve</span><span class="p">(</span><span class="n">lp</span><span class="p">,</span> <span class="n">solver</span> <span class="o">=</span> <span class="s2">"glpk"</span><span class="p">)</span>
+<span class="n">sol</span>
+<span class="c1">## Optimal solution found.
+## The objective value is: 7.666667e+01
+</span></code></pre>
 </div>
 
 <p>Get the solution.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>R&gt; solution(sol)
-[1]  0.000000  6.666667 16.666667
-</code></pre>
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">solution</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+<span class="c1">## [1]  0.000000  6.666667 16.666667
+</span></code></pre>
 </div>
 
 <p>Get the original solver message.</p>
 
-<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">R</span><span class="o">&gt;</span> <span class="n">sol</span><span class="o">$</span><span class="n">message</span>
-<span class="o">$</span><span class="n">optimum</span>
-<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="m">76.66667</span>
-
-<span class="o">$</span><span class="n">solution</span>
-<span class="p">[</span><span class="m">1</span><span class="p">]</span>  <span class="m">0.000000</span>  <span class="m">6.666667</span> <span class="m">16.666667</span>
-
-<span class="o">$</span><span class="n">status</span>
-<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="m">5</span>
-
-<span class="o">$</span><span class="n">solution_dual</span>
-<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="m">-1.833333</span>  <span class="m">0.000000</span>  <span class="m">0.000000</span>
-
-<span class="o">$</span><span class="n">auxiliary</span>
-<span class="o">$</span><span class="n">auxiliary</span><span class="o">$</span><span class="n">primal</span>
-<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="m">60.00000</span> <span class="m">40.00000</span> <span class="m">53.33333</span>
-
-<span class="o">$</span><span class="n">auxiliary</span><span class="o">$</span><span class="n">dual</span>
-<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="m">0.8333333</span> <span class="m">0.6666667</span> <span class="m">0.0000000</span>
-</code></pre>
+<div class="language-r highlighter-rouge"><pre class="highlight"><code><span class="n">sol</span><span class="o">$</span><span class="n">message</span>
+<span class="c1">## $optimum
+## [1] 76.66667
+## 
+## $solution
+## [1]  0.000000  6.666667 16.666667
+## 
+## $status
+## [1] 5
+## 
+## $solution_dual
+## [1] -1.833333  0.000000  0.000000
+## 
+## $auxiliary
+## $auxiliary$primal
+## [1] 60.00000 40.00000 53.33333
+## 
+## $auxiliary$dual
+## [1] 0.8333333 0.6666667 0.0000000
+</span></code></pre>
 </div>
 
 <p>Get the meta data.</p>
