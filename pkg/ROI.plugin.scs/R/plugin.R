@@ -282,7 +282,7 @@ solve_OP <- function(x, control=list()) {
         b <- c(b, rep.int(0L, nrow(cxL) - length(b))) ## TODO: check if this case can still occur (I assume not!)
     }
     if (length(b) != length(ind)) ## this shouldn't happen
-        stop("LENGTH_MISSMATCH in 'ROI.plugin.scs$solve_OP'\n",
+        stop("LENGTH_MISMATCH in 'ROI.plugin.scs$solve_OP'\n",
              "\tthe dimensions of the 'rhs' and it's permutation vector don't match!")
     b <- b[ind]
 
@@ -291,7 +291,13 @@ solve_OP <- function(x, control=list()) {
     if ( is.null(control$eps) ) control$eps <- 1e-6
 
     ## return(list(A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control))
-    out <- scs(A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control)
+    solver_call <- list(scs, A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control)
+    mode(solver_call) <- "call"
+    ## TODO: if dry_run isTRUE dann nicht solver ausfuehren sondern nur solver_call
+    ##       zurueck geben.
+    ## FIXME (for next release we add the possibility to only return the model): if (!isTRUE(control$dry_run)) {
+    out <- eval(solver_call)
+    ## FIXME: }
     x_sol <- out$x[seq_len(len_objective)]
     out$len_objective <- len_objective
     out$len_dual_objective <- len_dual_objective
@@ -307,6 +313,7 @@ solve_OP <- function(x, control=list()) {
     .ROI_plugin_canonicalize_solution( solution = x_sol,  optimum  = optimum,
                                        status   = out[["info"]][["statusVal"]],
                                        solver   = solver, message  = out )
+                                      ## solver_call= if (isTRUE(control$return_call)) solver_call else NULL ) FIXME: Add solver_call
 }
 
 .ROI_plugin_solution_dual.scs_solution <- function(x) {
