@@ -68,10 +68,10 @@ is_derivate_free_algorithm <- function(x) {
 ## nloptr(x0, eval_f, eval_grad_f = NULL, lb = NULL, ub = NULL,
 ##        eval_g_ineq = NULL, eval_jac_g_ineq = NULL, eval_g_eq = NULL,
 ##        eval_jac_g_eq = NULL, opts = list(), ...)
-if(FALSE) {
-    library(nloptr)
-    attach(getNamespace("ROI.plugin.nloptr"))    
-}
+## if(FALSE) {
+##     library(nloptr)
+##     attach(getNamespace("ROI.plugin.nloptr"))    
+## }
 
 solve_nloptr <- function( x, control ) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
