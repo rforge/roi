@@ -60,6 +60,13 @@ solve_OP <- function(x, control=list()){
     if ( is.null(cxL) ) cxL <- simple_triplet_zero_matrix(0, len_objective)
     noeq <- which(constraints(x)$dir %in% c("<", "<=", ">", ">="))
 
+    if ( length(setdiff(noeq, as.list( bo$cones )$free)) > 0 ) {
+        wi <- setdiff(noeq, as.list( bo$cones )$free)
+        stop('the directions "<", "<=", ">" and ">=" can only be used in combination ',
+             'with the "free" cone! ', 'The constraints c(', paste(wi, collapse=", "),
+             ') are inequality constraints but don`t belong to the "free" cone.')
+    }
+
     if ( length(noeq) ) {
         nc0 <- ncol(cxL)
         b <- c(b, rep.int(0L, length(noeq)))
