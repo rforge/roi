@@ -1,0 +1,101 @@
+
+R Under development (unstable) (2016-05-20 r70654) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ## ROI test suite
+> 
+> ## Configuration
+> suppressPackageStartupMessages( require("ROI") )
+> ## solver to check
+> solver <- "ipop"
+> ## load and register plug-in
+> require( sprintf("ROI.plugin.%s", solver), character.only = TRUE )
+> 
+> ## Example 5:
+> ## Another QP (this is qpex1.c in the CPLEX examples)
+> ## maximize:     x_1 + 2 x_2 + 3  x_3 - 1/2 (33 x_1^2 + 22 x_2^2 + 11 x_3^2) + 6 x_1 x_2 + 11.5 x_2 x_3
+> ## subject to: - x_1 +   x_2 +    x_3 <= 20
+> ##               x_1 - 3 x_2 +    x_3 <= 30
+> ##
+> 
+> ex5_qp <- OP( Q_objective(Q = matrix(c(-33, 6, 0, 6, -22, 11.5, 0, 11.5, -11),
++                         byrow = TRUE, ncol = 3),
++                       L = c(1, 2, 3)),
++           L_constraint(L = matrix(c(-1, 1, 1, 1, -3, 1),
++                          byrow = TRUE, ncol = 3),
++                        dir = rep("<=", 2),
++                        rhs = c(20, 30)),
++          maximum = TRUE)
+> 
+> res <- ROI_solve(ex5_qp, solver = solver)
+> 
+> solution( res )
+[1] 0.1391149 0.5984655 0.8983957
+> solution( res, "dual" )
+[1] -6.614407e-14 -3.442503e-14
+> solution( res, "msg" )
+An object of class "ipop"
+Slot "primal":
+[1] 0.1391149 0.5984655 0.8983957
+
+Slot "dual":
+[1] -6.614407e-14 -3.442503e-14
+
+Slot "how":
+[1] "slow convergence, change bound?"
+
+> 
+> ## Example 10: QP
+> ## Solve the portfolio optimization problem
+> 
+> ## portfolio optimization
+> data( US30 )
+> r <- na.omit( US30 )
+> ## objective function to minimize
+> obj <- Q_objective( 2*cov(r) )
+> ## full investment constraint
+> full_invest <- L_constraint( rep(1, ncol(US30)), "==", 1 )
+> ## create optimization problem / long-only
+> ex10_qp <- OP( objective = obj, constraints = full_invest )
+> ## solve the problem - only works if a QP solver is registered
+> 
+> res <- ROI_solve(ex10_qp, solver = solver)
+> 
+> round( solution(res), 3 )
+ [1] 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.165 0.000
+[13] 0.000 0.000 0.000 0.301 0.000 0.005 0.000 0.000 0.000 0.138 0.031 0.000
+[25] 0.000 0.000 0.000 0.091 0.169 0.101
+> solution( res, "dual" )
+[1] 0.001865327
+> solution( res, "msg" )
+An object of class "ipop"
+Slot "primal":
+ [1] 5.562513e-15 8.602156e-15 2.497804e-15 9.174341e-15 1.324638e-14
+ [6] 4.074680e-15 5.276884e-15 3.008673e-15 8.965391e-15 4.023374e-14
+[11] 1.650175e-01 1.580547e-14 6.113421e-14 4.954825e-15 2.834199e-14
+[16] 3.009363e-01 1.608795e-13 4.740371e-03 7.817983e-14 3.793758e-14
+[21] 5.182968e-15 1.375763e-01 3.053812e-02 2.705914e-14 1.321865e-14
+[26] 1.004542e-14 3.525237e-14 9.098392e-02 1.691908e-01 1.010166e-01
+
+Slot "dual":
+[1] 0.001865327
+
+Slot "how":
+[1] "converged"
+
+> 

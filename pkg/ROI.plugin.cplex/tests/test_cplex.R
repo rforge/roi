@@ -1,9 +1,11 @@
 ## ROI test suite
 
 ## Configuration
-require("ROI")
+suppressPackageStartupMessages( require("ROI") )
 ## solver to check
 solver <- "cplex"
+## load and register plug-in
+require( sprintf("ROI.plugin.%s", solver), character.only = TRUE )
 
 ## From Rglpk_solve_LP man page
 
