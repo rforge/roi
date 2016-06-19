@@ -1,10 +1,10 @@
 Package: ROI.plugin.scs
-Version: 0.2-1
+Version: 0.2-2
 Title: ROI-Plugin SCS
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
-Description: This package enhances the R Optimization Infrastructure (ROI) package
-	     with the SCS solver for solving convex cone problems.
+Description: Enhances the R Optimization Infrastructure (ROI) package
+         with the SCS solver for solving convex cone problems.
 Imports: stats, methods, Matrix, slam, ROI (>= 0.2-0), scs (>= 1.0.0)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
