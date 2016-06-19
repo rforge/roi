@@ -1,9 +1,9 @@
 Package: ROI.plugin.nloptr
-Version: 0.2-1
+Version: 0.2-3
 Title: ROI-Plugin NLOPTR
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
-Description: This package enhances the R Optimization Infrastructure (ROI) package
+Description: Enhances the R Optimization Infrastructure (ROI) package
         with the NLopt solver for solving nonlinear optimization problems.
 Imports: methods, stats, ROI (>= 0.2-0), nloptr (>= 1.0.1)
 License: GPL-3
