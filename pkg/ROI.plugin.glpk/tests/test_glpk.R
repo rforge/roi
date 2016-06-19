@@ -4,6 +4,8 @@
 suppressPackageStartupMessages( require("ROI") )
 ## solver to check
 solver <- "glpk"
+## load and register plug-in
+require( sprintf("ROI.plugin.%s", solver), character.only = TRUE )
 
 ## From Rglpk_solve_LP man page
 
