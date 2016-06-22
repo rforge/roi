@@ -96,7 +96,6 @@ solve_OP <- function( x, control ){
                                 ),
                         error = identity )
            }
-    Rcplex.close()
     if(inherits(out, "error")) {
         ## Explicitly catch and rethrow CPLEX unavailability errors.
         msg <- conditionMessage(out)
@@ -112,6 +111,7 @@ solve_OP <- function( x, control ){
         out <- .ROI_plugin_canonicalize_solution(solution, objval, status, .ROI_plugin_get_solver_name(getPackageName()) )
         if(value_is_list_of_solutions) out <- list(out)
     } else {
+        Rcplex.close()
         #class(out) <- c(class(x), class(out))
         out <- if(value_is_list_of_solutions)
             lapply( out, .ROI_plugin_canonicalize_solution(solution = out$xopt,
