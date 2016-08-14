@@ -115,9 +115,21 @@ solve_nloptr <- function( x, control ) {
     eval_g_eq <- build_equality_constraints(x, control$tol_constraints_eq)
     eval_jac_g_eq <- build_jacobian_equality_constraints(x, control$tol_constraints_eq)
 
-    o <- nloptr(x0 = control$x0, eval_f = objective_fun, eval_grad_f = gradient_fun,
-                lb = lb, ub = ub, eval_g_ineq = eval_g_ineq, eval_jac_g_ineq = eval_jac_g_ineq,
-                eval_g_eq = eval_g_eq, eval_jac_g_eq = eval_jac_g_eq, opts = control[-j] )
+    for (i in seq_len(3)) {
+        capture.output(
+        o <- try(nloptr(x0 = control$x0, eval_f = objective_fun, eval_grad_f = gradient_fun,
+                        lb = lb, ub = ub, eval_g_ineq = eval_g_ineq, eval_jac_g_ineq = eval_jac_g_ineq,
+                        eval_g_eq = eval_g_eq, eval_jac_g_eq = eval_jac_g_eq, opts = control[-j] ), silent=TRUE)
+        )
+        if ( (class(o) != "try-error") & 
+             check_eval_g_ineq(eval_g_ineq, o$solution, control$tol_constraints_ineq) & 
+             check_eval_g_eq(eval_g_eq, o$solution, control$tol_constraints_eq) ) {
+            break
+        } 
+    }
+    if (class(o) == "try-error") {
+        stop(attr(o, 'condition')[["message"]])
+    }
 
     optimum <- (-1)^x$maximum * o$objective
 
@@ -127,6 +139,19 @@ solve_nloptr <- function( x, control ) {
                                         solver    = solver,
                                         message   = o,
                                         algorithm = control$algorithm   )
+}
+
+check_eval_g_ineq <- function(eval_g_ineq, sol, tol) {
+    if ( is.null(eval_g_ineq) )
+        return(TRUE)
+    return( all(eval_g_ineq(sol) <= tol) )
+}
+
+check_eval_g_eq <- function(eval_g_eq, sol, tol) {
+    if ( is.null(eval_g_eq) )
+        return(TRUE)
+    ## difference to check_eval_g_ineq is only the abs
+    return( all(abs(eval_g_eq(sol)) <= tol) )
 }
 
 ## NLOPT Algorithmen
