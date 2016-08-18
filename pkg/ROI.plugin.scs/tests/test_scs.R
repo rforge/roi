@@ -1,4 +1,5 @@
 library(ROI)
+library(ROI.plugin.scs)
 
 check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
     if ( isTRUE(condition) ) return(invisible(NULL))
@@ -288,12 +289,19 @@ test_cp_09 <- function(solver) {
     check("CP-09@04", isTRUE(sum(abs(opt_sol_psd_2 - sol_psd_2)) < 1e-5))
 }
 
-local({test_cp_01("scs")})
-local({test_cp_02("scs")})
-local({test_cp_03("scs")})
-local({test_cp_04("scs")})
-local({test_cp_05("scs")})
-local({test_cp_06("scs")})
-local({test_cp_07("scs")})
-local({test_cp_08("scs")})
-local({test_cp_09("scs")})
+
+if ( !any("scs" %in% names(ROI_registered_solvers())) ) {
+    ## This should never happen.
+    cat("ROI.plugin.scs cloud not be found among the registered solvers.\n")
+} else {
+    print("Start Testing!")
+    local({test_cp_01("scs")})
+    local({test_cp_02("scs")})
+    local({test_cp_03("scs")})
+    local({test_cp_04("scs")})
+    local({test_cp_05("scs")})
+    local({test_cp_06("scs")})
+    local({test_cp_07("scs")})
+    local({test_cp_08("scs")})
+    local({test_cp_09("scs")})
+}

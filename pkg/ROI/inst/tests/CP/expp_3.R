@@ -28,11 +28,12 @@ test_that("Example 3", {
             bounds =  bound,
             maximum = TRUE)
 
-    for ( SOLVER in OP_applicable_solver(x) ) {
-        cat("  ", SOLVER)
-        opt <- ROI_solve(x, solver=SOLVER, control=list(eps=1e-12))
-        check( opt$solution , c(1, 1, exp(1)) )
-        cat("\n")
-    }  
+    for ( SOLVER in ROI_applicable_solvers(x) ) {
+        cat("  ", SOLVER, ": ", sep="")
+        opt <- ROI_solve(x, solver=SOLVER)
+        cat("opt: ", opt$obj, " ")
+        cat(equal( opt$solution , c(1, 1, exp(1))), "\n")
+    }
+    
 
 } )

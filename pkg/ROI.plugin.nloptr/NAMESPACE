@@ -1,6 +1,5 @@
 import("ROI")
 import("nloptr")
-import("registry")
 importFrom("stats", "na.exclude")
 importFrom("methods", "as")
 importFrom("methods", "getPackageName")

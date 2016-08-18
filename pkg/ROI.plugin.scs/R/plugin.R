@@ -300,6 +300,7 @@ solve_OP <- function(x, control=list()) {
     ## return(list(A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control))
     solver_call <- list(scs, A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control)
     mode(solver_call) <- "call"
+    ## if ( isTRUE(control$dry_run) )
     ## TODO: if dry_run isTRUE dann nicht solver ausfuehren sondern nur solver_call
     ##       zurueck geben.
     ## FIXME (for next release we add the possibility to only return the model): if (!isTRUE(control$dry_run)) {
@@ -319,7 +320,7 @@ solve_OP <- function(x, control=list()) {
     optimum <- (-1)^x$maximum * tryCatch({as.numeric(x_sol %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
     .ROI_plugin_canonicalize_solution( solution = x_sol,  optimum  = optimum,
                                        status   = out[["info"]][["statusVal"]],
-                                       solver   = solver, message  = out )
+                                       solver   = solver, message  = out, solver_call = solver_call )
                                       ## solver_call= if (isTRUE(control$return_call)) solver_call else NULL ) FIXME: Add solver_call
 }
 

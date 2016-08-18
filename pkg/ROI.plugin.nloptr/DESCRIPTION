@@ -5,6 +5,6 @@ Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the R Optimization Infrastructure ('ROI') package
         with the 'NLopt' solver for solving nonlinear optimization problems.
-Imports: methods, stats, utils, ROI (>= 0.2-1), nloptr (>= 1.0.1), registry
+Imports: methods, stats, utils, ROI (>= 0.2-1), nloptr (>= 1.0.1)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi

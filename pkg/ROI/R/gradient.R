@@ -103,3 +103,7 @@ print.jacobian <- function(x, ...) print(unclass(x), ...)
 ## TODO: 
 ## - J.F_constraint
 
+
+
+
+
