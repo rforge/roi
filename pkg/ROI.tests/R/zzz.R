@@ -1,6 +1,8 @@
 .onLoad <- function( libname, pkgname ) {
     ## LO-LC
     register_test(mksig("L", "L", "C", "V", "free", TRUE), "LP-01", test_lp_01)
+    register_test(mksig("L", "X", "C", "V", "free", TRUE), "LP-02", test_lp_02)
+    register_test(mksig("L", "X", "C", "V", "free", TRUE), "LP-03", test_lp_03)
 
     ## LO-LC-MI
     register_test(mksig("L", "L", "CI", "V", "free", TRUE), "MILP-01", test_milp_01)

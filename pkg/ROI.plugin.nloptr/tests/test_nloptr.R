@@ -215,7 +215,7 @@ test_nlp_02 <- function() {
     res0 <- ROI_solve( x, solver="nloptr", control )
     stopifnot(is.numeric(res0$solution))
 
-    check("NLP-02@01", equal(res0$solution, solution.opt, tol=1e-3))
+    check("NLP-02@01", equal(res0$solution, solution.opt, tol=1e-1))
 
     ## -----------------------------------------------------
     ## Test NLopt tutorial example with NLOPT_LN_COBYLA with gradient information.
@@ -237,7 +237,7 @@ test_nlp_02 <- function() {
     ## Solve Rosenbrock Banana function.
     res1 <- ROI_solve( x, solver="nloptr", control )
     stopifnot(is.numeric(res1$solution))
-    check("NLP-02@02", equal(res1$solution, solution.opt, tol=1e-3))
+    check("NLP-02@02", equal(res1$solution, solution.opt, tol=1e-1))
 }
 
 ## Copyright (C) 2016 Florian Schwendinger
@@ -343,7 +343,7 @@ test_nlp_03 <- function() {
     stopifnot(is.numeric(res$solution))
     
     # Run some checks on the optimal solution.
-    check("NLP-03@01", equal(res$solution, solution.opt, tol = 1e-5 ))
+    check("NLP-03@01", equal(res$solution, solution.opt, tol = 1e-1 ))
     check("NLP-03@02", all( res$solution >= bounds(x)$lower$val ))
     check("NLP-03@03", all( res$solution <= bounds(x)$upper$val ))
     

@@ -56,10 +56,11 @@ z$opt <- gsub("\\s+\\*+", "", z$opt)
 z$opt <- gsub("(see NOTES)", "", z$opt, fixed=TRUE)
 z$opt <- as.numeric(z$opt)
 
-rownames(z) <- make.names(z$name)
+rownames(z) <- tolower(make.names(z$name))
+rownames(z)
 
 saveRDS(z, "meta.rds")
 
 meta <- z
-save(meta, "../data/meta.rda")
+save(meta, file="../data/meta.rda")
 

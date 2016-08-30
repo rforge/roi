@@ -54,8 +54,26 @@ download_mps_files <- function() {
     return(roi_ops)
 }
 
-download_netlib <- function(folder = system.file("data", package = "ROI.models.netlib")) {
+##  -----------------------------------------------------------
+##  netlib_download 
+##  ===============
+##' @title Download the 'NETLIB-LP' Test Problem Set
+##' @description The \code{NETLIB-LP} test problem set is downloaded and
+##'     transformed from the \code{MPS} format into the \pkg{ROI} format.
+##'     The results are stored as \code{'.rda'} file at the location provided 
+##'     via the parameter \code{folder}.
+##' @param folder an optional character giving the location where the
+##'     'NETLIB-LP' test problem set should be downloaded to.
+##' @examples
+##' \dontrun{
+##' netlib_download()
+##' netlib_download("data/netlib")
+##' }
+##' @export
+##  -----------------------------------------------------------
+netlib_download <- function(folder = system.file("data", package = "ROI.models.netlib")) {
     stopifnot( dir.exists(folder) )
+    folder <- normalizePath(folder)
     netlib_mps <- download_mps_files()
     
     for (n in names(netlib_mps)) {
@@ -63,7 +81,49 @@ download_netlib <- function(folder = system.file("data", package = "ROI.models.n
         op <- netlib_mps[[n]]
         save(op, file=fname)
     }
+}
 
+netlib_meta <- function() {
+    folder <- system.file("data", package = "ROI.models.netlib")
+    fname <- file.path(folder, "meta.rda")
+    stopifnot( isTRUE(file.exists(fname)) )
+    env <- new.env(hash=FALSE, parent=emptyenv())
+    load(fname, envir=env)
+    return(env$meta)
+}
+
+
+netlib_ls <- function(folder=NULL, file_extension=TRUE) {
+    if ( is.null(folder) ) {
+        folder <- system.file("data", package = "ROI.models.netlib")
+    } else {
+        folder <- normalizePath(folder)
+    }
+    fnames <- setdiff(dir(folder), "meta.rda")
+    if ( !file_extension ) {
+        fnames <- gsub(".rda", "", fnames, fixed=TRUE)
+    }
+    return(fnames)
+}
+
+netlib_single_op <- function(op_name, folder) {
+    fname <- file.path(folder, op_name)
+    env <- new.env(hash=FALSE, parent=emptyenv())
+    load(fname, envir=env)
+    return(env$op)
+}
+
+netlib_op <- function(op_names=netlib_ls(), folder=NULL) {
+    stopifnot( any(op_names %in% netlib_ls()) )
+    if ( is.null(folder) ) {
+        folder <- system.file("data", package = "ROI.models.netlib")
+    } else {
+        folder <- normalizePath(folder)
+    }
+    if ( length(op_names) == 1 )  return(netlib_single_op(op_names, folder))
+    x <- lapply(op_names, netlib_single_op, folder=folder)
+    names(x) <- gsub(".rda", "", op_names, fixed=TRUE)
+    return(x)
 }
 
 if ( FALSE ) {

@@ -1,3 +1,6 @@
 import("ROI")
 import("Rglpk")
-exportPattern("download_netlib")
+export("netlib_download")
+export("netlib_meta")
+export("netlib_ls")
+export("netlib_op")
