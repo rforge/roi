@@ -15,7 +15,9 @@
 G <- function( x, ... )
     UseMethod("G")
 
-## FIXME: HWB suggested (see mail from 25.4.) to allow for using different gradient functions, e.g. in pracma HWB uses the "central difference formula". st: Implemented via ROI_options. sould be documented how this works
+## FIXME: HWB suggested (see mail from 25.4.) to allow for using different gradient functions, 
+##        e.g. in pracma HWB uses the "central difference formula". st: Implemented via ROI_options. 
+##        should be documented how this works
 ##' @noRd
 ##' @export
 G.F_objective <- function( x, ... ){
@@ -100,8 +102,28 @@ J.Q_constraint <- function(x, ...) {
 ##' @export
 print.jacobian <- function(x, ...) print(unclass(x), ...)
 
-## TODO: 
-## - J.F_constraint
+## TODO: J.F_constraint, test this function and add it to ROI.plugin.nloptr
+##' @noRd
+##' @export
+J.F_constraint <- function(x, ...) {
+    args <- list(...)
+    J_fun <- terms(x)$J
+    if ( is.null(J_fun) ) {
+        fun <- function(func) {
+            args$func <- func
+            J_fun <- function(x) {
+                args$x <- x
+                do.call(ROI_options("jacobian"), args = args)
+            }
+            return(J_fun)
+        }
+        J_fun <- lapply(terms(x)$F, fun)
+        class(J_fun) <- c(class(J_fun), "jacobian")
+    }
+    stopifnot( all(sapply(J_fun, is.function)) )
+    return(J_fun)
+}
+
 
 
 

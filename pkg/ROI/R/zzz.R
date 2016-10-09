@@ -94,8 +94,10 @@ control_db <- add_control_db_schema( control_db )
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
     ## OPs is the default solver
     ROI_options( "default_solver", "auto" )
-    ## NOTE: tryCatch since numDeriv has to be installed!
-    tryCatch({ROI_options( "gradient", numDeriv::grad )}, error=function(e) NULL)
+    ## NOTE: try since numDeriv has to be installed!
+    try(ROI_options("gradient", numDeriv::grad), silent=TRUE)
+    try(ROI_options("jacobian", numDeriv::jacobian), silent=TRUE)
+
     ROI_options("solver_selection_table", list(default = c("glpk", "ecos", "cplex", "quadprog", "nlminb"),
                                                  LP = c("glpk", "ecos", "cplex"),
                                                  QP = c("quadprog", "cplex", "ipop"),
