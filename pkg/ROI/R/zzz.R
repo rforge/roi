@@ -116,11 +116,14 @@ control_db <- add_control_db_schema( control_db )
         solvers <- NULL
     else
         solvers <- ROI_installed_solvers( lib.loc = libname )
-    lapply( solvers, function( pkgname ){ nmspc <- tryCatch(getNamespace(pkgname), error = identity)
-                                          if( !inherits(nmspc, "error") ){
-                                              load <- methods::getFunction( ".onLoad", where = nmspc )
-                                              load( libname = libname, pkgname = pkgname )
-                                          }} )
+
+    for ( pkgname in solvers ) { 
+        nmspc <- tryCatch(getNamespace(pkgname), error = identity)
+        if( !inherits(nmspc, "error") ) {
+            load <- methods::getFunction( ".onLoad", where = nmspc )
+            load( libname = libname, pkgname = pkgname )
+        }
+    }
     ## Startup messages
     packageStartupMessage( sprintf("%s: R Optimization Infrastructure", pkgname) )
     packageStartupMessage( sprintf("Registered solver plugins: %s.",

@@ -468,12 +468,13 @@ length.L_constraint <- function( x )
 ##' @noRd
 ##' @export
 ##  c("n_constraints", "n_L_constraints", "n_Q_constraints", "n_F_constraints")
+##  The Problem is we overwrite length therefore str will fail since it iterates over the length.
+##  I seems easiest to just change the class information, so it get's printed correctly and
+##  length is not dispached to it's ROI implementations.
 str.constraint <- function(object, ...) {
-    i <- grep("n_.*constraints", names(attributes(qc)))
-    attributes(qc)[[i]] <- length(unclass(object))
-    str_default(object)
+    class(object) <- paste(shQuote(class(object)), collapse=" ")
+    str(object)
 }
-
 
 ##  the linear term of the left hand side
 ##  ----------------------------------------------------------

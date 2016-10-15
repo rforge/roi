@@ -98,10 +98,9 @@ str_default <- function(object, ...) getNamespace("utils")$str.default(object, .
 ##' @noRd
 ##' @export
 str.objective <- function(object, ...) {
-    attributes(object)$nobj <- length(unclass(object))
-    str_default(object)
+    class(object) <- paste(shQuote(class(object)), collapse=" ")
+    str(object)
 }
-
 
 ##' @noRd
 ##' @export
@@ -406,9 +405,10 @@ as.F_objective.function <- function( x ){
     F_objective( F = x, n = n, G = G, names = names )
 }
 
-.check_function_for_sanity <- function(F, n){
+.check_function_for_sanity <- function(F, n) {
     ## TODO: check if F is really a function and n is an integer, for meaning full
     ##       error messages!
+    stopifnot( is.numeric(n) )
     ans <- tryCatch( F(rep.int(0, n)), error = identity )
     if( inherits(ans, "error") )
         stop(sprintf("cannot evaluate function 'F' using 'n' = %d parameters.", n))
