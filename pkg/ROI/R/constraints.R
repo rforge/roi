@@ -791,7 +791,8 @@ F_constraint <- function(F, dir, rhs, J=NULL, names=NULL){
     n_dir <- length( dir )
     n_F_constraints <- length( rhs )
     ## length of F, dir and rhs need to be equal
-    stopifnot( all(c(n_F, n_dir) == n_F_constraints) )
+    stopifnot( n_dir == n_F_constraints )
+    ## stopifnot( length() == n_F_constraints) )
     structure( list(F   = F,
                     dir = dir,
                     rhs = rhs,
