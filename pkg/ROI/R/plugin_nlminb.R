@@ -108,7 +108,7 @@ get_ub <- function(x) {
                     hessian = hessian,
                     control = control )
     .ROI_plugin_canonicalize_solution( solution  = out$par,
-                                       optimum   = objective(x)(out$solution),
+                                       optimum   = objective(x)(out$par),
                                        status    = out$convergence,
                                        solver    = solver,
                                        message   = out )
