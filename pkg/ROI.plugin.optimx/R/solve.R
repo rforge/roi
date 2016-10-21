@@ -46,8 +46,8 @@ solve_optimx <- function( x, control ) {
     opti$itnmax <- control$itnmax    
     opti$hessian <- if ( is.null(control$hessian) ) FALSE else control$hessian
     if ( is.null(control$method) ) control$all.methods <- TRUE
-    cn <- setdiff(names(control), c("par", "hess", "method", "itnmax", "hessian"))
     control$maximize <- x$maximum
+    cn <- setdiff(names(control), c("par", "hess", "method", "itnmax", "hessian"))
     opti$control <- control[cn]
     mode(opti) <- "call"
 

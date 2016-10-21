@@ -27,4 +27,6 @@
     register_test(mksig("Q", "Q", "C", "V", "free", FALSE), "QCQP-01", test_qcqp_01)
 
 
+    register_test(mksig("F", "X", "C", "V", "free", FALSE), "NLP-01", test_nlp_01)    
+
 }

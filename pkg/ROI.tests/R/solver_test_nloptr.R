@@ -16,7 +16,7 @@
 ##   27/10/2013: Changed example to use unit testing framework testthat.
 ##   08/06/2016: Changed into the ROI format.
 
-test_nlp_01 <- function(solver) {
+test_nloptr01 <- function(solver) {
     ## Rosenbrock Banana objective function
     eval_f <- function(x) {
         return( 100 * (x[2] - x[1] * x[1])^2 + (1 - x[1])^2 )
@@ -158,7 +158,7 @@ test_nlp_01 <- function(solver) {
 ## CHANGELOG:
 ##   03/05/2014: Changed example to use unit testing framework testthat.
 ##   08/06/2016: Changed into the ROI format.
-test_nlp_02 <- function(solver) {
+test_nloptr02 <- function(solver) {
     ## objective function
     eval_f0 <- function( x ) { 
         return( sqrt(x[2]) )
@@ -260,7 +260,7 @@ test_nlp_02 <- function(solver) {
 ## CHANGELOG:
 ##   05/05/2014: Changed example to use unit testing framework testthat.
 ##   08/06/2016: Changed into the ROI format.
-test_nlp_03 <- function(solver) {
+test_nloptr03 <- function(solver) {
     ##
     ## f(x) = x1^2 + x2^2
     ##
@@ -363,7 +363,7 @@ test_nlp_03 <- function(solver) {
 ## CHANGELOG:
 ##   05/05/2014: Changed example to use unit testing framework testthat.
 ##   08/06/2016: Changed into the ROI format.
-test_nlp_04 <- function(solver) {   
+test_nloptr04 <- function(solver) {   
     ##
     ## f(x) = x1*x4*(x1 + x2 + x3) + x3
     ##
@@ -438,7 +438,7 @@ test_nlp_04 <- function(solver) {
 ## CHANGELOG:
 ##   05/05/2014: Changed example to use unit testing framework testthat.
 ##   08/06/2016: Changed into the ROI format.
-test_nlp_05 <- function(solver) {   
+test_nloptr05 <- function(solver) {   
     ## -----------------------------------------------------
     ## Test simple polyonmial where parameters are supplied as additional data.
     ## -----------------------------------------------------
@@ -494,7 +494,7 @@ test_nlp_05 <- function(solver) {
 ## CHANGELOG:
 ##   05/05/2014: Changed example to use unit testing framework testthat.
 ##   08/06/2016: Changed into the ROI format.
-test_nlp_06 <- function(solver) {   
+test_nloptr06 <- function(solver) {   
     ## -----------------------------------------------------
     ## Test simple constrained optimization problem with gradient information.
     ## -----------------------------------------------------
@@ -589,7 +589,7 @@ test_nlp_06 <- function(solver) {
 ##   16/06/2011: added NLOPT_LD_SLSQP
 ##   05/05/2014: Changed example to use unit testing framework testthat.
 ##   08/06/2016: Changed into the ROI format.
-test_nlp_07 <- function(solver) {
+test_nloptr07 <- function(solver) {
     ## -----------------------------------------------------
     ## Solve system of equations using NLOPT_LD_MMA with local optimizer NLOPT_LD_MMA.
     ## -----------------------------------------------------
@@ -701,7 +701,7 @@ test_nlp_07 <- function(solver) {
 ## 2 x_1  +    x_2  +  2 x_3  <= 40
 ##   x_1  +  3 x_2  +  2 x_3  <= 80 
 ## x_1, x_2, x_3 >= 0
-test_nlp_08 <- function(solver) {
+test_nloptr08 <- function(solver) {
     ## -----------------------------------------------------
     ## Test transformation from LP to NLP
     ## -----------------------------------------------------

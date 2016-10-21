@@ -49,5 +49,3 @@ res
 attributes(res)$meta
 solution(res)
 solution(res, "msg")
-
-

@@ -42,6 +42,8 @@ ROI_available_solver_controls <- function(){
        "max_iter",         ## INTEGER: maximum number of iterations
        "max_time",         ## INTEGER: maximum time spent solving the problem in milliseconds before abort is triggered
        "tol",              ## NUMERIC: tolerance of termination criterion
+       "abs_tol",          ## NUMERIC: absolute tolerance of termination criterion
+       "rel_tol",          ## NUMERIC: relative tolerance of termination criterion
        "method",           ## CHARACTER: giving the algorithm
        "start"             ## NUMERIC: a numeric vector giving the start values
       )

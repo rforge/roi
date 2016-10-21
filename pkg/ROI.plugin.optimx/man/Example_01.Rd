@@ -28,5 +28,5 @@ nlp
 ## The objective value is: 4.979684e-30
 solution(nlp)
 ## [1] 1 1
-}
 
+}

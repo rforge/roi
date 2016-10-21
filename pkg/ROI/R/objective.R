@@ -349,7 +349,7 @@ as.function.F_objective <- function( x, ... ){
     G <- x$G
     nobj <- attr(x, "nobj")
     names <- terms(x)[["names"]]
-    out <- function(x){
+    out <- function(x) {
         F(x)
     }
     class(out) <- c(class(out), class(x))

@@ -16,7 +16,7 @@ ROI_make_NLP_FXCV_signatures <- function()
     .ROI_plugin_register_solver_control( solver, "itnmax", "max_iter" )
     .ROI_plugin_register_solver_control( solver, "trace", "verbose" )
     .ROI_plugin_register_solver_control( solver, "abstol", "abs_tol" )
-    .ROI_plugin_register_solver_control( solver, "rel", "rel_tol" )
+    .ROI_plugin_register_solver_control( solver, "reltol", "rel_tol" )
 
 
     .ROI_plugin_register_solver_control( solver, "hessian", "X" )
