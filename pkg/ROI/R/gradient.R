@@ -124,6 +124,19 @@ J.F_constraint <- function(x, ...) {
     return(J_fun)
 }
 
+##' @noRd
+##' @export
+##  NOTE: returns the jaccobian (not a list of length 1 containing the jaccobian)
+J.function <- function(f) {
+    args <- list()
+    args$func <- f
+    jfun <- function(x) {
+        args$x <- x
+        do.call(ROI_options("jacobian"), args = args)
+    }
+    return(jfun)
+}
+
 
 
 

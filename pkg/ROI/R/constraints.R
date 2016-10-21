@@ -224,16 +224,13 @@ is.NO_constraint <- function( x ) {
     inherits( x, "NO_constraint" )
 }
 
-rbind_NO_constraint <- function( ..., recursive = FALSE ){
-    constraints <- list(...)
+rbind_NO_constraint <- function(constraints) {
     nc <- unlist(lapply(constraints, is.NO_constraint))
-    dims <- unlist(lapply(constraints, function(x) dim(x)[1]))
+    dims <- unlist(lapply(constraints, function(x) dim(x)[2]))
     stopifnot( all(dims == dims[1]) )
-    ## FIXME: shouldn't we check dimensionaliy of constraints?
-    if( all(nc) )
-        constraints[[1]]
-    else
+    if( !all(nc) )
         stop( "can only rbind objects of class 'NO_constraint'." )
+    return( constraints[[1]] )
 }
 
 ##' @noRd
@@ -783,7 +780,7 @@ as.Q_term.NULL <- function( x, ... ) {
 ##' @export
 F_constraint <- function(F, dir, rhs, J=NULL, names=NULL){
     stopifnot( row_sense_is_feasible(dir) )
-    stopifnot( (length(F) == length(J)) | is.null(J) )
+    ##FIXME: (wieder einkommentieren)# stopifnot( (length(F) == length(J)) | is.null(J) )
     F     <- as.F_term( F )
     J     <- as.J_term( J )
     rhs   <- as.rhs( rhs )
@@ -859,9 +856,9 @@ rbind_F_constraint <- function( constraints ) {
     dir <- unlist(lapply(constraints, "[[", "dir"), use.names=FALSE)
     rhs <- unlist(lapply(constraints, "[[", "rhs"), use.names=FALSE)
     jac <- unlist(lapply(constraints, "[[", "J"), use.names=FALSE)
-    names <- 
-    ## NOTE: should we check the dims? I currently don't since it should be correct
-    ##       as a result of the checks before
+    ## FIXME (names was here without an assignment) : names <- 
+    ## NOTE: should we check the dims? I currently don't since it 
+    ##       should be correct as a result of the checks before
     F_constraint(F=fun, dir=dir, rhs=rhs, J=jac, names=names)
 }
 
