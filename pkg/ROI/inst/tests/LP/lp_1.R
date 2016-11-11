@@ -18,7 +18,7 @@ test_that("LP Example 1", {
                                         rhs = c(60, 40, 80)),
              maximum = TRUE)
 
-    opt <- ROI_solve(lp, solver = SOLVER, control=list(DEBUG=TRUE))
+    opt <- ROI_solve(lp, solver = SOLVER)
     expect_true( equal(opt$solution, c(0, 20/3, 50/3), tol=1e-4) )
     expect_true( equal(opt$objval, 230/3, tol=1e-4) )
 } )
