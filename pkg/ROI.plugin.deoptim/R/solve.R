@@ -1,0 +1,64 @@
+## get_lb
+## ======
+##
+## get lower bound constraints
+get_lb <- function(x) {
+    if( !length(bounds(x)$lower$val) ) {
+        lb <- 0
+    } else {
+        lb <- numeric( length(x$objective) )
+        lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
+    }
+    return(lb)
+}
+
+## get_ub
+## ======
+##
+## get upper bound constraints
+get_ub <- function(x) {
+    if( !length(bounds(x)$upper$val) ) {
+        ub <- Inf
+    } else {
+        ub <- rep.int(Inf, length(x$objective))
+        ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
+    }
+    return(ub)
+}
+
+.deoptim_control_names <- c("VTR", "strategy", "NP", "itermax", "CR", "F", "bs", "trace",  "initialpop", "storepopfrom", "storepopfreq", "p", "c", "reltol",  "steptol", "parallelType", "packages", "parVar", "foreachArgs")
+
+solve_deoptim <- function( x, control ) {
+    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+
+    lb <- get_lb(x)
+    ub <- get_ub(x)
+
+    opti <- list(DEoptim)
+    if ( isTRUE(x$maximum) ) {
+        objective_function <- terms(objective(x))$F
+        opti$fn <- function(x) -objective_function(x)
+    } else {
+        opti$fn <- terms(objective(x))$F
+    }
+    opti$lower <- lb
+    opti$upper <- ub
+    opti$fnMap <- control$fnMap
+    opti$control <- control[intersect(names(control), .deoptim_control_names)]
+    
+    mode(opti) <- "call"
+
+    if ( isTRUE(control$dry_run) )
+        return( opti )
+
+    out <- eval(opti)
+
+    solution <- setNames(out$optim$bestmem, terms(objective(x))$names)
+
+    .ROI_plugin_canonicalize_solution(  solution  = solution,
+                                        optimum   = out$optim$bestval,
+                                        status    = 0L,
+                                        solver    = solver,
+                                        message   = out)
+}
+
