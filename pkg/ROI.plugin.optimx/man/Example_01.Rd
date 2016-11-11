@@ -1,9 +1,11 @@
 \name{Example-1}
-\title{NLP 1}
+\title{Banana}
 
 \description{
-The following example solves the Rosenbrock function (\url{https://en.wikipedia.org/wiki/Rosenbrock_function}).
+The following example is also known as Rosenbrock's banana function 
+(\url{https://en.wikipedia.org/wiki/Rosenbrock_function}).
 \deqn{minimize \ f(x) = 100 (x_2 - x_1^2)^2 + (1 - x_1)^2}
+Solution: \code{c(1, 1)}
 }
 
 \examples{
@@ -22,7 +24,7 @@ f.gradient <- function(x) {
 x <- OP( objective = F_objective(f, n=1L, G=f.gradient), 
          bounds = V_bound(li=1:2, ui=1:2, lb=c(-3, -3), ub=c(3,  3)) )
 
-nlp <- ROI_solve(x, solver="optimx", control, start=c(-1.2, 1), method = "Rvmmin")
+nlp <- ROI_solve(x, solver="optimx", start=c(-1.2, 1), method = "Rvmmin")
 nlp
 ## Optimal solution found.
 ## The objective value is: 4.979684e-30
