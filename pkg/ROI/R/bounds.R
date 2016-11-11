@@ -122,11 +122,13 @@ print.bound <- function(x, ...){
 #' V_bound(li=c(1, 5, 10), ui=13, lb=rep.int(-Inf, 3), ub=100, nobj=20)
 ##' @author Stefan Theussl
 ##' @export
-V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
+V_bound <- function( li, ui, lb, ub, nobj) {
     if ( missing(li) ) li <- integer()
     if ( missing(ui) ) ui <- integer()
     if ( missing(lb) ) lb <- double()
     if ( missing(ub) ) ub <- double()
+    if ( missing(nobj) ) 
+        nobj <- max(li, ui)
     li <- as.integer(li)
     ui <- as.integer(ui)
     lb <- as.double(lb)
@@ -148,7 +150,7 @@ V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
     if ( any(duplicated(li)) || any(duplicated(ui)) )
         stop("duplicated entries in indices.")
     if ( length(li) )
-        if( (max_li <- max(li)) > nobj )
+        if( max(li) > nobj )
             stop("indices must not exceed number of objective coefficients.")
     if ( length(ui) )
         if( max(ui) > nobj )
@@ -157,13 +159,6 @@ V_bound <- function( li, ui, lb, ub, nobj = max(li, ui) ) {
         stop("lower bound cannot be 'Inf'.")
     if ( any(ub <= -Inf) )
         stop("upper bounds cannot be '-Inf'.")
-    ##if ( length(li) & length(ui) & (max_li < min(ui)) ) {
-    ##    m <- match(li, ui)
-    ##    b <- !is.na(m)
-    ##    if ( any(lb[b] > ub[m[b]]) | any(lb[li %in% ui[ub < 0]] > 0) ) {
-    ##        error("MISSPECIFICATION", "lower bounds must not exceed upper bounds.", "V_bound")
-    ##    }
-    ##}
     structure( list(lower = list(ind = li, val = lb),
                     upper = list(ind = ui, val = ub),
                     nobj = as.integer(nobj)),

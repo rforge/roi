@@ -923,17 +923,19 @@ is.constraint <- function(x) inherits(x, "constraint")
 ##' @export
 print.constraint <- function( x, ... ){
     len <- length(x)
-    if ( is.NO_constraint(x) )
+    if ( is.NO_constraint(x) ) {
         writeLines( "An object of type 'NO_constraint'." )
-    if ( is.L_constraint(x) )
+    } else if ( is.L_constraint(x) ) {
         writeLines( sprintf("An object containing %d linear constraints.", len) )
-    else
-        if( is.Q_constraint(x) )
+    } else {
+        if( is.Q_constraint(x) ) {
             writeLines( c(sprintf("An object containing %d constraints.", len),
                           "Some constraints are of type quadratic.") )
-        else
+        } else {
             writeLines( c(sprintf("An object containing %d constraints.", len),
                           "Some constraints are of type nonlinear.") )
+        }
+    }
     invisible(x)
 }
 
@@ -1025,6 +1027,10 @@ as.F_constraint <- function(x, ...) UseMethod( "as.F_constraint" )
 ##' @rdname F_constraint
 ##' @export
 as.F_constraint.NULL <- function(x, ...) x
+
+##' @rdname F_constraint
+##' @export
+as.F_constraint.NO_constraint <- function(x, ...) x
 
 ##' @rdname F_constraint
 ##' @export

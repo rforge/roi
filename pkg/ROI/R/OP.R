@@ -71,13 +71,7 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
     types <- as.types(types)
     maximum <- as.logical(maximum)
     ## TODO: as.bounds
-    ## check objective: the length of the objective defines the length of the constraints
-
-    ## check constraints
-    if ( (!is.null(constraints)) & (!is.F_constraint(constraints)) ) {
-        if ( length(objective) != ncol(constraints) )
-            stop( "dimensions of 'objective' and 'constraints' not conformable." )
-    }
+    .check_constraints(constraints, objective)
     ## check types
     if ( !is.null(types) ) {
         if ( length(objective) != length(types) )
@@ -86,6 +80,21 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
     ## check bounds
     structure(list(objective = objective, constraints = constraints, bounds = bounds,
                    types = types, maximum = maximum), class = "OP")
+}
+
+.check_constraints <- function(con, obj) UseMethod(".check_constraints")
+.check_constraints.NULL <- function(con, obj) NULL
+.check_constraints.NO_constraint <- function(con, obj) NULL
+.check_constraints.L_constraint <- function(con, obj) {
+    if ( length(obj) != ncol(con) )
+        stop( "dimensions of 'objective' and 'constraints' not conformable." )
+}
+.check_constraints.Q_constraint <- .check_constraints.L_constraint
+.check_constraints.F_constraint <- function(con, obj) {
+    x0 <- rep.int(1, length(obj))
+    F_len <- sum(unlist(lapply(con$F, function(f) length(f(x0))), FALSE, FALSE)) 
+    if ( F_len != length(con$rhs) )
+        stop( "dimensions of 'rhs' and 'constraints' not conformable." )
 }
 
 .check_OP_for_sanity <- function( x ) {
@@ -122,15 +131,19 @@ print.OP <- function(x, ...){
     writeLines( sprintf("- %d objective variables,", length(objective(x))) )
     writeLines( "\nsubject to" )
     ## constraints
-    types <- c( L_constraint = "linear",
-                Q_constraint = "quadratic",
-                F_constraint = "nonlinear" )
-    writeLines( sprintf("- %d constraints of type %s.",
-                        length(constraints(x)),
-                        paste(na.omit(types[class(constraints(x))])[1],
-                              collapse = ", ")
-                        ) )
-        ## calculate if types have to be written to stdout
+    if ( is.NO_constraint(constraints(x)) ) {
+        writeLines("- 0 constraints")
+    } else {
+        types <- c( L_constraint = "linear",
+                    Q_constraint = "quadratic",
+                    F_constraint = "nonlinear" )
+        writeLines( sprintf("- %d constraints of type %s.",
+                            length(constraints(x)),
+                            paste(na.omit(types[class(constraints(x))])[1],
+                                  collapse = ", ")
+                            ) )
+    }
+    ## calculate if types have to be written to stdout
     writetypes <- FALSE
     if( !is.null(types(x)) )
         if( any(types(x) %in% available_types()[2:3]) )

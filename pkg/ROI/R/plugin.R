@@ -279,3 +279,247 @@ canonicalize_status <- function( status, solver ){
                       solver   = solver,
                       message  = message, ... )
 }
+
+
+
+##  -----------------------------------------------------------
+##  build_equality_constraints
+##  ==========================
+##' @title Build Functional Equality Constraints
+##
+##' @description There exist different forms of functional equality constraints,
+##'              this function transforms the form used in \pkg{ROI} into the
+##'              forms commonly used by \R optimization solvers.
+##' @param x an object of type \code{"OP"}.
+##' @param type an character giving the type of the function to be returned,
+##'        possible values are \code{"eq_zero"} or \code{"eq_rhs"}.
+##'        For more information see Details.
+##' @details There are two types of equality constraints commonly used in \R
+##' \enumerate{
+##' \item{\code{eq\_zero}:}{ \ \eqn{h(x) = 0} \ and}
+##' \item{\code{eq\_rhs}:}{ \ \eqn{h(x) = rhs} \ .}
+##' }
+##' @note This function only intended for plugin authors.
+##' @return Returns one function, which combines all the functional constraints.
+##' @family plugin functions
+##' @rdname ROI_plugin_build_equality_constraints
+##' @export
+.ROI_plugin_build_equality_constraints <- function(x, type=c("eq_zero", "eq_rhs")) {
+    stopifnot(type %in% c("eq_zero", "eq_rhs"))
+    co <- as.F_constraint(constraints(x))
+    if ( any(is.NO_constraint(co), is.null(co)) )
+        return( list(F=NULL, J=NULL) )
+    
+    stopifnot( is.F_constraint(co) )
+    x0 <- rep.int(0, length(objective(x)))
+    b <- co$dir == "=="
+    if ( !any(b) )
+        return( list(F=NULL, J=NULL) )
+    J <- if ( is.null(J) ) NULL else co$J[b]
+    if ( isTRUE(type == "eq_rhs") )
+        return( build_equality_constraints_rhs_x(co$F[b], J, x0) )
+    return( build_equality_constraints_rhs_zero(co$F[b], J, co$rhs[b], x0) )
+}
+
+length_F_constraint <- function(F, x0) {
+    sum(unlist(lapply(F, function(f) length(f(x0)))))
+}
+
+## h(x) == 0
+## return value is h
+build_equality_constraints_rhs_zero <- function(F, J, rhs, x0) {
+    if ( isTRUE(length(F) == 1) ) {
+        J <- if ( is.null(J) ) NULL else J[[1]]
+        if ( all(rhs == 0) ) {
+            return( list(F=F[[1]], J=J) )
+        } else {
+            return( list(F=function(x) (F[[1]](x) - rhs), J=J) )
+        }
+    }
+    if ( is.null(J) ) {
+        jaccobian_fun <- function(x) {
+            do.call(rbind, lapply(J, function(f) f(x)))
+        }    
+    } else {
+        jaccobian_fun <- NULL
+    }
+    if ( all( rhs == 0 ) ) {
+        eq_fun <- function(x) {
+            unlist(lapply(F, function(f) f(x)), FALSE, FALSE)
+        }
+        return( list(F=eq_fun, J=jaccobian_fun) )
+    }
+    ## NOTE: Since we allow single constraints to have length bigger than
+    ##       1 we have to group them.
+    ##       Grouped constraints are all obligated to have the same dir.
+    F_len <- sapply(F, function(f) length(f(x0)))
+    grhs <- mapply(seq, cumsum(c(1L, F_len[-length(F_len)])), cumsum(F_len), SIMPLIFY = FALSE)
+    build_fun <- function(CFUN, rhs) {
+        if ( all(rhs == 0) )
+            return(CFUN)
+        return( function(x) - rhs )
+    }
+    rhs <- lapply(grhs, function(i) rhs[i])
+    F <- mapply(build_fun, F, rhs, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    eq_fun <- function(x) {
+        unlist(lapply(F, function(f) f(x)), FALSE, FALSE)
+    }
+    return( list(F=eq_fun, J=jaccobian_fun) )
+}
+
+## h(x) == rhs
+## return value is h
+build_equality_constraints_rhs_x <- function(F, J, x0) {
+    if ( isTRUE(length(F) == 1) )
+        J <- if ( is.null(J) ) NULL else J[[1]]
+        return( list(F=F[[1]], J=J) )
+    eq_fun <- function(x) {
+        unlist(lapply(F, function(f) f(x)), FALSE, FALSE)
+    }
+    if ( is.null(J) ) {
+        jaccobian_fun <- function(x) {
+            do.call(rbind, lapply(J, function(f) f(x)))
+        }    
+    } else {
+        jaccobian_fun <- NULL
+    }
+    return( list(F=eq_fun, J=jaccobian_fun) )
+}
+
+## ## Build inequality constraints
+## There are five types of inequality constraints,    
+## 1. **leq_zero**
+## $$ g(x) \leq 0 $$
+## 2. **geq_zero**
+## $$ g(x) \geq 0 $$
+## 3. **leq_rhs**
+## $$ g(x) \leq rhs $$    
+## 4. **geq_rhs**
+## $$ g(x) \geq rhs $$
+## 5. **leq_geq_rhs**
+## $$ lhs \leq g(x) \leq rhs $$
+## Es gibt weniger relevante faelle.
+## c("leq_zero", "geq_zero", "leq_rhs", "geq_rhs", "leq_geq_rhs")
+##  -----------------------------------------------------------
+##  build_inequality_constraints
+##  ============================
+##' @title Build Functional Inequality Constraints
+##
+##' @description There exist different forms of functional inequality constraints,
+##'              this function transforms the form used in \pkg{ROI} into the
+##'              forms commonly used by \R optimization solvers.
+##' @param x an object of type \code{"OP"}.
+##' @param type an character giving the type of the function to be returned,
+##'        possible values are \code{"leq\_zero"} or \code{"geq\_zero"} or
+##'        or \code{"leq\_rhs"} or \code{"geq\_rhs"} or \code{"leq\_geq\_rhs"}.
+##'        For more information see Details.
+##' @details There are three types of inequality constraints commonly used in \R
+##' \enumerate{
+##' \item{\code{leq\_zero}:}{ \ \eqn{h(x) \leq 0} \ and}
+##' \item{\code{geq\_zero}:}{ \ \eqn{h(x) \geq 0} \ and}
+##' \item{\code{leq_geq\_rhs}:}{ \ \eqn{lhs \geq h(x) \leq rhs} \ .}
+##' }
+##' @note This function only intended for plugin authors.
+##' @return Returns one function, which combines all the functional constraints.
+##' @family plugin functions
+##' @rdname ROI_plugin_build_inequality_constraints
+##' @export
+.ROI_plugin_build_inequality_constraints <- function(x, type=c("leq_zero", "geq_zero", "leq_geq_rhs")) {
+    stopifnot(type %in% c("leq_zero", "geq_zero", "leq_geq_rhs"))
+    co <- as.F_constraint(constraints(x))
+    if ( any(is.NO_constraint(co), is.null(co)) )
+        return( list(F=NULL, J=NULL) )
+
+    stopifnot( is.F_constraint(co) )
+    x0 <- rep.int(0, length(objective(x)))
+    ## for now we will treat < equal to <=
+    b <- co$dir %in% c("<", "<=", ">=", ">")
+    if ( !any(b) ) 
+        return( list(F=NULL, J=NULL) )
+
+    F_len <- sapply(co$F, function(f) length(f(x0)))
+    grhs <- mapply(seq, cumsum(c(1L, F_len[-length(F_len)])), cumsum(F_len), SIMPLIFY = FALSE)
+    dir <- lapply(grhs, function(i) co$dir[i])
+    ## TODO: this needs to be checked (we need a check which ensures that vector valued functions
+    ##       always use the same direction)
+    b <- sapply(dir, function(v) all(v %in% c("<", "<=", ">=", ">"))) 
+    J <- if ( is.null(co$J) ) NULL else co$J[b]
+    if ( isTRUE(type == "leq_zero") )
+        return( build_inequality_constraints(co$F[b], J, co$dir[b], co$rhs[b], x0, c("<", "<=")) )
+    else if ( isTRUE(type == "geq_zero") )
+        return( build_inequality_constraints(co$F[b], J, co$dir[b], co$rhs[b], x0, c(">", ">=")) )
+    ## else leq_geq_rhs
+    stop("TODO")
+}
+
+
+build_fun_dir_zero <- function(CFUN, dir, rhs, default_dir=c("<", "<=")) {
+    if ( is.null(CFUN) ) return(NULL)
+    if ( all(rhs == 0) ) {
+        if ( all(dir %in% default_dir) ) {
+            return( CFUN )
+        } 
+        return( function(x) (- CFUN(x)) )
+    }
+    if ( all(dir %in% default_dir) ) {
+        return( function(x) (CFUN(x) - rhs) )
+    }
+    return( function(x) (rhs - CFUN(x)) )
+}
+
+## F <- co$F[b]; dir <- co$dir[b]; rhs <- co$rhs[b]; default_dir <- c(">", ">=")
+## g(x) <= 0
+build_inequality_constraints <- function(F, J, dir, rhs, x0, default_dir) {
+    build_fun <- function(CFUN, dir, rhs) build_fun_dir_zero(CFUN, dir, rhs, default_dir)
+    if ( isTRUE(length(F) == 1) ) {
+        CF <- build_fun(F[[1]], dir, rhs)
+        CJ <- if ( is.null(J) ) J else build_fun(J[[1]], dir, 0)
+        return( list(F=CF, J=CJ) )
+    }
+
+    F_len <- sapply(F, function(f) length(f(x0)))
+    ## group right hand side
+    grhs <- mapply(seq, cumsum(c(1L, F_len[-length(F_len)])), cumsum(F_len), SIMPLIFY = FALSE)
+    rhs <- lapply(grhs, function(i) rhs[i])
+    dir <- lapply(grhs, function(i) dir[i])
+    F <- mapply(build_fun, F, dir, rhs, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    if ( !is.null(J) ) {
+        J <- mapply(build_fun, J, dir, rep.int(0, length(dir)), SIMPLIFY = FALSE, USE.NAMES = FALSE)
+        jaccobian_fun <- function(x) {
+            do.call(rbind, lapply(J, function(f) f(x)))
+        }
+    } else {
+        jaccobian_fun <- NULL
+    }
+    ineq_fun <- function(x) {
+        unlist(lapply(F, function(f) f(x)), FALSE, FALSE)
+    }
+    return( list(F=ineq_fun, J=jaccobian_fun) )
+}
+
+build_inequality_constraints_leq_geq_rhs <- function(F, dir, rhs, x0) {
+    build_fun <- function(CFUN, dir, rhs) {
+        if ( all(dir %in% c("<", "<=")) ) {
+            return( list(fun=CFUN, lb=rep.int(-Inf, length(rhs)), ub=rhs) )
+        }
+        return( list(fun=CFUN, lb=rhs, ub=rep.int(Inf, length(rhs))) )
+    }
+    
+    if ( isTRUE(length(F) == 1) ) {
+        return( build_fun(F[[1]], dir, rhs) )
+    }
+
+    F_len <- sapply(F, function(f) length(f(x0)))
+    grhs <- mapply(seq, cumsum(c(1L, F_len[-length(F_len)])), cumsum(F_len), SIMPLIFY = FALSE)
+    rhs <- lapply(grhs, function(i) rhs[i])
+    dir <- lapply(dir, function(i) dir[i])
+    X <- mapply(build_fun, F, dir, rhs, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    F <- lapply(X, "[[", "F")
+    lb <- lapply(X, "[[", "lb")
+    ub <- lapply(X, "[[", "ub")
+    ineq_fun <- function(x) {
+        unlist(lapply(F, function(f) f(x)), FALSE, FALSE)
+    }
+    return( list(fun=ineq_fun, lb=lb, ub=ub) )
+}
+
