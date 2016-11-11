@@ -3,6 +3,7 @@
 \name{F_constraint}
 \alias{F_constraint}
 \alias{as.F_constraint}
+\alias{as.F_constraint.NO_constraint}
 \alias{as.F_constraint.NULL}
 \alias{as.F_constraint.constraint}
 \alias{is.F_constraint}
@@ -21,6 +22,8 @@ is.F_constraint(x)
 as.F_constraint(x, ...)
 
 \method{as.F_constraint}{NULL}(x, ...)
+
+\method{as.F_constraint}{NO_constraint}(x, ...)
 
 \method{as.F_constraint}{constraint}(x, ...)
 }

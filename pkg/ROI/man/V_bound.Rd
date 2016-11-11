@@ -7,7 +7,7 @@
 \alias{is.V_bound}
 \title{Objective Variable Bounds}
 \usage{
-V_bound(li, ui, lb, ub, nobj = max(li, ui))
+V_bound(li, ui, lb, ub, nobj)
 
 \method{c}{V_bound}(...)
 

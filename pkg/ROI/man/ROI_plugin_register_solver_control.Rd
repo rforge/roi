@@ -21,6 +21,8 @@ Register a new solver control argument.
 }
 \seealso{
 Other plugin.functions: \code{\link{.ROI_plugin_add_status_code_to_db}},
+  \code{\link{.ROI_plugin_build_equality_constraints}},
+  \code{\link{.ROI_plugin_build_inequality_constraints}},
   \code{\link{.ROI_plugin_canonicalize_solution}},
   \code{\link{.ROI_plugin_get_solver_name}},
   \code{\link{.ROI_plugin_make_signature}},
