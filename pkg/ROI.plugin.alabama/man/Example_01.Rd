@@ -24,7 +24,7 @@ f.gradient <- function(x) {
 x <- OP( objective = F_objective(f, n=1L, G=f.gradient), 
          bounds = V_bound(li=1:2, ui=1:2, lb=c(-3, -3), ub=c(3,  3)) )
 
-nlp <- ROI_solve(x, solver="alabama", start=c(-1.2, 1))
+nlp <- ROI_solve(x, solver="alabama", start=c(-2, 2.4), method="bobyqa")
 nlp
 ## Optimal solution found.
 ## The objective value is: 3.049556e-23
