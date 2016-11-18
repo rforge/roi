@@ -109,8 +109,11 @@ solve_OP <- function(x, control=list()) {
     control.rm <- c("dry_run", "basis", "branch.mode", "branch.weights")
     lp_control <- do.call(lp.control, c(lp, control[!is.element(names(control), control.rm)]))
 
-    if ( isTRUE(control$dry_run) )
-        return(lp)
+    if ( isTRUE(control$dry_run) ) {
+        solver_call <- list(solve, lp)
+        mode(solver_call) <- "call"
+        return(solver_call)
+    }
 
     status <- solve(lp)
 
@@ -128,8 +131,6 @@ solve_OP <- function(x, control=list()) {
     sol$total_iter <- get.total.iter(lp)
     sol$total_nodes <- get.total.nodes(lp)
 
-    delete.lp(lp)
-
     x.solution <- tail(sol$solutions[[1]], nc)
     optimum <- tryCatch({as.numeric(objective(x)(x.solution))}, 
                         error=function(e) as.numeric(NA))
@@ -140,3 +141,62 @@ solve_OP <- function(x, control=list()) {
                                                message  = sol ) 
     )
 }
+
+write.op <- function(x, file, type=c("lp", "mps", "freemps")) {
+    type <- match.arg(type)
+    lp <- as.list(solve_OP(x, list(dry_run=TRUE, verbose="neutral")))[[2]]
+    write.lp(lp, file, type)
+    invisible(NULL)
+}
+
+col_to_slam <- function(col, j) {
+    names(col) <- c("v", "i")
+    col$j <- rep.int(j, length(col$v))
+    as.data.frame(col[c("i", "j", "v")])
+}
+
+lp_to_slam <- function(lp, ncol) {
+    fun <- function(j) col_to_slam(get.column(lp, j), j)
+    stm <- as.list(do.call(rbind, lapply(seq_len(ncol), fun)))
+    stm[['i']] <- stm[['i']] + 1L
+    stm <- c(stm, nrow=max(stm$i), ncol=ncol, dimnames=list(NULL))
+    class(stm) <- "simple_triplet_matrix"
+    stm
+}
+
+.type_map <- setNames(c("I", "B", "C"), c("integer", "binary", "real"))
+
+read.op <- function(file, type=c("lp", "mps", "freemps")) {
+    type <- match.arg(type)
+    
+    lp <- do.call(read.lp, as.list(c(filename=file, type=type, 
+                                     verbose="neutral")))
+
+    nr <- nrow(lp)
+    nc <- ncol(lp)
+    coeff <- lp_to_slam(lp, nc)
+
+    ## objective
+    obj <- coeff[1,]
+
+    ## constraints
+    con.L <- coeff[-1,]
+    con.dir <- c("<=", ">=", "==")[get.constr.type(lp, as.char=FALSE)]
+    con.rhs <- get.rhs(lp)
+    
+    ## types
+    ty <- unname(.type_map[get.type(lp)])
+
+    ## bounds
+    bo <- get.bounds(lp)
+    bo <- V_bound(li=seq_len(nc), ui=seq_len(nc), lb=bo$lower, ub=bo$upper, nobj=nc)
+    
+    ## maximium
+    is_maxi <- lp.control(lp)$sense == "maximize"
+
+    x <- OP(objective = L_objective(obj), 
+            constraints = L_constraint(con.L, con.dir, con.rhs),
+            types = ty, bounds = bo, maximum = is_maxi)
+    x
+}
+
