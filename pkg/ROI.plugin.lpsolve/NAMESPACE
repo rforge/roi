@@ -3,3 +3,6 @@ import("lpSolveAPI")
 importFrom("methods", "getPackageName", "getFunction")
 importFrom("stats", "setNames", "terms", "aggregate")
 importFrom("utils", "tail")
+
+export("write.op")
+export("read.op")
