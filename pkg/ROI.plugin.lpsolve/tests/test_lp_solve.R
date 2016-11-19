@@ -64,7 +64,6 @@ test_lp_03 <- function(solver) {
     check("LP-03@03", equal(opt$objval, 0, tol=1e-4))
 }
 
-
 if ( !any("lpsolve" %in% names(ROI_registered_solvers())) ) {
     ## This should never happen.
     cat("ROI.plugin.lpsolve cloud not be found among the registered solvers.\n")

@@ -17,8 +17,9 @@ write.op(x, file, type=c("lp", "mps", "freemps"))
   The optimization problems can be written to the three file formats \code{"lp"},
   \code{"mps"} and \code{"freemps"}.
   Where it seems important to note that the \code{"lp"} format refers to
-  \code{lpsolves} (\url{http://lpsolve.sourceforge.net/5.5/lp-format.htm}) 
-  native file format and not to the \code{CPLEX LP format}.
+  \code{lpsolves} native file format 
+  (\url{http://lpsolve.sourceforge.net/5.5/lp-format.htm}) 
+  and not to the \code{CPLEX LP format}.
 }
 \examples{
 \dontrun{

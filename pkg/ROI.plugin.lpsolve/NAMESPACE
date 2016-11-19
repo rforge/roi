@@ -6,3 +6,6 @@ importFrom("utils", "tail")
 
 export("write.op")
 export("read.op")
+
+S3method(".ROI_plugin_solution_dual", "lpsolve_solution")
+

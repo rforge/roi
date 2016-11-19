@@ -86,7 +86,7 @@ solve_OP <- function(x, control=list()) {
     if ( !is.null(control$basis) ) {
         stopifnot(length(control$basis$basis), is.numeric(control$basis$basis))
         if ( is.null(control$basis$nonbasic) ) control$basis$nonbasic <- FALSE
-        if ( is.null(control$basis$default) ) control$basis$default <- FALSE
+        if ( is.null(control$basis$default) ) control$basis$default <- TRUE
         set.basis(lp, control$basis$basis, control$basis$nonbasic, control$basis$default)
     }
     ## - branch.mode
@@ -123,7 +123,7 @@ solve_OP <- function(x, control=list()) {
     sol$dual_solutions <- vector("list", sol$solution_count)
     for ( i in seq_len(sol$solution_count) ) {
         select.solution(lp, i)
-        sol$solutions[[i]] <- get.primal.solution(lp)
+        sol$solutions[[i]] <- get.variables(lp)
         sol$dual_solutions[[i]] <- get.dual.solution(lp)
     }
     sol$sensitivity_objfun <- get.sensitivity.objex(lp)
@@ -131,7 +131,7 @@ solve_OP <- function(x, control=list()) {
     sol$total_iter <- get.total.iter(lp)
     sol$total_nodes <- get.total.nodes(lp)
 
-    x.solution <- tail(sol$solutions[[1]], nc)
+    x.solution <- sol$solutions[[1L]]
     optimum <- tryCatch({as.numeric(objective(x)(x.solution))}, 
                         error=function(e) as.numeric(NA))
     return( .ROI_plugin_canonicalize_solution( solution = x.solution, 
@@ -140,6 +140,10 @@ solve_OP <- function(x, control=list()) {
                                                solver   = solver, 
                                                message  = sol ) 
     )
+}
+
+.ROI_plugin_solution_dual.lpsolve_solution <- function(x) {
+    x[['message']][['dual_solutions']][[1L]]
 }
 
 write.op <- function(x, file, type=c("lp", "mps", "freemps")) {
