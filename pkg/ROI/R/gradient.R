@@ -49,7 +49,7 @@ G.Q_objective <- function( x, ... ){
     L <- terms(x)$L
     Q <- terms(x)$Q
     function(x)
-        c(slam::tcrossprod_simple_triplet_matrix(Q, t(x))) + c(L)
+        as.vector(slam::tcrossprod_simple_triplet_matrix(Q, t(x))) + as.vector(L)
 }
 
 
@@ -90,7 +90,7 @@ J.Q_constraint <- function(x, ...) {
         L <- terms(x)[['L']][i,]
         Q <- terms(x)[['Q']][[i]]
         return(function(x) {
-            c(slam::tcrossprod_simple_triplet_matrix(Q, t(x)) + t(L))
+            as.vector(slam::tcrossprod_simple_triplet_matrix(Q, t(x))) + as.vector(L)
         })
     }
     out <- lapply(seq_len(NROW(x$L)), J_fun)

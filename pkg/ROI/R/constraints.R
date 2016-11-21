@@ -444,8 +444,6 @@ rbind_L_constraint <- function( constraints, use.names = FALSE) {
     }
 }
 
-## FIXME: connection to rbind documentation
-
 ##' @noRd
 ##' @export
 c.L_constraint <- function( ..., recursive = FALSE )
@@ -742,15 +740,6 @@ as.Q_term.NULL <- function( x, ... ) {
     return( NULL )
 }
 
-## combine, print, and summary methods
-
-##summary.Q_constraint <- function(x){
-##
-##}
-
-
-## FIXME: Function constraints still incomplete and untested
-
 ################################################################################
 ## Function constraints (class 'F_constraint')
 ## list of constraints of the form f(x) ~ b
@@ -778,18 +767,20 @@ as.Q_term.NULL <- function( x, ... ) {
 ##' from \code{"constraint"}.
 ##' @author Stefan Theussl
 ##' @export
+## NOTE: checking the length of F_Constraints is a little more challenging since
+##       we allow a single F_Constraint to have a length greater than 1. Therefore
+##       to obtain the length we have to evaluate the constraints and get the length
+##       on the unlisted results.
 F_constraint <- function(F, dir, rhs, J=NULL, names=NULL){
     stopifnot( row_sense_is_feasible(dir) )
-    ##FIXME: (wieder einkommentieren)# stopifnot( (length(F) == length(J)) | is.null(J) )
+    stopifnot( (length(F) == length(J)) | is.null(J) )
     F     <- as.F_term( F )
     J     <- as.J_term( J )
     rhs   <- as.rhs( rhs )
     n_F   <- length( F )
     n_dir <- length( dir )
     n_F_constraints <- length( rhs )
-    ## length of F, dir and rhs need to be equal
     stopifnot( n_dir == n_F_constraints )
-    ## stopifnot( length() == n_F_constraints) )
     structure( list(F   = F,
                     dir = dir,
                     rhs = rhs,
@@ -849,17 +840,20 @@ is.F_constraint <- function( x ) {
     inherits( x, "F_constraint" )
 }
 
-rbind_F_constraint <- function( constraints ) {
+rbind_F_constraint <- function( constr ) {
     ## check if all inherit from constraint
-    constraints <- lapply(constraints, as.F_constraint)
-    fun <- unlist(lapply(constraints, "[[", "F"), use.names=FALSE)
-    dir <- unlist(lapply(constraints, "[[", "dir"), use.names=FALSE)
-    rhs <- unlist(lapply(constraints, "[[", "rhs"), use.names=FALSE)
-    jac <- unlist(lapply(constraints, "[[", "J"), use.names=FALSE)
-    ## FIXME (names was here without an assignment) : names <- 
-    ## NOTE: should we check the dims? I currently don't since it 
-    ##       should be correct as a result of the checks before
-    F_constraint(F=fun, dir=dir, rhs=rhs, J=jac, names=names)
+    constr <- lapply(constr, as.F_constraint)
+    cfun <- unlist(lapply(constr, "[[", "F"), use.names=FALSE)
+    cdir <- unlist(lapply(constr, "[[", "dir"), use.names=FALSE)
+    crhs <- unlist(lapply(constr, "[[", "rhs"), use.names=FALSE)
+    ## NOTE: We can just unlist it and if one constraint is missing 
+    ##       we just set them all NULL.
+    cjac <- unlist(lapply(constr, "[[", "J"), recursive=FALSE, use.names=FALSE)
+    if ( length(cjac) != length(cfun) ) cjac <- NULL
+    cnames <- lapply(constr, "[[", "names")
+    b <- sapply(cnames, is.null)
+    cnames <- if (any(b)) cnames[!b][[1]] else NULL
+    F_constraint(F=cfun, dir=cdir, rhs=crhs, J=cjac, names=cnames)
 }
 
 ##' @noRd
@@ -992,7 +986,7 @@ as.function.constraint <- function(x, ...) {
 as_function_L_constraint <- function( x, ... ) {
     fun <- function(L_row_i) {        
         f <- function(x) c(tcrossprod(L_row_i, t(x)))
-        class(f) <- c(class(f), class(x))
+        ##class(f) <- c(class(f), class(x))
         return(f)
     }
     ## NOTE: rowapply_simple_triplet_matrix doesn't save L_row_i
@@ -1008,7 +1002,7 @@ as_function_Q_constraint <- function(x, ...) {
         f <- function (x) {    
             c(tcrossprod_simple_triplet_matrix(L, t(x)) + 0.5 * .xtQx(Q, x))
         }
-        class(f) <- c(class(f), class(x))
+        ## class(f) <- c(class(f), class(x))
         return(f)
     }
     out <- lapply(seq_len(NROW(x)), fun)

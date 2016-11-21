@@ -56,6 +56,9 @@ c_C_bound <- function(...) {
 }
 
 c_2_cones <- function(x, y) {
+    if ( is.null(x) & is.null(y) ) return( NULL )
+    if ( is.null(x) ) return( y )
+    if ( is.null(y) ) return( x )
     cone <- list()
     for (co in union(names(x), names(y))) {
         cone[[co]] <- c(x[[co]], y[[co]])
@@ -87,11 +90,14 @@ is.bound <- function(x) inherits(x, "bound")
 
 ##' @noRd
 ##' @export
-print.bound <- function(x, ...){
-    if ( !is.null(x$lower) ) print.V_bound(x, ...)
+print.bound <- function(x, ...) {
+    if ( (!is.null(x$lower)) | (!is.null(x$upper)) ) {
+        print.V_bound(x, ...)
+        writeLines("\n")
+    }
     if ( !is.null(x$cones) ) {
-        if ( !is.null(x$lower) ) writeLines("\n")
         print.C_bound(x, ...)
+        writeLines("\n")
     }
 }
 
