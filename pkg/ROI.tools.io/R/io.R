@@ -2,19 +2,19 @@ read.lp <- ROI.plugin.lpsolve::read.lp
 write.lp <- ROI.plugin.lpsolve::write.lp
 
 get_namespace <- function(x) {
-	tryCatch(getNamespace(x), error=function(e) NULL)
+	tryCatch(loadNamespace(x), error=function(e) NULL)
 }
 
 read.qp <- function(file, type = c("auto", "SAV", "MPS", "LP")) {
     type <- match.arg(type)
     if (type == "auto") type <- NULL
 
-    if ( is.null((cplex <- get_namespace("cplexAPI"))) ) {
+    if ( !is.null((cplex <- get_namespace("cplexAPI"))) ) {
         env <- cplex$openEnvCPLEX(ptrtype = "cplex_env")
         prob <- cplex$initProbCPLEX(env, pname = "CPLEX_PROB", ptrtype = "cplex_prob")
         cplex$readCopyProbCPLEX(env, prob, file, ftype = type)
 
-        roi_op <- cplex$cplex_to_roi(env, prob, cplex)
+        roi_op <- cplex_to_roi(env, prob, cplex)
 
         cplex$delProbCPLEX(env, prob)
         cplex$closeEnvCPLEX(env)  
@@ -58,7 +58,7 @@ cplex_to_roi <- function(env, prob, cplex) {
     A.nrow <- cplex$getNumRowsCPLEX(env, prob)
 
     obj.L <- cplex$getObjCPLEX(env, prob, 0L, nobj-1L)
-    obj.Q <- cplex$cplex_matrix_to_simple_triplet_matrix(cplex$getQuadCPLEX(env, prob, 0L, nobj-1), nobj, nobj)
+    obj.Q <- cplex_matrix_to_simple_triplet_matrix(cplex$getQuadCPLEX(env, prob, 0L, nobj-1), nobj, nobj)
     obj.names <- cplex$getColNameCPLEX(env, prob, 0L, nobj-1L)
 
     if ( is.null(obj.Q) ) {
@@ -69,7 +69,7 @@ cplex_to_roi <- function(env, prob, cplex) {
 
     dir_map <- setNames(c('<=', '==', '>='), c('L', 'E', 'G'))
     if (A.nrow) {
-        con.L <- cplex$cplex_matrix_to_simple_triplet_matrix(cplex$getColsCPLEX(env, prob, 0L, nobj-1L), A.nrow, nobj)
+        con.L <- cplex_matrix_to_simple_triplet_matrix(cplex$getColsCPLEX(env, prob, 0L, nobj-1L), A.nrow, nobj)
         con.L.dir <- map_dir(cplex$getSenseCPLEX(env, prob, 0L, A.nrow-1L))
         con.L.rhs <- cplex$getRhsCPLEX(env, prob, 0L, A.nrow-1L)
         con.L.names <- cplex$getRowNameCPLEX(env, prob, 0L, A.nrow-1L)
@@ -83,7 +83,7 @@ cplex_to_roi <- function(env, prob, cplex) {
     if ( nqconstrs ) {
         con.Q <- vector("list", nqconstrs)
         for (i in seq_along(con.Q)) {
-            con.Q[[i]] <- cplex$cplex_to_Q_constraint(cplex$getQConstrCPLEX(env, prob, i-1L), nobj)
+            con.Q[[i]] <- cplex_to_Q_constraint(cplex$getQConstrCPLEX(env, prob, i-1L), nobj)
         }
         i
         con.Q <- do.call(c, con.Q)
