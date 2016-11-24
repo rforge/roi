@@ -83,6 +83,20 @@ netlib_download <- function(folder = system.file("data", package = "ROI.models.n
     }
 }
 
+##  -----------------------------------------------------------
+##  netlib_meta
+##  ===========
+##' @title Get Meta Data
+##' @description Ḿeta data for \code{NETLIB-LP} test problem set can
+##'   be obtained by simply calling \code{"netlib_met"}.
+##' @return
+##' @examples
+##' \dontrun{
+##' netlib_download()
+##' netlib_download("data/netlib")
+##' }
+##' @export
+##  -----------------------------------------------------------
 netlib_meta <- function() {
     folder <- system.file("data", package = "ROI.models.netlib")
     fname <- file.path(folder, "meta.rda")
@@ -124,24 +138,4 @@ netlib_op <- function(op_names=netlib_ls(), folder=NULL) {
     x <- lapply(op_names, netlib_single_op, folder=folder)
     names(x) <- gsub(".rda", "", op_names, fixed=TRUE)
     return(x)
-}
-
-if ( FALSE ) {
-    q("no")
-    R
-    require("Rglpk")
-    require(ROI)
-
-    i <- 1L
-
-    netlib_mps <- download_mps_files()
-    names(netlib_mps)
-    meta <- readRDS("../data/meta.rds")
-    nam <- tolower(rownames(meta))
-    length(names(netlib_mps))
-    length(nam)
-    intersect(names(netlib_mps), nam)
-    length(intersect(names(netlib_mps), nam))
-    setdiff(names(netlib_mps), nam)
-    setdiff(nam, names(netlib_mps))
 }

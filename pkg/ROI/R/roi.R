@@ -85,16 +85,7 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     control[names(dots)] <- dots
 
     x <- as.OP( x )
-
-    ## handle the boundary case of no variables.
-    ## #FIXME: @ST: should also consider other
-    ## #NOTE: @FS: The idea is that it sould also be possible to use the solvers
-    ##             to just find a feasible solution.
-    ##if( !length(terms(objective(x))$L) ) {
-    ##    y <- .solve_empty_OP(x)
-    ##    return(y)
-    ##}
-
+    
     methods <- get_solver_methods( OP_signature(x) )
     if ( !length(methods) ) {
         ## CASE: no method found for this signature

@@ -1,0 +1,12 @@
+Package: ROI.tools.io
+Type: Package
+Title: Tools for Reading and Writing Optimization Problems
+Version: 1.0
+Date: 2016-11-24
+Authors@R: c( person("Florian", "Schwendinger", role = c("aut", "cre"), email = "FlorianSchwendinger@gmx.at"),
+              person("Stefan", "Theussl", role = "aut") )
+Description: Tools for reading / writing 'ROI' optimization from / to files in several formats 
+             ('MPS_fixed', 'MPS_free', 'CPLEX_LP', 'MathProg').
+Imports: ROI (>= 0.2-1), ROI.plugin.lpsolve, slam
+Suggests: cplexAPI
+License: GPL-3

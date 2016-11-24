@@ -398,6 +398,26 @@ test_nlp_08 <- function() {
     check("NLP-08@01", equal(solution(nlp_opt), opt.solution))
 }
 
+## This test detects if each solver is using the same definition
+## for quadratic constraints.
+## minimize:    0.5 * (x^2 + y^2)
+## subject to:  0.5 * x^2 >= 0.5
+##      x, y >= 0
+## solution <- c(1, 0)
+test_qcqp_01 <- function() {
+    qo <- Q_objective(Q = diag(2), L =  numeric(2))
+    qc <- Q_constraint(rbind(c(1, 0), c(0, 0)), c(0, 0), dir=">=", rhs=0.5)
+    x <- OP(qo, qc)
+
+    opt <- ROI_solve(x, solver="alabama", start=c(3, 3))
+   
+    ## local_opts <- list( algorithm = "NLOPT_LD_LBFGS", xtol_rel  = 1e-4 )
+    ## opt <- ROI_solve(x, solver="nloptr", start=c(2, 2), method="NLOPT_LD_MMA")
+
+    check("QCQP-01@01", equal(solution(opt), c(1, 0)) )
+    check("QCQP-01@02", equal(opt$objval, 0.5) )
+}
+
 if ( !any("alabama" %in% names(ROI_registered_solvers())) ) {
     ## This should never happen.
     cat("ROI.plugin.nloptr cloud not be found among the registered solvers.\n")
@@ -415,4 +435,6 @@ if ( !any("alabama" %in% names(ROI_registered_solvers())) ) {
     local({test_nlp_07()})
     cat("OK\n"); cat("Test 08: \n")
     local({test_nlp_08()})
+    cat("OK\n"); cat("Test 09: \n")
+    local({test_qcqp_01()})
 }

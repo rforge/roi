@@ -16,8 +16,9 @@ map_types <- function(x) {
     if ( !length(types(x)) )
         return( list(real = seq_len(length(objective(x)))) )
     map <- setNames(c("integer", "binary", "real"), c("I", "B", "C"))
-    aggregate(id ~ type, data=data.frame(type=map[types(x)], id=seq_along(types(x)), 
-              stringsAsFactors=FALSE), FUN=c)
+    ty <- aggregate(id ~ type, data=data.frame(type=map[types(x)], id=seq_along(types(x)), 
+                    stringsAsFactors=FALSE), FUN=c, simplify=FALSE)
+    setNames(ty[,2], ty[,1])
 }
 
 .verbose_modes <- c("neutral", "critical", "severe", "important", "normal", "detailed", "full")
@@ -146,10 +147,10 @@ solve_OP <- function(x, control=list()) {
     x[['message']][['dual_solutions']][[1L]]
 }
 
-write.op <- function(x, file, type=c("lp", "mps", "freemps")) {
+write.lp <- function(x, file, type=c("lp", "mps", "freemps")) {
     type <- match.arg(type)
     lp <- as.list(solve_OP(x, list(dry_run=TRUE, verbose="neutral")))[[2]]
-    write.lp(lp, file, type)
+    lpSolveAPI::write.lp(lp, file, type)
     invisible(NULL)
 }
 
@@ -170,11 +171,11 @@ lp_to_slam <- function(lp, ncol) {
 
 .type_map <- setNames(c("I", "B", "C"), c("integer", "binary", "real"))
 
-read.op <- function(file, type=c("lp", "mps", "freemps")) {
+read.lp <- function(file, type=c("lp", "mps", "freemps")) {
     type <- match.arg(type)
     
-    lp <- do.call(read.lp, as.list(c(filename=file, type=type, 
-                                     verbose="neutral")))
+    lp <- do.call(lpSolveAPI::read.lp, as.list(c(filename=file, type=type, 
+                  verbose="neutral")))
 
     nr <- nrow(lp)
     nc <- ncol(lp)

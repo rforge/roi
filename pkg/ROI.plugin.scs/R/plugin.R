@@ -135,7 +135,7 @@ check_cone_types <- function(x) {
 }
 
 get_mapping <- function() {
-    setNames(c("f", "l", "q", "s", "ep", "ed", "p", "p"), 
+    setNames(c("f", "l", "q", "s", "ep", "ed", "p", "pd"), 
              c("free", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd"))
 }
 

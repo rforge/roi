@@ -3,12 +3,8 @@
 ##
 ## get lower bound constraints
 get_lb <- function(x) {
-    if( !length(bounds(x)$lower$val) ) {
-        lb <- 0
-    } else {
-        lb <- numeric( length(x$objective) )
-        lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
-    }
+    lb <- numeric( length(x$objective) )
+    lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
     return(lb)
 }
 
@@ -16,13 +12,9 @@ get_lb <- function(x) {
 ## ======
 ##
 ## get upper bound constraints
-get_ub <- function(x) {
-    if( !length(bounds(x)$upper$val) ) {
-        ub <- Inf
-    } else {
-        ub <- rep.int(Inf, length(x$objective))
-        ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
-    }
+get_ub <- function(x, .machine.max=Inf) {
+    ub <- rep.int(.machine.max, length(x$objective))
+    ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
     return(ub)
 }
 
@@ -53,9 +45,9 @@ solve_deoptim <- function( x, control ) {
 
     out <- eval(opti)
 
-    solution <- setNames(out$optim$bestmem, terms(objective(x))$names)
+    x.solution <- setNames(out$optim$bestmem, terms(objective(x))$names)
 
-    .ROI_plugin_canonicalize_solution(  solution  = solution,
+    .ROI_plugin_canonicalize_solution(  solution  = x.solution,
                                         optimum   = out$optim$bestval,
                                         status    = 0L,
                                         solver    = solver,

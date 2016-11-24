@@ -59,30 +59,10 @@ is.LP <- function(x) {
     return(FALSE)
 }
 
-## NOTE: the dispatch order is important
-## L_obj < Q_obj < F_obj
-## L_con < Q_obj < F_obj
-
-## solve_OP <- function(x, control=list()) {
-##     ## TODO: if LP
-##     if ( is.LP(x) )
-##         return( solve_LP(x, control) )
-##     if ( is.MILP(x) )
-## 
-##     stop("")
-## }
-
-## str(make_csc_matrix(constraints(x)$L))
-## str(as_dgCMatrix(constraints(x)$L))
-## dim(constraints(x)$L)
-## str(constraints(x)$L)
-
-## library(Rmosek)
-## source("sparse.R")
-
 .control_args  <- c("verbose", "usesol", "useparam", "soldetail", "getinfo", "scofile")
 .control_types <- c("numeric", "logical", "logical", "numeric",   "logical", "character")
 
+##
 solve_OP <- function(x, control=list()) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
     leno <- length(objective(x))

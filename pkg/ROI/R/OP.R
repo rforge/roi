@@ -98,9 +98,6 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
 }
 
 .check_OP_for_sanity <- function( x ) {
-    ## FIXME: FS
-    ## for F_constraints we shouldn't check the dimension
-    ## but how it is checked now can still go wrong!
     if ( !is.F_constraint( constraints(x) ) ) {
         if( length( objective(x) ) !=  dim(constraints(x))[2] )
             stop( "dimensions of 'objective' and 'constraints' not conformable." )

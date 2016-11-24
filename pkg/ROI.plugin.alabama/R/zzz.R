@@ -12,7 +12,7 @@ make_solnp_signature <- function()
 ## SOLVER CONTROLS
 .add_controls <- function(solver) {
     ## Rsolnp
-    .ROI_plugin_register_solver_control( solver, "pars", "start" )
+    .ROI_plugin_register_solver_control( solver, "par", "start" )
     .ROI_plugin_register_solver_control( solver, "xtol_rel", "tol" )
     .ROI_plugin_register_solver_control( solver, "trace", "verbose" )
 

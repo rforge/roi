@@ -1,7 +1,7 @@
 make_MILP_signatures <- function()
     .ROI_plugin_make_signature( objective = c("L"),
                                 constraints = c("X", "L"),
-                                types = c("C", "I", "B"),
+                                types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
                                 bounds = c("X", "V"),
                                 cones = c("free"),
                                 maximum = c(TRUE, FALSE) )

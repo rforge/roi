@@ -111,9 +111,7 @@ as.no_V_bounds_OP.OP <- function( x ){
 
 ## create box constraints, i.e. lower and upper bounds
 ## when solver doesn't support this feature
-.make_box_constraints_from_bounds_in_MIP <- function(x, negative = TRUE){
-    ## FIXME: we really need an extractor for the number of objective vars
-    ##        this only works for sure with linear objectives
+.make_box_constraints_from_bounds_in_MIP <- function(x, negative = TRUE) {
     n_obj <- length(objective(x))
 
     if(negative) {
@@ -355,4 +353,28 @@ vech <- function(...) {
     do.call(cbind, lapply(x, fun))
 }
 
+##  -----------------------------------------------------------
+##  eq
+##  ==
+##' @title Replicate \code{"=="}, \code{">="} and \code{"<="} Signs
+##' @description The utility functions \code{eq}, \code{leq} and 
+##'   \code{geq} replicate the signs \code{"=="}, \code{">="} and \code{"<="}
+##'   \code{n} times.
+##' @param n an integer giving the number of times the sign should be repeated.
+##' @examples
+##' eq(3)
+##' @rdname signs
+##' @export
+eq <- function(n) rep.int("==", n)
 
+##' @rdname signs
+##' @examples
+##' leq(2)
+##' @export
+leq <- function(n) rep.int("<=", n)
+
+##' @rdname signs
+##' @examples
+##' geq(4)
+##' @export
+geq <- function(n) rep.int(">=", n)

@@ -29,7 +29,7 @@ check:
 install:
 	$(R) CMD INSTALL $(PACKAGE)*.tar.gz
 
-clean: roxclean
+clean:
 	rm -rf $(PACKAGE)*.Rcheck
 	rm -f  $(PACKAGE)*.tar.gz
 	rm -f check.csv

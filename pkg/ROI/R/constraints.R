@@ -935,8 +935,7 @@ print.constraint <- function( x, ... ){
 
 ##' @rdname ROI_constraint
 ##' @export
-dim.constraint <- function( x ){
-    ## FIXME: we should actually save both dimensions in constraint object
+dim.constraint <- function( x ) {
     out <- if( inherits(x, "NO_constraint") )
         c( length(x), attributes(x)$n_obj )
     else if( inherits(x, "L_constraint") )
@@ -1013,7 +1012,6 @@ as_function_Q_constraint <- function(x, ...) {
 ## ---------------------------
 ## as.F_constraint
 ## ---------------------------
-##  FIXME: there are still F_constraint methods to implement
 ##' @rdname F_constraint
 ##' @export
 as.F_constraint <- function(x, ...) UseMethod( "as.F_constraint" )

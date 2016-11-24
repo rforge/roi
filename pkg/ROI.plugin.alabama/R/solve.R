@@ -86,8 +86,6 @@ solve_alabama_auglag <- function( x, control ) {
     if ( is.null(control$pars) ) 
         stop("no start value, please provide a start value via control$start!")
 
-    control$par <- control$x0
-
     args <- list()
     args$call_fun <- alabama::auglag
     args$par <- control$par

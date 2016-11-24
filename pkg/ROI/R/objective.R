@@ -237,32 +237,33 @@ as.L_objective.function <- function( x ){
 ##' @export
 Q_objective <- function( Q, L = NULL, names = NULL ) {
     L <- as.L_term(L)
-    ## FIXME: (check if Q ist quadratic!)
-    if( !is.null(Q) )
+    if( !is.null(Q) ) {
+        stopifnot(nrow(Q) == ncol(Q))
         obj <- .objective( Q    = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
                            L    = L, names = names,
                            nobj = dim(Q)[1])
-    else
+    } else {
         obj <- .objective( L = L, names = names, nobj = ncol(L) )
+    }
     class(obj) <- c( "Q_objective", class(obj) )
     obj
 }
 
 ##' @noRd
 ##' @export
-as.function.Q_objective <- function( x, ... ){
-  L <- terms(x)[["L"]]
-  ## FIXME: shouldn't this already be initialized earlier?
-  if( !length(L) )
-      L <- slam::simple_triplet_zero_matrix(ncol = length(x), nrow = 1L)
+as.function.Q_objective <- function( x, ... ) {
+    L <- terms(x)[["L"]]
+    ## FIXME: shouldn't this already be initialized earlier?
+    if( !length(L) )
+        L <- slam::simple_triplet_zero_matrix(ncol = length(x), nrow = 1L)
 
-  Q <- terms(x)[["Q"]]
-  names <- terms(x)[["names"]]
-  ## FIXME: what about objective function names?
-  out <- function(x)
-      structure( c(slam::tcrossprod_simple_triplet_matrix(L, t(x)) + 0.5 * .xtQx(Q, x)), names = NULL )
-  class(out) <- c(class(out), class(x))
-  out
+    Q <- terms(x)[["Q"]]
+    names <- terms(x)[["names"]]
+    ## FIXME: what about objective function names?
+    out <- function(x)
+        structure( c(slam::tcrossprod_simple_triplet_matrix(L, t(x)) + 0.5 * .xtQx(Q, x)), names = NULL )
+    class(out) <- c(class(out), class(x))
+    out
 }
 
 ##' @rdname Q_objective
@@ -391,7 +392,7 @@ as.F_objective.L_objective <- function( x )
 ##' @noRd
 ##' @export
 as.F_objective.Q_objective <- function( x )
-  F_objective( F = as.function(x), n = length(x), G = G(x), names = variable.names(x) )
+    F_objective( F = as.function(x), n = length(x), G = G(x), names = variable.names(x) )
 
 ##' @noRd
 ##' @export
