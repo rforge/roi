@@ -93,7 +93,8 @@ cplex_to_roi <- function(env, prob, cplex) {
         con.Q <- vector("list", nqconstrs)
         for (i in seq_along(con.Q)) {
             ## x <- cplex$getQConstrCPLEX(env, prob, i-1L)
-            con.Q[[i]] <- cplex_to_Q_constraint(cplex$getQConstrCPLEX(env, prob, i-1L), nobj)
+            Qi <- cplex_to_Q_constraint(cplex$getQConstrCPLEX(env, prob, i-1L), nobj)
+            con.Q[[i]] <- Qi + t(Qi)
         }
         con.Q <- do.call(c, con.Q)
     } else {
