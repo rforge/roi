@@ -2,7 +2,7 @@ read.lp <- ROI.plugin.lpsolve::read.lp
 write.lp <- ROI.plugin.lpsolve::write.lp
 
 get_namespace <- function(x) {
-	tryCatch(loadNamespace(x), error=function(e) NULL)
+    tryCatch(loadNamespace(x), error=function(e) NULL)
 }
 
 read.qp <- function(file, type = c("auto", "SAV", "MPS", "LP")) {
@@ -51,6 +51,15 @@ map_dir <- function(x) {
     dir_map[x]
 }
 
+is.nocon <- function(x) {
+    if (  is.null(x) ) 
+        return(TRUE)
+    if ( is.NO_constraint(x) )
+        return(TRUE)
+    return(FALSE)
+
+}
+
 cplex_to_roi <- function(env, prob, cplex) {
     problem_name <- cplex$getProbNameCPLEX(env, prob)
 
@@ -91,7 +100,16 @@ cplex_to_roi <- function(env, prob, cplex) {
         con.Q <- NO_constraint(nobj)
     }
 
-    con <- c(con.L, con.Q)
+    if ( is.nocon(con.L) &  is.nocon(con.Q)) {
+        con <- con.L
+    } else if ( is.nocon(con.L) ) {
+        con <- con.Q
+    } else if ( is.nocon(con.Q)) {
+        con <- con.L
+    } else {
+        con <- c(con.L, con.Q)
+    }
+
     if ( is.NO_constraint(con) ) con <- NULL
 
     typ <- cplex$getColTypeCPLEX(env, prob, 0L, nobj-1L)
@@ -101,7 +119,15 @@ cplex_to_roi <- function(env, prob, cplex) {
     ub <- cplex$getUpperBndsCPLEX(env, prob, 0L, nobj-1L)
     bou <- V_bound(li=seq_along(lb), ui=seq_along(ub), lb=lb, ub=ub, nobj=nobj)
 
-    maximum <- c(FALSE, NA, TRUE)[cplex$getObjDirCPLEX(env, prob) + 2L]
+    ## getObjDirCPLEX(env, prob) returns -1 for maximization and 1 for minimization
+    sense <- cplex$getObjDirCPLEX(env, prob)
+    if ( sense == -1 ) {
+        maximum <- TRUE
+    } else if ( sense == 1 ) {
+        maximum <- FALSE
+    } else {
+        stop("sense makes no sense!")
+    }    
 
     OP(objective=obj, constraints=con, types=typ, bounds=bou, maximum = maximum)
 }
