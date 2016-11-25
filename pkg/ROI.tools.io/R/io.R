@@ -27,7 +27,7 @@ read.qp <- function(file, type = c("auto", "SAV", "MPS", "LP")) {
 cplex_to_Q_constraint <- function(x, nobj) {
     Q <- simple_triplet_matrix(i=x$quadrow+1L, j=x$quadcol+1L, v=x$quadval, nrow=nobj, ncol=nobj)
     L <- numeric(nobj)
-    L[x$linind] <- x$linval
+    L[1 + x$linind] <- x$linval
     Q_constraint(Q=Q, L=L, dir=map_dir(x$sense), rhs=x$rhs)
 }
 
@@ -92,9 +92,9 @@ cplex_to_roi <- function(env, prob, cplex) {
     if ( nqconstrs ) {
         con.Q <- vector("list", nqconstrs)
         for (i in seq_along(con.Q)) {
+            ## x <- cplex$getQConstrCPLEX(env, prob, i-1L)
             con.Q[[i]] <- cplex_to_Q_constraint(cplex$getQConstrCPLEX(env, prob, i-1L), nobj)
         }
-        i
         con.Q <- do.call(c, con.Q)
     } else {
         con.Q <- NO_constraint(nobj)
