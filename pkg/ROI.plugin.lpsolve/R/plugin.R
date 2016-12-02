@@ -127,8 +127,11 @@ solve_OP <- function(x, control=list()) {
         sol$solutions[[i]] <- get.variables(lp)
         sol$dual_solutions[[i]] <- get.dual.solution(lp)
     }
-    sol$sensitivity_objfun <- get.sensitivity.objex(lp)
-    sol$sensitivity_rhs <- get.sensitivity.rhs(lp)
+    
+    if ( all( x$types == "C" ) ) { ## these two functions are only for lp available
+        sol$sensitivity_objfun <- get.sensitivity.objex(lp)
+        sol$sensitivity_rhs <- get.sensitivity.rhs(lp)
+    }
     sol$total_iter <- get.total.iter(lp)
     sol$total_nodes <- get.total.nodes(lp)
 
