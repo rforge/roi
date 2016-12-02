@@ -6,6 +6,7 @@ Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the R Optimization Infrastructure ('ROI') package
 	     with the 'Mosek' solver.
 Imports: stats, methods, Matrix, slam, ROI (>= 0.2-0), Rmosek (>= 8.1.1)
+SystemRequirements: MOSEK (http://www.mosek.com) and MOSEK License for use of Rmosek
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
 
