@@ -851,8 +851,8 @@ rbind_F_constraint <- function( constr ) {
     cjac <- unlist(lapply(constr, "[[", "J"), recursive=FALSE, use.names=FALSE)
     if ( length(cjac) != length(cfun) ) cjac <- NULL
     cnames <- lapply(constr, "[[", "names")
-    b <- sapply(cnames, is.null)
-    cnames <- if (any(b)) cnames[!b][[1]] else NULL
+    b <- !sapply(cnames, is.null)
+    cnames <- if (any(b)) cnames[b][[1]] else NULL
     F_constraint(F=cfun, dir=cdir, rhs=crhs, J=cjac, names=cnames)
 }
 

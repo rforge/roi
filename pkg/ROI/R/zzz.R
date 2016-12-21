@@ -120,8 +120,10 @@ control_db <- add_control_db_schema( control_db )
     for ( pkgname in solvers ) { 
         nmspc <- tryCatch(getNamespace(pkgname), error = identity)
         if( !inherits(nmspc, "error") ) {
-            load <- methods::getFunction( ".onLoad", where = nmspc )
-            load( libname = libname, pkgname = pkgname )
+            tryCatch({
+                load <- methods::getFunction( ".onLoad", where = nmspc )
+                load( libname = libname, pkgname = pkgname )
+            }, error = function(e) .couldnt_load_pkg(pkgname))
         }
     }
     ## Startup messages
@@ -129,4 +131,8 @@ control_db <- add_control_db_schema( control_db )
     packageStartupMessage( sprintf("Registered solver plugins: %s.",
                                    paste(names(ROI_registered_solvers()), collapse = ", ")) )
     packageStartupMessage( sprintf("Default solver: %s.", ROI_options("default_solver")) )
+}
+
+.couldnt_load_pkg <- function(pkg) {
+    warning(sprintf("couldn't load plugin '%s'.", pkg), call. = FALSE)
 }
