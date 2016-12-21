@@ -83,7 +83,7 @@ bounds_to_constraints <- function(x) {
 solve_alabama_auglag <- function( x, control ) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
 
-    if ( is.null(control$pars) ) 
+    if ( is.null(control$par) ) 
         stop("no start value, please provide a start value via control$start!")
 
     args <- list()

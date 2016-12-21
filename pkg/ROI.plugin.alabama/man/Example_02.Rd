@@ -11,9 +11,6 @@ Solution: \code{c(0.5, 0.25)}
 }
 
 \examples{
-
-library(ROI)
-
 f <- function(x) {
     return( 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2 )
 }
@@ -23,7 +20,7 @@ f.gradient <- function(x) {
                200 * (x[2] - x[1] * x[1])) )
 }
 
-x <- OP( objective = F_objective(f, n=1L, G=f.gradient), 
+x <- OP( objective = F_objective(f, n=2L, G=f.gradient), 
          constraints = c(F_constraint(F=function(x) x[1] + x[2]^2, ">=", 0,
                                       J=function(x) c(1, 2*x[2])),
                          F_constraint(F=function(x) x[1]^2 + x[2], ">=", 0,
