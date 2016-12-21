@@ -139,6 +139,9 @@ terms.function <- function( x, ... ){
 ##' @author Stefan Theussl
 ##' @export
 L_objective <- function( L, names = NULL ) {
+    if ( !is.null(names) ) {
+        stopifnot( is.character(names), any(c(length(L), ncol(L)) == length(names)) )
+    }
     obj <- Q_objective( Q = NULL, L = L, names=names )
     class( obj ) <- c( "L_objective", class(obj) )
     obj
@@ -451,6 +454,23 @@ variable.names.function <- function(object, ...) {
     NULL
 }
 
+##' @noRd
+##' @export
+print.L_objective <- function(x, ...) {
+    writeLines(sprintf("A linear objective of length %i.", length(x)))
+}
+
+##' @noRd
+##' @export
+print.Q_objective <- function(x, ...) {
+    writeLines(sprintf("A quadratic objective of length %i.", length(x)))
+}
+
+##' @noRd
+##' @export
+print.F_objective <- function(x, ...) {
+    writeLines(sprintf("A general objective function of length %i.", length(x)))
+}
 
 ## TODO:
 ##.check_gradient_for_sanity <- function(F, n){
