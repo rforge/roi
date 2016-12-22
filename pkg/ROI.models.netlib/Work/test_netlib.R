@@ -1,6 +1,8 @@
 q("no")
 library(ROI.models.netlib)
 
+getwd()
+remove.packages("ROI.models.netlib")
 netlib_download()
 
 f <- system.file("data", package = "ROI.models.netlib")

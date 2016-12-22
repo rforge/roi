@@ -14,7 +14,7 @@ netlib <- function(x=c("all", "metainfo", "adlittle", "afiro", "agg", "agg2",
                        "ship08s", "ship12l", "ship12s", "sierra", "stair", 
                        "standata", "standmps", "stocfor1", "stocfor2", "stocfor3", 
                        "truss", "tuff", "vtp.base", "wood1p",  "woodw","x25fv47", "x80bau3b")) {
-    folder <- system.file("data", package = "ROI.models.netlib")
+    folder <- system.file("roi_op", package = "ROI.models.netlib")
     if ( missing(x) )
         return( setdiff(dir(folder), "metainfo.rds") )
     
