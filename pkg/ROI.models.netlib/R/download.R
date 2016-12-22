@@ -57,19 +57,18 @@ download_mps_files <- function() {
 ##  -----------------------------------------------------------
 ##  netlib_download 
 ##  ===============
-##' @title Download the 'NETLIB-LP' Test Problem Set
-##' @description The \code{NETLIB-LP} test problem set is downloaded and
-##'     transformed from the \code{MPS} format into the \pkg{ROI} format.
-##'     The results are stored as \code{'.rda'} file at the location provided 
-##'     via the parameter \code{folder}.
-##' @param folder an optional character giving the location where the
-##'     'NETLIB-LP' test problem set should be downloaded to.
-##' @examples
-##' \dontrun{
-##' netlib_download()
-##' netlib_download("data/netlib")
-##' }
-##' @export
+##  @title Download the 'NETLIB-LP' Test Problem Set
+##  @description The \code{NETLIB-LP} test problem set is downloaded and
+##      transformed from the \code{MPS} format into the \pkg{ROI} format.
+##      The results are stored as \code{'.rda'} file at the location provided 
+##      via the parameter \code{folder}.
+##  @param folder an optional character giving the location where the
+##      'NETLIB-LP' test problem set should be downloaded to.
+##  @examples
+##  \dontrun{
+##  netlib_download()
+##  netlib_download("data/netlib")
+##  }
 ##  -----------------------------------------------------------
 netlib_download <- function(folder = system.file("data", package = "ROI.models.netlib")) {
     stopifnot( dir.exists(folder) )
@@ -77,25 +76,25 @@ netlib_download <- function(folder = system.file("data", package = "ROI.models.n
     netlib_mps <- download_mps_files()
     
     for (n in names(netlib_mps)) {
-        fname <- file.path(folder, sprintf("%s.rda", n))
+        fname <- file.path(folder, sprintf("%s.rds", n))
         op <- netlib_mps[[n]]
-        save(op, file=fname)
+        ##save(op, file=fname)
+        saveRDS(op, file=fname)
     }
 }
 
 ##  -----------------------------------------------------------
 ##  netlib_meta
 ##  ===========
-##' @title Get Meta Data
-##' @description Ḿeta data for \code{NETLIB-LP} test problem set can
-##'   be obtained by simply calling \code{"netlib_met"}.
-##' @return
-##' @examples
-##' \dontrun{
-##' netlib_download()
-##' netlib_download("data/netlib")
-##' }
-##' @export
+##  @title Get Meta Data
+##  @description Meta data for \code{NETLIB-LP} test problem set can
+##    be obtained by simply calling \code{"netlib_met"}.
+##  @return
+##  @examples
+##  \dontrun{
+##  netlib_download()
+##  netlib_download("data/netlib")
+##  }
 ##  -----------------------------------------------------------
 netlib_meta <- function() {
     folder <- system.file("data", package = "ROI.models.netlib")
