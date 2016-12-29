@@ -39,7 +39,7 @@ sanitize_control <- function(control) {
 
 as.bound <- function( x, ... ) UseMethod( "as.bound" )
 as.bound.bound <- identity
-as.bound.NULL <- function( x, ... ) structure(NULL, class="bound")
+as.bound.NULL <- function( x, ... ) structure(list(), class="bound")
 
 ## BASIC SOLVER METHOD
 solve_OP <- function(x, control=list()){
