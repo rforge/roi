@@ -5,7 +5,7 @@ netlib <- function(x=c("all", "metainfo", "adlittle", "afiro", "agg", "agg2",
                        "e226", "etamacro", "fffff800",  "finnis", "fit1d", "fit1p", 
                        "fit2d", "fit2p",  "forplan", "ganges", "gfrd.pnc", "greenbea", 
                        "greenbeb", "grow15", "grow22", "grow7", "israel", "kb2", 
-                       "lotfi", "maros.r7", "maros", "meta",  "modszk1", "nesm", 
+                       "lotfi", "maros.r7", "maros", "modszk1", "nesm", 
                        "perold", "pilot.ja", "pilot",  "pilot.we", "pilot4", "pilot87", 
                        "pilotnov",  "recipe", "sc105", "sc205", "sc50a", "sc50b", 
                        "scagr25", "scagr7", "scfxm1", "scfxm2", "scfxm3", "scorpion", 
@@ -16,7 +16,7 @@ netlib <- function(x=c("all", "metainfo", "adlittle", "afiro", "agg", "agg2",
                        "truss", "tuff", "vtp.base", "wood1p",  "woodw","x25fv47", "x80bau3b")) {
     folder <- system.file("roi_op", package = "ROI.models.netlib")
     if ( missing(x) )
-        return( setdiff(dir(folder), "metainfo.rds") )
+        return( gsub(".rds$", "", setdiff(dir(folder), "metainfo.rds")) )
     
     problem_name <- match.arg(x)
     if ( x == "all" ) {
@@ -36,8 +36,9 @@ netlib <- function(x=c("all", "metainfo", "adlittle", "afiro", "agg", "agg2",
                     "truss", "tuff", "vtp.base", "wood1p", "woodw", "x25fv47", "x80bau3b")
         ppath <- file.path(folder, sprintf("%s.rds", pnames))
         prob <- lapply(ppath, readRDS)
+        names(prob) <- pnames
     } else {
-        prob <- readRDS(file.path(folder, x))
+        prob <- readRDS(file.path(folder, sprintf("%s.rds", x)))
     }
     prob
 }

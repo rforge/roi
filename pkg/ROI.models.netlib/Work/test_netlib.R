@@ -1,5 +1,23 @@
 q("no")
+Rdevel 
+
+library(ROI)
 library(ROI.models.netlib)
+
+netlib()
+## get all problems as a list
+ntlb <- netlib("all")
+## get a certain problem by name
+netlib("afiro")
+ntlb[["afiro"]]
+## get the meta info to the problems
+netlib("metainfo")
+## solve a problem
+sol <- ROI_solve(netlib("afiro"))
+sol
+sol$objval - as.numeric(netlib("metainfo")["afiro", "optimal_value"])
+
+
 
 getwd()
 remove.packages("ROI.models.netlib")
