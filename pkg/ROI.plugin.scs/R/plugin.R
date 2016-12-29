@@ -175,7 +175,7 @@ which_scs_default_lower_bounds <- function(lower_bounds) {
 
 as.bound <- function( x, ... ) UseMethod( "as.bound" )
 as.bound.bound <- identity
-as.bound.NULL <- function( x, ... ) structure(NULL, class="bound")
+as.bound.NULL <- function( x, ... ) structure(list(), class="bound")
 
 solve_OP <- function(x, control=list()) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
