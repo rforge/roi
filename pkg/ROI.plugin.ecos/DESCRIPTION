@@ -1,10 +1,10 @@
 Package: ROI.plugin.ecos
 Version: 0.2-4
-Title: ROI-Plugin ECOS
+Title: 'ECOS' Plugin for the 'R' Optimization Infrastructure 
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
-Description: Enhances the R Optimization Infrastructure (ROI) package
-	     with the Embedded Conic Solver (ECOS) for solving conic optimization problems.
+Description: Enhances the 'R' Optimization Infrastructure ('ROI') package
+	     with the Embedded Conic Solver ('ECOS') for solving conic optimization problems.
 Imports: methods, slam, Matrix, ROI (>= 0.2-3), ECOSolveR (>= 0.2)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
