@@ -210,8 +210,11 @@ test_cp_08 <- function(solver) {
     cones <- list("free"=c(1, 2), "powd"=list(list(i=3:5, a=0.5)))
     bound <- as.C_bound(cones)
 
-    lc <- L_constraint(L = rbind(A, G), dir=rep("==", length(c(b, h))), rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc, types = rep("C", 3), bounds =  bound,
+    lc <- L_constraint(L = rbind(A, G), 
+                       dir=rep("==", length(c(b, h))), 
+                       rhs = c(b, h))
+    x <- OP(objective = obj, constraints = lc, 
+            types = rep("C", 3), bounds =  bound,
             maximum = TRUE)
 
     opt <- ROI_solve(x, solver=solver)
