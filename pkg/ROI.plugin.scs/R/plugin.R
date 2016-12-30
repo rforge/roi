@@ -135,7 +135,7 @@ check_cone_types <- function(x) {
 }
 
 get_mapping <- function() {
-    setNames(c("f", "l", "q", "s", "ep", "ed", "p", "pd"), 
+    setNames(c("f", "l", "q", "s", "ep", "ed", "p", "p"), 
              c("free", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd"))
 }
 
@@ -161,7 +161,7 @@ build_cone_dims <- function( roi_cones ) {
         cone_dims[[map["powp"]]] <- sapply(roi_cones[["powp"]], "[[", "a")
     }
     if ( length(roi_cones[["powd"]]) > 0 ) {
-        cone_dims[[map["powd"]]] <- c( cone_dims[[map["pow"]]], 
+        cone_dims[[map["powd"]]] <- c( cone_dims[[map["powp"]]], 
                                      -sapply(roi_cones[["powd"]], "[[", "a") )
     }
     cone_dims
@@ -298,14 +298,13 @@ solve_OP <- function(x, control=list()) {
     if ( is.null(control$eps) ) control$eps <- 1e-6
 
     ## return(list(A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control))
-    solver_call <- list(scs, A = cxL[ind,], b = b, obj = obj, cone = cone_dims, control = control)
+    solver_call <- list(scs, A = cxL[ind,], b = b, obj = obj, 
+                        cone = cone_dims, control = control)
     mode(solver_call) <- "call"
-    ## if ( isTRUE(control$dry_run) )
-    ## TODO: if dry_run isTRUE dann nicht solver ausfuehren sondern nur solver_call
-    ##       zurueck geben.
-    ## FIXME (for next release we add the possibility to only return the model): if (!isTRUE(control$dry_run)) {
+    if ( isTRUE(control$dry_run) )
+        return(solver_call) 
+
     out <- eval(solver_call)
-    ## FIXME: }
     x_sol <- out$x[seq_len(len_objective)]
     out$len_objective <- len_objective
     out$len_dual_objective <- len_dual_objective
@@ -320,8 +319,9 @@ solve_OP <- function(x, control=list()) {
     optimum <- (-1)^x$maximum * tryCatch({as.numeric(x_sol %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
     .ROI_plugin_canonicalize_solution( solution = x_sol,  optimum  = optimum,
                                        status   = out[["info"]][["statusVal"]],
-                                       solver   = solver, message  = out, solver_call = solver_call )
-                                      ## solver_call= if (isTRUE(control$return_call)) solver_call else NULL ) FIXME: Add solver_call
+                                       solver   = solver, message  = out, 
+                                       solver_call = solver_call )
+                                       ## solver_call= if (isTRUE(control$return_call)) solver_call else NULL ) FIXME: Add solver_call
 }
 
 .ROI_plugin_solution_dual.scs_solution <- function(x) {
