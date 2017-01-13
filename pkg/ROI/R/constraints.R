@@ -921,7 +921,10 @@ print.constraint <- function( x, ... ) {
     if ( is.NO_constraint(x) ) {
         writeLines( "An object of type 'NO_constraint'." )
     } else if ( is.L_constraint(x) ) {
-        writeLines( sprintf("An object containing %d linear constraints.", len) )
+        i <- 1L + as.integer(len != 1L)
+        txt <- sprintf("An object containing %d linear %s.", 
+                       len, constr[i])
+        writeLines( txt )
     } else {
         if( is.Q_constraint(x) ) {
             b <- sapply(x$Q, is_zero_matrix)
