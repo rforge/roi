@@ -314,6 +314,14 @@ equal.Q_constraint <- function(x, y, ...) {
     return(TRUE)
 }
 
+is_zero_matrix <- function(x) {
+    if ( is.simple_triplet_matrix(x) ) {
+        if ( isTRUE(length(x$v) > 0L) )
+            return(FALSE)
+    }
+    return(TRUE)
+}
+
 has.Q_constraint <- function(x) {
     is_Q_constraint_exact <- function(x) ((!is.L_constraint(x)) & is.Q_constraint(x))
     any(sapply(constraints, is_Q_constraint_exact))

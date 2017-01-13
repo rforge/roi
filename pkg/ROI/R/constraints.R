@@ -915,19 +915,30 @@ is.constraint <- function(x) inherits(x, "constraint")
 
 ##' @noRd
 ##' @export
-print.constraint <- function( x, ... ){
+print.constraint <- function( x, ... ) {
     len <- length(x)
+    constr <- c("constraint", "constraints")
     if ( is.NO_constraint(x) ) {
         writeLines( "An object of type 'NO_constraint'." )
     } else if ( is.L_constraint(x) ) {
         writeLines( sprintf("An object containing %d linear constraints.", len) )
     } else {
         if( is.Q_constraint(x) ) {
-            writeLines( c(sprintf("An object containing %d constraints.", len),
-                          "Some constraints are of type quadratic.") )
+            b <- sapply(x$Q, is_zero_matrix)
+            n_L_constraints <- sum(b)
+            n_Q_constraints <- length(b) - n_L_constraints
+            fmt <- paste("An object containing %d linear %s",
+                         "                     %d quadratic %s.", sep = "\n")
+            i <- 1L + as.integer(n_L_constraints != 1L)
+            j <- 1L + as.integer(n_Q_constraints != 1L)
+            txt <- sprintf(fmt, n_L_constraints, constr[i],
+                           n_Q_constraints, constr[j])
+            writeLines( txt )
         } else {
-            writeLines( c(sprintf("An object containing %d constraints.", len),
-                          "Some constraints are of type nonlinear.") )
+            i <- 1L + as.integer(len != 1L)
+            txt <- sprintf("An object containing %d nonlinear %s.", 
+                           len, constr[i])
+            writeLines( txt )
         }
     }
     invisible(x)
