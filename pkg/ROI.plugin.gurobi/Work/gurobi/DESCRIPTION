@@ -1,0 +1,12 @@
+Package: gurobi
+Version: 6.5-1
+Date: 2016-02-29
+Title: Gurobi Optimizer 6.5 interface
+Author: Gurobi Optimization, Inc.
+Maintainer: Gurobi Optimization, Inc. <support@gurobi.com>
+Description: R interface to Gurobi Optimizer
+License: GPL-2
+Copyright: Copyright (c) 2016, Gurobi Optimization, Inc.
+Depends: slam (>= 0.1-9)
+URL: http://www.gurobi.com
+Built: R 3.2.1; x86_64-unknown-linux-gnu; 2016-02-27 17:47:36 UTC; unix

@@ -1,0 +1,7 @@
+useDynLib("gurobi", "gurobi_R_solve")
+import("methods")
+import("slam")
+import("Matrix")
+
+export("gurobi")
+export("gurobi_write")
