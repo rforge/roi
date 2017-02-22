@@ -45,6 +45,13 @@ map_verbose <- function(x) {
     return("neutral")
 }
 
+is.all_integer <- function(types) {
+    if ( is.null(types) ) {
+        return(FALSE)
+    }
+    all(types %in% c("B", "I"))
+}
+
 solve_OP <- function(x, control=list()) {
     solver <- .ROI_plugin_get_solver_name( getPackageName() )
 
@@ -71,6 +78,7 @@ solve_OP <- function(x, control=list()) {
         if ( !is.null(xtypes[[typ]]) )
             set.type(lp, xtypes[[typ]], typ)
     }
+    all_integer <- if (is.all_integer(types(x))) TRUE else FALSE
 
     ## bounds (lp_solve has the lower bound default by zero)
     if ( !is.null(bounds(x)) ) {
@@ -135,6 +143,13 @@ solve_OP <- function(x, control=list()) {
     sol$total_iter <- get.total.iter(lp)
     sol$total_nodes <- get.total.nodes(lp)
 
+    ## <<< TODO: multiple-solutions
+    if ( isTRUE(control$nsol > 1) ) {
+        sol$solutions <- .find_up_to_n_binary_MILP_solutions(lp, sol$solutions[[1L]],
+                                                             types(x), nsol)
+    }
+    ## >>>
+
     x.solution <- sol$solutions[[1L]]
     optimum <- tryCatch({as.numeric(objective(x)(x.solution))}, 
                         error=function(e) as.numeric(NA))
@@ -144,6 +159,40 @@ solve_OP <- function(x, control=list()) {
                                                solver   = solver, 
                                                message  = sol ) 
     )
+}
+
+.find_up_to_n_binary_MILP_solutions <- function(lp, objective, solution, types, nsol) {
+    k <- which(types == "B")
+    if ( !length(k) ) {
+        stop("no 'binary' variables found")
+    }
+    ## one row of A (A x <= b)
+    ak <- double(length(k))
+    solutions <- rep.int(NA, length(k))
+    solutions[1L] <- solution
+    obj_val <- as.vector(objective %*% solution)
+
+    for ( i in seq_len(nsol - 1L) ) {
+        sol <- solution[k]
+        rhs <- sum(sol) - 1L
+        ak[sol == 1] <-  1    
+        ak[sol == 0] <- -1
+        add.constraint(lp, xt = ak, type = "<=", rhs = rhs, indices = k)
+
+        status <- solve(lp)
+        if ( status != 0 ) {
+            return(solutions)
+        }
+
+        sol <- get.variables(lp)
+        oval <- as.vector(objective %*% sol)
+        if ( abs(obj_val - oval) > 1e-4 ) {
+            return(solutions)
+        }
+
+        solutions[i + 1L] <- sol
+    }
+    return(solutions)
 }
 
 .ROI_plugin_solution_dual.lpsolve_solution <- function(x) {

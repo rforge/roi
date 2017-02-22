@@ -10,7 +10,7 @@ make_MILP_signatures <- function()
 .add_controls <- function(solver) {
     ## lp_solve
     .ROI_plugin_register_solver_control( solver, "dry_run", "X" )
-
+    .ROI_plugin_register_solver_control( solver, "nsol_max", "X" )
     .ROI_plugin_register_solver_control( solver, "verbose", "verbose" )
 
     .ROI_plugin_register_solver_control( solver, "anti.degen", "X" )
