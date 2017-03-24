@@ -8,8 +8,11 @@
 ##      solver, essentially y and z are switched.
 ##
 ## -----------------------------------------------------------------------------
-as_dgCMatrix <- function( x, ... ) 
+as_dgCMatrix <- function( x, ... ) {
     sparseMatrix(i=x$i, j=x$j, x=x$v, dims=c(x$nrow, x$ncol))
+}
+
+ecos_cones <- c("zero" = 1L, "nonneg" = 2L, "soc" = 3L, "expp" = 5L)
 
 check_cone_types <- function(x) {
     b = !( x %in% c("free", "nonneg", "soc", "expp") )
@@ -41,141 +44,145 @@ as.bound <- function( x, ... ) UseMethod( "as.bound" )
 as.bound.bound <- identity
 as.bound.NULL <- function( x, ... ) structure(list(), class="bound")
 
+## get the indices of the conic bounds which are not the free cone
+get_indizes_nonfree <- function(bo) {
+    if ( is.null(bo) )
+        return(integer())
+    if ( is.null(bo$cones) )
+        return(integer())
+
+    c(unlist(bo$cones$nonneg), unlist(bo$cones$soc), unlist(bo$cones$psd),
+      unlist(bo$cones$expp), unlist(bo$cones$expd), 
+      unlist(lapply(bo$cones$powp, "[[", "i")), 
+      unlist(lapply(bo$cones$powd, "[[", "i")))
+}
+
+soc_dims <- function(x) {
+    y <- x$id[x$cone == ecos_cones['soc']]
+    if ( length(y) )
+        y <- table(y)
+    as.integer(y)
+}
+
+calc_dims <- function(cones, dims) {
+    dims$l <- sum( cones$cone == ecos_cones['nonneg'] )
+    dims$q <- as.integer(soc_dims(cones))
+    if ( !length(dims$q) ) {
+        dims["q"] <- list(NULL)
+    }
+    dims$e <- length(unique(cones$id[cones$cone == ecos_cones['expp']]))
+    dims
+}
+
+
 ## BASIC SOLVER METHOD
-solve_OP <- function(x, control=list()){
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+## attach(getNamespace("ROI.plugin.ecos")); control <- list(); library(slam) ## for debugging
+solve_OP <- function(x, control = list()){
+    solver <- "ecos"
+
+    constr <- as.C_constraint(constraints(x))
 
     ## check if ecos supports the provided cone types
-    check_cone_types(names(bounds(x)$cones))
-
-    len_objective <- length(objective(x))
-    len_dual_objective <- ncol(constraints(x)$L)
-    bo <- bounds(x)
-    b <- constraints(x)$rhs
+    stopifnot(all(constr$cones$cone %in% ecos_cones))
     
-    ## -------------------------------
-    ## Constraints dir    <  <=  >  >=
-    ## -------------------------------
-    cxL <- constraints(x)$L
-    if ( is.null(cxL) ) cxL <- simple_triplet_zero_matrix(0, len_objective)
-    noeq <- which(constraints(x)$dir %in% c("<", "<=", ">", ">="))
+    obj <- as.vector(terms(objective(x))[["L"]])
+    if ( maximum(x) ) 
+        obj <- -obj
 
-    if ( length(setdiff(noeq, as.list( bo$cones )$free)) > 0 ) {
-        wi <- setdiff(noeq, as.list( bo$cones )$free)
-        stop('the directions "<", "<=", ">" and ">=" can only be used in combination ',
-             'with the "free" cone! ', 'The constraints c(', paste(wi, collapse=", "),
-             ') are inequality constraints but don`t belong to the "free" cone.')
+    b <- constr$cones$cone == ecos_cones['zero']
+    if ( any(b) ) {
+        A     <- as_dgCMatrix(constr$L[b,])
+        A.rhs <- constr$rhs[b]
+    } else {
+        A <- NULL
+        A.rhs <- double()
     }
 
-    if ( length(noeq) ) {
-        nc0 <- ncol(cxL)
-        b <- c(b, rep.int(0L, length(noeq)))
-        bo <- c(as.bound(bo), C_bound(nrow(cxL) + seq_len(length(noeq)), type="nonneg"))
+    dims <- list(l = 0L, q = NULL, e = 0L)
 
-        slack_noeq <- simple_triplet_matrix(noeq, seq_along(noeq), rep.int(1L, length(noeq)), 
-                                            nrow=nrow(cxL), ncol=length(noeq))
-        cxL <- cbind(cxL, slack_noeq)
+    if ( any(!b) ) {
+        G     <- constr$L[!b,]
+        G.rhs <- constr$rhs[!b]
+        cones <- constr$cones[!b]
+        dims <- calc_dims(cones, dims)
 
-        nc <- ncol(cxL)
-        loeq <- which(constraints(x)$dir %in% c("<", "<="))
-        if ( length(loeq) ) {
-            i <- seq_along(loeq)
-            j <- nc0 + match(loeq, noeq)
-            cxL <- rbind(cxL, simple_triplet_matrix(i, j, v=rep.int(-1L, length(loeq)),
-                                                    nrow=length(loeq), ncol=nc) )
+        ## Since ecos uses a different cone definition we have to 
+        ## permutate the cones.
+        ## Change the order from c(1, 2, 3) to c(1, 3, 2)
+        k <- which(cones$cone %in% ecos_cones['expp'])
+        if ( length(k) ) {
+            cids <- aggregate(id ~ cone_id, 
+                              data = list(cone_id = cones$id[k], id = k), 
+                              FUN = c, simplify = FALSE)
+            for (i in seq_len(nrow(cids))) {
+                j <- cids[[i, 2]]
+                cones$id[j] <- cones$id[j] + c(0.1, 0.3, 0.2)
+            }
         }
 
-        goeq <- which(constraints(x)$dir %in% c(">", ">="))
-        if ( length(goeq) ) {
-            i <- seq_along(goeq)
-            j <- nc0 + match(goeq, noeq)
-            cxL <- rbind(cxL, simple_triplet_matrix(i, j, v=rep.int(1L, length(goeq)),
-                                                    nrow=length(goeq), ncol=nc) )
-        }
+        i <- with(cones, order(cone, id))
+        
+        G     <- G[i,]
+        G.rhs <- G.rhs[i]
+
+    } else {
+        G <- NULL
+        G.rhs <- double()
     }
 
-    ## ------------------------------
-    ## V_bounds (ROI default is [0, Inf))
-    ## ------------------------------
-    ## build lower bounds (NOTE: ROI default is 0 scs default is Inf)
-    lower_bounds <- to_dense_vector(bounds(x)$lower, len_objective)
-    not_is_ecos_default <- !is.infinite(lower_bounds) ## NOTE: we can assume that the lower bound is never Inf since ROI would complain before
+    GL <- GU <- NULL
+    GL.rhs <- GU.rhs <- integer()
+
+    ## lower bounds
+    lower_bounds <- to_dense_vector(bounds(x)$lower, length(objective(x)))
+    not_is_ecos_default <- !is.infinite(lower_bounds)
     if ( any(not_is_ecos_default) ) {
-        lbi <- which(not_is_ecos_default)
-        bo <- c(as.bound(bo), C_bound((nrow(cxL) + seq_along(lbi)), type="nonneg"))
-        cxL <- rbind(cxL, simple_triplet_matrix(seq_along(lbi), lbi, v=rep.int(-1L, length(lbi)), 
-                                                nrow=length(lbi), ncol=ncol(cxL)))
-        b <- c(b, -lower_bounds[not_is_ecos_default])
-    }
-    ## build upper bounds (upper bounds are for ROI and scs Inf)
-    which_exclude <- is.infinite(bounds(x)$upper$val)
-    if ( any(!which_exclude) ) {
-        ubi <- bounds(x)$upper$ind
-        bo <- c(as.bound(bo), C_bound((nrow(cxL) + seq_along(ubi)), type="nonneg"))
-        cxL <- rbind(cxL, simple_triplet_matrix(seq_along(ubi), ubi, v=rep.int(1L, length(ubi)), 
-                                                nrow=length(ubi), ncol=ncol(cxL)))
-        b <- c(b, bounds(x)$upper$val)
+        li <- which(not_is_ecos_default)
+        GL <- simple_triplet_matrix(i = seq_along(li), j = li, 
+                                    v = rep.int(-1, length(li)), 
+                                    nrow = length(li), ncol = length(obj))
+        GL.rhs <- -lower_bounds[not_is_ecos_default]
     }
 
-    cones <- as.list( bo$cones )
-    rowsA <- cones$free  
-    if ( !is.null(cones$expp) ) {
-        cones$expp <- lapply(cones$expp, function(x) x[c(1L, 3L, 2L)])
-    }
-    rowsG <- unlist(c(cones$nonneg, cones$soc, cones$expp), use.names=FALSE)   
-
-    missing_indizes <- setdiff(seq_len(nrow(cxL)), c(rowsA, rowsG))
-    if ( length(missing_indizes) > 0 ) {
-        ## If I give no warnig it can be used like every other solver.
-        ## warning("  No cone was provided for the indices ", 
-        ##     paste(missing_indizes, collapse=", "), " they will be set to the free cone.")
-        cones$f <- sum(c(cones$f, length(missing_indizes)))
-        rowsA <- c(missing_indizes, rowsA)
+    ## upper bounds
+    ui <- bounds(x)$upper$ind
+    ub <- bounds(x)$upper$val
+    if ( length(ui) ) {
+        GU <- simple_triplet_matrix(i = seq_along(ui), j = ui,
+                                    v = rep.int(1, length(ui)), 
+                                    nrow = length(ui), ncol = length(obj))
+        GU.rhs <- ub
     }
 
-    obj <- as.numeric( as.matrix(terms(objective(x))[["L"]]) )
-    ## if we add slack variables for e.g. <= we have to fix the dim of the
-    ## objective ## TODO: add a check of something was added
-    if ( length(obj) < ncol(cxL) ) {
-        obj <- c(obj, rep.int(0L, ncol(cxL) - length(obj)))
-    }
-    if (length(b) != sum(c(length(rowsA), length(rowsG)))) ## this shouldn't happen
-        stop("LENGTH_MISMATCH in 'ROI.plugin.scs$solve_OP'\n",
-             "\tthe dimensions of the 'rhs' and it's permutation vector don't match!")
+    G      <- as_dgCMatrix(rbind(GL, GU, G))
+    G.rhs  <- c(GL.rhs, GU.rhs, G.rhs)
+    dims$l <- dims$l + length(GL.rhs) + length(GU.rhs)
 
-    if ( x$maximum ) obj <- -obj
-    dimq <- as.integer(unlist(lapply(cones$soc, length), use.names=FALSE))
-    if ( !is.null(control$DEBUG) ) 
-        return(list(c = obj, 
-                    G = if (length(rowsG) > 0) as_dgCMatrix(cxL[rowsG,]) else NULL,
-                    h = if (length(rowsG) > 0) b[rowsG] else numeric(0),
-                    dims = list(
-                        l = length(cones$nonneg),
-                        q = dimq,
-                        e = length(cones$expp) ),
-                    A = if (length(rowsA) > 0) as_dgCMatrix(cxL[rowsA,]) else NULL,
-                    b = if (length(rowsA) > 0) b[rowsA] else numeric(0),
-                    bool_vars = which( types(x) == "B" ),                     
-                    int_vars  = which( types(x) == "I" ),
-                    control   = sanitize_control(control)))
+    which_logical <- which( types(x) == "B" )
+    which_integer <- which( types(x) == "I" )
+
+    ## TODO add a dims check!
+
+    ecos <- list(ECOS_csolve, c = obj, G = G, h = G.rhs,
+                 dims = dims, A = A, b = A.rhs,
+                 bool_vars = which_logical, int_vars  = which_integer,
+                 control   = sanitize_control(control))
     
-    out <- ECOS_csolve(c = obj, 
-                       G = if (length(rowsG) > 0) as_dgCMatrix(cxL[rowsG,]) else NULL,
-                       h = if (length(rowsG) > 0) b[rowsG] else numeric(0),
-                       dims = list(
-                           l = length(cones$nonneg),
-                           q = dimq,
-                           e = length(cones$expp) ),
-                       A = if (length(rowsA) > 0) as_dgCMatrix(cxL[rowsA,]) else NULL,
-                       b = if (length(rowsA) > 0) b[rowsA] else numeric(0),
-                       bool_vars = which( types(x) == "B" ),
-                       int_vars  = which( types(x) == "I" ),
-                       control   = sanitize_control(control) )
-    x_sol <- out$x[seq_len(len_objective)]
-    out$len_objective <- len_objective
-    out$len_dual_objective <- len_dual_objective
+    mode(ecos) <- "call"
 
-    optimum <- (-1)^x$maximum * tryCatch({as.numeric(x_sol %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
+    if ( isTRUE(control$dry_run) ) {
+        return(ecos)
+    }
+
+    out <- eval(ecos)
+    x_sol <- out$x
+
+    if ( any(b <- types(x) %in% c("B", "I")) ) {
+        x_sol[b] <- round(x_sol[b])
+    }
+
+    optimum <- tryCatch({as.numeric(x_sol %*% obj)}, error=function(e) as.numeric(NA))
+    optimum <- ((-1)^maximum(x) * optimum)
 
     .ROI_plugin_canonicalize_solution( solution = x_sol, optimum  = optimum,
                                        status   = out[["retcodes"]]["exitFlag"],
@@ -205,7 +212,7 @@ solve_OP <- function(x, control=list()){
     .ROI_plugin_add_status_code_to_db( solver,
                            10L,
                            "ECOS_OPTIMAL + ECOS_INACC_OFFSET",
-                           "Optimal solution found subject to reduced tolerances." )
+                           "Optimal solution found subject to reduced tolerances.", 0L)
     .ROI_plugin_add_status_code_to_db( solver,
                            11L,
                            "ECOS_PINF + ECOS_INACC_OFFSET",
