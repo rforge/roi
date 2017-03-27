@@ -9,12 +9,8 @@
 ##
 ## get lower bound constraints
 get_lb <- function(x) {
-    ##if( !length(bounds(x)$lower$val) ) {
-    ##    lb <- NULL
-    ##} else {
-        lb <- numeric( length(x$objective) )
-        lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
-    ##}
+    lb <- numeric( length(x$objective) )
+    lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
     return(lb)
 }
 
@@ -23,12 +19,8 @@ get_lb <- function(x) {
 ##
 ## get upper bound constraints
 get_ub <- function(x) {
-    ##if( !length(bounds(x)$upper$val) ) {
-    ##    ub <- NULL
-    ##} else {
-        ub <- rep.int(Inf, length(x$objective))
-        ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
-    ##}
+    ub <- rep.int(Inf, length(x$objective))
+    ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
     return(ub)
 }
 
@@ -81,10 +73,11 @@ bounds_to_constraints <- function(x) {
 ##
 ## NOTE: check the bounds
 solve_alabama_auglag <- function( x, control ) {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
 
-    if ( is.null(control$par) ) 
+    if ( is.null(control$par) ) {
         stop("no start value, please provide a start value via control$start!")
+    }
 
     args <- list()
     args$call_fun <- alabama::auglag
@@ -100,7 +93,7 @@ solve_alabama_auglag <- function( x, control ) {
     }   
 
     ## h_inequality constraints
-    hin <- .ROI_plugin_build_inequality_constraints(x, type="geq_zero")
+    hin <- ROI_plugin_build_inequality_constraints(x, type="geq_zero")
     args$hin <- hin$F
     if ( is.null(hin$J) ) {
         if ( is.null(hin$F) ) {
@@ -127,7 +120,7 @@ solve_alabama_auglag <- function( x, control ) {
 
     }
 
-    heq <- .ROI_plugin_build_equality_constraints(x, type="eq_zero")
+    heq <- ROI_plugin_build_equality_constraints(x, type="eq_zero")
     args$heq <- heq$F
     if ( is.null(heq$J) ) {
         if ( is.null(heq$F) ) {
@@ -154,9 +147,10 @@ solve_alabama_auglag <- function( x, control ) {
     
     res <- eval(args)
 
-    .ROI_plugin_canonicalize_solution(solution  = res$par,
-                                      optimum   = objective(x)(res$par),
-                                      status    = res$convergence,
-                                      solver    = "alabama",
-                                      message   = res)
+    ROI_plugin_canonicalize_solution(solution  = res$par,
+                                     optimum   = objective(x)(res$par),
+                                     status    = res$convergence,
+                                     solver    = "alabama",
+                                     message   = res)
 }
+

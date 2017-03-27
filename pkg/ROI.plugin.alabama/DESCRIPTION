@@ -1,7 +1,7 @@
 Package: ROI.plugin.alabama
 Version: 0.0-1
-Date: 2016-11-11
-Title: ROI-Plugin 'alabama'
+Date: 2016-12-22
+Title: 'alabama' Plugin for the 'R' Optimization Infrastructure 
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the R Optimization Infrastructure ('ROI') package

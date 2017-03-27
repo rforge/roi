@@ -1,8 +1,8 @@
 ## ROI plugin: alabama
-## based on Rsolnp interface
+## based the alabama package
 
 make_solnp_signature <- function()
-    .ROI_plugin_make_signature( objective = c("L", "Q", "F"),
+    ROI_plugin_make_signature( objective = c("L", "Q", "F"),
                                 constraints = c("X", "L", "Q", "F"),
                                 types = c("C"),
                                 bounds = c("X", "V"),
@@ -12,14 +12,14 @@ make_solnp_signature <- function()
 ## SOLVER CONTROLS
 .add_controls <- function(solver) {
     ## Rsolnp
-    .ROI_plugin_register_solver_control( solver, "par", "start" )
-    .ROI_plugin_register_solver_control( solver, "xtol_rel", "tol" )
-    .ROI_plugin_register_solver_control( solver, "trace", "verbose" )
+    ROI_plugin_register_solver_control( solver, "par", "start" )
+    ROI_plugin_register_solver_control( solver, "xtol_rel", "tol" )
+    ROI_plugin_register_solver_control( solver, "trace", "verbose" )
 
-    .ROI_plugin_register_solver_control( solver, "rho", "X" )
-    .ROI_plugin_register_solver_control( solver, "outer.iter", "X" )
-    .ROI_plugin_register_solver_control( solver, "inner.iter", "X" )
-    .ROI_plugin_register_solver_control( solver, "delta", "X" )
+    ROI_plugin_register_solver_control( solver, "rho", "X" )
+    ROI_plugin_register_solver_control( solver, "outer.iter", "X" )
+    ROI_plugin_register_solver_control( solver, "inner.iter", "X" )
+    ROI_plugin_register_solver_control( solver, "delta", "X" )
 
     invisible( TRUE )
 }
@@ -30,7 +30,7 @@ make_solnp_signature <- function()
         ## Register solver methods here.
         solver <- "alabama"
         ## obj: F    constr: X    types: C    bounds: V
-        .ROI_plugin_register_solver_method(
+        ROI_plugin_register_solver_method(
             signatures = make_solnp_signature(),
             solver = solver,
             method = getFunction("solve_alabama_auglag",

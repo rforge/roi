@@ -11,6 +11,8 @@ Solution: \code{c(0.5, 0.25)}
 }
 
 \examples{
+library(ROI)
+
 f <- function(x) {
     return( 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2 )
 }
