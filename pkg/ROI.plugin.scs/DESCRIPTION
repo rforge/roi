@@ -1,5 +1,5 @@
 Package: ROI.plugin.scs
-Version: 0.2-3
+Version: 0.2-4
 Title: 'SCS' Plugin for the 'R' Optimization Infrastructure 
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>

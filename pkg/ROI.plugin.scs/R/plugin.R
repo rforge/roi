@@ -125,8 +125,6 @@ to_dense_vector <- function(x, len) {
     return(y)
 }
 
-calc_psd_matrix_dim <- function(m) as.integer((- 1 + sqrt(1 + 8 * m)) / 2)
-
 check_cone_types <- function(x) {
     b = !( x %in% c("free", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd") )
     if ( any(b) ) stop("SCS doesn't support cones of type ",
@@ -167,6 +165,50 @@ build_cone_dims <- function( roi_cones ) {
     cone_dims
 }
 
+
+calc_soc_dims <- function(x) {
+    y <- x$id[x$cone == scs_cones['soc']]
+    if ( !length(y) )
+        return(NULL)
+    as.integer(table(y))
+}
+
+calc_psd_matrix_dim <- function(m) as.integer((- 1 + sqrt(1 + 8 * m)) / 2)
+calc_psd_dims <- function(x) {
+    y <- x$id[x$cone == scs_cones['psd']]
+    if ( !length(y) )
+        return(NULL)
+    sapply(table(y), calc_psd_matrix_dim)
+}
+
+calc_pow_dims <- function(x) {
+    powp <- powd <- NULL
+    ids <- unique(x$id[x$cone == scs_cones['powp']])
+    if ( length(ids) )
+        powp <- sapply(as.character(ids), function(id) x$params[[id]]['a'], USE.NAMES = FALSE)
+
+    ids <- unique(x$id[x$cone == scs_cones['powd']])
+    if ( length(ids) )
+        powd <- sapply(as.character(ids), function(id) -x$params[[id]]['a'], USE.NAMES = FALSE)
+
+    unname(c(powp, powd))
+}
+
+calc_dims <- function(cones) {
+    dims <- list()
+    dims$f <- sum(cones$cone == scs_cones["zero"])
+    dims$l <- sum(cones$cone == scs_cones["nonneg"])
+    dims$ep <- sum(cones$cone == scs_cones["expp"])
+    dims$ed <- sum(cones$cone == scs_cones["expd"])
+
+    dims$q <- calc_soc_dims(cones)
+    dims$s <- calc_psd_dims(cones)
+
+    dims$p <- calc_pow_dims(cones)
+
+    dims
+}
+
 which_scs_default_lower_bounds <- function(lower_bounds) {
     which_inf <- which(is.infinite(lower_bounds$val))
     if ( length(which_inf) ) return(lower_bounds$ind[which_inf])
@@ -177,154 +219,119 @@ as.bound <- function( x, ... ) UseMethod( "as.bound" )
 as.bound.bound <- identity
 as.bound.NULL <- function( x, ... ) structure(list(), class="bound")
 
+## get the indices of the conic bounds which are not the free cone
+get_indizes_nonfree <- function(bo) {
+    if ( is.null(bo) )
+        return(integer())
+    if ( is.null(bo$cones) )
+        return(integer())
+
+    c(unlist(bo$cones$nonneg), unlist(bo$cones$soc), unlist(bo$cones$psd),
+      unlist(bo$cones$expp), unlist(bo$cones$expd), 
+      unlist(lapply(bo$cones$powp, "[[", "i")), 
+      unlist(lapply(bo$cones$powd, "[[", "i")))
+}
+
+scs_cones <-  c("zero" = 1L, "nonneg" = 2L, "soc" = 3L, "psd" = 4L, 
+                "expp" = 5L, "expd" = 6L, "powp" = 7L, "powd" = 8L)
+
+
 solve_OP <- function(x, control=list()) {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
 
-    len_objective <- length(objective(x))
-    len_dual_objective <- nrow(constraints(x)$L)
-    bo <- bounds(x)
-    b <- constraints(x)$rhs
+    constr <- as.C_constraint(constraints(x))
 
-    ## -------------------------------
-    ## Constraints dir    <  <=  >  >=
-    ## -------------------------------
-    cxL <- constraints(x)$L
-    if ( is.null(cxL) ) cxL <- simple_triplet_zero_matrix(0, len_objective)
-    noeq <- which(constraints(x)$dir %in% c("<", "<=", ">", ">="))
+    ## check if "scs" supports the provided cone types
+    stopifnot(all(constr$cones$cone %in% scs_cones))
 
-    if ( length(setdiff(noeq, as.list(bo$cones)$free)) > 0 ) {
-        wi <- setdiff(noeq, as.list(bo$cones)$free)
-        stop('the directions "<", "<=", ">" and ">=" can only be used in combination ',
-             'with the "free" cone! ', 'The constraints c(', paste(wi, collapse=", "),
-             ') are inequality constraints but don`t belong to the "free" cone.')
+    obj <- as.vector(terms(objective(x))[["L"]])
+    if ( maximum(x) ) 
+        obj <- -obj
+
+    if ( nrow(constr) > 0 ) {
+        i <- with(constr$cones, order(cone, id))
+        A <- constr$L[i,]
+        A.rhs <- constr$rhs[i]
+        dims <- calc_dims(constr$cones)
+    } else {
+
     }
 
-    if ( length(noeq) ) {
-        nc0 <- ncol(cxL)
-        b <- c(b, rep.int(0L, length(noeq)))
-        bo <- c(as.bound(bo), C_bound(nrow(cxL) + seq_len(length(noeq)), type="nonneg"))
+    stop("FIXME")
+    ## Ordering is at the wrong position since 
+    ## the ordering should be done after appending
+    ## the bounds. I could do the bounds at the beginning
+    ## and therefore rely on the rbind of constraints!
 
-        slack_noeq <- simple_triplet_matrix(noeq, seq_along(noeq), rep.int(1L, length(noeq)), 
-                                            nrow=nrow(cxL), ncol=length(noeq))
-        cxL <- cbind(cxL, slack_noeq)
+    AL <- AU <- NULL
+    AL.rhs <- AU.rhs <- double()
 
-        nc <- ncol(cxL)
-        loeq <- which(constraints(x)$dir %in% c("<", "<="))
-        if ( length(loeq) ) {
-            i <- seq_along(loeq)
-            j <- nc0 + match(loeq, noeq)
-            cxL <- rbind(cxL, simple_triplet_matrix(i, j, v=rep.int(-1L, length(loeq)),
-                                                    nrow=length(loeq), ncol=nc) )
-        }
-
-        goeq <- which(constraints(x)$dir %in% c(">", ">="))
-        if ( length(goeq) ) {
-            i <- seq_along(goeq)
-            j <- nc0 + match(goeq, noeq)
-            cxL <- rbind(cxL, simple_triplet_matrix(i, j, v=rep.int(1L, length(goeq)),
-                                                    nrow=length(goeq), ncol=nc) )
-        }
-    }
-
-    ## ------------------------------
-    ## V_bounds (ROI default is [0, Inf))
-    ## ------------------------------
-    ## build lower bounds (NOTE: ROI default is 0 scs default is Inf)
-    lower_bounds <- to_dense_vector(bounds(x)$lower, len_objective)
-    not_is_scs_default <- !is.infinite(lower_bounds) ## NOTE: we can assume that the lower bound is never Inf since ROI would complain before
+    ## lower bounds
+    lower_bounds <- to_dense_vector(bounds(x)$lower, length(objective(x)))
+    not_is_scs_default <- !is.infinite(lower_bounds)
     if ( any(not_is_scs_default) ) {
-        lbi <- which(not_is_scs_default)
-        bo <- c(as.bound(bo), C_bound((nrow(cxL) + seq_along(lbi)), type="nonneg"))
-        cxL <- rbind(cxL, simple_triplet_matrix(seq_along(lbi), lbi, v=rep.int(-1L, length(lbi)), 
-                                                nrow=length(lbi), ncol=ncol(cxL)))
-        b <- c(b, -lower_bounds[not_is_scs_default])
+        li <- which(not_is_scs_default)
+        AL <- simple_triplet_matrix(i = seq_along(li), j = li, 
+                                    v = rep.int(-1, length(li)), 
+                                    nrow = length(li), ncol = length(obj))
+        AL.rhs <- -lower_bounds[not_is_scs_default]
     }
-    ## build upper bounds (upper bounds are for ROI and scs Inf)
-    which_exclude <- is.infinite(bounds(x)$upper$val)
-    if ( any(!which_exclude) ) {
-        ubi <- bounds(x)$upper$ind
-        bo <- c(as.bound(bo), C_bound((nrow(cxL) + seq_along(ubi)), type="nonneg"))
-        cxL <- rbind(cxL, simple_triplet_matrix(seq_along(ubi), ubi, v=rep.int(1L, length(ubi)), 
-                                                nrow=length(ubi), ncol=ncol(cxL)))
-        b <- c(b, bounds(x)$upper$val)
+
+    ## upper bounds
+    ui <- bounds(x)$upper$ind
+    ub <- bounds(x)$upper$val
+    if ( length(ui) ) {
+        AU <- simple_triplet_matrix(i = seq_along(ui), j = ui,
+                                    v = rep.int(1, length(ui)), 
+                                    nrow = length(ui), ncol = length(obj))
+        AU.rhs <- ub
     }
-    
-    roi_cones <- as.list( bo$cones )
-    cone_dims <- build_cone_dims( roi_cones )
-    
+   
     ## The NO_PSD_SCALING mode is only for testing purposes
-    if ( !is.null(cone_dims$s) & is.null(control$NO_PSD_SCALING) ) {
+    if ( !is.null(dims$s) & is.null(control$NO_PSD_SCALING) ) {
         psd_j <- list()
-        for ( i in seq_along(roi_cones$psd) ) {
-            psd_dim <- cone_dims$s[i]
-            psd_j[[i]] <- roi_cones$psd[[i]][scale_which( psd_dim )]
-            k <- cxL$i %in% psd_j[[i]]
-            cxL$v[k] <- sqrt(2) * cxL$v[k]
-            b[psd_j[[i]]] <- sqrt(2) * b[psd_j[[i]]]
+        b <- constr$cones$cone[i] == scs_cones["psd"]
+        roi_cones <- split(seq_along(constr$cones$cone)[b], constr$cones$id[b])         
+        for ( i in seq_along(roi_cones) ) {
+            psd_dim <- dims$s[i]
+            psd_j[[i]] <- roi_cones[[i]][scale_which( psd_dim )]
+            k <- A$i %in% psd_j[[i]]
+            A$v[k] <- sqrt(2) * A$v[k]
+            A.rhs[psd_j[[i]]] <- sqrt(2) * A.rhs[psd_j[[i]]]
         }
     }
 
-    map <- get_mapping()
-    ind <- unlist(c(roi_cones[setdiff(names(map), c("powp", "powd"))]), use.names=FALSE)
-    ind <- c(ind, unlist(lapply(c(roi_cones[["powp"]], roi_cones[["powd"]]), "[[", 1), use.names=FALSE))
+    A <- rbind(A, AL, AU)
+    A.rhs <- c(A.rhs, AL.rhs, AU.rhs)
+    dims$l <- dims$l + length(AL.rhs) + length(AU.rhs)
 
-    missing_indizes <- setdiff(seq_len(nrow(cxL)), ind)
-    if ( length(missing_indizes) > 0 ) {
-        ## If I give no warnig it can be used like every other solver.
-        ## warning("  No cone was provided for the indices ", 
-        ##     paste(missing_indizes, collapse=", "), " they will be set to the free cone.")
-        cone_dims$f <- sum(c(cone_dims$f, length(missing_indizes)))
-        ind <- c(missing_indizes, ind)
-    }
-
-    obj <- as.numeric( as.matrix(terms(objective(x))[["L"]]) )
-
-    ## if we add slack variables for e.g. <= we have to fix the dim of the
-    ## objective ## TODO: add a check of something was added
-    if ( length(obj) < ncol(cxL) ) {
-        obj <- c(obj, rep.int(0L, ncol(cxL) - length(obj)))
-    }
-
-    if ( length(b) < nrow(cxL) ) {
-        b <- c(b, rep.int(0L, nrow(cxL) - length(b))) ## TODO: check if this case can still occur (I assume not!)
-    }
-    if (length(b) != length(ind)) ## this shouldn't happen
-        stop("LENGTH_MISMATCH in 'ROI.plugin.scs$solve_OP'\n",
-             "\tthe dimensions of the 'rhs' and it's permutation vector don't match!")
-    b <- b[ind]
-
-    if ( x$maximum ) obj <- -obj
     if ( is.null(control$verbose) ) control$verbose <- FALSE
     if ( is.null(control$eps) ) control$eps <- 1e-6
 
-    solver_call <- list(scs, A = cxL[ind,], b = b, obj = obj, 
-                        cone = cone_dims, control = control)
+    solver_call <- list(scs, A = A, b = A.rhs, obj = obj, 
+                        cone = dims, control = control)
     mode(solver_call) <- "call"
     if ( isTRUE(control$dry_run) )
         return(solver_call) 
 
     out <- eval(solver_call)
-    x_sol <- out$x[seq_len(len_objective)]
-    out$len_objective <- len_objective
-    out$len_dual_objective <- len_dual_objective
-    ## out$y <- out$y[seq_len(len_dual_objective)]
-    ## out$s <- out$s[seq_len(len_dual_objective)]
+    out$len_objective <- length(objective(x))
+    out$len_dual_objective <- nrow(constraints(x))
 
     if ( "s" %in% names(cone_dims)  ) {
         out$psd <- lapply(roi_cones$psd, function(j) unvech(out$y[j]))
     } else {
         sdp <- NULL
     }
-    optimum <- (-1)^x$maximum * tryCatch({as.numeric(x_sol %*% obj[seq_len(len_objective)])}, error=function(e) as.numeric(NA))
-    .ROI_plugin_canonicalize_solution( solution = x_sol,  optimum  = optimum,
+    optimum <- (-1)^x$maximum * tryCatch({as.numeric(out$x %*% obj)}, error=function(e) as.numeric(NA))
+    ROI_plugin_canonicalize_solution( solution = out$x,  optimum  = optimum,
                                        status   = out[["info"]][["statusVal"]],
-                                       solver   = solver, message  = out )
+                                       solver   = "scs", message  = out )
 }
 
-.ROI_plugin_solution_dual.scs_solution <- function(x) {
+ROI_plugin_solution_dual.scs_solution <- function(x) {
     x$message$y[seq_len(x$message$len_dual_objective)]
 }
 
-.ROI_plugin_solution_psd.scs_solution <- function(x) {
+ROI_plugin_solution_psd.scs_solution <- function(x) {
     x$message$psd
 }
