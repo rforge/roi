@@ -28,10 +28,10 @@ solve_QP <- function( x, control ) {
                               rhs = constraints(x)$rhs,
                               max = x$maximum,
                               control = control)
-    .ROI_plugin_canonicalize_solution( solution = out$sol,
+    ROI_plugin_canonicalize_solution( solution = out$sol,
                                        optimum  = objective(x)(out$sol),
                                        status   = out$ierr,
-                                       solver   = .ROI_plugin_get_solver_name(getPackageName()),
+                                       solver   = ROI_plugin_get_solver_name(getPackageName()),
                                        message = out)
 }
 
@@ -145,25 +145,25 @@ solve_QP <- function( x, control ) {
 ## STATUS CODES
 .add_status_codes <- function(){
     ## quadprog
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
-    .ROI_plugin_add_status_code_to_db(solver,
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
+    ROI_plugin_add_status_code_to_db(solver,
                                 0L,
                                 "OPTIMAL",
                                 "Solution is optimal",
                                 0L
                                 )
-    .ROI_plugin_add_status_code_to_db(solver,
+    ROI_plugin_add_status_code_to_db(solver,
                                 1L,
                                 "INCONSISTENT",
                                 "Constraints are inconsistent, no solution."
                                 )
-    .ROI_plugin_add_status_code_to_db(solver,
+    ROI_plugin_add_status_code_to_db(solver,
                                 2L,
                                 "NOT_POSITIVE_DEFINITE",
                                 "quadratic term in function is not positive definite."
                                 )
     ## FIXME: temporary status code until Fortran routine is called directly again
-    .ROI_plugin_add_status_code_to_db(solver,
+    ROI_plugin_add_status_code_to_db(solver,
                                 3L,
                                 "ROI_INTERFACE_ERROR",
                                 "contact the plugin maintainer."
