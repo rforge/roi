@@ -64,7 +64,7 @@ is.LP <- function(x) {
 
 ##
 solve_OP <- function(x, control=list()) {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
     leno <- length(objective(x))
     m <- list()
     m$sense <- c("min", "max")[1 + x$maximum]
@@ -113,7 +113,7 @@ solve_OP <- function(x, control=list()) {
         i <- which(types(x) == "B")
         if ( length(i) ) {
             m$bx[1, i] <- sapply(m$bx[1, i], max, 0)
-            m$bx[2, i] <- sapply(m$bx[2, i], min, 0)
+            m$bx[2, i] <- sapply(m$bx[2, i], min, 1)
         }
     } 
 
@@ -146,7 +146,7 @@ solve_OP <- function(x, control=list()) {
 
     optimum <- tryCatch({as.numeric(objective(x)(x.solution))}, 
                         error=function(e) as.numeric(NA))
-    return( .ROI_plugin_canonicalize_solution( solution = x.solution, 
+    return( ROI_plugin_canonicalize_solution( solution = x.solution, 
                                                optimum  = optimum,
                                                status   = as.integer(out$response$code),
                                                solver   = solver, 
