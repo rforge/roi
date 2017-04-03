@@ -21,7 +21,7 @@ get_ub <- function(x, .machine.max=Inf) {
 .deoptim_control_names <- c("VTR", "strategy", "NP", "itermax", "CR", "F", "bs", "trace",  "initialpop", "storepopfrom", "storepopfreq", "p", "c", "reltol",  "steptol", "parallelType", "packages", "parVar", "foreachArgs")
 
 solve_deoptim <- function( x, control ) {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
 
     lb <- get_lb(x)
     ub <- get_ub(x)
@@ -47,7 +47,7 @@ solve_deoptim <- function( x, control ) {
 
     x.solution <- setNames(out$optim$bestmem, terms(objective(x))$names)
 
-    .ROI_plugin_canonicalize_solution(  solution  = x.solution,
+    ROI_plugin_canonicalize_solution(  solution  = x.solution,
                                         optimum   = out$optim$bestval,
                                         status    = 0L,
                                         solver    = solver,
