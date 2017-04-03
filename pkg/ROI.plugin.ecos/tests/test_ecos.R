@@ -21,14 +21,17 @@ test_cp_01 <- function(solver) {
     b <- c(sqrt(2))
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1), "soc"=list(2:4))
-    bound <- c(V_bound(li=1:3, lb=rep(-Inf, 3)), as.C_bound(cones))
 
-    lc <- L_constraint(L = rbind(A, G), dir=rep("==", length(c(b, h))), rhs = c(b, h))
+    bound <- V_bound(li = 1:3, lb = rep(-Inf, 3))
+
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(1), K_soc(3)), 
+                       rhs = c(b, h))
     x <- OP(objective = obj, constraints = lc, types = rep("C", 3),
             bounds =  bound, maximum = FALSE)
 
-    opt <- ROI_solve(x, solver=solver)
+    opt <- ROI_solve(x, solver = solver)
+    
     check("CP-01@01", equal(sum(abs(opt$solution - c(sqrt(2), -1, -1))), 0))
     check("CP-01@02", equal(opt$objval, (sqrt(2) - 2)))
 }
@@ -48,12 +51,11 @@ test_cp_02 <- function(solver) {
     b <- c(sqrt(2), sqrt(2))
     G <- diag(x=-1, 6)
     h <- rep(0, 6)
-    cones <- list("free"=c(1, 2), "soc"=list(3:5, 6:8))
-    bound <- as.C_bound(cones)
 
-    lc <- L_constraint(L = rbind(A, G), dir=rep("==", length(c(b, h))), rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc, types = rep("C", 6), bounds =  bound,
-            maximum = FALSE)
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_soc(c(3, 3))), 
+                       rhs = c(b, h))
+    x <- OP(objective = obj, constraints = lc)
 
     opt <- ROI_solve(x, solver=solver)
     check("CP-02@01", equal(sum(abs(opt$solution - c(sqrt(2), 1, 1, sqrt(2), 1, 1))), 0))
@@ -72,16 +74,15 @@ test_cp_03 <- function(solver) {
     A <- rbind(c(1, 0, 0),
                c(0, 1, 0))
     b <- c(1, 2)
-    G <- diag(x=-1, 3)
+    G <- -diag(3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "expp"=list(3:5))
-    bound <- as.C_bound(cones)
 
-    lc <- L_constraint(L = rbind(A, G), dir=rep("==", length(c(b, h))), rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc, types = rep("C", 3),
-            bounds =  bound, maximum = FALSE)
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_expp(1)), 
+                       rhs = c(b, h))
+    x <- OP(objective = obj, constraints = lc)
 
-    opt <- ROI_solve(x, solver=solver)
+    opt <- ROI_solve(x, solver = solver)
     check("CP-03@01", equal(opt$solution , c(1, 2, 2*exp(1/2))))
 }
 
@@ -100,12 +101,11 @@ test_cp_04 <- function(solver) {
     b <- c(2, 2*exp(1/2))
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "expp"=list(3:5))
-    bound <- as.C_bound(cones)
 
-    lc <- L_constraint(L = rbind(A, G), dir=rep("==", length(c(b, h))), rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc, types = rep("C", 3),
-            bounds =  bound, maximum = TRUE)
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_expp(1)), 
+                       rhs = c(b, h))
+    x <- OP(objective = obj, constraints = lc, maximum = TRUE)
 
     opt <- ROI_solve(x, solver=solver)
     check("CP-04@01", equal(opt$solution , c(1, 2, 2*exp(1/2))))
@@ -126,14 +126,16 @@ test_cp_05 <- function(solver) {
     b <- c(1, exp(1))
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "expp"=list(3:5))
-    bound <- as.C_bound(cones)
+    ## cones <- list("free"=c(1, 2), "expp"=list(3:5))
+    ## bound <- as.C_bound(cones)
 
-    lc <- L_constraint(L = rbind(A, G), dir=rep("==", length(c(b, h))), rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc, types = rep("C", 3),
-            bounds =  bound, maximum = TRUE)
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_expp(1)), 
+                       rhs = c(b, h))
+    x <- OP(objective = obj, constraints = lc, 
+            types = rep("C", 3), maximum = TRUE)
 
-    opt <- ROI_solve(x, solver=solver)
+    opt <- ROI_solve(x, solver = solver)
     check("CP-05@01", equal(opt$solution , c(1, 1, exp(1))))
 }
 

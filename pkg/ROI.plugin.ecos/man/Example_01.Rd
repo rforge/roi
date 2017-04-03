@@ -12,8 +12,10 @@
 library(ROI)
 obj <- L_objective(c(1, 1))
 ## NOTE: chol(diag(2)) == diag(2)
-con <- L_constraint(rbind(0, -diag(2)), dir=rep("==", 3), rhs=c(1, 0, 0))
-op <- OP(obj, con, bounds=as.C_bound(list(soc=list(1:3))), maximum=TRUE)
+con <- C_constraint(L = rbind(0, -diag(2)), 
+                    cones = K_soc(3), 
+                    rhs = c(1, 0, 0))
+op <- OP(obj, con, maximum=TRUE)
 x <- ROI_solve(op, solver="ecos")
 x
 ## Optimal solution found.

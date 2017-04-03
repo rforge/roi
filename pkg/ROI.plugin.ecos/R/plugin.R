@@ -184,60 +184,60 @@ solve_OP <- function(x, control = list()){
     optimum <- tryCatch({as.numeric(x_sol %*% obj)}, error=function(e) as.numeric(NA))
     optimum <- ((-1)^maximum(x) * optimum)
 
-    .ROI_plugin_canonicalize_solution( solution = x_sol, optimum  = optimum,
+    ROI_plugin_canonicalize_solution( solution = x_sol, optimum  = optimum,
                                        status   = out[["retcodes"]]["exitFlag"],
                                        solver   = solver, message = out )
 }
 
-.ROI_plugin_solution_dual.scs_solution <- function(x) {
+ROI_plugin_solution_dual.ecos_solution <- function(x) {
     x$message$y[seq_len(x$message$len_dual_objective)]
 }
 
 ## STATUS CODES
 .add_status_codes <- function() {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
-    .ROI_plugin_add_status_code_to_db( solver,
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
+    ROI_plugin_add_status_code_to_db( solver,
                            0L,
                            "ECOS_OPTIMAL",
                            "Optimal solution found.",
                            0L )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            1L,
                            "ECOS_PINF",
                            "Certificate of primal infeasibility found." )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            2L,
                            "ECOS_DINF",
                            "Certificate of dual infeasibility found." )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            10L,
                            "ECOS_OPTIMAL + ECOS_INACC_OFFSET",
                            "Optimal solution found subject to reduced tolerances.", 0L)
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            11L,
                            "ECOS_PINF + ECOS_INACC_OFFSET",
                            "Certificate of primal infeasibility found subject to reduced tolerances." )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            12L,
                            "ECOS_DINF + ECOS_INACC_OFFSET",
                            "Certificate of dual infeasibility found subject to reduced tolerances." )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            -1L,
                            "ECOS_MAXIT",
                            "Maximum number of iterations reached." )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            -2L,
                            "ECOS_NUMERICS",
                            "Numerical problems (unreliable search direction)." )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            -3L,
                            "ECOS_OUTCONE",
                            "Numerical problems (slacks or multipliers outside cone)." )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            -4L,
                            "ECOS_SIGINT",
                            "Interrupted by signal or CTRL-C." )
-    .ROI_plugin_add_status_code_to_db( solver,
+    ROI_plugin_add_status_code_to_db( solver,
                            -7L,
                            "ECOS_FATAL",
                            "Unknown problem in solver." )
