@@ -74,7 +74,7 @@ is_derivate_free_algorithm <- function(x) {
 ## }
 
 solve_nloptr <- function( x, control ) {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
     lb <- get_lb(x)
     ub <- get_ub(x)
 
@@ -133,7 +133,7 @@ solve_nloptr <- function( x, control ) {
 
     optimum <- (-1)^x$maximum * o$objective
 
-    .ROI_plugin_canonicalize_solution(  solution  = o$solution,
+    ROI_plugin_canonicalize_solution(  solution  = o$solution,
                                         optimum   = optimum,
                                         status    = o$status,
                                         solver    = solver,
