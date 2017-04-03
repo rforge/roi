@@ -27,7 +27,7 @@ get_ub <- function(x) {
 }
 
 solve_optimx <- function( x, control ) {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
 
     if ( is.null(control$par) )
         stop("argument 'start' is missing with no default")
@@ -61,7 +61,7 @@ solve_optimx <- function( x, control ) {
     solution <- as.numeric(out[i, seq_len(length(control$par))])
     algorithm <- if ( is.null(control$method) ) "all" else control$method
 
-    .ROI_plugin_canonicalize_solution(  solution  = solution,
+    ROI_plugin_canonicalize_solution(  solution  = solution,
                                         optimum   = out$value[i],
                                         status    = out$convcode[i],
                                         solver    = solver,
