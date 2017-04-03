@@ -4,8 +4,8 @@ library(ROI.plugin.lpsolve)
 check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
     if ( isTRUE(condition) ) return(invisible(NULL))
     msg <- sprintf("in %s", domain)
-    if ( all(nchar(message) > 0) ) msg <- sprintf("%s\n\t%s", msg, message)
-    stop(msg)
+    if ( all(nchar(message) > 0) ) msg <- sprintf("%s\n\t%s\n", msg, message)
+    cat("Diff:", msg)
     return(invisible(NULL))
 }
 
@@ -117,11 +117,9 @@ test_milp_02 <- function(solver) {
          types = c("I", "C", "I"),
          maximum = TRUE)
 
-    control <- list()
-
-    opt <- ROI_solve(x, solver=solver, control=control)
+    opt <- ROI_solve(x, solver=solver)
     check("MILP-02@01", all(A %*% opt$solution <= b))
-    check("MILP-02@02", equal(opt$solution , c(5, 2.75, 3), tol=1e-01))
+    check("MILP-02@01", equal(opt$solution , c(5, 2.75, 3), tol=1e-01))
 }
 
 if ( !any("lpsolve" %in% names(ROI_registered_solvers())) ) {
