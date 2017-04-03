@@ -6,7 +6,7 @@ make_solnp_signature <- function()
                                 constraints = c("X", "L", "Q", "F"),
                                 types = c("C"),
                                 bounds = c("X", "V"),
-                                cones = c("free"),
+                                cones = c("X"),
                                 maximum = c(TRUE, FALSE) )
 
 ## SOLVER CONTROLS
