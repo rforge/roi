@@ -36,11 +36,11 @@ library(ROI)
 lo <- L_objective(c(-2, 1, 5))
 lc1 <- rbind(c(12, 6, -5), c(13, -3, -5), c(12, -12, 6))
 lc2 <- rbind(c(3, -6, 10), c(3, -6, -2), c(-1, -9, -2), c(1, 19, -3))
-lc <- L_constraint(rbind(lc1, lc2), dir=rep("==", 7), 
-                   rhs=c(c(-12, -3, -2), c(27, 0, 3, -42)))
-cb <- as.C_bound(list(soc=list(1:3, 4:7)))
+lc <- C_constraint(L = rbind(lc1, lc2), 
+                   cones = K_soc(c(3, 4)), 
+                   rhs = c(c(-12, -3, -2), c(27, 0, 3, -42)))
 vb <- V_bound(li=1:3, lb=rep(-Inf, 3))
-op <- OP(objective = lo, constraints = lc, bounds = c(vb, cb))
+op <- OP(objective = lo, constraints = lc, bounds = vb)
 x <- ROI_solve(op, solver="scs")
 x
 ## Optimal solution found.

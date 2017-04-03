@@ -165,6 +165,19 @@ build_cone_dims <- function( roi_cones ) {
     cone_dims
 }
 
+calc_expp_dims <- function(x) {
+    y <- x$id[x$cone == scs_cones['expp']]
+    if ( !length(y) )
+        return(NULL)
+    length(unique(y))
+}
+
+calc_expd_dims <- function(x) {
+    y <- x$id[x$cone == scs_cones['expd']]
+    if ( !length(y) )
+        return(NULL)
+    length(unique(y))
+}
 
 calc_soc_dims <- function(x) {
     y <- x$id[x$cone == scs_cones['soc']]
@@ -198,8 +211,8 @@ calc_dims <- function(cones) {
     dims <- list()
     dims$f <- sum(cones$cone == scs_cones["zero"])
     dims$l <- sum(cones$cone == scs_cones["nonneg"])
-    dims$ep <- sum(cones$cone == scs_cones["expp"])
-    dims$ed <- sum(cones$cone == scs_cones["expd"])
+    dims$ep <- calc_expp_dims(cones)
+    dims$ed <- calc_expd_dims(cones)
 
     dims$q <- calc_soc_dims(cones)
     dims$s <- calc_psd_dims(cones)
@@ -247,21 +260,6 @@ solve_OP <- function(x, control=list()) {
     if ( maximum(x) ) 
         obj <- -obj
 
-    if ( nrow(constr) > 0 ) {
-        i <- with(constr$cones, order(cone, id))
-        A <- constr$L[i,]
-        A.rhs <- constr$rhs[i]
-        dims <- calc_dims(constr$cones)
-    } else {
-
-    }
-
-    stop("FIXME")
-    ## Ordering is at the wrong position since 
-    ## the ordering should be done after appending
-    ## the bounds. I could do the bounds at the beginning
-    ## and therefore rely on the rbind of constraints!
-
     AL <- AU <- NULL
     AL.rhs <- AU.rhs <- double()
 
@@ -285,12 +283,25 @@ solve_OP <- function(x, control=list()) {
                                     nrow = length(ui), ncol = length(obj))
         AU.rhs <- ub
     }
-   
+
+    A <- rbind(constr$L, AL, AU)
+    A.rhs <- c(constr$rhs, AL.rhs, AU.rhs)
+    cones <- c(constr$cones, K_lin(length(AL.rhs)), K_lin(length(AU.rhs)))
+
+    if ( nrow(constr) > 0 ) {
+        i <- with(cones, order(cone, id))
+        A <- A[i,]
+        A.rhs <- A.rhs[i]
+        dims <- calc_dims(cones)
+    } else {
+
+    }    
+
     ## The NO_PSD_SCALING mode is only for testing purposes
     if ( !is.null(dims$s) & is.null(control$NO_PSD_SCALING) ) {
         psd_j <- list()
-        b <- constr$cones$cone[i] == scs_cones["psd"]
-        roi_cones <- split(seq_along(constr$cones$cone)[b], constr$cones$id[b])         
+        b <- cones$cone[i] == scs_cones["psd"]
+        roi_cones <- split(seq_along(cones$cone)[b], cones$id[b])         
         for ( i in seq_along(roi_cones) ) {
             psd_dim <- dims$s[i]
             psd_j[[i]] <- roi_cones[[i]][scale_which( psd_dim )]
@@ -299,10 +310,6 @@ solve_OP <- function(x, control=list()) {
             A.rhs[psd_j[[i]]] <- sqrt(2) * A.rhs[psd_j[[i]]]
         }
     }
-
-    A <- rbind(A, AL, AU)
-    A.rhs <- c(A.rhs, AL.rhs, AU.rhs)
-    dims$l <- dims$l + length(AL.rhs) + length(AU.rhs)
 
     if ( is.null(control$verbose) ) control$verbose <- FALSE
     if ( is.null(control$eps) ) control$eps <- 1e-6
@@ -317,8 +324,8 @@ solve_OP <- function(x, control=list()) {
     out$len_objective <- length(objective(x))
     out$len_dual_objective <- nrow(constraints(x))
 
-    if ( "s" %in% names(cone_dims)  ) {
-        out$psd <- lapply(roi_cones$psd, function(j) unvech(out$y[j]))
+    if ( "s" %in% names(dims)  ) {
+        out$psd <- lapply(roi_cones, function(j) unvech(out$y[j]))
     } else {
         sdp <- NULL
     }
