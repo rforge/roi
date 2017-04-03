@@ -20,10 +20,10 @@ solve_QP <- function( x, control ) {
                            bounds = bounds(x),
                            max = x$maximum,
                            control = control )
-    .ROI_plugin_canonicalize_solution( solution = out$solution,
+    ROI_plugin_canonicalize_solution( solution = out$solution,
                                        optimum  = ifelse(!out$status, objective(x)(out$solution), NA),
                                        status   = out$status,
-                                       solver   = .ROI_plugin_get_solver_name(getPackageName()),
+                                       solver   = ROI_plugin_get_solver_name(getPackageName()),
                                        message  = out$output )
 }
 
@@ -43,10 +43,10 @@ solve_LP <- function( x, control ) {
                            bounds = bounds(x),
                            max = x$maximum,
                            control = control )
-    .ROI_plugin_canonicalize_solution( solution = out$solution,
+    ROI_plugin_canonicalize_solution( solution = out$solution,
                                        optimum  = ifelse(!out$status, objective(x)(out$solution), NA),
                                        status   = out$status,
-                                       solver   = .ROI_plugin_get_solver_name(getPackageName()),
+                                       solver   = ROI_plugin_get_solver_name(getPackageName()),
                                        message  = out$output)
 }
 
@@ -126,24 +126,24 @@ solve_LP <- function( x, control ) {
 ## STATUS CODES
 .add_status_codes <- function(){
     ## quadprog
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
-    .ROI_plugin_add_status_code_to_db(solver,
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
+    ROI_plugin_add_status_code_to_db(solver,
                                 0L,
                                 "converged",
                                 "Solution is optimal",
                                 0L
                                 )
-    .ROI_plugin_add_status_code_to_db(solver,
+    ROI_plugin_add_status_code_to_db(solver,
                                 1L,
                                 "not converged",
                                 "No solution found."
                                 )
-    .ROI_plugin_add_status_code_to_db(solver,
+    ROI_plugin_add_status_code_to_db(solver,
                                 2L,
                                 "error",
                                 "Solver error: No solution found."
                                 )
-    .ROI_plugin_add_status_code_to_db(solver,
+    ROI_plugin_add_status_code_to_db(solver,
                                 3L,
                                 "bounds violated",
                                 "Problem is most likely unbounded."
@@ -172,31 +172,31 @@ ipop_default_control <- function()
 
 ## SOLVER CONTROLS
 .add_controls <- function(){
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
     ## ROI + ipop
-    .ROI_plugin_register_solver_control( solver,
+    ROI_plugin_register_solver_control( solver,
                                          "verb",
                                          "verbose" )
-    .ROI_plugin_register_solver_control( solver,
+    ROI_plugin_register_solver_control( solver,
                                          "maxiter",
                                          "max_iter" )
     ## ipop only
-    .ROI_plugin_register_solver_control( solver,
+    ROI_plugin_register_solver_control( solver,
                                          "sigf",
                                          "X" )
-    .ROI_plugin_register_solver_control( solver,
+    ROI_plugin_register_solver_control( solver,
                                          "margin",
                                          "X" )
-    .ROI_plugin_register_solver_control( solver,
+    ROI_plugin_register_solver_control( solver,
                                          "bound",
                                          "X" )
-    .ROI_plugin_register_solver_control( solver,
+    ROI_plugin_register_solver_control( solver,
                                          "inf",
                                          "X" )
     invisible( TRUE )
 }
 
 ## SOLUTION EXTRACTORS
-.ROI_plugin_solution_dual.ipop_solution <- function( x ){
+ROI_plugin_solution_dual.ipop_solution <- function( x ){
     dual( x$message )
 }
