@@ -73,7 +73,7 @@ canonicalize_control <- function(x) {
 }
 
 .solve_LP <- function(x, control) {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
 
     model <- list()
     ## objective
@@ -96,7 +96,7 @@ canonicalize_control <- function(x) {
 
     out <- gurobi(model, canonicalize_control(control))
 
-    .ROI_plugin_canonicalize_solution( solution = out$x,
+    ROI_plugin_canonicalize_solution( solution = out$x,
                                        optimum  = out$objval,
                                        status   = gurobi_status_code[[out$status]],
                                        solver   = solver,
@@ -114,7 +114,7 @@ canonicalize_control <- function(x) {
 }
 
 .solve_QP <- function(x, control) {
-    solver <- .ROI_plugin_get_solver_name( getPackageName() )
+    solver <- ROI_plugin_get_solver_name( getPackageName() )
 
     model <- list()
     ## objective
@@ -176,10 +176,10 @@ canonicalize_control <- function(x) {
 
     ## maximum
     model$modelsense <- if(x$maximum) "max" else "min"
-
+    
     out <- gurobi(model, canonicalize_control(control))
 
-    .ROI_plugin_canonicalize_solution( solution = out$x,
+    ROI_plugin_canonicalize_solution( solution = out$x,
                                        optimum = out$objval,
                                        status = gurobi_status_code[[out$status]],
                                        solver = solver,
