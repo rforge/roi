@@ -87,7 +87,7 @@ test_cp_03 <- function(solver) {
     check("CP-03@01", equal(opt$solution , c(1, 2, 2*exp(1/2))))
 }
 
-## EXPP - Example - 1
+## EXPP - Example - 2
 ## max:  x + y + z
 ## s.t.
 ## y e^(x/y) <= z
@@ -102,8 +102,6 @@ test_cp_04 <- function(solver) {
     b <- c(2, 2*exp(1/2))
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "expp"=list(3:5))
-    bound <- as.C_bound(cones)
 
     lc <- C_constraint(L = rbind(A, G), 
                        cones = c(K_zero(2), K_expp(1)), 
