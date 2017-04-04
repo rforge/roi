@@ -66,35 +66,20 @@
 ##' @export
 OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
                 maximum = FALSE ) {
-    objective <- as.objective(objective)
-    constraints <- as.constraint(constraints)
-    types <- as.types(types)
-    maximum <- as.logical(maximum)
-    ## TODO: as.bounds
-    .check_constraints(constraints, objective)
-    ## check types
-    if ( !is.null(types) ) {
-        if ( length(objective) != length(types) )
-            stop( "dimensions of 'objective' and 'types' not conformable." )
-    }
-    ## check bounds
-    structure(list(objective = objective, constraints = constraints, bounds = bounds,
-                   types = types, maximum = maximum), class = "OP")
-}
+    x <- vector("list", 5)
+    names(x) <- c("objective", "constraints", "bounds", "types", "maximum")
+    class(x) <- "OP"
 
-.check_constraints <- function(con, obj) UseMethod(".check_constraints")
-.check_constraints.NULL <- function(con, obj) NULL
-.check_constraints.NO_constraint <- function(con, obj) NULL
-.check_constraints.L_constraint <- function(con, obj) {
-    if ( length(obj) != ncol(con) )
-        stop( "dimensions of 'objective' and 'constraints' not conformable." )
-}
-.check_constraints.Q_constraint <- .check_constraints.L_constraint
-.check_constraints.F_constraint <- function(con, obj) {
-    x0 <- rep.int(1, length(obj))
-    F_len <- sum(unlist(lapply(con$F, function(f) length(f(x0))), FALSE, FALSE)) 
-    if ( F_len != length(con$rhs) )
-        stop( "dimensions of 'rhs' and 'constraints' not conformable." )
+    if ( missing(objective) )
+        return(x)
+    
+    objective(x)   <- objective
+    constraints(x) <- constraints
+    bounds(x)      <- bounds
+    types(x)       <- types
+    maximum(x)     <- maximum
+    
+    x
 }
 
 .check_OP_for_sanity <- function( x ) {
@@ -115,17 +100,33 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
 
 ##' @noRd
 ##' @export
-print.OP <- function(x, ...){
+print.OP <- function(x, ...) {
     writeLines( "ROI Optimization Problem:\n" )
     ## objective
+    len <- length(objective(x))
     op_type <- switch( class(objective(x))[2],
                        "L_objective" = "linear",
                        "Q_objective" = "quadratic",
                        "F_objective" = "nonlinear",
                        "abstract" )
-    writeLines( sprintf("%s a %s objective function with",
-                        ifelse(x$maximum, "Maximize", "Minimize"), op_type) )
-    writeLines( sprintf("- %d objective variables,", length(objective(x))) )
+    txt <- sprintf("%s a %s objective function of length %d with",
+                   ifelse(x$maximum, "Maximize", "Minimize"), op_type, len)
+    writeLines( txt )
+    if ( any(types(x) %in% available_types()[-1L]) ) {
+        tab <- table(types(x))
+        nam <- setNames(c("continuous", "integer", "binary"), c("C", "I", "B"))
+        for ( ty in available_types() ) {
+            if ( isTRUE(ty %in% names(tab)) ) {
+                txt <- sprintf("- %d %s objective variable%s,", 
+                               tab[ty], nam[ty], plural_s(tab[ty] != 1L))
+                writeLines(txt)
+            }
+        }
+    } else {
+        txt <- sprintf("- %d continuous objective variable%s,", 
+                       len, plural_s(len != 1L))
+        writeLines( txt )
+    }
     writeLines( "\nsubject to" )
     ## constraints
     if ( is.NO_constraint(constraints(x)) ) {
@@ -133,21 +134,29 @@ print.OP <- function(x, ...){
     } else {
         types <- c( L_constraint = "linear",
                     Q_constraint = "quadratic",
+                    C_constraint = "conic", 
                     F_constraint = "nonlinear" )
-        writeLines( sprintf("- %d constraints of type %s.",
-                            length(constraints(x)),
-                            paste(na.omit(types[class(constraints(x))])[1],
-                                  collapse = ", ")
-                            ) )
+        len <- length(constraints(x))
+        
+        txt <- sprintf("- %d constraint%s of type %s.",
+                       len, plural_s(len != 1L),
+                       paste(na.omit(types[class(constraints(x))])[1],
+                             collapse = ", "))
+        writeLines( txt )
+        if ( inherits(constraints(x), "C_constraint") ) {
+            cones <- table(available_cone_types()[constraints(x)$cones$cone])
+            for ( i in seq_along(cones) ) {
+                txt <- sprintf("  |- %i conic constraint%s of type '%s'", 
+                               cones[i], plural_s(cones[i] != 1), names(cones)[i])
+                writeLines( txt )
+            }
+        }
     }
-    ## calculate if types have to be written to stdout
-    writetypes <- FALSE
-    if( !is.null(types(x)) )
-        if( any(types(x) %in% available_types()[2:3]) )
-            writetypes <- TRUE
-    if( writetypes ){
-        writeLines( "" )
-        writeLines( "Some of the objective variables are of type binary or integer." )
+    if ( !(is.null(bounds(x)$lower) & is.null(bounds(x)$upper)) ) {
+        len.lo <- length(bounds(x)$lower$ind)
+        len.up <- length(bounds(x)$upper$ind)
+        writeLines( sprintf("- %d lower and %d upper non-standard variable bound%s.",
+                    len.lo, len.up, plural_s(len.up != 1)) )
     }
 }
 
@@ -187,58 +196,45 @@ as.OP.numeric <- function(x){
 ##' @noRd
 ## since available_objective_classes are ordered I only need to take the first!
 get_objective_class <- function(x) {
-    b <- available_objective_classes() %in% class(x$objective)
-    names(available_objective_classes())[b][1]
+    b <- available_objective_classes() %in% class(x$objective)[1]
+    names(available_objective_classes())[b]
 }
 
-## TODO:
-## get_constraint_class <- function(x)
+get_constraint_class <- function(x) {
+    b <- available_constraint_classes() %in% class(constraints(x))[1]
+    names(available_constraint_classes())[b] 
+}
 
-## OP_class <- function( x ){
-##     x <- as.OP( x )
-##     uniq_types <- if( is.null(types(x)) )
-##         available_types()[1]
-##     else unique(types(x))
-##     signature <- list(
+get_cone_types <- function(x) {
+    cones <- unique(constraints(x)$cones$cone)
+    if ( is.null(cones) )
+        return("X")
+    available_cone_types()[cones]
+}
 
-##                       )
-##     c(sapply(available_objective_classes(),
-##                           function(what) inherits(objective(x), what) ),
-##                    sapply(available_constraint_classes(),
-##                           function(what) inherits(constraints(x), what)),
-##                    sapply(available_types(),
-##                           function(what) what %in% uniq_types),
-##                    bounds  = !is.null(bounds(x)),
-##                    maximum = x$maximum
-##     )
-##     signature
-## }
+get_varibale_types <- function(x) {
+    if ( is.null(types(x)) ) {
+        available_types()[1]
+    } else {
+        paste(unique(types(x)), collapse = "")
+    }
+}
+
+get_bound_type <- function(x) {
+    if ( class(bounds(x))[1] == "V_bound" ) "V" else  "X"
+}
 
 ## NOTE: objective(x) returns something which inherits from function and class(x).
 ##       this is why we need to derive the type of objective by taking the 2nd element.
 ## NOTE (#FS): Did run into an error since objective from F_function returns and object of type function
-OP_signature <- function( x ){
+OP_signature <- function( x ) {
     x <- as.OP( x )
-    uniq_types <- if ( is.null(types(x)) ) { available_types()[1]
-                } else { paste(unique(types(x)), collapse = "") }
-
-    bound_mapping <- setNames(c("CV", "C", "V", "X"), c("bound", "C_bound", "V_bound", "NULL"))
-    boun <- bound_mapping[class(bounds(x))[1]]
-
-    constr <- names( available_constraint_classes() )[ available_constraint_classes() %in% class(constraints(x))[1] ]
-
-    if ( is.null(bounds(x)$cones) ) {
-        cone_types <- "free"
-    } else {
-        cone_types <- available_cone_types()[ available_cone_types() %in% names(bounds(x)$cones) ]
-    }
-
-    .ROI_plugin_make_signature( objective = get_objective_class(x),
-                                constraints = constr,
-                                types = uniq_types,
-                                bounds  = boun,
-                                cones = cone_types,
-                                maximum = x$maximum )
+    ROI_plugin_make_signature( objective = get_objective_class(x),
+                               constraints = get_constraint_class(x),
+                               types = get_varibale_types(x),
+                               bounds  = get_bound_type(x),
+                               cones = get_cone_types(x),
+                               maximum = x$maximum )
 }
 
 #  -----------------------------------------------------------
@@ -258,3 +254,4 @@ OP_signature <- function( x ){
 OP_applicable_solver <- function( x ) {
     unname( names(get_solver_methods( OP_signature(x) )) )
 }
+

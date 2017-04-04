@@ -39,6 +39,7 @@ available_objective_classes <- function()
 ##' function. The extractet element is then coerced to a function.
 ##' @title Extract Objective Functions
 ##' @param x an object used to select the method.
+##' @param value an R object.
 ##' @return a function inheriting from \code{"objective"}.
 ##' @author Stefan Theussl
 ##' @export
@@ -50,6 +51,19 @@ objective <- function( x )
 objective.default <- function( x )
     as.function( x$objective )
 
+##' @rdname objective
+##' @export objective<-
+'objective<-' <- function( x, value )
+    UseMethod("objective<-")
+
+
+##' @noRd
+##' @export
+'objective<-.OP' <- function( x, value ) {
+    x$objective <- as.objective(value)
+    x
+}
+
 ## Coerces objects of type \code{"objective"}.
 ##
 ## @title Objective Function Utilities
@@ -59,7 +73,7 @@ objective.default <- function( x )
 ##' @rdname objective
 ##' @export
 as.objective <- function( x )
-  UseMethod("as.objective")
+    UseMethod("as.objective")
 
 ##' @noRd
 ##' @export
@@ -70,7 +84,8 @@ as.objective.function <- function( x ){
         return( as.L_objective( x ) )
     if( inherits(x, "F_objective", which = TRUE) == 2 )
         return( as.F_objective( x ) )
-    stop("'x' must be of type L_objective, Q_objective or F_objective, was ", shQuote(typeof(x)))
+    stop("'x' must be of type L_objective, Q_objective or", 
+         " F_objective, was ", shQuote(typeof(x)))
 }
 
 ##' @noRd
@@ -331,17 +346,18 @@ as.Q_objective.simple_triplet_matrix <- function( x )
 ##' @title General (Nonlinear) Objective Function
 ##' @param F an R \code{"function"} taking a numeric vector \code{x} of length \eqn{n} as argument.
 ##' @param G an R \code{"function"} returning the gradient at \code{x}.
+##' @param H an optional \code{function} holding the Hessian of F.
 ##' @param n the number of objective variables.
 ##' @param names an optional character vector giving the names of x.
 ##' @return an object of class \code{"F_objective"} which inherits
 ##' from \code{"objective"}.
 ##' @author Stefan Theussl
 ##' @export
-F_objective <- function( F, n, G = NULL, names=NULL ) {
+F_objective <- function( F, n, G = NULL, H = NULL, names=NULL ) {
     .check_function_for_sanity( F, n )
     ##if( !is.null(G) )
     ##    .check_gradient_for_sanity( G, n )
-    obj <- .objective( F = F, G = G, names = names, nobj = n )
+    obj <- .objective( F = F, G = G, H = H, names = names, nobj = n )
     class( obj ) <- c( "F_objective", class(obj) )
     obj
 }

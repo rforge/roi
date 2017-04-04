@@ -6,12 +6,9 @@
 ################################################################################
 
 ## Imports
-#' @importFrom "stats" "variable.names"
-#' @importFrom "stats" "setNames"
-#' @importFrom "stats" "na.omit"
-#' @importFrom "stats" "terms"
-#' @importFrom "utils" "str"
-#' @import "slam"
+#' @importFrom stats variable.names setNames na.omit terms aggregate
+#' @importFrom utils str tail
+#' @import slam
 #
 
 ################################################################################
@@ -87,9 +84,9 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     x <- as.OP( x )
     
     methods <- get_solver_methods( OP_signature(x) )
+    sig <- OP_signature( x )
     if ( !length(methods) ) {
         ## CASE: no method found for this signature
-        sig <- OP_signature( x )
         stop( "no solver found for this signature:\n\t",
               paste(paste(names(sig), sig, sep=": "), collapse="\n\t") )
     }
@@ -104,14 +101,38 @@ ROI_solve <- function( x, solver, control = list(), ... ){
             solver <- names( methods )[1]
         }
     } else {
-        SOLVE <- select_solver(x, methods)
+        ## select the solver given on an ordering in ROI_options
+        SOLVE <- select_solver(x, methods) 
         solver <- names( SOLVE )[1]
         SOLVE <- SOLVE[[1]]
     }
 
-    if( length(control) )
-        if( all(!names(ROI_translate(control, solver)) %in% get_solver_controls_from_db(solver)) )
+    if( length(control) ) {
+        solver_control_names <- get_solver_controls_from_db(solver)
+        if ( "nsol_max" %in% solver_control_names ) {
+            nsol_max <- 0
+        } else {
+            nsol_max <- control$nsol_max
+            control$nsol_max <- NULL
+        }
+            
+        cntrl <- ROI_translate(control, solver)
+        if( !all(names(cntrl) %in% solver_control_names) )
             warning( sprintf("some control arguments not available in solver '%s'.", solver) )
+
+        if ( isTRUE(nsol_max > 1) ) {
+            ## TODO: check if we have really a MILP with binary variables.
+            ## if ( !isTRUE(sig$objective == "L") | !isTRUE(sig$constraints == "L")) {
+            ##
+            ## }
+            out <- .find_up_to_n_binary_MILP_solutions(x, nos = nsol_max,
+                                                       add = isTRUE(control$add), 
+                                                       solver = solver,
+                                                       control = cntrl)
+            class(out) <- "OP_solutions"
+            return(out)
+        }
+    }
 
     ## TODO: handle default ROI controls separately
     ## FIXME: what if verbose and solver specific verbosity are set at the same time?
@@ -121,6 +142,7 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     out <- SOLVE( x, ROI_translate(control, solver) )
     if( control$verbose )
         writeLines( "<!SOLVER MSG> ----" )
+    ## add the names to the solution
     if ( any(!c(is.null(variable.names(constraints(x))), is.null(variable.names(objective(x))))) ) {
         if ( is.null(variable.names(constraints(x))) ) {
             if ( length(out$solution) == length(variable.names(objective(x))) )
@@ -140,7 +162,7 @@ ROI_solve <- function( x, solver, control = list(), ... ){
 
 which_op_type <- function(x) {
     if ( any(x$C) ) {
-        if ( all(x$cones == "free") ) {
+        if ( all(x$cones == "X") ) {
             if ( all(x[,c('objective', 'constraints')] == "L") ) { ## LP
                 return("LP")
             } else { ## QP
@@ -150,7 +172,7 @@ which_op_type <- function(x) {
             return("CP")
         }
     } else { ## MIXED INTEGER
-        if ( all(x$cones == "free") ) {
+        if ( all(x$cones == "X") ) {
             if ( all(x[,c('objective', 'constraints')] == "L") ) { ## LP
                 return("MILP")
             } else { ## QP
@@ -211,7 +233,7 @@ ROI_installed_solvers <- function( ... ) {
     if ( "lib.loc" %in% names(dots) ) lib.loc <- dots$lib.loc
     else lib.loc <- .libPaths()
     pkgs <- grep( .plugin_prefix(), unlist(lapply(lib.loc, dir)), value = TRUE )
-    structure( pkgs, names = .ROI_plugin_get_solver_name(pkgs) )
+    structure( pkgs, names = ROI_plugin_get_solver_name(pkgs) )
 }
 
 ##' @rdname ROI_registered_solvers
@@ -279,6 +301,6 @@ get_solver_packages_from_db <- function ( ){
     x[ordered]
 }
 
-ROI_expand <- function(...){
+ROI_expand <- function(...) {
     base::expand.grid(..., stringsAsFactors = FALSE)
 }

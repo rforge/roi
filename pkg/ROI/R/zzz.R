@@ -70,13 +70,37 @@ add_control_db_schema <- function( control_db ){
 control_db <- registry( )
 control_db <- add_control_db_schema( control_db )
 
+## REFORMULATION_DB
+## create a database for the reformulations
+reformulation_db <- ReformulationDatabase()
+
+##
+## IdGenerator
+##
+IdGenerator <- function() {
+    id_gen <- new.env(parent=emptyenv())
+    id_gen$id <- 0L
+    id_gen$get_ids <- function(n = 1L) {
+        self <- parent.env(environment())$id_gen
+        if ( (self$id + n) > 2147483647L ) {
+            self$id <- 1L
+        }
+        ids <- self$id + seq_len(n)
+        self$id <- tail(ids, 1L)
+        ids
+    }
+    id_gen
+}
+
+id_generator <- IdGenerator()
+
 .onLoad <- function( libname, pkgname ) {
     if( ! "ROI.plugin.nlminb" %in% ROI_registered_solvers() ){
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
         ## DISABLED! see R code (solution of QP from examples.R in work not same as quadprog)
          solver <- "nlminb"
-         .ROI_plugin_register_solver_method(
+         ROI_plugin_register_solver_method(
              signatures = ROI_make_NLP_FXCV_signatures(),
              solver = solver,
              method = getFunction( ".solve_NLP_nlminb", where = getNamespace(pkgname)) )
@@ -85,11 +109,28 @@ control_db <- add_control_db_schema( control_db )
          .add_nlminb_status_codes()
 
 
-        #.ROI_plugin_register_solver_method( signatures = ROI_make_QP_signatures(),
+        #ROI_plugin_register_solver_method( signatures = ROI_make_QP_signatures(),
         #                            solver = solver,
         #                            method =
         #                            getFunction( ".solve_QP_nlminb", where = getNamespace(pkgname)) )
     }
+
+    lbqp.cite <- paste("Boros, Endre, and Peter L. Hammer.",
+                       '"Pseudo-boolean optimization."',
+                       "Discrete applied mathematics 123.1 (2002): 155-225.", 
+                       collapse = " ")
+    lbqp.descr <- paste("Reformulate a binary optimization problem with", 
+                        "quadratic objective and linear constraints",
+                        "to a mixed integer problem with linear objective and",
+                        "linear constraints.", collapse = " ")
+
+    reformulation_db$append(QPLC.B(), LPLC.BCI(), "linearize_bqp", .linearize_BQP,
+                            description = lbqp.descr, cite = lbqp.cite)
+
+    qpsoc.descr <- paste("positive definite quadratic objective,",
+                         "linear constraints to", collapse = " ")
+    reformulation_db$append(QPLC.BCI(), LPLC.BCI.SOC(), "soc_qp", qp_to_socp,
+                            description = qpsoc.descr)
 
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty
     ## OPs is the default solver

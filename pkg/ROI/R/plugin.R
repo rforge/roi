@@ -12,7 +12,7 @@
 ################################################################################
 
 ##  -----------------------------------------------------------
-##  .ROI_plugin_register_solver_control
+##  ROI_plugin_register_solver_control
 ##  ==========================
 ##' @title Register Solver Controls
 ##'
@@ -24,7 +24,7 @@
 ##' @family plugin functions
 ##' @rdname ROI_plugin_register_solver_control
 ##' @export
-.ROI_plugin_register_solver_control <- function( solver, args, roi_control = "X" ){
+ROI_plugin_register_solver_control <- function( solver, args, roi_control = "X" ){
     args <- as.character( args )
     if( length(roi_control) == 1L )
         roi_control <- rep( as.character(roi_control), length(args) )
@@ -45,7 +45,8 @@ ROI_available_solver_controls <- function(){
        "abs_tol",          ## NUMERIC: absolute tolerance of termination criterion
        "rel_tol",          ## NUMERIC: relative tolerance of termination criterion
        "method",           ## CHARACTER: giving the algorithm
-       "start"             ## NUMERIC: a numeric vector giving the start values
+       "start",            ## NUMERIC: a numeric vector giving the start values
+       "nsol"              ## INTEGER: a integer giving the maximum number of solutions
       )
 }
 
@@ -86,16 +87,16 @@ ROI_translate <- function( control, solver ){
 ##' @examples
 ##' \dontrun{
 ##' solver <- "ecos"
-##' .ROI_plugin_add_status_code_to_db(solver, 0L, "ECOS_OPTIMAL", "Optimal solution found.", 0L)
-##' .ROI_plugin_add_status_code_to_db(solver, -7L, "ECOS_FATAL", "Unknown problem in solver.", 1L)
+##' ROI_plugin_add_status_code_to_db(solver, 0L, "ECOS_OPTIMAL", "Optimal solution found.", 0L)
+##' ROI_plugin_add_status_code_to_db(solver, -7L, "ECOS_FATAL", "Unknown problem in solver.", 1L)
 ##' solver <- "glpk"
-##' .ROI_plugin_add_status_code_to_db(solver, 5L, "GLP_OPT", "Solution is optimal.", 0L)
-##' .ROI_plugin_add_status_code_to_db(solver, 1L, "GLP_UNDEF", "Solution is undefined.", 1L)
+##' ROI_plugin_add_status_code_to_db(solver, 5L, "GLP_OPT", "Solution is optimal.", 0L)
+##' ROI_plugin_add_status_code_to_db(solver, 1L, "GLP_UNDEF", "Solution is undefined.", 1L)
 ##' }
 ##' @family plugin functions
 ##' @rdname ROI_plugin_add_status_code_to_db
 ##' @export
-.ROI_plugin_add_status_code_to_db <- function(solver, code, symbol, message, roi_code = 1L){
+ROI_plugin_add_status_code_to_db <- function(solver, code, symbol, message, roi_code = 1L){
     status_db$set_entry(solver = solver,
                         code = code,
                         symbol = symbol,
@@ -124,7 +125,7 @@ available_in_status_codes_db <- function( )
 ################################################################################
 
 ##  -----------------------------------------------------------
-##  .ROI_plugin_register_solver_method
+##  ROI_plugin_register_solver_method
 ##  ==========================
 ##' @title Register Solver Method
 ##'
@@ -136,7 +137,7 @@ available_in_status_codes_db <- function( )
 ##' @family plugin functions
 ##' @rdname ROI_plugin_register_solver_method
 ##' @export
-.ROI_plugin_register_solver_method <- function( signatures, solver, method ){
+ROI_plugin_register_solver_method <- function( signatures, solver, method ){
     for( i in 1:nrow(signatures) )
         do.call(solver_db$set_entry, c(as.list(signatures[i,]),
                                              list(solver = solver),
@@ -162,16 +163,16 @@ ROI_required_signature <- function()
 ##' @return a data.frame with the supported signatures
 ##' @examples
 ##' ## ROI_make_LP_signatures
-##' lp_signature <- .ROI_plugin_make_signature( objective = "L",
+##' lp_signature <- ROI_plugin_make_signature( objective = "L",
 ##'                                     constraints = "L",
 ##'                                     types = c("C"),
 ##'                                     bounds = c("X", "V"),
-##'                                     cones = c("free"),
+##'                                     cones = c("X"),
 ##'                                     maximum = c(TRUE, FALSE) )
 ##' @family plugin functions
 ##' @rdname ROI_plugin_make_signature
 ##' @export
-.ROI_plugin_make_signature <- function(...){
+ROI_plugin_make_signature <- function(...){
     dotargs <- list(...)
     required <- ROI_required_signature() ## names(formals(OP))
     if( length(dotargs) < 2 )
@@ -188,7 +189,7 @@ ROI_required_signature <- function()
     stopifnot( all(names(dotargs) %in% required) )
 
     signature_default <- list(objective="L", constraints="L", types="C", bounds="C",
-                              cones="free", maximum=FALSE)
+                              cones="X", maximum=FALSE)
     set_defaults <- function(name, x) if (is.null(x)) signature_default[[name]] else x
     dotargs <- mapply(set_defaults, names(dotargs), dotargs, SIMPLIFY=FALSE)
 
@@ -226,7 +227,7 @@ ROI_required_signature <- function()
 .plugin_prefix <- function()
     "ROI.plugin"
 
-## NOTE: all plugin related functions must be prefixed with ".ROI_plugin_" and
+## NOTE: all plugin related functions must be prefixed with "ROI_plugin_" and
 ##       exported.
 
 ##  -----------------------------------------------------------
@@ -240,7 +241,7 @@ ROI_required_signature <- function()
 ##' @family plugin functions
 ##' @rdname ROI_plugin_get_solver_name
 ##' @export
-.ROI_plugin_get_solver_name <- function( pkgname )
+ROI_plugin_get_solver_name <- function( pkgname )
     sub(sprintf("%s.", .plugin_prefix()), "", as.character(pkgname))
 
 
@@ -271,7 +272,7 @@ canonicalize_status <- function( status, solver ){
 ##' @family plugin functions
 ##' @rdname ROI_plugin_canonicalize_solution
 ##' @export
-.ROI_plugin_canonicalize_solution <- function( solution, optimum, status, solver, message=NULL, ... ) {
+ROI_plugin_canonicalize_solution <- function( solution, optimum, status, solver, message=NULL, ... ) {
     status <- canonicalize_status( status, solver )
     make_OP_solution( solution = solution,
                       objval   = optimum,
@@ -304,7 +305,7 @@ canonicalize_status <- function( status, solver ){
 ##' @family plugin functions
 ##' @rdname ROI_plugin_build_equality_constraints
 ##' @export
-.ROI_plugin_build_equality_constraints <- function(x, type=c("eq_zero", "eq_rhs")) {
+ROI_plugin_build_equality_constraints <- function(x, type=c("eq_zero", "eq_rhs")) {
     stopifnot(type %in% c("eq_zero", "eq_rhs"))
     co <- as.F_constraint(constraints(x))
     if ( any(is.NO_constraint(co), is.null(co)) )
@@ -424,7 +425,7 @@ build_equality_constraints_rhs_x <- function(F, J, x0) {
 ##' @family plugin functions
 ##' @rdname ROI_plugin_build_inequality_constraints
 ##' @export
-.ROI_plugin_build_inequality_constraints <- function(x, type=c("leq_zero", "geq_zero", "leq_geq_rhs")) {
+ROI_plugin_build_inequality_constraints <- function(x, type=c("leq_zero", "geq_zero", "leq_geq_rhs")) {
     stopifnot(type %in% c("leq_zero", "geq_zero", "leq_geq_rhs"))
     co <- as.F_constraint(constraints(x))
     if ( any(is.NO_constraint(co), is.null(co)) )

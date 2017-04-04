@@ -18,36 +18,89 @@
 ##' @description The solution can be accessed via the method \code{'solution'}.
 ##' @param x an object of type \code{'OP_solution'}.
 ##' @param type a character giving the name of the solution to be extracted.
+##' @param ... further arguments passed to or from other methods.
 ##' @return the extracted solution.
 ##' @export
-solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg")) {
-    type <- type[1]
-    switch(type,
-           primal = .ROI_plugin_solution_prim(x),
-           dual   = .ROI_plugin_solution_dual(x),
-           aux    = .ROI_plugin_solution_aux(x) ,
-           psd    = .ROI_plugin_solution_psd(x) ,
-           msg    = .ROI_plugin_solution_msg(x)  )
+solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg"), ...) {
+    UseMethod("solution")
 }
 
 ##' @noRd
 ##' @export
-.ROI_plugin_solution_prim <- function(x) UseMethod(".ROI_plugin_solution_prim")
-.ROI_plugin_solution_prim.OP_solution <- function(x) x$solution
+solution.default <- function(x, type=c("primal", "dual", "aux", "psd", "msg"), ...) {
+    type <- match.arg(type)
+    switch(type,
+           primal = ROI_plugin_solution_prim(x),
+           dual   = ROI_plugin_solution_dual(x),
+           aux    = ROI_plugin_solution_aux(x) ,
+           psd    = ROI_plugin_solution_psd(x) ,
+           msg    = ROI_plugin_solution_msg(x)  )
+}
+
+##' @title Extract solution from the solver.
+##' @description Define a getter function for the solution of the solver.
+##' @param x an \code{R} object inheriting from \code{solution} or \code{solutions}.
+##' @return the corresponding solution/s.
+##' @examples
+##' ## TODO
+##' @family plugin functions
+##' @rdname ROI_plugin_solution
+##' @export
+ROI_plugin_solution_prim <- function(x) {
+    UseMethod("ROI_plugin_solution_prim")
+}
+
+##' @rdname ROI_plugin_solution
+##' @export
+ROI_plugin_solution_prim.OP_solution <- function(x) {
+    x$solution
+}
+
+##' @rdname ROI_plugin_solution
+##' @export
+ROI_plugin_solution_prim.OP_solutions <- function(x) {
+    lapply(x, "[[", "solution")
+}
 
 ##  @title Extract Dual Solution
 ##  @description The dual solution can be accessed via the method \code{'solution_dual'}.
 ##  @param x an object of type \code{'OP_solution'}.
 ##  @return the extracted solution.
-##' @noRd
+##' @rdname ROI_plugin_solution
 ##' @export
-.ROI_plugin_solution_dual <- function(x) UseMethod(".ROI_plugin_solution_dual")
-.ROI_plugin_solution_dual.OP_solution <- function(x) NA
+ROI_plugin_solution_dual <- function(x) {
+    UseMethod("ROI_plugin_solution_dual")
+}
 
 ##' @noRd
 ##' @export
-.ROI_plugin_solution_aux <- function(x) UseMethod(".ROI_plugin_solution_aux")
-.ROI_plugin_solution_aux.OP_solution <- function(x) NA
+ROI_plugin_solution_dual.OP_solution <- function(x) {
+    NA
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_dual.OP_solutions <- function(x) {
+    NA
+}
+
+##' @rdname ROI_plugin_solution
+##' @export
+ROI_plugin_solution_aux <- function(x) {
+    UseMethod("ROI_plugin_solution_aux")
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_aux.OP_solution <- function(x) {
+    NA
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_aux.OP_solutions <- function(x) {
+    NA
+}
 
 ## @title Extract Positive Semi-Definite Matrices
 ## @description The matrix part of the solution from an semidefinite program can
@@ -55,16 +108,41 @@ solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg")) {
 ## @param sol an object of type \code{'OP_solution'}.
 ## @return the matrix part of the solution from an semidefinite program if
 ##   available.
-##' @noRd
+##' @rdname ROI_plugin_solution
 ##' @export
-.ROI_plugin_solution_psd <- function(x) UseMethod(".ROI_plugin_solution_psd")
-.ROI_plugin_solution_psd.OP_solution <- function(x) NA
+ROI_plugin_solution_psd <- function(x) {
+    UseMethod("ROI_plugin_solution_psd")
+}
 
 ##' @noRd
 ##' @export
-.ROI_plugin_solution_msg <- function(x) UseMethod(".ROI_plugin_solution_msg")
-.ROI_plugin_solution_msg.OP_solution <- function(x) x$message
+ROI_plugin_solution_psd.OP_solution <- function(x) {
+    NA
+}
 
+##' @noRd
+##' @export
+ROI_plugin_solution_psd.OP_solutions <- function(x) {
+    NA
+}
+
+##' @rdname ROI_plugin_solution
+##' @export
+ROI_plugin_solution_msg <- function(x) {
+    UseMethod("ROI_plugin_solution_msg")
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_msg.OP_solution <- function(x) {
+    x$message
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_msg.OP_solutions <- function(x) {
+    lapply(x, "[[", "message")
+}
 
 ################################################################################
 ## Solution object
@@ -110,3 +188,17 @@ print.OP_solution <- function(x, ...){
     }
     writeLines( sprintf("The objective value is: %e", x$objval) )
 }
+
+##' @noRd
+##' @export
+print.OP_solutions <- function(x, ...) {
+    success <- x[[1L]]$status$code == 0
+    if( !success ){
+        writeLines( "No solution found." )
+        writeLines( sprintf("The solver message was: %s", x[[1L]]$status$msg$message) )
+    } else{
+        writeLines( sprintf("%i optimal solutions found.", length(x)) )
+    }
+    writeLines( sprintf("The objective value is: %e", x[[1L]]$objval) )   
+}
+

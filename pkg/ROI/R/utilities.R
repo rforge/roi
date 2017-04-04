@@ -386,3 +386,7 @@ leq <- function(n) rep.int("<=", n)
 ##' geq(4)
 ##' @export
 geq <- function(n) rep.int(">=", n)
+
+plural_s <- function(condition) {
+    if (condition) "s" else ""
+}

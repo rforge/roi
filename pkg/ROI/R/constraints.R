@@ -33,8 +33,15 @@ NULL
 ## 'constraints' helper functions
 ################################################################################
 
-available_constraint_classes <- function()
-    c(L = "L_constraint", Q = "Q_constraint", F = "F_constraint", X = "NO_constraint")
+available_constraint_classes <- function() {
+    c(L = "L_constraint", C = "C_constraint", Q = "Q_constraint", 
+      F = "F_constraint", X = "NO_constraint")
+}
+
+available_cone_types <- function()
+    c("zero", "nonneg", "soc", "psd", "expp", "expd", "powp", "powd")
+
+valid_cone <- function(x) x %in% available_cone_types()
 
 ################################################################################
 ## 'constraints' extractor functions
@@ -101,10 +108,40 @@ constraints.OP <- function( x ){
 ##' @noRd
 ##' @export
 'constraints<-.OP' <- function( x, value ) {
-    x$constraints <- as.constraint(value)
+    if ( is.null(value) ) {
+        x[["constraints"]] <- NO_constraint(length(objective(x)))
+    } else {
+        constr <- as.constraint(value)
+        .check_constraints(constr, x)
+        x$constraints <- constr
+    }
     x
 }
 
+.check_constraints <- function(constr, x) UseMethod(".check_constraints")
+
+.check_constraints.NULL <- function(constr, x) NULL
+
+.check_constraints.NO_constraint <- function(constr, x) NULL
+
+.check_constraints.L_constraint <- function(constr, x) {
+    if ( length(objective(x)) != ncol(constr) ) {
+        stop( "dimensions of 'objective' and 'constraints' not conformable." )
+    }
+    NULL
+}
+
+.check_constraints.C_constraint <- .check_constraints.L_constraint
+.check_constraints.Q_constraint <- .check_constraints.L_constraint
+
+.check_constraints.F_constraint <- function(constr, x) {
+    x0 <- rep.int(1, length(objective(x)))
+    F_len <- sum(unlist(lapply(constr$F, function(f) length(f(x0))), FALSE, FALSE)) 
+    if ( F_len != length(constr$rhs) ) {
+        stop( "dimensions of 'rhs' and 'constraints' not conformable." )
+    }
+    NULL
+}
 
 ## combining matrices (see 'rbind' in matrix.R, package relation)
 
@@ -141,6 +178,8 @@ rbind.constraint <- function(..., use.names=FALSE, recursive=FALSE) {
     if ( length( constraints ) == 1L ) return( constraints[[1L]] )
     if ( "F_constraint" %in% constraint_types ) {
         return( rbind_F_constraint(constraints) )
+    } else if ( "C_constraint" %in% constraint_types ) {
+        return( rbind_C_constraint(constraints) )
     } else if ( "Q_constraint" %in% constraint_types ) {
         return( rbind_Q_constraint(constraints, use.names=use.names) )
     } else if ( "L_constraint" %in% constraint_types ) {
@@ -177,7 +216,9 @@ c.constraint <- function( ..., recursive = FALSE )
 NO_constraint <- function( n_obj ) {
     n_obj <- as.integer( n_obj )
     stopifnot( length(n_obj) == 1L )
-    structure( list(),
+
+    L <- simple_triplet_zero_matrix(0, n_obj)
+    structure( list(L = L, dir = character(), rhs = numeric(), names = NULL),
                n_constraints = 0,
                n_obj = n_obj,
                class = c("NO_constraint", "constraint") )
@@ -229,7 +270,7 @@ rbind_NO_constraint <- function(constraints) {
     dims <- unlist(lapply(constraints, function(x) dim(x)[2]))
     stopifnot( all(dims == dims[1]) )
     if( !all(nc) )
-        stop( "can only rbind objects of class 'NO_constraint'." )
+        stop( "constraints of type 'NO_constraint' can not be combined with other constraints." )
     return( constraints[[1]] )
 }
 
@@ -467,8 +508,17 @@ length.L_constraint <- function( x )
 ##  I seems easiest to just change the class information, so it get's printed correctly and
 ##  length is not dispached to it's ROI implementations.
 str.constraint <- function(object, ...) {
-    class(object) <- paste(shQuote(class(object)), collapse=" ")
-    str(object)
+    str(unclass(object))
+    cat(sprintf(' - attr(*, "class")='))
+    str(class(object))
+}
+
+##' @noRd
+##' @export
+str.cone <- function(object, ...) {
+    str(unclass(object), nest.lev = 1)
+    cat(sprintf(' - attr(*, "class")='))
+    str(class(object))
 }
 
 ##  the linear term of the left hand side
@@ -771,7 +821,7 @@ as.Q_term.NULL <- function( x, ... ) {
 ##       we allow a single F_Constraint to have a length greater than 1. Therefore
 ##       to obtain the length we have to evaluate the constraints and get the length
 ##       on the unlisted results.
-F_constraint <- function(F, dir, rhs, J=NULL, names=NULL){
+F_constraint <- function(F, dir, rhs, J=NULL, names=NULL) {
     stopifnot( row_sense_is_feasible(dir) )
     stopifnot( (length(F) == length(J)) | is.null(J) )
     F     <- as.F_term( F )
@@ -898,6 +948,10 @@ as.constraint.L_constraint <- identity
 
 ##' @noRd
 ##' @export
+as.constraint.C_constraint <- identity
+
+##' @noRd
+##' @export
 as.constraint.Q_constraint <- identity
 
 ##' @noRd
@@ -915,6 +969,7 @@ is.constraint <- function(x) inherits(x, "constraint")
 
 ##' @noRd
 ##' @export
+## FIXME add C_constraint
 print.constraint <- function( x, ... ) {
     len <- length(x)
     constr <- c("constraint", "constraints")
@@ -937,6 +992,11 @@ print.constraint <- function( x, ... ) {
             txt <- sprintf(fmt, n_L_constraints, constr[i],
                            n_Q_constraints, constr[j])
             writeLines( txt )
+        } else if ( is.C_constraint(x) ) {
+            i <- 1L + as.integer(len != 1L)
+            txt <- sprintf("An object containing %d conic %s.", 
+                           len, constr[i])
+            writeLines( txt )
         } else {
             i <- 1L + as.integer(len != 1L)
             txt <- sprintf("An object containing %d nonlinear %s.", 
@@ -954,6 +1014,8 @@ dim.constraint <- function( x ) {
         c( length(x), attributes(x)$n_obj )
     else if( inherits(x, "L_constraint") )
         c( length(x), ncol(x$L))
+    else if( inherits(x, "C_constraint") )
+        c( length(x), ncol(x$L))
     else if( inherits(x, "Q_constraint") )
         c( length(x), ncol(x$L) )
     else if( inherits(x, "F_constraint") ){
@@ -969,6 +1031,12 @@ dim.constraint <- function( x ) {
 ##' @export
 terms.L_constraint <- function( x, ... ) {
     list( L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
+}
+
+##' @rdname C_constraint
+##' @export
+terms.C_constraint <- function( x, ... ) {
+    list( L = x$L, cones=x$cones, rhs=x$rhs, names=x$names )
 }
 
 ##' @rdname Q_constraint
@@ -989,6 +1057,7 @@ terms.F_constraint <- function( x, ... ) {
 ## ---------------------------
 ##' @noRd
 ##' @export
+## FIXME as function C_constraint
 as.function.constraint <- function(x, ...) {
     if ( inherits(x, "L_constraint") ) return(as_function_L_constraint(x, ...))
     if ( inherits(x, "Q_constraint") ) return(as_function_Q_constraint(x, ...))
@@ -1038,6 +1107,7 @@ as.F_constraint.NULL <- function(x, ...) x
 ##' @export
 as.F_constraint.NO_constraint <- function(x, ...) x
 
+## TODO: implement C_constraint!
 ##' @rdname F_constraint
 ##' @export
 as.F_constraint.constraint <- function(x, ...) {
@@ -1046,4 +1116,297 @@ as.F_constraint.constraint <- function(x, ...) {
     if ( inherits(x, "F_constraint") ) return( x )
     stop("'x' must be of type L_constraint, Q_constraint or F_constraint, was ", shQuote(typeof(x)))
 }
+
+
+## ---------------------------
+## Cone Constraint
+## ---------------------------
+## params is a list of lists of parameters
+simple_cone <- function(n, type, params = NULL) {
+    id <- id_generator$get_ids(1L)
+    if ( !is.null(params) ) {
+        names(params) <- id
+    }
+    structure(list(cone = rep.int(type, n), 
+                   id = rep.int(id, n), 
+                   params = params), 
+              class = "cone")
+}
+
+##' @title Zero Cone
+##' @description TODO
+##' @param size a integer giving the size of the cone.
+##' @export
+K_zero <- function(size) {
+    simple_cone(size, 1L)
+}
+
+##' @title Linear Cone
+##' @description TODO
+##' @param size a integer giving the size of the cone.
+##' @export
+K_lin <- function(size) {
+    simple_cone(size, 2L)
+}
+
+##' @title Second-order Cone
+##' @description TODO
+##' @param sizes a integer giving the sizes of the cones.
+##' @export
+K_soc <- function(sizes) {
+    do.call(c, lapply(sizes, simple_cone, type = 3L))
+}
+
+##' @title Cone
+##' @description TODO
+##' @param sizes a integer giving the sizes of the cones.
+##' @export
+K_psd <- function(sizes) {
+    do.call(c, lapply(sizes, simple_cone, type = 4L))
+}
+
+##' @title Cone
+##' @description TODO
+##' @param size a integer giving the size of the cones.
+##' @export
+K_expp <- function(size) {
+    do.call(c, lapply(rep.int(3L, size), simple_cone, type = 5L))
+}
+
+##' @title Cone
+##' @description TODO
+##' @param size a integer giving the size of the cones.
+##' @export
+K_expd <- function(size) {
+    do.call(c, lapply(rep.int(3L, size), simple_cone, type = 6L))
+}
+
+##' @title Cone
+##' @description TODO
+##' @param a numeric vector
+##' @export
+K_powp <- function(a) {
+    fun <- function(x) simple_cone(3L, 7L, params = list(c(a = x)))
+    do.call(c, lapply(a, fun))
+}
+
+##' @title Cone
+##' @description TODO
+##' @param a numeric vector
+##' @export
+K_powd <- function(a) {
+    fun <- function(x) simple_cone(3L, 8L, params = list(c(a = x)))
+    do.call(c, lapply(a, fun))
+}
+
+##' @noRd
+##' @export
+c.cone <- function(...) {
+    x <- list(...)
+    cone <- list()
+    cone$cone <- do.call(c, lapply(x, "[[", "cone"))
+    cone$id <- do.call(c, lapply(x, "[[", "id"))
+    cone$params <- do.call(c, lapply(x, "[[", "params"))
+    class(cone) <- "cone"
+    cone
+}
+
+##' @noRd
+##' @export
+`[.cone` <- function(x, i) {
+    x$cone <- x$cone[i]
+    x$id <- x$id[i]
+    if ( !is.null(x$params) ) {
+        j <- which(x$id %in% as.integer(names(x$params)))
+        x$params <- x$params[j]
+    }
+    x
+}
+
+##' @noRd
+##' @export
+length.cone <- function(x) {
+    length(x$cone)
+}
+
+calc_dims <- function(x, type) {
+    i <- which(x$cone == type)
+    ids <- x[,'id']
+    if ( length(i) ) {
+        if (type %in% 1:2) {
+            dims <- length(ids[[i]])
+        } else if (type %in% 3:4) {
+            dims <- table(ids[[i]])
+        } else if (type %in% 5:8) {
+            dims <- length(unique(ids[[i]]))
+        }
+    }
+    dims
+}
+
+##
+##
+##' Linear constraints are typically of the form \deqn{Lx \leq rhs}
+##' where \eqn{L} is a \eqn{m \times n} (sparse) matrix of coefficients 
+##' to the objective variables \eqn{x} and the right hand side \eqn{rhs} 
+##' is a vector of length \eqn{m}.
+##'
+##' @title Linear Constraints
+##' @param L a numeric vector of length \eqn{n} (a single constraint)
+##' or a matrix of dimension \eqn{n \times m}, where \eqn{n} is the
+##' number of objective variables and \eqn{m} is the number of
+##' constraints. Matrices can be of class
+##' \code{"simple_triplet_matrix"} to allow a sparse representation of
+##' constraints.
+##' @param cones TODO
+##' @param rhs a numeric vector with the right hand side of the constraints.
+##' @param names an optional character vector giving the names of \eqn{x} 
+##'        (column names of \eqn{A}).
+##' @param x an R object.
+##' @param ... further arguments passed to or from other methods
+##' (currently ignored).
+##' @return an object of class \code{"L_constraint"} which inherits
+##'         from \code{"constraint"}.
+##' @export
+C_constraint <- function(L, cones, rhs, names = NULL) {
+    L     <- as.L_term(L)
+    rhs   <- as.rhs( rhs )
+    dim_L <- dim( L )
+    n_L_constraints <- length( rhs )
+    stopifnot(length(cones) == length(rhs), length(rhs) == nrow(L))
+    if ( (!is.null(names)) & (length(names) != ncol(L)) ) {
+        stop("number of columns of 'L' and length 'names' must be equal.")
+    }
+    structure( list(L     = L,
+                    cones = cones,
+                    rhs   = rhs,
+                    names = names),
+              n_L_constraints = n_L_constraints,
+              class = c("C_constraint", "constraint") )
+}
+
+
+##' @rdname C_constraint
+##' @export
+as.C_constraint <- function(x, ...) UseMethod("as.C_constraint")
+
+##' @noRd
+##' @export
+as.C_constraint.C_constraint <- function(x, ...) identity(x)
+
+##' @noRd
+##' @export
+as.C_constraint.NO_constraint <- function(x, ...) identity(x)
+
+##' @noRd
+##' @export
+as.C_constraint.NULL <- function(x, ...) identity(x)
+
+##' @noRd
+##' @export
+as.C_constraint.L_constraint <- function(x, ...) {
+    if ( !nrow(x) ) {
+        x$dir <- simple_cone(0, 2)
+        names(x)[names(x) == "dir"] <- "cones"
+        return(x)
+    }
+
+    cdir <- aggregate(id ~ dir, 
+                      data = list(id = seq_along(x$dir), dir = x$dir), 
+                      FUN = c, simplify = FALSE)
+
+    names(x)[names(x) == "dir"] <- "cones"
+    
+    ## <=
+    ## canonical case: I don't need to do anything!
+
+    ## >=
+    i <- which(cdir$dir == ">=")
+    if ( length(i) ) {
+        i <- cdir[[i, "id"]]
+        x$rhs[i] <- -x$rhs[i]
+        j <- which(x$L$i %in% i)
+        x$L$v[j] <- -x$L$v[j]
+    }
+
+    x$cones <- K_lin(length(x$cones))
+    
+    ## == (zero cone)
+    i <- which(cdir$dir == "==")
+    if ( length(i) ) {
+        i <- cdir[[i, "id"]]
+        zero <- K_zero(length(i))
+        x$cones$cone[i] <- zero$cone
+        x$cones$id[i] <- zero$id
+    }
+       
+    class(x) <- c("C_constraint", "constraint")
+    x
+}
+
+##  Tests if an object is interpretable as being of class \code{"C_constraint"}.
+## 
+##  @title Conic Constraints
+##  @param x object to be tested.
+##  @return returns \code{TRUE} if its argument is of class
+##  \code{"C_constraint"} and \code{FALSE} otherwise.
+##' @rdname C_constraint
+##' @export
+is.C_constraint <- function( x ) {
+    inherits(x, "C_constraint")
+}
+
+##  Get the number of constraints from a corresponding ROI object.
+## 
+##  @title Linear Constraints
+##  @param x constraints object.
+##  @return an integer.
+##' @rdname C_constraint
+##' @export
+length.C_constraint <- function( x )
+    attr(x, "n_L_constraints")
+
+##' @rdname C_constraint
+##' @param object an R object.
+##' @export
+variable.names.C_constraint <- function(object, ...) {
+    object$names
+}
+
+## combine 2 C_constraints (ignore names)
+c2_C_constraints <- function(x, y) {
+    C_constraint( L=rbind(x$L, y$L), cones=c(x$cones, y$cones),  
+                  rhs=c(x$rhs, y$rhs), names=x$names )
+}
+
+## combine 2 C_constraints (use names, using the names allows to 'rbind' 
+## 2 C_constraints where the number of columns to not match by matching the names)
+c2_C_constraints_named <- function(x, y) {
+    C_constraint( L=rbind_stm_by_names(x$L, y$L, variable.names(x), variable.names(y)),
+                  cones=c(x$cones, y$cones), rhs=c(x$rhs, y$rhs), 
+                  names=variable.names(x) )
+}
+
+rbind_C_constraint <- function( constraints, use.names = FALSE) {
+    constraints <- lapply(constraints, as.C_constraint)
+    if ( length(constraints) == 1L ) return( constraints[[1L]] )
+    if ( use.names ) {
+        var.names <- lapply(constraints, function(x) variable.names(x))
+        if ( any(sapply(var.names, is.null)) ) {
+            stop("all constraints need to be named if 'use.names' is TRUE!")
+        }
+        is_equal <- function(x, y) isTRUE(all.equal(x, y))
+        if ( all(mapply(is_equal, var.names[-1L], var.names[-length(var.names)])) ) {
+            return( Reduce(c2_C_constraints, constraints) )
+        } else {
+            var.names <- unique(unlist(var.names))
+            lc <- C_constraint(simple_triplet_zero_matrix(0L, length(var.names)),
+                               NULL, NULL, names=var.names)
+            return( Reduce(c2_C_constraints_named, c(list(lc), constraints)) )
+        }
+    } else {
+        return( Reduce(c2_C_constraints, constraints) )
+    }
+}
+
 
