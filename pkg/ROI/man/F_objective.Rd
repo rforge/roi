@@ -7,7 +7,7 @@
 \alias{variable.names.F_objective}
 \title{General (Nonlinear) Objective Function}
 \usage{
-F_objective(F, n, G = NULL, names = NULL)
+F_objective(F, n, G = NULL, H = NULL, names = NULL)
 
 \method{terms}{F_objective}(x, ...)
 
@@ -21,6 +21,8 @@ as.F_objective(x)
 \item{n}{the number of objective variables.}
 
 \item{G}{an R \code{"function"} returning the gradient at \code{x}.}
+
+\item{H}{an optional \code{function} holding the Hessian of F.}
 
 \item{names}{an optional character vector giving the names of x.}
 

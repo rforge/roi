@@ -3,14 +3,19 @@
 \name{objective}
 \alias{as.objective}
 \alias{objective}
+\alias{objective<-}
 \title{Extract Objective Functions}
 \usage{
 objective(x)
+
+objective(x) <- value
 
 as.objective(x)
 }
 \arguments{
 \item{x}{an object used to select the method.}
+
+\item{value}{an R object.}
 }
 \value{
 a function inheriting from \code{"objective"}.

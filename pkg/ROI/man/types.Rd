@@ -2,12 +2,17 @@
 % Please edit documentation in R/types.R
 \name{types}
 \alias{types}
+\alias{types<-}
 \title{Extract Objective Variable Types}
 \usage{
 types(x)
+
+types(x) <- value
 }
 \arguments{
 \item{x}{an object used to select the method.}
+
+\item{value}{an R object.}
 }
 \value{
 a character vector.

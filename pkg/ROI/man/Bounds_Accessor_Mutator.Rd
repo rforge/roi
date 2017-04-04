@@ -17,7 +17,7 @@ bounds(x) <- value
 \item{x}{an object of type \code{'OP'} used to select the method.}
 
 \item{value}{an object derived from \code{'bound'} 
-(normally \code{'\link{V_bound}'} or \code{'\link{C_bound}'}).}
+(\code{'\link{V_bound}'}) or \code{NULL}.}
 }
 \value{
 the extracted bounds object on get and the altered \code{'\link{OP}'}
