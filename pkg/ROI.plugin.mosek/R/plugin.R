@@ -52,8 +52,7 @@ V_bound_2_matrix <- function(bound, len) {
 is.LP <- function(x) {
     if ( inherits(objective(x), "L_objective")
        & is.L_constraint(constraints(x))
-       & all(types(x) == "C")
-       & ((is.V_bound(bounds(x)) | is.null(bounds(x))) & !is.C_bound(x)) ) {
+       & all(types(x) == "C") ) {
         return(TRUE)
     }    
     return(FALSE)

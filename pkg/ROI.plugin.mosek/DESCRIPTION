@@ -1,12 +1,12 @@
 Package: ROI.plugin.mosek
-Version: 0.0-4
+Version: 0.2-5
 Title: ROI-Plugin 'Mosek'
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the R Optimization Infrastructure ('ROI') package
 	     with the 'Mosek' solver. This package was built and tested
          with 'Rmosek_8.1.3'.
-Imports: stats, methods, Matrix, slam, ROI (>= 0.2-0), Rmosek
+Imports: stats, methods, Matrix, slam, ROI (>= 0.2-5), Rmosek
 SystemRequirements: MOSEK (http://www.mosek.com) and MOSEK License for use of Rmosek
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
