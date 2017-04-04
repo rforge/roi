@@ -1,11 +1,11 @@
 Package: ROI.plugin.alabama
-Version: 0.0-1
-Date: 2016-12-22
+Version: 0.2-5
+Date: 2017-04-04
 Title: 'alabama' Plugin for the 'R' Optimization Infrastructure 
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the R Optimization Infrastructure ('ROI') package
         with the 'alabama' solver for solving nonlinear optimization problems.
-Imports: methods, stats, ROI (>= 0.2-3), alabama (>= 1.0.1)
+Imports: methods, stats, ROI (>= 0.2-5), alabama (>= 1.0.1)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
