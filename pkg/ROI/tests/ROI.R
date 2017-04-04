@@ -54,11 +54,11 @@ test.L_constraint <- function() {
 }
 
 test.Q_constraint <- function() {
-    
+    ## Q_constraint()   
 }
 
-test.Q_constraint <- function() {
-    NO_constraint(3)
+test.C_constraint <- function() {
+    ## C_constraint
 }
 
 
@@ -130,7 +130,7 @@ test.LP <- function() {
                                        rhs = c(60, 40, 80)),
             maximum = TRUE)
     
-    if ( length(ROI_applicable_solvers(x)) ) {
+    if ( "glpk" %in% ROI_applicable_solvers(x) ) {
         sol <- ROI_solve(x)    
         stopifnot( equal(sol$solution, c(0, 20/3, 50/3), tol=1e-4) )
         stopifnot( equal(sol$objval, 230/3, tol=1e-4) ) 
@@ -173,7 +173,7 @@ test.QP <- function() {
                          dir = rep(">=", 3),
                          rhs = c(-8, 2, 0)))
 
-    if ( length(ROI_applicable_solvers(x)) ) {
+    if ( "quadprog" %in% ROI_applicable_solvers(x) ) {
         sol <- ROI_solve(x)
         solution <- c(0.476190476190476, 1.04761904761905, 2.0952380952381)
         stopifnot( equal(sol$solution, solution) )
@@ -191,14 +191,14 @@ test.SOCP_1 <- function() {
     b <- c(sqrt(2))
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1), "soc"=list(2:4))
-    bound <- as.C_bound(cones)
-    lc <- L_constraint(L = rbind(A, G), 
-                       dir=rep("==", length(c(b, h))), 
+
+    bound <- V_bound(li = 1:3, lb = rep(-Inf, 3))
+
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(1), K_soc(3)), 
                        rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", 3), bounds =  bound,
-            maximum = FALSE)
+    x <- OP(objective = obj, constraints = lc, types = rep("C", 3),
+            bounds =  bound, maximum = FALSE)
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
@@ -214,14 +214,11 @@ test.SOCP_2 <- function() {
     b <- c(sqrt(2), sqrt(2))
     G <- diag(x=-1, 6)
     h <- rep(0, 6)
-    cones <- list("free"=c(1, 2), "soc"=list(3:5, 6:8))
-    bound <- as.C_bound(cones)
-    lc <- L_constraint(L = rbind(A, G), 
-                       dir=rep("==", length(c(b, h))), 
+
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_soc(c(3, 3))), 
                        rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", 6), bounds =  bound,
-            maximum = FALSE)
+    x <- OP(objective = obj, constraints = lc)
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
@@ -236,16 +233,13 @@ test.EXPP_1 <- function() {
     A <- rbind(c(1, 0, 0),
                c(0, 1, 0))
     b <- c(1, 2)
-    G <- diag(x=-1, 3)
+    G <- -diag(3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "expp"=list(3:5))
-    bound <- as.C_bound(cones)
-    lc <- L_constraint(L = rbind(A, G), 
-                       dir=rep("==", length(c(b, h))), 
+
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_expp(1)), 
                        rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", 3), bounds =  bound,
-            maximum = FALSE)
+    x <- OP(objective = obj, constraints = lc)
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
@@ -255,18 +249,16 @@ test.EXPP_1 <- function() {
 
 test.EXPP_2 <- function() {
     obj <- c(1, 1, 1)
-    A <- rbind(c(0, 1, 0), c(0, 0, 1))
+    A <- rbind(c(0, 1, 0),
+               c(0, 0, 1))
     b <- c(2, 2*exp(1/2))
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "expp"=list(3:5))
-    bound <- as.C_bound(cones)
-    lc <- L_constraint(L = rbind(A, G), 
-                       dir=rep("==", length(c(b, h))), 
+
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_expp(1)), 
                        rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", 3), bounds =  bound,
-            maximum = TRUE)
+    x <- OP(objective = obj, constraints = lc, maximum = TRUE)
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
@@ -276,18 +268,17 @@ test.EXPP_2 <- function() {
 
 test.EXPP_3 <- function() {
     obj <- c(1, 1, 1)
-    A <- rbind(c(0, 1, 0), c(0, 0, 1))
+    A <- rbind(c(0, 1, 0),
+               c(0, 0, 1))
     b <- c(1, exp(1))
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "expp"=list(3:5))
-    bound <- as.C_bound(cones)
-    lc <- L_constraint(L = rbind(A, G), 
-                       dir=rep("==", length(c(b, h))), 
+
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_expp(1)), 
                        rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", 3), bounds =  bound,
-            maximum = TRUE)
+    x <- OP(objective = obj, constraints = lc, 
+            types = rep("C", 3), maximum = TRUE)
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
@@ -297,20 +288,16 @@ test.EXPP_3 <- function() {
 
 ## EXPD
 test.EXPD_1 <- function() {
-    obj <- c(1, 1, 1)
+    x <- OP(c(1, 1, 1))
     A <- rbind(c(1,  0, 0),
                c(0,  1, 0))
     b <- c(-1, 1)
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "expd"=list(3:5))
-    bound <- as.C_bound(cones)
-    lc <- L_constraint(L = rbind(A, G), 
-                       dir=rep("==", length(c(b, h))), 
-                       rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", 3), bounds =  bound,
-            maximum = FALSE)
+    constraints(x) <- C_constraint(L = rbind(A, G), 
+                                   cones = c(K_zero(2), K_expd(1)), 
+                                   rhs = c(b, h))
+    bounds(x) <- V_bound(li=1:3, lb=rep(-Inf, 3))
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
@@ -321,41 +308,39 @@ test.EXPD_1 <- function() {
 ## POWP
 test.POWP_1 <- function() {
     obj <- c(1, 1, 1)
-    A <- rbind(c(1, 0, 0), c(0, 1, 0))
+    A <- rbind(c(1, 0, 0),
+               c(0, 1, 0))
     b <- c(4, 4)
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "powp"=list(list(i=3:5, a=0.5)))
-    bound <- as.C_bound(cones)
-    lc <- L_constraint(L = rbind(A, G), 
-                       dir=rep("==", length(c(b, h))), 
+
+    cc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_powp(0.5)), 
                        rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", 3), bounds =  bound,
-            maximum = TRUE)
+    x <- OP(objective = obj, constraints = cc, 
+            types = rep("C", 3), maximum = TRUE)
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
         stopifnot( equal(sol$solution, c(4, 4, 4)) )
-        stopifnot( equal(sol$objval, -12) )
+        stopifnot( equal(sol$objval, 12) )
     }
 }
 
 ## POWD
 test.POWD_1 <- function() {
     obj <- c(1, 1, 1)
-    A <- rbind(c(1, 0, 0), c(0, 1, 0))
+    A <- rbind(c(1, 0, 0),
+               c(0, 1, 0))
     b <- c(2, 2)
     G <- diag(x=-1, 3)
     h <- rep(0, 3)
-    cones <- list("free"=c(1, 2), "powd"=list(list(i=3:5, a=0.5)))
-    bound <- as.C_bound(cones)
-    lc <- L_constraint(L = rbind(A, G), 
-                       dir=rep("==", length(c(b, h))), 
+    
+    lc <- C_constraint(L = rbind(A, G), 
+                       cones = c(K_zero(2), K_powd(0.5)), 
                        rhs = c(b, h))
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", 3), bounds =  bound,
-            maximum = TRUE)
+    x <- OP(objective = obj, constraints = lc, 
+            types = rep("C", 3), maximum = TRUE)
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
@@ -375,24 +360,64 @@ test.SDP_1 <- function() {
 ## SDP - Example - 1
 ## for the example definition see ROI.plugin.scs inst/doc
 ## or http://cvxopt.org/userguide/coneprog.html
-    obj <- c(-6, -4, -5)
-    G <- cbind(c( 16, 7,  24,  -8,   8, -1, 0, -1,  0,  0, 7, -5,  1, -5,  1,  -7,  1,  -7,  -4),
-               c(-14, 2,   7, -13, -18,  3, 0,  0, -1,  0, 3, 13, -6, 13, 12, -10, -6, -10, -28),
-               c(  5, 0, -15,  12,  -6, 17, 0,  0,  0, -1, 9,  6, -6,  6, -7,  -7, -6,  -7, -11))
-    h <- c(-3, 5, 12, -2, -14, -13, 10, 0, 0, 0, 68, -30, -19, -30, 99, 23, -19, 23, 10)
+    obj <- c(1, -1, 1)
+    A1 <- matrix(c(-7, -11, -11,  3), 2)
+    A2 <- matrix(c( 7, -18, -18,  8), 2)
+    A3 <- matrix(c(-2,  -8,  -8,  1), 2)
+    a  <- matrix(c(33,  -9,  -9, 26), 2)
+    B1 <- matrix(c(-21, -11,  0, -11,  10,   8,  0,    8, 5), 3)
+    B2 <- matrix(c(  0,  10,  16, 10, -10, -10,  16, -10, 3), 3)
+    B3 <- matrix(c( -5,   2, -17,  2,  -6,   8, -17,   8, 6), 3)
+    b  <- matrix(c( 14,   9,  40,  9,  91,  10,  40,  10,15), 3)
 
-    dims <- c(C_bound(1:6, type="free"), C_bound(7, 8, type="nonneg"), 
-              C_bound(9:12, type="soc"), C_bound(13:16, type="soc"), 
-              C_bound(17:19, type="psd"))
-    lc <- L_constraint(L = G, dir=rep("==", length(h)), rhs = h)
-    x <- OP(objective = obj, constraints = lc,
-            types = rep("C", length(obj)), bounds =  dims,
+    ## PSD matrices have to be vectorized
+    G1 <- vech(A1, A2, A3)
+    h1 <- vech(a)
+    G2 <- vech(B1, B2, B3)
+    h2 <- vech(b)
+    h <- c(h1, h2)
+    bounds <- V_bound(li=1:3, lb=rep(-Inf, 3)) 
+
+    x <- OP(objective = obj,
+            constraints = C_constraint(L = rbind(G1, G2), 
+                                       cones = K_psd(c(3, 6)), 
+                                       rhs = h),
+            types = rep("C", length(obj)),
+            bounds =  bounds,
             maximum = FALSE)
 
     if ( length(ROI_applicable_solvers(x)) ) {
         sol <- ROI_solve(x)
-        stopifnot( equal(sum(abs(opt$solution - c(sqrt(2), -1, -1))), 0) ) 
-        stopifnot( equal(opt$objval, sqrt(2) - 2) )
+        ## NOTE: The solutions I compare with are from cvxopt where I used the default settings,
+        ##       therefore it is possible that scs just provides a solution with a smaler eps
+        known_sol <- c(-0.367666090041563, 1.89832827158511, -0.887550426343585)
+        stopifnot(isTRUE(c(obj %*% solution(sol)) <= c(obj %*% known_sol)))
+    
+        ## solution from cvxopt
+        ## [-3.68e-01 1.90e+00 -8.88e-01]
+        ## or c(-0.367666090041563, 1.89832827158511, -0.887550426343585)
+        stopifnot(isTRUE(sum(abs(solution(sol) - known_sol)) < 1e-3))
+
+        ## [ 3.96e-03 -4.34e-03]
+        ## [-4.34e-03  4.75e-03]
+        ## c(0.00396107103000518, -0.00433836779348354, -0.00433836779348354,  0.00475162592559036) 
+        sol_psd_1 <- c( 0.00396107103000518, -0.00433836779348354, 
+                       -0.00433836779348354,  0.00475162592559036)
+
+        opt_sol_psd_1 <- as.numeric(as.matrix(solution(sol, "psd")[[1]]))
+        stopifnot(isTRUE(sum(abs(opt_sol_psd_1 - sol_psd_1)) < 1e-5))
+    
+        ## [ 5.58e-02 -2.41e-03  2.42e-02]
+        ## [-2.41e-03  1.04e-04 -1.05e-03]
+        ## [ 2.42e-02 -1.05e-03  1.05e-02]
+        ## c(0.0558011514407859, -0.00240909203896524, 0.0242146296992217,  -0.00240909203896524, 
+        ##   0.000104021271556218, -0.00104543254168053,  0.0242146296992217, -0.00104543254168053, 
+        ##   0.0105078600239678) 
+        sol_psd_2 <- c( 0.0558011514407859, -0.00240909203896524,   0.0242146296992217,  
+                       -0.00240909203896524, 0.000104021271556218, -0.00104543254168053,  
+                        0.0242146296992217, -0.00104543254168053,   0.0105078600239678)
+        opt_sol_psd_2 <- as.numeric(as.matrix(solution(sol, "psd")[[2]]))
+        stopifnot(isTRUE(sum(abs(opt_sol_psd_2 - sol_psd_2)) < 1e-5))
     }
 }
 
