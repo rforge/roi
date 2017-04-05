@@ -16,7 +16,7 @@
 ##  ========
 ##' @title Extract Solution
 ##' @description The solution can be accessed via the method \code{'solution'}.
-##' @param x an object of type \code{'OP_solution'}.
+##' @param x an object of type \code{'OP_solution'} or \code{'OP_solutions'}.
 ##' @param type a character giving the name of the solution to be extracted.
 ##' @param ... further arguments passed to or from other methods.
 ##' @return the extracted solution.
@@ -38,11 +38,12 @@ solution.default <- function(x, type=c("primal", "dual", "aux", "psd", "msg"), .
 }
 
 ##' @title Extract solution from the solver.
-##' @description Define a getter function for the solution of the solver.
+##' @description Generic getter functions used by the function 
+##'     \code{\link{solution}}. These functions can be used to write
+##'     a solver specific getter function.
+##' 
 ##' @param x an \code{R} object inheriting from \code{solution} or \code{solutions}.
 ##' @return the corresponding solution/s.
-##' @examples
-##' ## TODO
 ##' @family plugin functions
 ##' @rdname ROI_plugin_solution
 ##' @export

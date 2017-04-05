@@ -23,7 +23,7 @@ is.L_constraint(x)
 }
 \arguments{
 \item{L}{a numeric vector of length \eqn{n} (a single constraint)
-or a matrix of dimension \eqn{n \times m}, where \eqn{n} is the
+or a matrix of dimension \eqn{m \times n}, where \eqn{n} is the
 number of objective variables and \eqn{m} is the number of
 constraints. Matrices can be of class
 \code{"simple_triplet_matrix"} to allow a sparse representation of

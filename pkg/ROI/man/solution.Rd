@@ -7,7 +7,7 @@
 solution(x, type = c("primal", "dual", "aux", "psd", "msg"), ...)
 }
 \arguments{
-\item{x}{an object of type \code{'OP_solution'}.}
+\item{x}{an object of type \code{'OP_solution'} or \code{'OP_solutions'}.}
 
 \item{type}{a character giving the name of the solution to be extracted.}
 

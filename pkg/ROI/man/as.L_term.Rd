@@ -12,7 +12,7 @@ as.L_term(x, ...)
 \item{...}{further arguments passed to or from other methods.}
 }
 \value{
-an object of class \code{"simple_triplet_zero_matrix"}
+an object of class \code{"simple_triplet_matrix"}
 }
 \description{
 The \code{"L_term"} object represents the linear term of the \code{"L_constraint"}.

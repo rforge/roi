@@ -31,10 +31,9 @@ ROI_plugin_solution_msg(x)
 the corresponding solution/s.
 }
 \description{
-Define a getter function for the solution of the solver.
-}
-\examples{
-## TODO
+Generic getter functions used by the function 
+    \code{\link{solution}}. These functions can be used to write
+    a solver specific getter function.
 }
 \seealso{
 Other plugin functions: \code{\link{ROI_plugin_add_status_code_to_db}},

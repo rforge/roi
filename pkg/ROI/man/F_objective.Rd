@@ -37,7 +37,7 @@ an object of class \code{"F_objective"} which inherits
 from \code{"objective"}.
 }
 \description{
-General objective function \eqn{f(x)}to be optimized.
+General objective function \eqn{f(x)} to be optimized.
 }
 \author{
 Stefan Theussl

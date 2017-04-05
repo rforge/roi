@@ -371,6 +371,7 @@ vech <- function(...) {
 ##' @param n an integer giving the number of times the sign should be repeated.
 ##' @examples
 ##' eq(3)
+##' @name constraint directions
 ##' @rdname signs
 ##' @export
 eq <- function(n) rep.int("==", n)

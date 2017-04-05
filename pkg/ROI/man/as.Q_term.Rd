@@ -27,7 +27,7 @@ as.Q_term(x, ...)
 \item{...}{further arguments}
 }
 \value{
-an object of class \code{"simple_triplet_zero_matrix"}
+an object of class \code{"simple_triplet_matrix"}
 }
 \description{
 The \code{"Q_term"} object represents the quadratic term of the \code{"Q_constraint"}.

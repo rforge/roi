@@ -19,11 +19,11 @@ which problem types can be solved by a given solver.
 \examples{
 ## ROI_make_LP_signatures
 lp_signature <- ROI_plugin_make_signature( objective = "L",
-                                    constraints = "L",
-                                    types = c("C"),
-                                    bounds = c("X", "V"),
-                                    cones = c("X"),
-                                    maximum = c(TRUE, FALSE) )
+                                           constraints = "L",
+                                           types = c("C"),
+                                           bounds = c("X", "V"),
+                                           cones = c("X"),
+                                           maximum = c(TRUE, FALSE) )
 }
 \seealso{
 Other plugin functions: \code{\link{ROI_plugin_add_status_code_to_db}},

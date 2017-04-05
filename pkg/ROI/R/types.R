@@ -5,18 +5,29 @@
 available_types <- function( )
     c( "C", "I", "B" )
 
-##' Extract objective variable types from its argument (typically ROI
-##' objects) and return them.
-##'
-##' Currently, there is no default method. For ROI objects of class
-##' \code{"OP"} it returns a character vector specifying whether a
-##' given objective variable is of type continuous (\code{"C"}),
-##' integer (\code{"I"}), or binary (\code{"B"}).
-##' @title Extract Objective Variable Types
+##  Extract objective variable types from its argument (typically ROI
+##  objects) and return them.
+## 
+##  Currently, there is no default method. For ROI objects of class
+##  \code{"OP"} it returns a character vector specifying whether a
+##  given objective variable is of type continuous (\code{"C"}),
+##  integer (\code{"I"}), or binary (\code{"B"}).
+##' @title Types - Accessor and Mutator Functions
+##' @description The \link{types} of a given optimization problem (\link{OP}) 
+##'     can be accessed or mutated via the method \code{'types'}.
 ##' @param x an object used to select the method.
 ##' @param value an R object.
 ##' @return a character vector.
+##' @name types (Set/Get)
+##' @rdname types
 ##' @author Stefan Theussl
+##' @examples
+##' ## minimize: x + 2 y
+##' ## subject to: x + y >= 1
+##' ## x, y >= 0    x, y are integer
+##' x <- OP(objective = 1:2, constraints = L_constraint(c(1, 1), ">=", 1))
+##' types(x) <- c("I", "I")
+##' types(x)
 ##' @export
 types <- function( x )
     UseMethod("types")

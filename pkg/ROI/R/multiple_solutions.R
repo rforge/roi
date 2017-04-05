@@ -21,7 +21,6 @@ function(x, nos = 1L, add = FALSE, solver = NULL, control = NULL)
     ## Find up to n binary MILP solutions using a simple branch and cut
     ## approach (repeatedly splitting the binary variables and cutting
     ## the non-optimal branches).
-
     objfun <- objective(x)
 
     if(is.na(nos))

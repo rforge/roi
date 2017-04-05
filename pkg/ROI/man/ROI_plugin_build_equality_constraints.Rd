@@ -24,8 +24,8 @@ There exist different forms of functional equality constraints,
 \details{
 There are two types of equality constraints commonly used in \R
 \enumerate{
-\item{\code{eq\_zero}:}{ \ \eqn{h(x) = 0} \ and}
-\item{\code{eq\_rhs}:}{ \ \eqn{h(x) = rhs} \ .}
+\item{\code{eq\_zero}:}{ \eqn{h(x) = 0} and}
+\item{\code{eq\_rhs}:}{ \eqn{h(x) = rhs} .}
 }
 }
 \note{

@@ -31,17 +31,24 @@ available_objective_classes <- function()
 ## get objective function from problem object
 ## returns a function!
 
-##' Extract the objective function from its argument (typically ROI
-##' objects) and return them.
-##'
-##' The default method assumes that the supplied R object is a list
-##' where the element \code{objective} represents the objective
-##' function. The extractet element is then coerced to a function.
-##' @title Extract Objective Functions
+##  Extract the objective function from its argument (typically ROI
+##  objects) and return them.
+## 
+##  The default method assumes that the supplied R object is a list
+##  where the element \code{objective} represents the objective
+##  function. The extractet element is then coerced to a function.
+##' @title Objective - Accessor and Mutator Functions
+##' @description The \link{objective} of a given optimization problem (\link{OP}) 
+##'     can be accessed or mutated via the method \code{'objective'}.
 ##' @param x an object used to select the method.
 ##' @param value an R object.
 ##' @return a function inheriting from \code{"objective"}.
 ##' @author Stefan Theussl
+##' @name objective (Set/Get)
+##' @rdname objective
+##' @examples
+##' x <- OP()
+##' objective(x) <- 1:3
 ##' @export
 objective <- function( x )
     UseMethod( "objective" )
@@ -341,7 +348,7 @@ as.Q_objective.simple_triplet_matrix <- function( x )
 ## general objectives
 ###############################################################
 
-##' General objective function \eqn{f(x)}to be optimized.
+##' General objective function \eqn{f(x)} to be optimized.
 ##'
 ##' @title General (Nonlinear) Objective Function
 ##' @param F an R \code{"function"} taking a numeric vector \code{x} of length \eqn{n} as argument.

@@ -12,12 +12,13 @@
 ##  Constraint
 ##  ==========
 ##' @title constraint
-##' @description \pkg{ROI} distinguishes between 4 different 
+##' @description \pkg{ROI} distinguishes between 5 different 
 ##'   types of constraint: 
 ##'   \itemize{
 ##'     \item No Constraint \code{\link{NO_constraint}} (inherits from \code{"constraint"})
 ##'     \item Linear Constraint \code{\link{L_constraint}} (inherits from \code{"constraint"})
 ##'     \item Quadratic Constraint \code{\link{Q_constraint}} (inherits from \code{"constraint"})
+##'     \item Conic Constraint \code{\link{C_constraint}} (inherits from \code{"constraint"})
 ##'     \item Function Constraint \code{\link{F_constraint}} (inherits from \code{"constraint"})
 ##'   }
 ##' @param x an object to be coerced or tested.
@@ -47,16 +48,27 @@ valid_cone <- function(x) x %in% available_cone_types()
 ## 'constraints' extractor functions
 ################################################################################
 
-##' Extract constraints from its argument (typically ROI objects) and
-##' return them.
-##'
-##' Currently, there is no default method. See \code{\link{constraints.OP}}
-##' for extracting constraints from ROI objects of class \code{"OP"}.
-##' @title Extract constraints
+##  Extract constraints from its argument (typically ROI objects) and
+##  return them.
+## 
+##  Currently, there is no default method. See \code{\link{constraints.OP}}
+##  for extracting constraints from ROI objects of class \code{"OP"}.
+##' @title Constraints - Accessor and Mutator Functions
+##' @description The \link{constraints} of a given optimization problem (\link{OP}) 
+##'     can be accessed or mutated via the method \code{'constraints'}.
 ##' @param x an object used to select the method.
 ##' @param value an R object.
 ##' @return the extracted constraints object.
+##' @name constraints (Set/Get)
+##' @rdname constraints
 ##' @author Stefan Theussl
+##' @examples
+##' ## minimize: x + 2 y
+##' ## subject to: x + y >= 1
+##' ## x, y >= 0
+##' x <- OP(1:2)
+##' constraints(x) <- L_constraint(c(1, 1), ">=", 1)
+##' constraints(x)
 ##' @export
 constraints <- function( x )
     UseMethod("constraints")
@@ -150,9 +162,10 @@ constraints.OP <- function( x ){
 ##'
 ##' The output type is determined from the highest type of the
 ##' components in the hierarchy \cr \code{"L_constraint"} <
-##' \code{"Q_constraint"} < \code{"F_constraint"}.
+##' \code{"Q_constraint"} < \code{"F_constraint"} and \cr
+##' \code{"L_constraint"} < \code{"C_constraint"}.
 ##'
-##' @title Linear Constraints
+##' @title Combine Constraints
 ##' @param ... constraints objects to be concatenated.
 ##' @param use.names a logical if \code{FALSE} the names of the constraints
 ##'   are ignored when combining them, if \code{TRUE} the constraints are
@@ -303,7 +316,7 @@ length.NO_constraint <- function( x )
 ##'
 ##' @title Linear Constraints
 ##' @param L a numeric vector of length \eqn{n} (a single constraint)
-##' or a matrix of dimension \eqn{n \times m}, where \eqn{n} is the
+##' or a matrix of dimension \eqn{m \times n}, where \eqn{n} is the
 ##' number of objective variables and \eqn{m} is the number of
 ##' constraints. Matrices can be of class
 ##' \code{"simple_triplet_matrix"} to allow a sparse representation of
@@ -538,7 +551,7 @@ str.cone <- function(object, ...) {
 ##'   with the specified dimension.
 ##' @param x an R object.
 ##' @param ... further arguments passed to or from other methods.
-##' @return an object of class \code{"simple_triplet_zero_matrix"}
+##' @return an object of class \code{"simple_triplet_matrix"}
 ##' @export
 as.L_term <- function( x, ... )
     UseMethod("as.L_term")
@@ -586,7 +599,7 @@ as.L_term.NULL <- function( x, ... ) {
 ##' @param Q a list of (sparse) matrices representing the quadratic
 ##' part of each constraint.
 ##' @param L a numeric vector of length \eqn{n} (a single constraint)
-##' or a matrix of dimension \eqn{n \times m}, where \eqn{n} is the
+##' or a matrix of dimension \eqn{m \times n}, where \eqn{n} is the
 ##' number of objective variables and \eqn{m} is the number of
 ##' constraints. Matrices can be of class
 ##' \code{"simple_triplet_matrix"} to allow a sparse representation of
@@ -746,7 +759,7 @@ length.Q_constraint <- function(x)
 ##'   with the specified dimension.
 ##' @param x an R object.
 ##' @param ... further arguments
-##' @return an object of class \code{"simple_triplet_zero_matrix"}
+##' @return an object of class \code{"simple_triplet_matrix"}
 ##' @export
 as.Q_term <- function(x, ...)
     UseMethod( "as.Q_term" )
@@ -1025,34 +1038,6 @@ dim.constraint <- function( x ) {
 }
 
 ## ---------------------------
-## terms
-## ---------------------------
-##' @rdname L_constraint
-##' @export
-terms.L_constraint <- function( x, ... ) {
-    list( L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
-}
-
-##' @rdname C_constraint
-##' @export
-terms.C_constraint <- function( x, ... ) {
-    list( L = x$L, cones=x$cones, rhs=x$rhs, names=x$names )
-}
-
-##' @rdname Q_constraint
-##' @export
-terms.Q_constraint <- function( x, ... ) {
-    list( Q = x$Q, L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
-}
-    
-##' @rdname F_constraint
-##' @export
-terms.F_constraint <- function( x, ... ) {
-    list( F = x$F, G = x$J, dir=x$dir, rhs=x$rhs, names=x$names )
-}
-
-
-## ---------------------------
 ## as.function.constraint
 ## ---------------------------
 ##' @noRd
@@ -1133,70 +1118,83 @@ simple_cone <- function(n, type, params = NULL) {
               class = "cone")
 }
 
-##' @title Zero Cone
-##' @description TODO
-##' @param size a integer giving the size of the cone.
+##' @title Cone Constructors
+##' @description Constructor functions for the different cone
+##'     types. Currently \pkg{ROI} supports eight different types
+##'     of cones.
+##'     \itemize{
+##'     \item \code{Zero cone} \deqn{ \mathcal{K}_{\mathrm{zero}} = \{0\} }
+##'     \item \code{Nonnegative (linear) cone} \deqn{ \mathcal{K}_{\mathrm{lin}} = \{x|x \geq 0 \} }
+##'     \item \code{Second-order cone} \deqn{ \mathcal{K}_{\mathrm{soc}} = \left\{(t, x) \ | \ ||x||_2 \leq t, x \in R^n, t \in R \right\} }
+##'     \item \code{Positive semidefinite cone} \deqn{ \mathcal{K}_{\mathrm{psd}} = \left\{ X \ | \ min(eig(X)) \geq 0, \ X = X^T, \ X \in R^{n \times n} \right\} }
+##'     \item \code{Exponential cone} \deqn{ \mathcal{K}_{\mathrm{expp}} = \left\{(x,y,z) \ | \ y e^{\frac{x}{y}} \leq z, \ y > 0 \right\} }
+##'     \item \code{Dual exponential cone} \deqn{ \mathcal{K}_{\mathrm{expd}} = \left\{(u,v,w) \ | \ -u e^{\frac{v}{u}} \leq e w, u < 0 \right\} }
+##'     \item \code{Power cone} \deqn{ \mathcal{K}_{\mathrm{powp}} = \left\{(x,y,z) \ | \ x^\alpha * y^{(1-\alpha)} \geq |z|, \ x \geq 0, \ y \geq 0 \right\} }
+##'     \item \code{Dual power cone} \deqn{ \mathcal{K}_{\mathrm{powd}} = \left\{ (u,v,w) \ | \ \left(\frac{u}{\alpha}\right)^\alpha * \left(\frac{v}{(1-\alpha)}\right)^{(1-\alpha)} \geq |w|, \ u \geq 0, \ v \geq 0 \right\} }
+##'     }
+##' 
+##' @param size a integer giving the size of the cone, 
+##'        if the dimension of the cones is fixed 
+##'        (i.e. \code{zero}, \code{lin}, \code{expp}, \code{expd})
+##'        the number of cones is sufficient to define the dimension
+##'        of the product cone.
+##' @param sizes a integer giving the sizes of the cones,
+##'        if the dimension of the cones is not fixed 
+##'        (i.e. \code{soc}, \code{psd}) we
+##'        have to define the sizes of each single cone.
+##' @param alpha a numeric vector giving the \code{alphas}
+##'        for the (dual) power cone.
+##' @rdname cone
+##' @examples 
+##' K_zero(3) ## 3 equality constraints
+##' K_lin(3)  ## 3 constraints where the slack variable s lies in the linear cone
 ##' @export
 K_zero <- function(size) {
     simple_cone(size, 1L)
 }
 
-##' @title Linear Cone
-##' @description TODO
-##' @param size a integer giving the size of the cone.
+##' @rdname cone
 ##' @export
 K_lin <- function(size) {
     simple_cone(size, 2L)
 }
 
-##' @title Second-order Cone
-##' @description TODO
-##' @param sizes a integer giving the sizes of the cones.
+##' @rdname cone
 ##' @export
 K_soc <- function(sizes) {
     do.call(c, lapply(sizes, simple_cone, type = 3L))
 }
 
-##' @title Cone
-##' @description TODO
-##' @param sizes a integer giving the sizes of the cones.
+##' @rdname cone
 ##' @export
 K_psd <- function(sizes) {
     do.call(c, lapply(sizes, simple_cone, type = 4L))
 }
 
-##' @title Cone
-##' @description TODO
-##' @param size a integer giving the size of the cones.
+##' @rdname cone
 ##' @export
 K_expp <- function(size) {
     do.call(c, lapply(rep.int(3L, size), simple_cone, type = 5L))
 }
 
-##' @title Cone
-##' @description TODO
-##' @param size a integer giving the size of the cones.
+##' @rdname cone
 ##' @export
 K_expd <- function(size) {
     do.call(c, lapply(rep.int(3L, size), simple_cone, type = 6L))
 }
 
-##' @title Cone
-##' @description TODO
-##' @param a numeric vector
+##' @rdname cone
 ##' @export
-K_powp <- function(a) {
+K_powp <- function(alpha) {
     fun <- function(x) simple_cone(3L, 7L, params = list(c(a = x)))
-    do.call(c, lapply(a, fun))
+    do.call(c, lapply(alpha, fun))
 }
 
-##' @title Cone
-##' @description TODO
-##' @param a numeric vector
+##' @rdname cone
 ##' @export
-K_powd <- function(a) {
+K_powd <- function(alpha) {
     fun <- function(x) simple_cone(3L, 8L, params = list(c(a = x)))
-    do.call(c, lapply(a, fun))
+    do.call(c, lapply(alpha, fun))
 }
 
 ##' @noRd
@@ -1244,29 +1242,49 @@ calc_dims <- function(x, type) {
     dims
 }
 
-##
-##
-##' Linear constraints are typically of the form \deqn{Lx \leq rhs}
-##' where \eqn{L} is a \eqn{m \times n} (sparse) matrix of coefficients 
-##' to the objective variables \eqn{x} and the right hand side \eqn{rhs} 
+################################################################################
+##  C_constraint
+##  ============
+##' @title Conic Constraints
+##' @description
+##' Conic constraints are often written in the form \deqn{Lx + s = rhs}
+##' where \eqn{L} is a \eqn{m \times n} (sparse) matrix and 
+##' \eqn{s \in \mathcal{K}} are the slack variables restricted to
+##' some cone \eqn{\mathcal{K}} which is typically the product of simpler cones 
+##' \eqn{\mathcal{K} = \prod \mathcal{K}_i}. The right hand side \eqn{rhs} 
 ##' is a vector of length \eqn{m}.
 ##'
-##' @title Linear Constraints
+
 ##' @param L a numeric vector of length \eqn{n} (a single constraint)
-##' or a matrix of dimension \eqn{n \times m}, where \eqn{n} is the
+##' or a matrix of dimension \eqn{m \times n}, where \eqn{n} is the
 ##' number of objective variables and \eqn{m} is the number of
 ##' constraints. Matrices can be of class
 ##' \code{"simple_triplet_matrix"} to allow a sparse representation of
 ##' constraints.
-##' @param cones TODO
-##' @param rhs a numeric vector with the right hand side of the constraints.
+##' @param cones an object of class \code{"cone"} created by the combination,
+##'        of \code{\link{K_zero}}, \code{\link{K_lin}}, \code{\link{K_soc}}, 
+##'        \code{\link{K_psd}}, \code{\link{K_expp}}, \code{\link{K_expd}}, 
+##'        \code{\link{K_powp}} or \code{\link{K_powd}}.
+##' @param rhs a numeric vector giving the right hand side of the constraints.
 ##' @param names an optional character vector giving the names of \eqn{x} 
-##'        (column names of \eqn{A}).
+##'        (column names of \eqn{L}).
 ##' @param x an R object.
 ##' @param ... further arguments passed to or from other methods
 ##' (currently ignored).
-##' @return an object of class \code{"L_constraint"} which inherits
+##' @return an object of class \code{"C_constraint"} which inherits
 ##'         from \code{"constraint"}.
+##' @examples
+##' ## minimize:  x1 + x2 + x3
+##' ## subject to: 
+##' ##   x1 == sqrt(2)
+##' ##   ||(x2, x3)|| <= x1
+##' x <- OP(objective = c(1, 1, 1), 
+##'         constraints = C_constraint(L = rbind(rbind(c(1, 0, 0)), 
+##'                                              diag(x=-1, 3)), 
+##'                                    cones = c(K_zero(1), K_soc(3)), 
+##'                                    rhs = c(sqrt(2), rep(0, 3))), 
+##'         types = rep("C", 3),
+##'         bounds =  V_bound(li = 1:3, lb = rep(-Inf, 3)), maximum = FALSE)
 ##' @export
 C_constraint <- function(L, cones, rhs, names = NULL) {
     L     <- as.L_term(L)
@@ -1409,4 +1427,29 @@ rbind_C_constraint <- function( constraints, use.names = FALSE) {
     }
 }
 
+## ---------------------------
+## terms
+## ---------------------------
+##' @rdname L_constraint
+##' @export
+terms.L_constraint <- function( x, ... ) {
+    list( L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
+}
 
+##' @rdname C_constraint
+##' @export
+terms.C_constraint <- function( x, ... ) {
+    list( L = x$L, cones=x$cones, rhs=x$rhs, names=x$names )
+}
+
+##' @rdname Q_constraint
+##' @export
+terms.Q_constraint <- function( x, ... ) {
+    list( Q = x$Q, L = x$L, dir=x$dir, rhs=x$rhs, names=x$names )
+}
+    
+##' @rdname F_constraint
+##' @export
+terms.F_constraint <- function( x, ... ) {
+    list( F = x$F, G = x$J, dir=x$dir, rhs=x$rhs, names=x$names )
+}

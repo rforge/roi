@@ -164,11 +164,11 @@ ROI_required_signature <- function()
 ##' @examples
 ##' ## ROI_make_LP_signatures
 ##' lp_signature <- ROI_plugin_make_signature( objective = "L",
-##'                                     constraints = "L",
-##'                                     types = c("C"),
-##'                                     bounds = c("X", "V"),
-##'                                     cones = c("X"),
-##'                                     maximum = c(TRUE, FALSE) )
+##'                                            constraints = "L",
+##'                                            types = c("C"),
+##'                                            bounds = c("X", "V"),
+##'                                            cones = c("X"),
+##'                                            maximum = c(TRUE, FALSE) )
 ##' @family plugin functions
 ##' @rdname ROI_plugin_make_signature
 ##' @export
@@ -297,8 +297,8 @@ ROI_plugin_canonicalize_solution <- function( solution, optimum, status, solver,
 ##'        For more information see Details.
 ##' @details There are two types of equality constraints commonly used in \R
 ##' \enumerate{
-##' \item{\code{eq\_zero}:}{ \ \eqn{h(x) = 0} \ and}
-##' \item{\code{eq\_rhs}:}{ \ \eqn{h(x) = rhs} \ .}
+##' \item{\code{eq\_zero}:}{ \eqn{h(x) = 0} and}
+##' \item{\code{eq\_rhs}:}{ \eqn{h(x) = rhs} .}
 ##' }
 ##' @note This function only intended for plugin authors.
 ##' @return Returns one function, which combines all the functional constraints.
@@ -416,9 +416,9 @@ build_equality_constraints_rhs_x <- function(F, J, x0) {
 ##'        For more information see Details.
 ##' @details There are three types of inequality constraints commonly used in \R
 ##' \enumerate{
-##' \item{\code{leq\_zero}:}{ \ \eqn{h(x) \leq 0} \ and}
-##' \item{\code{geq\_zero}:}{ \ \eqn{h(x) \geq 0} \ and}
-##' \item{\code{leq_geq\_rhs}:}{ \ \eqn{lhs \geq h(x) \leq rhs} \ .}
+##' \item{\code{leq\_zero}:}{ \eqn{h(x) \leq 0} and}
+##' \item{\code{geq\_zero}:}{ \eqn{h(x) \geq 0} and}
+##' \item{\code{leq_geq\_rhs}:}{ \eqn{lhs \geq h(x) \leq rhs} .}
 ##' }
 ##' @note This function only intended for plugin authors.
 ##' @return Returns one function, which combines all the functional constraints.

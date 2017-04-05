@@ -26,9 +26,9 @@ There exist different forms of functional inequality constraints,
 \details{
 There are three types of inequality constraints commonly used in \R
 \enumerate{
-\item{\code{leq\_zero}:}{ \ \eqn{h(x) \leq 0} \ and}
-\item{\code{geq\_zero}:}{ \ \eqn{h(x) \geq 0} \ and}
-\item{\code{leq_geq\_rhs}:}{ \ \eqn{lhs \geq h(x) \leq rhs} \ .}
+\item{\code{leq\_zero}:}{ \eqn{h(x) \leq 0} and}
+\item{\code{geq\_zero}:}{ \eqn{h(x) \geq 0} and}
+\item{\code{leq_geq\_rhs}:}{ \eqn{lhs \geq h(x) \leq rhs} .}
 }
 }
 \note{

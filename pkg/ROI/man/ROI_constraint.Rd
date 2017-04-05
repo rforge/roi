@@ -24,12 +24,13 @@ is.constraint(x)
 \item{\ldots}{objects to be combined.}
 }
 \description{
-\pkg{ROI} distinguishes between 4 different 
+\pkg{ROI} distinguishes between 5 different 
   types of constraint: 
   \itemize{
     \item No Constraint \code{\link{NO_constraint}} (inherits from \code{"constraint"})
     \item Linear Constraint \code{\link{L_constraint}} (inherits from \code{"constraint"})
     \item Quadratic Constraint \code{\link{Q_constraint}} (inherits from \code{"constraint"})
+    \item Conic Constraint \code{\link{C_constraint}} (inherits from \code{"constraint"})
     \item Function Constraint \code{\link{F_constraint}} (inherits from \code{"constraint"})
   }
 }

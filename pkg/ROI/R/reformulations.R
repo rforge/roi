@@ -405,7 +405,8 @@ ROI_reformulate <- function(x, to, method = NULL) {
 ##  ==========================
 ##' @title Register Reformulation Method
 ##'
-##' @description Register a new reformulation method.
+##' @description Register a new reformulation method to be used with 
+##'        \code{\link{ROI_reformulate}}.
 ##' @param from a data.frame with the supported signatures.
 ##' @param to a data.frame with the supported signatures.
 ##' @param method_name a character string giving the name of the method.

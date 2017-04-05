@@ -17,8 +17,6 @@ F_constraint(F, dir, rhs, J = NULL, names = NULL)
 
 is.F_constraint(x)
 
-\method{terms}{F_constraint}(x, ...)
-
 as.F_constraint(x, ...)
 
 \method{as.F_constraint}{NULL}(x, ...)
@@ -26,6 +24,8 @@ as.F_constraint(x, ...)
 \method{as.F_constraint}{NO_constraint}(x, ...)
 
 \method{as.F_constraint}{constraint}(x, ...)
+
+\method{terms}{F_constraint}(x, ...)
 }
 \arguments{
 \item{F}{a \code{function} or a list of \code{function}s of length
