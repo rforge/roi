@@ -7,9 +7,9 @@
 ROI_reformulate(x, to, method = NULL)
 }
 \arguments{
-\item{x}{an object of type \code{'OP'} giving the optimization problem.}
+\item{x}{an object of class \code{'OP'} giving the optimization problem.}
 
-\item{to}{a data.frame with the supported signatures.}
+\item{to}{a \code{data.frame} with the supported signatures.}
 
 \item{method}{a character string giving the name of the method.}
 }
@@ -19,7 +19,37 @@ the reformulated optimization problem.
 \description{
 Register a new reformulation method.
 }
+\details{
+Currently \pkg{ROI} provides two reformulation methods.
+\enumerate{
+  \item \code{bqp_to_lp} transforms binary quadratic problems to 
+      linear mixed integer problems.
+  \item \code{qp_to_socp} transforms quadratic problems with linear 
+      constraints to second-order cone problems.
+}
+}
+\examples{
+## Example from 
+## Boros, Endre, and Peter L. Hammer. "Pseudo-boolean optimization."
+## Discrete applied mathematics 123, no. 1 (2002): 155-225.
+
+## minimize: 3 x y + y z - x - 4 y - z + 6
+
+Q <- rbind(c(0, 3, 0), 
+           c(3, 0, 1), 
+           c(0, 1, 0))
+L <- c(-1, -4, -1)
+x <- OP(objective = Q_objective(Q = Q, L = L), types = rep("B", 3))
+
+## reformulate into a mixed integer linear problem
+milp <- ROI_reformulate(x, "lp")
+
+## reformulate into a second-order cone problem
+socp <- ROI_reformulate(x, "socp")
+
+}
 \seealso{
-Other reformulate functions: \code{\link{ROI_plugin_register_reformulation}}
+Other reformulate functions: \code{\link{ROI_plugin_register_reformulation}},
+  \code{\link{ROI_registered_reformulations}}
 }
 

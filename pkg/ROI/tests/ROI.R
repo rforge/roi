@@ -468,6 +468,18 @@ test.NLP_2 <- function() {
     }
 }
 
+test.multiple_solutions <- function(solver) {
+    x <- OP(objective = c(1, 1),
+            constraints = L_constraint(c(1, 1), "==", 1),
+            types = c("B", "B"))
+
+    if ( solver %in% names(ROI_registered_solvers())) {
+        so <- ROI_solve(x, solver = "glpk", control = list(nsol_max = 2L))
+        solu <- do.call(c, solution(so))
+        stopifnot( (equal(solu, c(1, 0, 0, 1)) | equal(solu, c(0, 1, 1, 0))) )
+    }
+}
+
 ## ---------------------------
 ## test 
 ## ---------------------------
@@ -534,6 +546,9 @@ rt( test.SDP_1() )
 cat("## NLP\n", file=file)
 rt( test.NLP_1() )
 rt( test.NLP_2() )
+
+cat("## Multiple Solutions\n", file=file)
+rt( test.multiple_solutions("glpk") )
 
 
 if ( ROI_TEST_ERRORS ) {

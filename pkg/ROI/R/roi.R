@@ -102,7 +102,7 @@ ROI_solve <- function( x, solver, control = list(), ... ){
         }
     } else {
         ## select the solver given on an ordering in ROI_options
-        SOLVE <- select_solver(x, methods) 
+        SOLVE <- select_solver(x, sig, methods) 
         solver <- names( SOLVE )[1]
         SOLVE <- SOLVE[[1]]
     }
@@ -112,8 +112,9 @@ ROI_solve <- function( x, solver, control = list(), ... ){
         if ( "nsol_max" %in% solver_control_names ) {
             nsol_max <- 0
         } else {
-            nsol_max <- control$nsol_max
-            control$nsol_max <- NULL
+            nsol_max <- control[["nsol_max"]]
+            nsol_add <- control[["nsol_add"]]
+            control$nsol_max <- control$nsol_add <- NULL
         }
             
         cntrl <- ROI_translate(control, solver)
@@ -121,16 +122,16 @@ ROI_solve <- function( x, solver, control = list(), ... ){
             warning( sprintf("some control arguments not available in solver '%s'.", solver) )
 
         if ( isTRUE(nsol_max > 1) ) {
-            ## TODO: check if we have really a MILP with binary variables.
-            ## if ( !isTRUE(sig$objective == "L") | !isTRUE(sig$constraints == "L")) {
-            ##
-            ## }
-            out <- .find_up_to_n_binary_MILP_solutions(x, nos = nsol_max,
-                                                       add = isTRUE(control$add), 
-                                                       solver = solver,
-                                                       control = cntrl)
-            class(out) <- "OP_solutions"
-            return(out)
+            if ( (sig$objective == "L") & (sig$constraints == "L") & (sig$B) ) {
+                out <- .find_up_to_n_binary_MILP_solutions(x, nos = nsol_max,
+                                                           add = isTRUE(nsol_add), 
+                                                           solver = solver,
+                                                           control = cntrl)
+                class(out) <- "OP_solutions"
+                return(out)
+            } else {
+                stop( "multiple solutions are only provided for binary mixed integer problems." )
+            }
         }
     }
 
@@ -187,18 +188,19 @@ which_op_type <- function(x) {
 
 ## select_solver gets an optimization problem "x" and the applicable methods
 ## "methods" and returns a solver.
-select_solver <- function(x, methods) {
-    signature <- OP_signature(x)
+select_solver <- function(x, signature, methods) {
     type <- which_op_type(signature)
+    ## select solver by ordering by type
     solver_selection_table <- ROI_options("solver_selection_table")
-    b <- solver_selection_table[[type]] %in% names(methods)
-    if ( sum(b) > 0) {
-        solver <- solver_selection_table[[type]][which(b)[1]]
+    i <- which(solver_selection_table[[type]] %in% names(methods))
+    if ( length(i) > 0 ) {
+        solver <- solver_selection_table[[type]][i[1]]
         return( methods[solver] )
     }
-    b <- solver_selection_table[["default"]] %in% names(methods)
-    if ( sum(b) ) {
-        solver <- solver_selection_table[["default"]][which(b)[1]]
+    ## select solver by default ordering
+    i <- which(solver_selection_table[["default"]] %in% names(methods))
+    if ( length(i) > 0 ) {
+        solver <- solver_selection_table[["default"]][i[1]]
         return( methods[solver] )
     }
     return( methods[1] )

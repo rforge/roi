@@ -124,12 +124,12 @@ id_generator <- IdGenerator()
                         "to a mixed integer problem with linear objective and",
                         "linear constraints.", collapse = " ")
 
-    reformulation_db$append(QPLC.B(), LPLC.BCI(), "linearize_bqp", .linearize_BQP,
+    reformulation_db$append(QPLC.B(), LPLC.BCI(), "bqp_to_lp", .linearize_BQP,
                             description = lbqp.descr, cite = lbqp.cite)
 
     qpsoc.descr <- paste("positive definite quadratic objective,",
                          "linear constraints to", collapse = " ")
-    reformulation_db$append(QPLC.BCI(), LPLC.BCI.SOC(), "soc_qp", qp_to_socp,
+    reformulation_db$append(QPLC.BCI(), LPLC.BCI.SOC(), "qp_to_socp", qp_to_socp,
                             description = qpsoc.descr)
 
     ## SET DEFAULTS: for the time being 'ROI_NULL' for solving empty

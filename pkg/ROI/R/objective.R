@@ -164,7 +164,7 @@ L_objective <- function( L, names = NULL ) {
     if ( !is.null(names) ) {
         stopifnot( is.character(names), any(c(length(L), ncol(L)) == length(names)) )
     }
-    obj <- Q_objective( Q = NULL, L = L, names=names )
+    obj <- Q_objective( Q = NULL, L = L, names = names )
     class( obj ) <- c( "L_objective", class(obj) )
     obj
 }
@@ -261,13 +261,14 @@ as.L_objective.function <- function( x ){
 ##' @author Stefan Theussl
 ##' @export
 Q_objective <- function( Q, L = NULL, names = NULL ) {
-    L <- as.L_term(L)
     if( !is.null(Q) ) {
         stopifnot(nrow(Q) == ncol(Q))
+        L <- as.L_term(L, nrow = 1L, ncol = ncol(Q))
         obj <- .objective( Q    = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
                            L    = L, names = names,
                            nobj = dim(Q)[1])
     } else {
+        L <- as.L_term(L)
         obj <- .objective( L = L, names = names, nobj = ncol(L) )
     }
     class(obj) <- c( "Q_objective", class(obj) )
@@ -278,15 +279,10 @@ Q_objective <- function( Q, L = NULL, names = NULL ) {
 ##' @export
 as.function.Q_objective <- function( x, ... ) {
     L <- terms(x)[["L"]]
-    ## FIXME: shouldn't this already be initialized earlier?
-    if( !length(L) )
-        L <- slam::simple_triplet_zero_matrix(ncol = length(x), nrow = 1L)
-
     Q <- terms(x)[["Q"]]
     names <- terms(x)[["names"]]
-    ## FIXME: what about objective function names?
     out <- function(x)
-        structure( c(slam::tcrossprod_simple_triplet_matrix(L, t(x)) + 0.5 * .xtQx(Q, x)), names = NULL )
+        structure( c(slam::tcrossprod_simple_triplet_matrix(L, t(x)) + 0.5 * .xtQx(Q, x)) )
     class(out) <- c(class(out), class(x))
     out
 }

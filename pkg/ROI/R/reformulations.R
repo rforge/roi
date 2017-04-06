@@ -20,66 +20,66 @@ is.F_objective <- function(x) {
 ##
 LPLC.C <- function() {
     ROI_plugin_make_signature( objective = "L",
-                                constraints = c("X", "L"),
-                                types = c("C"),
-                                bounds = c("X", "V"),
-                                cones = c("X"),
-                                maximum = c(TRUE, FALSE) )
+                               constraints = c("X", "L"),
+                               types = c("C"),
+                               bounds = c("X", "V"),
+                               cones = c("X"),
+                               maximum = c(TRUE, FALSE) )
 }
 
 LPLC.BC <- function() {
     ROI_plugin_make_signature( objective = "L",
-                                constraints = c("X", "L"),
-                                types = c("B", "C"),
-                                bounds = c("X", "V"),
-                                cones = c("X"),
-                                maximum = c(TRUE, FALSE) )
+                               constraints = c("X", "L"),
+                               types = c("B", "C"),
+                               bounds = c("X", "V"),
+                               cones = c("X"),
+                               maximum = c(TRUE, FALSE) )
 }
 
 LPLC.BCI <- function() {
     ROI_plugin_make_signature( objective = "L",
-                                constraints = c("X", "L"),
-                                types = c("B", "I", "C"),
-                                bounds = c("X", "V"),
-                                cones = c("X"),
-                                maximum = c(TRUE, FALSE) )
+                               constraints = c("X", "L"),
+                               types = c("B", "I", "C"),
+                               bounds = c("X", "V"),
+                               cones = c("X"),
+                               maximum = c(TRUE, FALSE) )
 }
 
 QPLC.B <- function() {
     ROI_plugin_make_signature( objective = "Q",
-                                constraints = c("X", "L"),
-                                types = c("B"),
-                                bounds = c("X", "V"),
-                                cones = c("X"),
-                                maximum = c(TRUE, FALSE) )
+                               constraints = c("X", "L"),
+                               types = c("B"),
+                               bounds = c("X", "V"),
+                               cones = c("X"),
+                               maximum = c(TRUE, FALSE) )
 }
 
 QPLC.BCI <- function() {
     ROI_plugin_make_signature( objective = "Q",
-                                constraints = c("X", "L"),
-                                types = c("B", "I", "C"),
-                                bounds = c("X", "V"),
-                                cones = c("X"),
-                                maximum = c(TRUE, FALSE) )
+                               constraints = c("X", "L"),
+                               types = c("B", "I", "C"),
+                               bounds = c("X", "V"),
+                               cones = c("X"),
+                               maximum = c(TRUE, FALSE) )
 }
 
 
 LPLC.BCI.SOC <- function() {
     ROI_plugin_make_signature( objective = "L",
-                                constraints = c("X", "L"),
-                                types = c("B", "I", "C"),
-                                bounds = c("X", "V", "C"),
-                                cones = c("X", "zero", "nonneg", "soc"),
-                                maximum = c(TRUE, FALSE) )
+                               constraints = c("X", "L", "C"),
+                               types = c("B", "I", "C"),
+                               bounds = c("X", "V", "C"),
+                               cones = c("X", "zero", "nonneg", "soc"),
+                               maximum = c(TRUE, FALSE) )
 }
 
 LPLC.BCI.PSD <- function() {
     ROI_plugin_make_signature( objective = "L",
-                                constraints = c("X", "L"),
-                                types = c("B", "I", "C"),
-                                bounds = c("X", "V", "C"),
-                                cones = c("X", "zero", "nonneg", "psd"),
-                                maximum = c(TRUE, FALSE) )
+                               constraints = c("X", "L", "C"),
+                               types = c("B", "I", "C"),
+                               bounds = c("X", "V", "C"),
+                               cones = c("X", "zero", "nonneg", "psd"),
+                               maximum = c(TRUE, FALSE) )
 }
 
 .linearize_BQP <- function(x) {
@@ -369,11 +369,37 @@ qp_to_socp <- function(x) {
 ##' @title Reformulate a Optimization Problem
 ##'
 ##' @description Register a new reformulation method.
-##' @param x an object of type \code{'OP'} giving the optimization problem.
-##' @param to a data.frame with the supported signatures.
+##' @param x an object of class \code{'OP'} giving the optimization problem.
+##' @param to a \code{data.frame} with the supported signatures.
 ##' @param method a character string giving the name of the method.
+##' @details Currently \pkg{ROI} provides two reformulation methods.
+##' \enumerate{
+##'   \item \code{bqp_to_lp} transforms binary quadratic problems to 
+##'       linear mixed integer problems.
+##'   \item \code{qp_to_socp} transforms quadratic problems with linear 
+##'       constraints to second-order cone problems.
+##' }
 ##' @return the reformulated optimization problem.
 ##' @family reformulate functions
+##' @examples
+##' ## Example from 
+##' ## Boros, Endre, and Peter L. Hammer. "Pseudo-boolean optimization."
+##' ## Discrete applied mathematics 123, no. 1 (2002): 155-225.
+##'
+##' ## minimize: 3 x y + y z - x - 4 y - z + 6
+##'
+##' Q <- rbind(c(0, 3, 0), 
+##'            c(3, 0, 1), 
+##'            c(0, 1, 0))
+##' L <- c(-1, -4, -1)
+##' x <- OP(objective = Q_objective(Q = Q, L = L), types = rep("B", 3))
+##'
+##' ## reformulate into a mixed integer linear problem
+##' milp <- ROI_reformulate(x, "lp")
+##'
+##' ## reformulate into a second-order cone problem
+##' socp <- ROI_reformulate(x, "socp")
+##' 
 ##' @export
 ROI_reformulate <- function(x, to, method = NULL) {
     from <- OP_signature(x)
@@ -386,8 +412,8 @@ ROI_reformulate <- function(x, to, method = NULL) {
 
     if ( is.character(to) ) {
         to <- switch(to, 
-                     lolc = LPLC.BCI(), 
-                     soc  = LPLC.BCI.SOC(),
+                     lp   = LPLC.BCI(), 
+                     socp = LPLC.BCI.SOC(),
                      sdp  = LPLC.BCI.PSD(),
                      NULL)
         if ( is.null(to) ) {
@@ -400,9 +426,10 @@ ROI_reformulate <- function(x, to, method = NULL) {
     fun(x)
 }
 
+
 ##  -----------------------------------------------------------
 ##  ROI_plugin_register_reformulation
-##  ==========================
+##  =================================
 ##' @title Register Reformulation Method
 ##'
 ##' @description Register a new reformulation method to be used with 
@@ -424,3 +451,20 @@ ROI_plugin_register_reformulation <- function(from, to, method_name, method,
     reformulation_db$append(from, to, method_name, method, description, cite, author)
     invisible(TRUE)
 }
+
+
+##  -----------------------------------------------------------
+##  ROI_registered_reformulations
+##  =============================
+##' @title Registered Reformulations
+##' @description Retrieve the meta information the registered reformulations.
+##' @return a data.frame giving some information about the registered reformulation 
+##'     methods.
+##' @family reformulate functions
+##' @examples
+##' ROI_registered_reformulations()
+##' @export
+ROI_registered_reformulations <- function() {
+    reformulation_db$meta
+}
+

@@ -32,6 +32,7 @@ Register a new reformulation method to be used with
        \code{\link{ROI_reformulate}}.
 }
 \seealso{
-Other reformulate functions: \code{\link{ROI_reformulate}}
+Other reformulate functions: \code{\link{ROI_reformulate}},
+  \code{\link{ROI_registered_reformulations}}
 }
 
