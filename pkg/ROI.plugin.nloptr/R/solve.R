@@ -185,9 +185,9 @@ solve_nloptr <- function( x, control) {
         capture.output(res <- try(eval(args), silent=TRUE))
         if ( class(res) != "try-error") {
             check_ineq <- check_eval_g_ineq(inequality_constraint[["F"]], 
-                                            res$solution, opts)
+                                            res$solution, opts[["tol_constraints_ineq"]])
             check_eq <- check_eval_g_eq(equality_constraint[["F"]], 
-                                        res$solution, opts)
+                                        res$solution, opts[["tol_constraints_eq"]])
             if ( check_ineq & check_eq ) {
                 break
             }

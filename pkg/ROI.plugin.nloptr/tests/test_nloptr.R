@@ -234,7 +234,7 @@ test_nlp_02 <- function() {
 
     ## Solve using NLOPT_LN_COBYLA with gradient information supplied in separate function
     x <- OP(objective = F_objective(F=eval_f0, n=2L), 
-            constraints = F_constraint(F=eval_g0, dir="<=", rhs=0),
+            constraints = F_constraint(F=eval_g0, dir=leq(2), rhs=double(2)),
             bounds = V_bound(li=1, lb=-Inf))
 
     ## Solve Rosenbrock Banana function.
@@ -338,7 +338,7 @@ test_nlp_03 <- function() {
 
     ## Solve using NLOPT_LD_MMA with gradient information supplied in separate function
     x <- OP(objective = F_objective(F=f_objective, n=2L, G=f_gradient), 
-            constraints = F_constraint(F=g_constraint, dir="<=", rhs=0, J=g_jacobian),
+            constraints = F_constraint(F=g_constraint, dir=leq(5), rhs=double(5), J=g_jacobian),
             bounds = V_bound(li=1:2, ui=1:2, lb=c(-50,-50), ub=c(50,50)) )
     
     ## Solve Rosenbrock Banana function.
@@ -737,14 +737,9 @@ test_nlp_08 <- function() {
     lp <- OP(objective = lo, constraints = lc, maximum = TRUE)
     lp_opt <- ROI_solve(lp, solver="glpk")
 
+    control <- list(x0 = c(1, 1, 1), algorithm = "NLOPT_LD_MMA") ## for debuging
     nlp_opt <- ROI_solve(lp, solver="nloptr", start=c(1, 1, 1), method="NLOPT_LD_MMA")
 
-    ##stopifnot(is.numeric(lp_opt$solution))
-    ##stopifnot(is.numeric(nlp_opt$solution))
-    ##stopifnot(is.numeric(lp_opt$objval))
-    ##stopifnot(is.numeric(nlp_opt$objval))
-    ##check("NLP-08@01", equal(lp_opt$objval, nlp_opt$objval, tol=1e-2))
-    ##check("NLP-08@02", equal(lp_opt$solution, nlp_opt$solution, tol=1e-2))
     cat("Solution LP :", lp_opt$solution, "\n")
     cat("Solution NLP:", nlp_opt$solution, "\n")
     cat("Objective Value LP :", lp_opt$objval, "\n")
@@ -771,10 +766,7 @@ if ( !any("nloptr" %in% names(ROI_registered_solvers())) ) {
     cat("OK\n"); cat("Test 07: ")
     local({test_nlp_07()})
     cat("OK\n")
-    ## NOTE: To compare standard lp solver with nlp solver, at least
-    ##       one lp solver has to be installed. For simplicity I fix it 
-    ##       with glpk.
-    if (isTRUE("ROI.plugin.glpk" %in% ROI_registered_solvers())) {
+    if ( isTRUE("ROI.plugin.glpk" %in% ROI_registered_solvers()) ) {
         cat("Test 08: \n")
         local({test_nlp_08()})
     }
