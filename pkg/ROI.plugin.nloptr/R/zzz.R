@@ -30,6 +30,7 @@ ROI_make_NLP_FXCV_signatures <- function()
     ROI_plugin_register_solver_control( solver, "print_options_doc", "X" )
     ROI_plugin_register_solver_control( solver, "population", "X" )
     ROI_plugin_register_solver_control( solver, "ranseed", "X" )
+    ROI_plugin_register_solver_control( solver, "local_opts", "X" )
 
     invisible( TRUE )
 }

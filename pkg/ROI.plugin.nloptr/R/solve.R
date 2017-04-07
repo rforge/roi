@@ -1,3 +1,41 @@
+## --------------------------------------
+## Box Bound Constraints
+## --------------------------------------
+is_na <- function(x) {
+    if ( is.vector(x) ) {
+        if ( any(is.na(x)) ) return(TRUE)
+    }
+    return( FALSE )
+}
+
+## get_lb
+## ======
+##
+## get lower bound constraints
+get_lb <- function(x) {
+    ##if( !length(bounds(x)$lower$val) ) {
+    ##    lb <- NULL
+    ##} else {
+        lb <- numeric( length(x$objective) )
+        lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
+    ##}
+    return(lb)
+}
+
+## get_ub
+## ======
+##
+## get upper bound constraints
+get_ub <- function(x) {
+    ##if( !length(bounds(x)$upper$val) ) {
+    ##    ub <- NULL
+    ##} else {
+        ub <- rep.int(Inf, length(x$objective))
+        ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
+    ##}
+    return(ub)
+}
+
 nloptr_defaults <- function(x=NULL) {
     d <- nloptr.get.default.options()
     ## set variables needed to evaluate the default values
@@ -73,72 +111,102 @@ is_derivate_free_algorithm <- function(x) {
 ##     attach(getNamespace("ROI.plugin.nloptr"))    
 ## }
 
-solve_nloptr <- function( x, control ) {
-    solver <- ROI_plugin_get_solver_name( getPackageName() )
-    lb <- get_lb(x)
-    ub <- get_ub(x)
+build_options <- function(control) {
+    opts <- control[!names(control) %in% c("gradient", "nl.info", "x0", "args")]
+    
+    if ( is.null(opts$xtol_rel) ) 
+        opts[['xtol_rel']] <- nloptr_defaults('xtol_rel')
 
-    objective_fun <- objective(x)
-    if ( is.null(control$algorithm) ) { 
-        control$algorithm <- "NLOPT_LD_AUGLAG_EQ"
-    }
-    if ( !is_derivate_free_algorithm(control$algorithm) ) {
-        gradient_fun <- G(objective(x))
+    if ( is.null(opts$tol_constraints_ineq) ) 
+        opts[['tol_constraints_ineq']] <- nloptr_defaults("tol_constraints_ineq")
+
+    if ( is.null(opts$tol_constraints_eq) ) 
+        opts[['tol_constraints_eq']] <- nloptr_defaults("tol_constraints_eq")
+
+    opts
+}
+
+solve_nloptr <- function( x, control) {
+
+    args <- list()
+    args$call_fun <- nloptr::nloptr
+    args$x0 <- control$x0 ## FIXME
+
+    ## objective function
+    if ( isTRUE(x$maximum) ) {
+        objective_function <- objective(x)
+        args$eval_f <- function(x) -objective_function(x)
     } else {
-        gradient_fun <-  NULL
+        args$eval_f <- objective(x)
     }
-    x$constraints <- as.F_constraint(x$constraints)
 
-    if ( x$maximum ) {
-        OBJ_FUN <- objective_fun
-        objective_fun <- function(x) -(OBJ_FUN(x))
-        if ( !is.null(gradient_fun) ) {
-            GRAD_FUN <- gradient_fun
-            gradient_fun <- function(x) -(GRAD_FUN(x))
+    ## gradient of the objective function
+    if ( !is_derivate_free_algorithm(control$algorithm) ) {
+        if ( isTRUE(x$maximum) ) {
+            gradient_function <- G(objective(x))
+            args$eval_grad_f <- function(x) -gradient_function(x)
+        } else {
+            args$eval_grad_f <- G(objective(x))
         }
     }
 
-    if ( is.null(control$x0) & is.null(control$start) ) {
-        stop("no start value, please provide a start value")
-    } else if ( is.null(control$x0) ) {
-        control$x0 <- control$start
+    ## lower and upper bounds
+    args$lb <- get_lb(x)
+    args$ub <- get_ub(x)
+
+    ## inequality constraints
+    inequality_constraint <- ROI_plugin_build_inequality_constraints(x, type="leq_zero")
+    args$eval_g_ineq <- inequality_constraint[["F"]]
+
+    ## jacobian inequality constraints
+    args$eval_jac_g_ineq <- inequality_constraint[["J"]]
+  
+    ## equality constraints
+    equality_constraint <- ROI_plugin_build_equality_constraints(x, type = "eq_zero")
+    args$eval_g_eq <- equality_constraint[["F"]]
+
+    ## jacobian equality constraints
+    args$eval_jac_g_eq <- equality_constraint[["J"]]
+
+    ## nloptr control (opts)
+    opts <- build_options(control)
+    args$opts <- opts
+
+    ## ... args
+    args <- c(args, control$args)
+
+    mode(args) <- "call"
+
+    if ( isTRUE(control$dry_run) )
+        return(args)
+
+    for ( i in seq_len(3) ) {
+        ## NLOPTR has some unfixed issues!
+        capture.output(res <- try(eval(args), silent=TRUE))
+        if ( class(res) != "try-error") {
+            check_ineq <- check_eval_g_ineq(inequality_constraint[["F"]], 
+                                            res$solution, opts)
+            check_eq <- check_eval_g_eq(equality_constraint[["F"]], 
+                                        res$solution, opts)
+            if ( check_ineq & check_eq ) {
+                break
+            }
+        }
     }
-    j <- na.exclude(match(c("gradient", "nl.info", "x0", "args"), names(control)))
-    if ( is.null(control$xtol_rel) ) control[['xtol_rel']] <- nloptr_defaults('xtol_rel')
-    if ( is.null(control$tol_constraints_ineq) ) 
-        control[['tol_constraints_ineq']] <- nloptr_defaults("tol_constraints_ineq")
-    if ( is.null(control$tol_constraints_eq) ) 
-        control[['tol_constraints_eq']] <- nloptr_defaults("tol_constraints_eq")
-
-    eval_g_ineq <- build_inequality_constraints(x, control$tol_constraints_ineq)
-    eval_jac_g_ineq <- build_jacobian_inequality_constraints(x, control$tol_constraints_ineq)
-    eval_g_eq <- build_equality_constraints(x, control$tol_constraints_eq)
-    eval_jac_g_eq <- build_jacobian_equality_constraints(x, control$tol_constraints_eq)
-
-    for (i in seq_len(3)) {
-        capture.output(
-        o <- try(nloptr(x0 = control$x0, eval_f = objective_fun, eval_grad_f = gradient_fun,
-                        lb = lb, ub = ub, eval_g_ineq = eval_g_ineq, eval_jac_g_ineq = eval_jac_g_ineq,
-                        eval_g_eq = eval_g_eq, eval_jac_g_eq = eval_jac_g_eq, opts = control[-j] ), silent=TRUE)
-        )
-        if ( (class(o) != "try-error") & 
-             check_eval_g_ineq(eval_g_ineq, o$solution, control$tol_constraints_ineq) & 
-             check_eval_g_eq(eval_g_eq, o$solution, control$tol_constraints_eq) ) {
-            break
-        } 
+    
+    ## TODO: check the conditions since nloptr sometimes gives
+    ##       results which violate the constraints
+    if (class(res) == "try-error") {
+        stop(attr(res, 'condition')[["message"]])
     }
-    if (class(o) == "try-error") {
-        stop(attr(o, 'condition')[["message"]])
-    }
+    
+    ROI_plugin_canonicalize_solution( solution  = res$solution,
+                                      optimum   = objective(x)(res$solution),
+                                      status    = res$status,
+                                      solver    = "nloptr",
+                                      message   = res,
+                                      algorithm = control$algorithm )
 
-    optimum <- (-1)^x$maximum * o$objective
-
-    ROI_plugin_canonicalize_solution(  solution  = o$solution,
-                                        optimum   = optimum,
-                                        status    = o$status,
-                                        solver    = solver,
-                                        message   = o,
-                                        algorithm = control$algorithm   )
 }
 
 check_eval_g_ineq <- function(eval_g_ineq, sol, tol) {
