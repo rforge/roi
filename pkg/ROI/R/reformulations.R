@@ -68,7 +68,7 @@ LPLC.BCI.SOC <- function() {
     ROI_plugin_make_signature( objective = "L",
                                constraints = c("X", "L", "C"),
                                types = c("B", "I", "C"),
-                               bounds = c("X", "V", "C"),
+                               bounds = c("X", "V"),
                                cones = c("X", "zero", "nonneg", "soc"),
                                maximum = c(TRUE, FALSE) )
 }
@@ -77,7 +77,7 @@ LPLC.BCI.PSD <- function() {
     ROI_plugin_make_signature( objective = "L",
                                constraints = c("X", "L", "C"),
                                types = c("B", "I", "C"),
-                               bounds = c("X", "V", "C"),
+                               bounds = c("X", "V"),
                                cones = c("X", "zero", "nonneg", "psd"),
                                maximum = c(TRUE, FALSE) )
 }
@@ -422,7 +422,9 @@ ROI_reformulate <- function(x, to, method = NULL) {
 
     }
 
-    fun <- reformulation_db$get(from, to, method)    
+    fun <- reformulation_db$get(from, to, method)
+    if ( inherits(fun, "roi_error") )
+        stop(fun$msg)
     fun(x)
 }
 

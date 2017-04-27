@@ -538,10 +538,13 @@ str.cone <- function(object, ...) {
 ##  ----------------------------------------------------------
 ##  as.L_term
 ##  =========
-##' @title Coerce an object to type \code{"L_term"}.
+##  @title Coerce an object to type \code{"L_term"}.
+##' @title Canonicalize the Linear Term
 ##' @description
-##'   The \code{"L_term"} object represents the linear term of the \code{"L_constraint"}.
-##'   Objects from the following classes can be coerced to \code{"L_term"}:
+##    The \code{"L_term"} object represents the linear term of the \code{"L_constraint"}.
+##    Objects from the following classes can be coerced to \code{"L_term"}:
+##'   Canonicalize the linear term of a linear constraint.
+##'   Objects from the following classes can be canonicalized:
 ##'   \code{"NULL"}, \code{"numeric"}, \code{"matrix"}, \code{"simple_triplet_matrix"}
 ##'   and \code{"list"}.
 ##' @details
@@ -746,10 +749,13 @@ length.Q_constraint <- function(x)
 ##  ----------------------------------------------------------
 ##  as.Q_term
 ##  =========
-##' @title Coerce an object to type \code{"Q_term"}.
+##  @title Coerce an object to type \code{"Q_term"}.
+##' @title Canonicalize the Quadraric Term
 ##' @description
-##'   The \code{"Q_term"} object represents the quadratic term of the \code{"Q_constraint"}.
-##'   Objects from the following classes can be coerced to \code{"Q_term"}:
+##    The \code{"Q_term"} object represents the quadratic term of the \code{"Q_constraint"}.
+##    Objects from the following classes can be coerced to \code{"Q_term"}:
+##'   Canonicalize the quadraric term of a quadratic constraint.
+##'   Objects from the following classes can be canonicalized:
 ##'   \code{"NULL"}, \code{"numeric"}, \code{"matrix"}, \code{"simple_triplet_matrix"}
 ##'   and \code{"list"}.
 ##' @details
@@ -1451,5 +1457,5 @@ terms.Q_constraint <- function( x, ... ) {
 ##' @rdname F_constraint
 ##' @export
 terms.F_constraint <- function( x, ... ) {
-    list( F = x$F, G = x$J, dir=x$dir, rhs=x$rhs, names=x$names )
+    list( F = x$F, J = x$J, dir=x$dir, rhs=x$rhs, names=x$names )
 }

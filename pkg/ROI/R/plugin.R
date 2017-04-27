@@ -138,6 +138,7 @@ available_in_status_codes_db <- function( )
 ##' @rdname ROI_plugin_register_solver_method
 ##' @export
 ROI_plugin_register_solver_method <- function( signatures, solver, method ){
+    solver_signature_db$set(solver, signatures)
     for( i in 1:nrow(signatures) )
         do.call(solver_db$set_entry, c(as.list(signatures[i,]),
                                              list(solver = solver),

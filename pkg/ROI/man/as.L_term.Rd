@@ -2,7 +2,7 @@
 % Please edit documentation in R/constraints.R
 \name{as.L_term}
 \alias{as.L_term}
-\title{Coerce an object to type \code{"L_term"}.}
+\title{Canonicalize the Linear Term}
 \usage{
 as.L_term(x, ...)
 }
@@ -15,8 +15,8 @@ as.L_term(x, ...)
 an object of class \code{"simple_triplet_matrix"}
 }
 \description{
-The \code{"L_term"} object represents the linear term of the \code{"L_constraint"}.
-  Objects from the following classes can be coerced to \code{"L_term"}:
+Canonicalize the linear term of a linear constraint.
+  Objects from the following classes can be canonicalized:
   \code{"NULL"}, \code{"numeric"}, \code{"matrix"}, \code{"simple_triplet_matrix"}
   and \code{"list"}.
 }

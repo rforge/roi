@@ -26,23 +26,50 @@ all_signatures <- function(){
     sigs
 }
 
-##' Check if the solver is applicable for a given problem!
-##' @param x an optimization problem of class \code{"OP"}
-##' @param solver a character vector specifying the solver to use.
-##' @return a boolean indicating if the given solver can be used on the 
-##'         optimization problem based on the signature
-##' @noRd
-## TODO: FS put this in again!
-## .check_solver_applicable <- function(x, solver) {
-##     if (!solver %in% names(ROI_registered_solvers()))
-##         stop(sprintf('"%s" is not amongst the registered solvers!', solver), call.=FALSE)
-##     solver_signature <- do.call(rbind, solver_db$get_entries(solver))
-##     fun <- function(y) {
-##         OP_signature(qp)[,y] %in% unlist(solver_signature[,y], use.names=FALSE)
-##     }
-##     sapply(colnames(OP_signature(x)), fun)
-##}
+## In reformulations.R I use reduce_signature
+signature_to_list <- function(x) {
+    x <- reduce_signature(x)
+    x[['types']] <- c("B", "I", "C")[sapply(c("B", "I", "C"), function(i) isTRUE(x[[i]]))]
+    x[['B']] <- NULL
+    x[['I']] <- NULL
+    x[['C']] <- NULL
+    x
+}
 
-#make_generics <- function(){
-#    lapply( apply( all_signatures(), 1, .make_signature), function(x) sprintf('%s <- function(x) UseMethod( "%s" )', x, x))
-#}
+SolverDatabase <- function() {
+    env <- new.env(parent = emptyenv())
+    env$solvers <- list()
+
+    ## name   solver name
+    ## signature   the signature as data.frame
+    env$set <- function(name, signature) {
+        stopifnot(is.character(name))
+        self <- parent.env(environment())$env
+        self$solvers[[name]] <- signature ## signature_to_list(signature)
+        invisible(NULL)
+    }
+
+    env$get <- function(name) {
+        self <- parent.env(environment())$env
+        self$solvers[[name]]
+    }
+    env
+}
+
+##  -----------------------------------------------------------
+##  ROI_solver_signature
+##  ====================
+##' @title Obtain Solver Signature
+##'
+##' @description Obtain the signature of a registered solver.
+##' @param solver a character string giving the name of the solver.
+##' @return the solver signature if the specified solver is registered \code{NULL} otherwise.
+##' @examples
+##' ROI_solver_signature("nlminb")
+##' @export
+ROI_solver_signature <- function(solver) {
+    stopifnot(is.character(solver), (length(solver) == 1L))
+    solver_signature_db$get(solver)
+}
+
+

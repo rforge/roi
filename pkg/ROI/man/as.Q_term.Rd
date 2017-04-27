@@ -7,7 +7,7 @@
 \alias{as.Q_term.matrix}
 \alias{as.Q_term.numeric}
 \alias{as.Q_term.simple_triplet_matrix}
-\title{Coerce an object to type \code{"Q_term"}.}
+\title{Canonicalize the Quadraric Term}
 \usage{
 as.Q_term(x, ...)
 
@@ -30,8 +30,8 @@ as.Q_term(x, ...)
 an object of class \code{"simple_triplet_matrix"}
 }
 \description{
-The \code{"Q_term"} object represents the quadratic term of the \code{"Q_constraint"}.
-  Objects from the following classes can be coerced to \code{"Q_term"}:
+Canonicalize the quadraric term of a quadratic constraint.
+  Objects from the following classes can be canonicalized:
   \code{"NULL"}, \code{"numeric"}, \code{"matrix"}, \code{"simple_triplet_matrix"}
   and \code{"list"}.
 }

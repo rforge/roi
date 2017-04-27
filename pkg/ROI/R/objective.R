@@ -56,7 +56,7 @@ objective <- function( x )
 ##' @noRd
 ##' @export
 objective.default <- function( x )
-    as.function( x$objective )
+    if (is.null(x$objective)) NULL else as.function( x$objective )
 
 ##' @rdname objective
 ##' @export objective<-
@@ -261,14 +261,13 @@ as.L_objective.function <- function( x ){
 ##' @author Stefan Theussl
 ##' @export
 Q_objective <- function( Q, L = NULL, names = NULL ) {
+    L <- as.L_term(L, nrow = 1L, ncol = ncol(Q))
     if( !is.null(Q) ) {
         stopifnot(nrow(Q) == ncol(Q))
-        L <- as.L_term(L, nrow = 1L, ncol = ncol(Q))
         obj <- .objective( Q    = as.simple_triplet_matrix(0.5 * (Q + t(Q))),
                            L    = L, names = names,
                            nobj = dim(Q)[1])
     } else {
-        L <- as.L_term(L)
         obj <- .objective( L = L, names = names, nobj = ncol(L) )
     }
     class(obj) <- c( "Q_objective", class(obj) )
@@ -370,6 +369,7 @@ F_objective <- function( F, n, G = NULL, H = NULL, names=NULL ) {
 as.function.F_objective <- function( x, ... ){
     F <- x$F
     G <- x$G
+    H <- x$H
     nobj <- attr(x, "nobj")
     names <- terms(x)[["names"]]
     out <- function(x) {
@@ -384,7 +384,7 @@ as.function.F_objective <- function( x, ... ){
 ##' @param ... further arguments passed to or from other methods
 ##' @export
 terms.F_objective <- function( x, ... )
-    list( F = x$F, G = x$G, names = x$names )
+    list( F = x$F, n = x$n, G = x$G, H = x$H, names = x$names )
 
 ##  Coerces objects of type \code{"F_objective"}.
 ##
@@ -422,10 +422,11 @@ as.F_objective.function <- function( x ){
     F <- get("F", environment(x))
     n <- get("nobj", environment(x))
     G <- get("G", environment(x))
+    H <- get("H", environment(x))
     names <- get("names", environment(x))
     if( !inherits(x, "objective") )
         stop("'x' must be a function which inherits from 'objective'")
-    F_objective( F = x, n = n, G = G, names = names )
+    F_objective( F = x, n = n, G = G, H = H, names = names )
 }
 
 .check_function_for_sanity <- function(F, n) {

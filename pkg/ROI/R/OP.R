@@ -70,6 +70,8 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
     names(x) <- c("objective", "constraints", "bounds", "types", "maximum")
     class(x) <- "OP"
 
+    maximum(x)     <- maximum
+    
     if ( missing(objective) )
         return(x)
     
@@ -77,20 +79,22 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
     constraints(x) <- constraints
     bounds(x)      <- bounds
     types(x)       <- types
-    maximum(x)     <- maximum
     
     x
 }
 
 .check_OP_for_sanity <- function( x ) {
     if ( !is.F_constraint( constraints(x) ) ) {
-        if( length( objective(x) ) !=  dim(constraints(x))[2] )
+        if( length( objective(x) ) !=  dim(constraints(x))[2] ) {
             stop( "dimensions of 'objective' and 'constraints' not conformable." )
+        }
     }
     len_types <- length( types(x) )
-    if( len_types && (len_types > 1L) )
-        if( length(objective(x)) != len_types )
+    if( len_types && (len_types > 1L) ) {
+        if( length(objective(x)) != len_types ) {
             stop( "dimensions of 'objective' and 'types' not conformable." )
+        }
+    }
     ## TODO: FS
     ## if( !is.null(bounds(x)) )
     ##    if( length(objective(x)) != bounds(x)$nobj )

@@ -70,6 +70,10 @@ add_control_db_schema <- function( control_db ){
 control_db <- registry( )
 control_db <- add_control_db_schema( control_db )
 
+## SOLVER Signature Database
+## The solver signature is now lost in solver_db.
+solver_signature_db <- SolverDatabase()
+
 ## REFORMULATION_DB
 ## create a database for the reformulations
 reformulation_db <- ReformulationDatabase()
@@ -139,24 +143,33 @@ id_generator <- IdGenerator()
     try(ROI_options("gradient", numDeriv::grad), silent=TRUE)
     try(ROI_options("jacobian", numDeriv::jacobian), silent=TRUE)
 
-    ROI_options("solver_selection_table", list(default = c("glpk", "ecos", "cplex", "quadprog", "nlminb"),
-                                                 LP = c("glpk", "ecos", "cplex"),
-                                                 QP = c("quadprog", "cplex", "ipop"),
-                                                 CP = c("ecos", "scs"),
-                                               MILP = c("glpk", "ecos", "cplex"),
-                                               MIQP = c("cplex"),
-                                               MICP = c("ecos"),
-                                                NLP = c("nlminb", "nloptr")))
+    ROI_options("solver_selection_table", 
+        list(default = c("glpk", "ecos", "cplex", "quadprog", "nlminb"),
+             LP   = c("glpk", "ecos", "cplex"),
+             QP   = c("quadprog", "cplex", "ipop"),
+             CP   = c("ecos", "scs"),
+             MILP = c("glpk", "ecos", "cplex"),
+             MIQP = c("cplex"),
+             MICP = c("ecos"),
+             NLP  = c("nlminb", "nloptr")))
     return(invisible(NULL))
 }
 
 .onAttach <- function( libname, pkgname ) {
     ## Search for all solvers in same library as ROI and register found solvers
     ## implicitely be running the corresponding .onLoad() function.
-    if( Sys.getenv("_R_ROI_NO_CHECK_SOLVERS_") != "" )
-        solvers <- NULL
-    else
+    load_plugins <- function() {
+        if ( !Sys.getenv("_R_ROI_NO_CHECK_SOLVERS_") == "" ) {
+            return(FALSE)
+        }
+        isTRUE(as.logical(Sys.getenv("ROI_LOAD_PLUGINS", TRUE)))
+    }
+
+    if ( load_plugins() ) {
         solvers <- ROI_installed_solvers( lib.loc = libname )
+    } else {
+        solvers <- NULL
+    }
 
     for ( pkgname in solvers ) { 
         nmspc <- tryCatch(getNamespace(pkgname), error = identity)

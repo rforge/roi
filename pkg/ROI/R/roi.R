@@ -113,7 +113,7 @@ ROI_solve <- function( x, solver, control = list(), ... ){
             nsol_max <- 0
         } else {
             nsol_max <- control[["nsol_max"]]
-            nsol_add <- control[["nsol_add"]]
+            nsol_add <- TRUE ## use always true since it has to be more tested with FALSE ## control[["nsol_add"]]
             control$nsol_max <- control$nsol_add <- NULL
         }
             

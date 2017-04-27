@@ -165,6 +165,8 @@ function(x, nos = 1L, add = FALSE, solver = NULL, control = NULL)
         x$objective <- L_objective(x$objective[-pos_i])
         x$constraints$L <- x$constraints$L[, -pos_i, drop = FALSE]
         x$types <- x$types[-pos_i]
+        if ( length(x$types) == 0L )
+            break
         nodes <- do.call(c,
                          lapply(nodes,
                                 .split_single_binary_variable,

@@ -38,9 +38,9 @@ c_V_bound <- function(...) {
 c_2_bounds <- function(x, y) {
     z <- list()
     ## V_bound
-    z$lower$ind <- c(x$lower$ind, y$lower$ind)
+    z$lower$ind <- c(x$lower$ind, x$nobj + y$lower$ind)
     z$lower$val <- c(x$lower$val, y$lower$val)
-    z$upper$ind <- c(x$upper$ind, y$upper$ind)
+    z$upper$ind <- c(x$upper$ind, x$nobj + y$upper$ind)
     z$upper$val <- c(x$upper$val, y$upper$val)
     nobj <- max(c(-1L, x$nobj, y$nobj))
     z$nobj <- if (nobj < 0L) NULL else nobj
@@ -134,10 +134,6 @@ V_bound <- function( li, ui, lb, ub, nobj) {
                     nobj = as.integer(nobj)),
               class = c("V_bound", "bound") )
 }
-
-##' @rdname V_bound
-##' @export
-c.V_bound <- c.bound
 
 ##  V_bound
 ##
