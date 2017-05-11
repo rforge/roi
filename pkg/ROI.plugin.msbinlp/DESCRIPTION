@@ -1,8 +1,8 @@
 Package: ROI.plugin.msbinlp
 Version: 0.2-5
 Title: Multi Solution Binary Linear Problem Plugin for the 'R' Optimization Interface
-Authors@R: c( person("Kurt", "Hornik", role = c("aut", "cph")),
-              person("David", "Meyer", role = c("aut", "cph")),
+Authors@R: c( person("Kurt", "Hornik", role = c("aut")),
+              person("David", "Meyer", role = c("aut")),
               person("Florian", "Schwendinger", role =  c("aut", "cre"), 
                      email = "FlorianSchwendinger@gmx.at") )
 Description: Enhances the 'R' Optimization Infrastructure ('ROI') package
