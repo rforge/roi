@@ -4,7 +4,8 @@
 \alias{solution}
 \title{Extract Solution}
 \usage{
-solution(x, type = c("primal", "dual", "aux", "psd", "msg"), ...)
+solution(x, type = c("primal", "dual", "aux", "psd", "msg", "objval",
+  "status", "status_code"), ...)
 }
 \arguments{
 \item{x}{an object of type \code{'OP_solution'} or \code{'OP_solutions'}.}

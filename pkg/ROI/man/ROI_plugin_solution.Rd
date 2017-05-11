@@ -4,10 +4,13 @@
 \alias{ROI_plugin_solution_aux}
 \alias{ROI_plugin_solution_dual}
 \alias{ROI_plugin_solution_msg}
+\alias{ROI_plugin_solution_objval}
 \alias{ROI_plugin_solution_prim}
 \alias{ROI_plugin_solution_prim.OP_solution}
 \alias{ROI_plugin_solution_prim.OP_solutions}
 \alias{ROI_plugin_solution_psd}
+\alias{ROI_plugin_solution_status}
+\alias{ROI_plugin_solution_status_code}
 \title{Extract solution from the solver.}
 \usage{
 ROI_plugin_solution_prim(x)
@@ -23,6 +26,12 @@ ROI_plugin_solution_aux(x)
 ROI_plugin_solution_psd(x)
 
 ROI_plugin_solution_msg(x)
+
+ROI_plugin_solution_status_code(x)
+
+ROI_plugin_solution_status(x)
+
+ROI_plugin_solution_objval(x)
 }
 \arguments{
 \item{x}{an \code{R} object inheriting from \code{solution} or \code{solutions}.}

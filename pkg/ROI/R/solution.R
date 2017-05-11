@@ -21,20 +21,23 @@
 ##' @param ... further arguments passed to or from other methods.
 ##' @return the extracted solution.
 ##' @export
-solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg"), ...) {
+solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg", "objval", "status", "status_code"), ...) {
     UseMethod("solution")
 }
 
 ##' @noRd
 ##' @export
-solution.default <- function(x, type=c("primal", "dual", "aux", "psd", "msg"), ...) {
+solution.default <- function(x, type=c("primal", "dual", "aux", "psd", "msg", "objval", "status", "status_code"), ...) {
     type <- match.arg(type)
     switch(type,
            primal = ROI_plugin_solution_prim(x),
            dual   = ROI_plugin_solution_dual(x),
-           aux    = ROI_plugin_solution_aux(x) ,
-           psd    = ROI_plugin_solution_psd(x) ,
-           msg    = ROI_plugin_solution_msg(x)  )
+           aux    = ROI_plugin_solution_aux(x),
+           psd    = ROI_plugin_solution_psd(x),
+           msg    = ROI_plugin_solution_msg(x),
+           objval = ROI_plugin_solution_objval(x),
+           status = ROI_plugin_solution_status(x),
+           status_code = ROI_plugin_solution_status_code(x) )
 }
 
 ##' @title Extract solution from the solver.
@@ -54,13 +57,15 @@ ROI_plugin_solution_prim <- function(x) {
 ##' @rdname ROI_plugin_solution
 ##' @export
 ROI_plugin_solution_prim.OP_solution <- function(x) {
+    if ( isTRUE(as.logical(x[["status"]][["code"]])) )
+        return( rep(NA_real_, length(x$solution)) )
     x$solution
 }
 
 ##' @rdname ROI_plugin_solution
 ##' @export
 ROI_plugin_solution_prim.OP_solutions <- function(x) {
-    lapply(x, "[[", "solution")
+    lapply(x, ROI_plugin_solution_prim)
 }
 
 ##  @title Extract Dual Solution
@@ -145,6 +150,62 @@ ROI_plugin_solution_msg.OP_solutions <- function(x) {
     lapply(x, "[[", "message")
 }
 
+##' @rdname ROI_plugin_solution
+##' @export
+ROI_plugin_solution_status_code <- function(x) {
+    UseMethod("ROI_plugin_solution_status_code")
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_status_code.OP_solution <- function(x) {
+    x$status$code
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_status_code.OP_solutions <- function(x) {
+    lapply(x, ROI_plugin_solution_status_code)
+}
+
+##' @rdname ROI_plugin_solution
+##' @export
+ROI_plugin_solution_status <- function(x) {
+    UseMethod("ROI_plugin_solution_status")
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_status.OP_solution <- function(x) {
+    x$status
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_status.OP_solutions <- function(x) {
+    lapply(x, ROI_plugin_solution_status)
+}
+
+##' @rdname ROI_plugin_solution
+##' @export
+ROI_plugin_solution_objval <- function(x) {
+    UseMethod("ROI_plugin_solution_objval")
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_objval.OP_solution <- function(x) {
+    if ( isTRUE(as.logical(x[["status"]][["code"]])) )
+        return( NA_real_ )
+    x$objval
+}
+
+##' @noRd
+##' @export
+ROI_plugin_solution_objval.OP_solutions <- function(x) {
+    lapply(x, ROI_plugin_solution_objval)
+}
+
 ################################################################################
 ## Solution object
 ################################################################################
@@ -163,11 +224,8 @@ ROI_plugin_solution_msg.OP_solutions <- function(x) {
 make_OP_solution <- function(solution, objval, status, solver, message = NULL, ...){
     if( is.null(status$code) ) ## a status code for the solution is a necessary condition.
         stop( sprintf("unknown solver status code. Please contact the ROI.plugin.%s maintainer.", solver) )
-    structure( list(solution = if( !status$code )
-                                   solution
-                               else
-                                   rep(NA_real_, length(solution)),
-                    objval   = ifelse( !status$code, objval, NA_real_ ),
+    structure( list(solution = solution,
+                    objval   = objval,
                     status   = status,
                     message  = message),
               meta  = list(solver = solver, ...),
@@ -182,7 +240,7 @@ make_OP_solution <- function(solution, objval, status, solver, message = NULL, .
 print.OP_solution <- function(x, ...){
     success <- x$status$code == 0
     if( !success ){
-        writeLines( "No solution found." )
+        writeLines( "No optimal solution found." )
         writeLines( sprintf("The solver message was: %s", x$status$msg$message) )
     } else{
         writeLines( "Optimal solution found." )
@@ -195,7 +253,7 @@ print.OP_solution <- function(x, ...){
 print.OP_solutions <- function(x, ...) {
     success <- x[[1L]]$status$code == 0
     if( !success ){
-        writeLines( "No solution found." )
+        writeLines( "No optimal solution found." )
         writeLines( sprintf("The solver message was: %s", x[[1L]]$status$msg$message) )
     } else{
         writeLines( sprintf("%i optimal solutions found.", length(x)) )

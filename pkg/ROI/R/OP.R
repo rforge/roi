@@ -231,6 +231,7 @@ get_bound_type <- function(x) {
 ## NOTE: objective(x) returns something which inherits from function and class(x).
 ##       this is why we need to derive the type of objective by taking the 2nd element.
 ## NOTE (#FS): Did run into an error since objective from F_function returns and object of type function
+## FIXME: Should be exported!!!
 OP_signature <- function( x ) {
     x <- as.OP( x )
     ROI_plugin_make_signature( objective = get_objective_class(x),

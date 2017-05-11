@@ -46,7 +46,8 @@ ROI_available_solver_controls <- function(){
        "rel_tol",          ## NUMERIC: relative tolerance of termination criterion
        "method",           ## CHARACTER: giving the algorithm
        "start",            ## NUMERIC: a numeric vector giving the start values
-       "nsol"              ## INTEGER: a integer giving the maximum number of solutions
+       "nsol_max",         ## INTEGER: a integer giving the maximum number of solutions
+       "dry_run"           ## LOGICAL: turn on/off dry_run
       )
 }
 

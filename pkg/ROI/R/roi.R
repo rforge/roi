@@ -107,31 +107,15 @@ ROI_solve <- function( x, solver, control = list(), ... ){
         SOLVE <- SOLVE[[1]]
     }
 
+    cntrl <- ROI_translate(control, solver)
     if( length(control) ) {
-        solver_control_names <- get_solver_controls_from_db(solver)
-        if ( "nsol_max" %in% solver_control_names ) {
-            nsol_max <- 0
-        } else {
-            nsol_max <- control[["nsol_max"]]
-            nsol_add <- TRUE ## use always true since it has to be more tested with FALSE ## control[["nsol_add"]]
-            control$nsol_max <- control$nsol_add <- NULL
-        }
-            
-        cntrl <- ROI_translate(control, solver)
-        if( !all(names(cntrl) %in% solver_control_names) )
-            warning( sprintf("some control arguments not available in solver '%s'.", solver) )
-
-        if ( isTRUE(nsol_max > 1) ) {
-            if ( (sig$objective == "L") & (sig$constraints == "L") & (sig$B) ) {
-                out <- .find_up_to_n_binary_MILP_solutions(x, nos = nsol_max,
-                                                           add = isTRUE(nsol_add), 
-                                                           solver = solver,
-                                                           control = cntrl)
-                class(out) <- "OP_solutions"
-                return(out)
-            } else {
-                stop( "multiple solutions are only provided for binary mixed integer problems." )
-            }
+        solver_control_names <- get_solver_controls_from_db(solver)    
+        if( !all(names(cntrl) %in% solver_control_names) ) {
+            missing_control_args <- names(cntrl)[which(!names(cntrl) %in% solver_control_names)]
+            k <- min(length(missing_control_args), 2L)
+            warning("the control argument", c(" ", "s ")[k], 
+                    deparse(missing_control_args), c(" is ", " are ")[k],
+                    "not available in solver '", solver, "'")
         }
     }
 
@@ -140,7 +124,7 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     control$verbose <- ifelse( length(control$verbose), control$verbose, FALSE )
     if( control$verbose )
         writeLines( "<SOLVER MSG>  ----" )
-    out <- SOLVE( x, ROI_translate(control, solver) )
+    out <- SOLVE( x, cntrl )
     if( control$verbose )
         writeLines( "<!SOLVER MSG> ----" )
     ## add the names to the solution
