@@ -359,7 +359,8 @@ F_objective <- function( F, n, G = NULL, H = NULL, names=NULL ) {
     .check_function_for_sanity( F, n )
     ##if( !is.null(G) )
     ##    .check_gradient_for_sanity( G, n )
-    obj <- .objective( F = F, G = G, H = H, names = names, nobj = n )
+    obj <- .objective( F = F, G = G, H = H, 
+                       names = names, nobj = as.integer(n) )
     class( obj ) <- c( "F_objective", class(obj) )
     obj
 }
@@ -430,9 +431,12 @@ as.F_objective.function <- function( x ){
 }
 
 .check_function_for_sanity <- function(F, n) {
-    ## TODO: check if F is really a function and n is an integer, for meaning full
-    ##       error messages!
-    stopifnot( is.numeric(n) )
+    is_integer <- function(x) {
+        if ( !is.numeric(x) )
+            return(FALSE)
+        (x - as.integer(x)) < .Machine$double.eps
+    }
+    stopifnot( is.function(F), is_integer(n) )
     ans <- tryCatch( F(rep.int(0, n)), error = identity )
     if( inherits(ans, "error") )
         stop(sprintf("cannot evaluate function 'F' using 'n' = %d parameters.", n))
@@ -492,7 +496,7 @@ print.F_objective <- function(x, ...) {
     writeLines(sprintf("A general objective function of length %i.", length(x)))
 }
 
-## TODO:
+## <<< TODO: add a sanity check for the gradient! >>>
 ##.check_gradient_for_sanity <- function(F, n){
 ##    ans <- tryCatch( F(rep(n, 0)), error = identity )
 ##    if( inherits(ans, "error") )

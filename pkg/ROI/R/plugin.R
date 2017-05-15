@@ -443,8 +443,8 @@ ROI_plugin_build_inequality_constraints <- function(x, type=c("leq_zero", "geq_z
     F_len <- sapply(co$F, function(f) length(f(x0)))
     grhs <- mapply(seq, cumsum(c(1L, F_len[-length(F_len)])), cumsum(F_len), SIMPLIFY = FALSE)
     dir <- lapply(grhs, function(i) co$dir[i])
-    ## TODO: this needs to be checked (we need a check which ensures that vector valued functions
-    ##       always use the same direction)
+    ## <<< TODO: this needs to be checked (we need a check which ensures that 
+    ##           vector valued functions always use the same direction) >>>
     b <- sapply(dir, function(v) all(v %in% c("<", "<=", ">=", ">"))) 
     J <- if ( is.null(co$J) ) NULL else co$J[b]
     if ( isTRUE(type == "leq_zero") )
@@ -452,7 +452,7 @@ ROI_plugin_build_inequality_constraints <- function(x, type=c("leq_zero", "geq_z
     else if ( isTRUE(type == "geq_zero") )
         return( build_inequality_constraints(co$F[b], J, co$dir[b], co$rhs[b], x0, c(">", ">=")) )
     ## else leq_geq_rhs
-    stop("TODO")
+    stop("due to no use case not implemented yet")
 }
 
 

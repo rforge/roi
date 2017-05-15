@@ -83,6 +83,8 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
     x
 }
 
+## <<< NOTE: We moved the sanity checks into the objective,
+##           bounds, types files. >>>
 .check_OP_for_sanity <- function( x ) {
     if ( !is.F_constraint( constraints(x) ) ) {
         if( length( objective(x) ) !=  dim(constraints(x))[2] ) {
@@ -95,7 +97,6 @@ OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
             stop( "dimensions of 'objective' and 'types' not conformable." )
         }
     }
-    ## TODO: FS
     ## if( !is.null(bounds(x)) )
     ##    if( length(objective(x)) != bounds(x)$nobj )
     ##        stop( "dimensions of 'objective' and 'bounds' not conformable." )
@@ -230,8 +231,17 @@ get_bound_type <- function(x) {
 
 ## NOTE: objective(x) returns something which inherits from function and class(x).
 ##       this is why we need to derive the type of objective by taking the 2nd element.
-## NOTE (#FS): Did run into an error since objective from F_function returns and object of type function
-## FIXME: Should be exported!!!
+##
+##  OP_signature
+##  ============
+##' @title Optimization Problem Signature
+##' @description
+##'   Takes an object of class \code{"OP"} (optimization problem)
+##'   and returns the signature of the optimization problem.
+##' @param x an object of class \code{"OP"}
+##' @return A \code{data.frame} giving the signature of the
+##'         the optimization problem.
+##' @export
 OP_signature <- function( x ) {
     x <- as.OP( x )
     ROI_plugin_make_signature( objective = get_objective_class(x),
@@ -252,7 +262,7 @@ OP_signature <- function( x ) {
 #    and returns a character vector giving the names of all available
 #    and applicable solver.
 #  @param x an object of class \code{"OP"}
-#  @return A a character vector giving the giving the names of all available
+#  @return A character vector giving the giving the names of all available
 #    and applicable solver
 #  @export
 #  -----------------------------------------------------------

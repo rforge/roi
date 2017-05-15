@@ -988,7 +988,6 @@ is.constraint <- function(x) inherits(x, "constraint")
 
 ##' @noRd
 ##' @export
-## FIXME add C_constraint
 print.constraint <- function( x, ... ) {
     len <- length(x)
     constr <- c("constraint", "constraints")
@@ -1098,7 +1097,8 @@ as.F_constraint.NULL <- function(x, ...) x
 ##' @export
 as.F_constraint.NO_constraint <- function(x, ...) x
 
-## TODO: implement C_constraint!
+## <<< TODO: The typecasting from C_constraint to F_constraint is more
+##           challenging and in some chases doesn't make much sense. >>>
 ##' @rdname F_constraint
 ##' @export
 as.F_constraint.constraint <- function(x, ...) {

@@ -8,9 +8,36 @@
 ##' @title Extract Gradient information
 ##' @param x an object used to select the method.
 ##' @param \ldots further arguments passed down to the
-##' \code{\link[numDeriv]{grad}()} function for calculating gradients (only for \code{"F_objective"}).
+##'   \code{\link[numDeriv]{grad}()} function for calculating gradients 
+##'   (only for \code{"F_objective"}).
+##' @details
+##'   By default \pkg{ROI} uses the \code{"grad"} function from the 
+##'   \pkg{numDeriv} package to derive the gradient information.
+##'   An alternative function can be provided via \code{"ROI_options"}.
+##'   For example \code{ROI_options("gradient", myGrad)}
+##'   would tell \pkg{ROI} to use the function \code{"myGrad"} for the
+##'   gradient calculation. The only requirement to the function 
+##'   \code{"myGrad"} is that it has the argument \code{"func"}
+##'   which takes a function with a scalar real result.
 ##' @return a \code{"function"}.
-##' @author Stefan Theussl
+##' @examples
+##' \dontrun{
+##'    f <- function(x) {
+##'        return( 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2 )
+##'    }
+##'    x <- OP( objective = F_objective(f, n=2L), 
+##'             bounds = V_bound(li=1:2, ui=1:2, lb=c(-3, -3), ub=c(3, 3)) )
+##'    G(objective(x))(c(0, 0)) ## gradient numerically approximated by numDeriv
+##'
+##'
+##'    f.gradient <- function(x) {
+##'        return( c( -400 * x[1] * (x[2] - x[1] * x[1]) - 2 * (1 - x[1]),
+##'                    200 * (x[2] - x[1] * x[1])) )
+##'    }
+##'    x <- OP( objective = F_objective(f, n=2L, G=f.gradient), 
+##'             bounds = V_bound(li=1:2, ui=1:2, lb=c(-3, -3), ub=c(3, 3)) )
+##'    G(objective(x))(c(0, 0)) ## gradient calculated by f.gradient
+##' }
 ##' @export
 G <- function( x, ... )
     UseMethod("G")
@@ -103,7 +130,6 @@ J.Q_constraint <- function(x, ...) {
 ##' @export
 print.jacobian <- function(x, ...) print(unclass(x), ...)
 
-## TODO: J.F_constraint, test this function and add it to ROI.plugin.nloptr
 ##' @noRd
 ##' @export
 J.F_constraint <- function(x, ...) {
