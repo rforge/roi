@@ -118,25 +118,60 @@ ROI_plugin_solution_aux.glpk_solution <- function ( x ){
 
 read_lp_mps_fixed <- function(file, ...) {
     a <- list(...)
-    Rglpk::Rglpk_read_file(file, type = "MPS_fixed", 
-                           isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+    x <- Rglpk::Rglpk_read_file(file, type = "MPS_fixed", 
+                                isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+    as.OP.MILP(x)
 }
 
 read_lp_mps_free <- function(file, ...) {
     a <- list(...)
-    Rglpk::Rglpk_read_file(file, type = "MPS_free",
-                           isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+    x <- Rglpk::Rglpk_read_file(file, type = "MPS_free",
+                                isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+    as.OP.MILP(x)
 }
 
 read_lp_cplex_lp <- function(file, ...) {
     a <- list(...)
-    Rglpk::Rglpk_read_file(file, type = "CPLEX_LP",
-                           isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+    x <- Rglpk::Rglpk_read_file(file, type = "CPLEX_LP",
+                                isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+    as.OP.MILP(x)
 }
 
 read_lp_math_prog <- function(file, ...) {
     a <- list(...)
-    Rglpk::Rglpk_read_file(file, type = "MathProg",
-                           isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+    x <- Rglpk::Rglpk_read_file(file, type = "MathProg",
+                                isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+    as.OP.MILP(x)
 }
+
+
+as.OP.MILP <- function(x){
+    p <- OP()
+    ## objective
+    obj <- c(x$objective)
+    names(obj) <- attr(x, "objective_vars_names")
+    objective(p) <- obj
+
+    ## constraints
+    constraints(p) <- L_constraint(L = x$constraints[[1]], 
+                                   dir = x$constraints[[2]], 
+                                   rhs = x$constraints[[3]],
+                                   names = attr(x, "constraint_names"))
+    
+    ## bounds
+    bounds(p) <- V_bound( li = x$bounds$lower$ind,
+                          ui = x$bounds$upper$ind,
+                          lb = x$bounds$lower$val,
+                          ub = x$bounds$upper$val,
+                          nobj = attr(x,"n_objective_vars") )
+
+    ## types
+    types(p) <- x$types
+
+    ## maximum
+    maximum(p) <- x$maximum
+
+    p
+}
+
 
