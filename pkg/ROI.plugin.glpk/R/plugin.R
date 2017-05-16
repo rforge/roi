@@ -114,3 +114,29 @@ ROI_plugin_solution_dual.glpk_solution <- function( x ){
 ROI_plugin_solution_aux.glpk_solution <- function ( x ){
     x$message$auxiliary
 }
+
+
+read_lp_mps_fixed <- function(file, ...) {
+    a <- list(...)
+    Rglpk::Rglpk_read_file(file, type = "MPS_fixed", 
+                           isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+}
+
+read_lp_mps_free <- function(file, ...) {
+    a <- list(...)
+    Rglpk::Rglpk_read_file(file, type = "MPS_free",
+                           isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+}
+
+read_lp_cplex_lp <- function(file, ...) {
+    a <- list(...)
+    Rglpk::Rglpk_read_file(file, type = "CPLEX_LP",
+                           isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+}
+
+read_lp_math_prog <- function(file, ...) {
+    a <- list(...)
+    Rglpk::Rglpk_read_file(file, type = "MathProg",
+                           isTRUE(a$ignore_first_row), isTRUE(a$verbose))
+}
+
