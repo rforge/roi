@@ -43,6 +43,17 @@ make_MILP_signatures <- function()
     invisible( TRUE )
 }
 
+.add_reader_writer <- function(solver) {
+    ROI_plugin_register_reader("lp_lpsolve", solver, make_MILP_signatures(), read.lp.lp)
+    ROI_plugin_register_reader("mps_fixed", solver, make_MILP_signatures(), read.lp.mps)
+    ROI_plugin_register_reader("mps_free", solver, make_MILP_signatures(), read.lp.freemps)
+
+    ROI_plugin_register_writer("lp_lpsolve", solver, make_MILP_signatures(), write.lp.lp)
+    ROI_plugin_register_writer("mps_fixed", solver, make_MILP_signatures(), write.lp.mps)
+    ROI_plugin_register_writer("mps_free", solver, make_MILP_signatures(), write.lp.freemps)
+    invisible(NULL)
+}
+
 .onLoad <- function( libname, pkgname ) {
     ## Solver plugin name (based on package name)
     if( ! pkgname %in% ROI_registered_solvers() ){
@@ -56,5 +67,6 @@ make_MILP_signatures <- function()
         ## Finally, for status code canonicalization add status codes to data base
         .add_status_codes()
         .add_controls(solver)
+        .add_reader_writer(solver)
     }
 }

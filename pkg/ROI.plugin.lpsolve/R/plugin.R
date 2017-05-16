@@ -1,9 +1,34 @@
+
+read.lp.lp <- function(file, ...) {
+    ROI.plugin.lpsolve::read.lp(file, type = "lp")
+}
+
+read.lp.mps <- function(file, ...) {
+    ROI.plugin.lpsolve::read.lp(file, type = "mps")
+}
+
+read.lp.freemps <- function(file, ...) {
+    ROI.plugin.lpsolve::read.lp(file, type = "freemps")
+}
+
+write.lp.lp <- function(x, file, ...) {
+    ROI.plugin.lpsolve::write.lp(x, file, type = "lp")   
+}
+
+write.lp.mps <- function(x, file, ...) {
+    ROI.plugin.lpsolve::write.lp(x, file, type = "mps")   
+}
+
+write.lp.freemps <- function(x, file, ...) {
+    ROI.plugin.lpsolve::write.lp(x, file, type = "freemps")   
+}
+
 build_bounds <- function(bo) {
-    ind <- sort(union(bo$lower$ind, bo$upper$ind))
-    lower <- double(length(ind))
-    upper <- rep.int(Inf, length(ind))
-    lower[which(bo$lower$ind %in% ind)] <- bo$lower$val
-    upper[which(bo$upper$ind %in% ind)] <- bo$upper$val
+    ind <- seq_len(bo$nobj)
+    lower <- double(bo$nobj)
+    upper <- rep.int(Inf, bo$nobj)
+    lower[bo$lower$ind] <- bo$lower$val
+    upper[bo$upper$ind] <- bo$upper$val
     list(lower=lower, upper=upper, ind=ind)
 }
 
