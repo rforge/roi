@@ -11,7 +11,7 @@ a data.frame giving some information about the registered reformulation
     methods.
 }
 \description{
-Retrieve the meta information the registered reformulations.
+Retrieve meta information about the registered reformulations.
 }
 \examples{
 ROI_registered_reformulations()
