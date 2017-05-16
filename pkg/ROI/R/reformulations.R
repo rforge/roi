@@ -459,7 +459,7 @@ ROI_plugin_register_reformulation <- function(from, to, method_name, method,
 ##  ROI_registered_reformulations
 ##  =============================
 ##' @title Registered Reformulations
-##' @description Retrieve the meta information the registered reformulations.
+##' @description Retrieve meta information about the registered reformulations.
 ##' @return a data.frame giving some information about the registered reformulation 
 ##'     methods.
 ##' @family reformulate functions

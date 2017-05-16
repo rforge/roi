@@ -391,3 +391,8 @@ geq <- function(n) rep.int(">=", n)
 plural_s <- function(condition) {
     if (condition) "s" else ""
 }
+
+is_string <- function(x) {
+    is.character(x) & (length(x) == 1L)
+}
+
