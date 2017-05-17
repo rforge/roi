@@ -9,4 +9,5 @@ Description: Enhances the R Optimization Infrastructure ('ROI') package by regis
 	     variants/combinations of LP, IP.
 Imports: methods, ROI (>= 0.2-5), Rsymphony, slam
 License: GPL-3
+SystemRequirements: SYMPHONY (>= 5.6.16) libraries and headers
 URL: http://R-Forge.R-project.org/projects/roi
