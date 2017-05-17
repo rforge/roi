@@ -128,7 +128,7 @@ ROI_plugin_solution_psd.OP_solution <- function(x) {
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_psd.OP_solutions <- function(x) {
+ROI_plugin_solution_psd.OP_solution_set <- function(x) {
     NA
 }
 
