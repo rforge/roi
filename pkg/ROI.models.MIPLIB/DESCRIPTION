@@ -1,14 +1,16 @@
-Package: ROI.models.MIPLIB
+Package: ROI.models.miplib
 Version: 0.0-1
-Date: 2016-10-26
-Title: R Optimization Infrastructure: MIPLIB 2010 (benchmark) instances
-Authors@R: c( person("Florian", "Schwendinger", role = "aut"),
-              person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org") )
-Description: This R Optimization Infrastructure (ROI) models package provides
+Date: 2016-12-23
+Title: R Optimization Infrastructure: 'MIPLIB' 2010 Benchmark Instances
+Authors@R: c( person("Florian", "Schwendinger", 
+                     role = c("aut", "cre"), 
+                     email = "FlorianSchwendinger@gmx.at"),
+              person("Stefan", "Theussl", role = "aut") )
+Description: This 'R' Optimization Infrastructure ('ROI') models package provides
     the well-known standard test set used to compare the performance of
-    mixed integer optimizers (see http://miplib.zib.de/).
+    mixed integer optimizers (see <http://miplib.zib.de/>).
     The paper by Koch et al. describing the test set can be found
-    at: http://mpc.zib.de/index.php/MPC/article/viewFile/56/28.
+    at: <http://mpc.zib.de/index.php/MPC/article/viewFile/56/28>.
 Depends:
     R (>= 2.10)
 Imports: R.utils, Rglpk, ROI (>= 0.2-0)

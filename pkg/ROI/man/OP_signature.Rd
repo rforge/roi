@@ -17,4 +17,3 @@ A \code{data.frame} giving the signature of the
 Takes an object of class \code{"OP"} (optimization problem)
   and returns the signature of the optimization problem.
 }
-

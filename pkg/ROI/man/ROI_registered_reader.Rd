@@ -26,4 +26,3 @@ Other input output: \code{\link{ROI_plugin_register_reader_writer}},
   \code{\link{ROI_registered_writer}},
   \code{\link{read.op}}, \code{\link{write.op}}
 }
-

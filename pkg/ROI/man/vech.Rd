@@ -16,4 +16,3 @@ a matrix
 The utility function \code{vech} performs a
   half-vectorization on the given matrices.
 }
-

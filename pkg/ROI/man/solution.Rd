@@ -20,4 +20,3 @@ the extracted solution.
 \description{
 The solution can be accessed via the method \code{'solution'}.
 }
-

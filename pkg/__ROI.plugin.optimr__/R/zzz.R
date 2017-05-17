@@ -5,7 +5,7 @@ ROI_make_NLP_FXCV_signatures <- function()
                                 constraints = c("X"),
                                 types = c("C"),
                                 bounds = c("X", "V"),
-                                cones = c("free"),
+                                cones = c("X"),
                                 maximum = c(TRUE, FALSE) )
 
 ## SOLVER CONTROLS

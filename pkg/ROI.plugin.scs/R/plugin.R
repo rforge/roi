@@ -294,7 +294,7 @@ solve_OP <- function(x, control=list()) {
         A.rhs <- A.rhs[i]
         dims <- calc_dims(cones)
     } else {
-
+        dims <- calc_dims(cones)
     }    
 
     ## The NO_PSD_SCALING mode is only for testing purposes

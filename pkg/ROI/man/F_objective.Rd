@@ -2,8 +2,8 @@
 % Please edit documentation in R/objective.R
 \name{F_objective}
 \alias{F_objective}
-\alias{as.F_objective}
 \alias{terms.F_objective}
+\alias{as.F_objective}
 \alias{variable.names.F_objective}
 \title{General (Nonlinear) Objective Function}
 \usage{
@@ -42,4 +42,3 @@ General objective function \eqn{f(x)} to be optimized.
 \author{
 Stefan Theussl
 }
-

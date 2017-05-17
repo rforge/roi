@@ -5,8 +5,8 @@
 \alias{as.C_constraint}
 \alias{is.C_constraint}
 \alias{length.C_constraint}
-\alias{terms.C_constraint}
 \alias{variable.names.C_constraint}
+\alias{terms.C_constraint}
 \title{Conic Constraints}
 \usage{
 C_constraint(L, cones, rhs, names = NULL)
@@ -71,4 +71,3 @@ x <- OP(objective = c(1, 1, 1),
         types = rep("C", 3),
         bounds =  V_bound(li = 1:3, lb = rep(-Inf, 3)), maximum = FALSE)
 }
-

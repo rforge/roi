@@ -41,5 +41,3 @@ test_lp_03 <- function(solver) {
     check("LP-03@03", equal(opt$solution, c(0, 0, 0), tol=1e-4))
     check("LP-03@03", equal(opt$objval, 0, tol=1e-4))
 }
-
-

@@ -2,13 +2,13 @@
 % Please edit documentation in R/constraints.R
 \name{F_constraint}
 \alias{F_constraint}
-\alias{as.F_constraint}
-\alias{as.F_constraint.NO_constraint}
-\alias{as.F_constraint.NULL}
-\alias{as.F_constraint.constraint}
-\alias{is.F_constraint}
-\alias{terms.F_constraint}
 \alias{variable.names.F_constraint}
+\alias{is.F_constraint}
+\alias{as.F_constraint}
+\alias{as.F_constraint.NULL}
+\alias{as.F_constraint.NO_constraint}
+\alias{as.F_constraint.constraint}
+\alias{terms.F_constraint}
 \title{Function Constraints}
 \usage{
 F_constraint(F, dir, rhs, J = NULL, names = NULL)
@@ -62,4 +62,3 @@ right hand side of the constraints.
 \author{
 Stefan Theussl
 }
-

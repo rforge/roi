@@ -2,8 +2,8 @@
 % Please edit documentation in R/objective.R
 \name{L_objective}
 \alias{L_objective}
-\alias{as.L_objective}
 \alias{terms.L_objective}
+\alias{as.L_objective}
 \alias{variable.names.L_objective}
 \title{Linear Objective Function}
 \usage{
@@ -42,4 +42,3 @@ x} where \eqn{c} is a (sparse) vector of coefficients to the
 \author{
 Stefan Theussl
 }
-

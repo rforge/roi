@@ -17,4 +17,3 @@ If both are missing. all set options are returned.}
 Allow the user to set and examine a variety of ROI options like the default
 solver or the function used to compute the gradients.
 }
-

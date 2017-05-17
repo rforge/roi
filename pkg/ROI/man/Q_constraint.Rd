@@ -2,11 +2,11 @@
 % Please edit documentation in R/constraints.R
 \name{Q_constraint}
 \alias{Q_constraint}
+\alias{variable.names.Q_constraint}
 \alias{as.Q_constraint}
 \alias{is.Q_constraint}
 \alias{length.Q_constraint}
 \alias{terms.Q_constraint}
-\alias{variable.names.Q_constraint}
 \title{Quadratic Constraints}
 \usage{
 Q_constraint(Q, L, dir, rhs, names = NULL)
@@ -65,4 +65,3 @@ is represented by the vector \eqn{rhs}.
 \author{
 Stefan Theussl
 }
-

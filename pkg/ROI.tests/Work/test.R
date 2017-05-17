@@ -13,13 +13,19 @@ test_solver("ipop")
 test_solver("symphony")
 test_solver("nloptr")
 
+test_solver("lpsolve")
+
+test_solver("gurobi")
+test_solver("mosek")
+
+traceback()
+ls()
+
 ROI_registered_solvers()
 
 
 
 library(ECOSolveR)
 ecos.control()
-
-
 
 

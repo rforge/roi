@@ -47,4 +47,3 @@ V_bound(li=c(1, 5, 10), ui=13, lb=rep.int(-Inf, 3), ub=100, nobj=20)
 \author{
 Stefan Theussl
 }
-

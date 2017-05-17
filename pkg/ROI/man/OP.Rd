@@ -78,4 +78,3 @@ QP
 \author{
 Stefan Theussl
 }
-

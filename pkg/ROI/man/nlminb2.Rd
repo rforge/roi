@@ -56,4 +56,3 @@ eval_f0 <- function( x, ... ) {
 \author{
 Diethelm Wuertz
 }
-

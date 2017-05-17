@@ -2,15 +2,15 @@
 % Please edit documentation in R/utilities.R
 \name{equal}
 \alias{equal}
-\alias{equal.L_constraint}
 \alias{equal.NULL}
-\alias{equal.Q_constraint}
-\alias{equal.character}
-\alias{equal.integer}
-\alias{equal.list}
 \alias{equal.logical}
+\alias{equal.integer}
 \alias{equal.numeric}
+\alias{equal.character}
+\alias{equal.list}
 \alias{equal.simple_triplet_matrix}
+\alias{equal.L_constraint}
+\alias{equal.Q_constraint}
 \title{Compare two Objects}
 \usage{
 equal(x, y, ...)
@@ -56,4 +56,3 @@ lc2 <- L_constraint(diag(2), dir=c("==", "<="), rhs=1:2)
 equal(lc1, lc1)
 equal(lc1, lc2)
 }
-

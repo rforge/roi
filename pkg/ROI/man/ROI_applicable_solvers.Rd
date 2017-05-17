@@ -21,4 +21,3 @@ An character vector giving the applicable solver,
   would be applicable but a \code{ROI.plugin} is only installed for solver
   \code{"A"} only solver \code{"A"} would be listed as applicable solver.
 }
-

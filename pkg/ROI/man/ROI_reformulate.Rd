@@ -52,4 +52,3 @@ socp <- ROI_reformulate(x, "socp")
 Other reformulate functions: \code{\link{ROI_plugin_register_reformulation}},
   \code{\link{ROI_registered_reformulations}}
 }
-

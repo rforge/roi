@@ -2,11 +2,11 @@
 % Please edit documentation in R/constraints.R
 \name{as.Q_term}
 \alias{as.Q_term}
-\alias{as.Q_term.NULL}
 \alias{as.Q_term.list}
-\alias{as.Q_term.matrix}
 \alias{as.Q_term.numeric}
+\alias{as.Q_term.matrix}
 \alias{as.Q_term.simple_triplet_matrix}
+\alias{as.Q_term.NULL}
 \title{Canonicalize the Quadraric Term}
 \usage{
 as.Q_term(x, ...)
@@ -41,4 +41,3 @@ In the case of \code{lists} \code{"as.Q_term"} is applied to every element
   and \code{"ncol"} which will create a \code{"simple_triplet_zero_matrix"}
   with the specified dimension.
 }
-

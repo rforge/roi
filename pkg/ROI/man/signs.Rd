@@ -3,8 +3,8 @@
 \name{constraint directions}
 \alias{constraint directions}
 \alias{eq}
-\alias{geq}
 \alias{leq}
+\alias{geq}
 \title{Replicate \code{"=="}, \code{">="} and \code{"<="} Signs}
 \usage{
 eq(n)
@@ -26,4 +26,3 @@ eq(3)
 leq(2)
 geq(4)
 }
-

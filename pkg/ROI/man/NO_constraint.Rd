@@ -34,4 +34,3 @@ inherits from \code{"L_constraint"}.
 \author{
 Stefan Theussl
 }
-

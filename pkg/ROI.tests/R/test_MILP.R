@@ -24,21 +24,8 @@ test_milp_01 <- function(solver) {
          maximum = TRUE)
 
     control <- list()
-    if ( solver == "ecos" ) {
-        tol <- 1e-03
-        mi_tol <- 1e-01
-        control$MAXIT <- 2000L
-        control$FEASTOL <- tol
-        control$RELTOL <- tol
-        control$ABSTOL <- tol
-        control$MI_MAX_ITERS <- 5000L
-        control$MI_INT_TOL <- mi_tol
-        control$MI_ABS_EPS <- mi_tol
-        control$MI_REL_EPS <- mi_tol
-        control$VERBOSE <- 0L
-    }
-    opt <- ROI_solve(x, solver=solver, control=control)
-    
+
+    opt <- ROI_solve(x, solver=solver, control=control)    
     check("MILP-01@01", equal(opt$solution , c(4, 2.5, 3), tol=1e-01))
 }
 
@@ -66,19 +53,6 @@ test_milp_02 <- function(solver) {
          maximum = TRUE)
 
     control <- list()
-    if ( solver == "ecos" ) {
-        tol <- 1e-03
-        mi_tol <- 1e-01
-        control$MAXIT <- 2000L
-        control$FEASTOL <- tol
-        control$RELTOL <- tol
-        control$ABSTOL <- tol
-        control$MI_MAX_ITERS <- 5000L
-        control$MI_INT_TOL <- mi_tol
-        control$MI_ABS_EPS <- mi_tol
-        control$MI_REL_EPS <- mi_tol
-        control$VERBOSE <- 0L
-    }
 
     opt <- ROI_solve(x, solver=solver, control=control)
     check("MILP-02@01", all(A %*% opt$solution <= b))

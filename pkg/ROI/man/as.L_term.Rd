@@ -26,4 +26,3 @@ In the case of \code{lists} \code{"as.Q_term"} is applied to every element
   and \code{"ncol"} which will create a \code{"simple_triplet_zero_matrix"}
   with the specified dimension.
 }
-

@@ -2,8 +2,8 @@
 % Please edit documentation in R/objective.R
 \name{Q_objective}
 \alias{Q_objective}
-\alias{as.Q_objective}
 \alias{terms.Q_objective}
+\alias{as.Q_objective}
 \alias{variable.names.Q_objective}
 \title{Quadratic Objective Function}
 \usage{
@@ -46,4 +46,3 @@ part.
 \author{
 Stefan Theussl
 }
-

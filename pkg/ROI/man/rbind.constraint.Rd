@@ -4,7 +4,7 @@
 \alias{rbind.constraint}
 \title{Combine Constraints}
 \usage{
-rbind.constraint(..., use.names = FALSE, recursive = FALSE)
+\method{rbind}{constraint}(..., use.names = FALSE, recursive = FALSE)
 }
 \arguments{
 \item{...}{constraints objects to be concatenated.}
@@ -32,4 +32,3 @@ components in the hierarchy \cr \code{"L_constraint"} <
 \author{
 Stefan Theussl
 }
-

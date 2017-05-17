@@ -18,4 +18,3 @@ Obtain the signature of a registered solver.
 \examples{
 ROI_solver_signature("nlminb")
 }
-

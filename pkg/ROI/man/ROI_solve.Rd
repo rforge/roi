@@ -70,4 +70,3 @@ round( sol[ which(sol > 1/10^6) ], 3 )
 \author{
 Stefan Theussl
 }
-

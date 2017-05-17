@@ -2,11 +2,11 @@
 % Please edit documentation in R/constraints.R
 \name{L_constraint}
 \alias{L_constraint}
+\alias{variable.names.L_constraint}
 \alias{as.L_constraint}
 \alias{is.L_constraint}
 \alias{length.L_constraint}
 \alias{terms.L_constraint}
-\alias{variable.names.L_constraint}
 \title{Linear Constraints}
 \usage{
 L_constraint(L, dir, rhs, names = NULL)
@@ -57,4 +57,3 @@ is a vector of length \eqn{m}.
 \author{
 Stefan Theussl
 }
-

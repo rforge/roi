@@ -29,4 +29,3 @@ Other plugin functions: \code{\link{ROI_plugin_add_status_code_to_db}},
   \code{\link{ROI_plugin_register_solver_control}},
   \code{\link{ROI_plugin_solution_prim}}
 }
-

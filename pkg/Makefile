@@ -52,18 +52,45 @@ clean.Rchecks:
 ## ROI
 ## ===
 ROI.namespace:
+	export ROI_LOAD_PLUGINS="FALSE"
 	$(RR) -e "library(roxygen2); roxygenise(package.dir='ROI', roclets=c('rd', 'namespace'))"
 
 ROI.build:
-	$(RR) -e "library(roxygen2); roxygenise(package.dir='ROI', roclets=c('rd'))"
+	export ROI_LOAD_PLUGINS="FALSE"
+	$(RR) -e "library(roxygen2); roxygenise(package.dir='ROI', roclets=c('rd', 'namespace'))"
 	$(RR) CMD build ROI
 
-ROI.check: ROI.build 
+ROI.check: ROI.build
 	$(RR) CMD check ROI_*.tar.gz \\
 	cp ROI.Rcheck/ROI-manual.pdf ROI-manual.pdf
 
 ROI.install: ROI.build 
 	$(RR) CMD INSTALL ROI_*.tar.gz
+
+ROI.all: ROI.namespace ROI.install
+
+
+## alabama
+## =======
+alabama.build:
+	$(RR) CMD build ROI.plugin.alabama
+
+alabama.check: alabama.build 
+	$(RR) CMD check ROI.plugin.alabama*.tar.gz
+
+alabama.install: alabama.build
+	$(RR) CMD INSTALL ROI.plugin.alabama*.tar.gz
+
+## deoptim
+## =======
+deoptim.build:
+	$(RR) CMD build ROI.plugin.deoptim
+
+deoptim.check: deoptim.build 
+	$(RR) CMD check ROI.plugin.deoptim*.tar.gz
+
+deoptim.install: deoptim.build
+	$(RR) CMD INSTALL ROI.plugin.deoptim*.tar.gz
 
 ## ecos
 ## ====
@@ -87,6 +114,17 @@ glpk.check: glpk.build
 glpk.install: glpk.build
 	$(RR) CMD INSTALL ROI.plugin.glpk*.tar.gz
 
+## gurobi
+## ======
+gurobi.build:
+	$(RR) CMD build ROI.plugin.gurobi
+
+gurobi.check: gurobi.build 
+	$(RR) CMD check ROI.plugin.gurobi*.tar.gz
+
+gurobi.install: gurobi.build
+	$(RR) CMD INSTALL ROI.plugin.gurobi*.tar.gz
+
 ## ipop
 ## ====
 ipop.build:
@@ -97,6 +135,17 @@ ipop.check: ipop.build
 
 ipop.install: ipop.build
 	$(RR) CMD INSTALL ROI.plugin.ipop*.tar.gz
+
+## lpsolve
+## =======
+lpsolve.build:
+	$(RR) CMD build ROI.plugin.lpsolve
+
+lpsolve.check: lpsolve.build 
+	$(RR) CMD check ROI.plugin.lpsolve*.tar.gz
+
+lpsolve.install: lpsolve.build
+	$(RR) CMD INSTALL ROI.plugin.lpsolve*.tar.gz
 
 ## mosek
 ## =====
@@ -109,6 +158,17 @@ mosek.check: mosek.build
 mosek.install: mosek.build
 	$(RR) CMD INSTALL ROI.plugin.mosek*.tar.gz
 
+## msbinlp
+## =======
+msbinlp.build:
+	$(RR) CMD build ROI.plugin.msbinlp
+
+msbinlp.check: msbinlp.build 
+	$(RR) CMD check ROI.plugin.msbinlp*.tar.gz
+
+msbinlp.install: msbinlp.build
+	$(RR) CMD INSTALL ROI.plugin.msbinlp*.tar.gz
+
 ## nloptr
 ## ======
 nloptr.build:
@@ -119,6 +179,17 @@ nloptr.check: nloptr.build
 
 nloptr.install: nloptr.build 
 	$(RR) CMD INSTALL ROI.plugin.nloptr*.tar.gz
+
+## optimx
+## ======
+optimx.build:
+	$(RR) CMD build ROI.plugin.optimx
+
+optimx.check: optimx.build
+	$(RR) CMD check ROI.plugin.optimx*.tar.gz
+
+optimx.install: optimx.build 
+	$(RR) CMD INSTALL ROI.plugin.optimx*.tar.gz
 
 ## quadprog
 ## ========

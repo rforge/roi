@@ -28,4 +28,3 @@ is.bound(x)
   as constructor for variable bounds.
   \code{NO_bound} is not explicitly implemented but represented by \code{NULL}.
 }
-

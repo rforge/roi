@@ -40,4 +40,3 @@ Other plugin functions: \code{\link{ROI_plugin_build_equality_constraints}},
   \code{\link{ROI_plugin_register_solver_method}},
   \code{\link{ROI_plugin_solution_prim}}
 }
-

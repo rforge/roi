@@ -22,4 +22,3 @@ The data source is Quandl. Data flagged as "WIKI" in their database is
 public domain.
 }
 \keyword{datasets}
-

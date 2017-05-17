@@ -49,4 +49,3 @@ By default \pkg{ROI} uses the \code{"grad"} function from the
    G(objective(x))(c(0, 0)) ## gradient calculated by f.gradient
 }
 }
-
