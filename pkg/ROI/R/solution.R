@@ -16,7 +16,7 @@
 ##  ========
 ##' @title Extract Solution
 ##' @description The solution can be accessed via the method \code{'solution'}.
-##' @param x an object of type \code{'OP_solution'} or \code{'OP_solutions'}.
+##' @param x an object of type \code{'OP_solution'} or \code{'OP_solution_set'}.
 ##' @param type a character giving the name of the solution to be extracted.
 ##' @param ... further arguments passed to or from other methods.
 ##' @return the extracted solution.
@@ -64,7 +64,7 @@ ROI_plugin_solution_prim.OP_solution <- function(x) {
 
 ##' @rdname ROI_plugin_solution
 ##' @export
-ROI_plugin_solution_prim.OP_solutions <- function(x) {
+ROI_plugin_solution_prim.OP_solution_set <- function(x) {
     lapply(x, ROI_plugin_solution_prim)
 }
 
@@ -86,7 +86,7 @@ ROI_plugin_solution_dual.OP_solution <- function(x) {
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_dual.OP_solutions <- function(x) {
+ROI_plugin_solution_dual.OP_solution_set <- function(x) {
     NA
 }
 
@@ -104,7 +104,7 @@ ROI_plugin_solution_aux.OP_solution <- function(x) {
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_aux.OP_solutions <- function(x) {
+ROI_plugin_solution_aux.OP_solution_set <- function(x) {
     NA
 }
 
@@ -146,7 +146,7 @@ ROI_plugin_solution_msg.OP_solution <- function(x) {
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_msg.OP_solutions <- function(x) {
+ROI_plugin_solution_msg.OP_solution_set <- function(x) {
     lapply(x, "[[", "message")
 }
 
@@ -164,7 +164,7 @@ ROI_plugin_solution_status_code.OP_solution <- function(x) {
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_status_code.OP_solutions <- function(x) {
+ROI_plugin_solution_status_code.OP_solution_set <- function(x) {
     lapply(x, ROI_plugin_solution_status_code)
 }
 
@@ -182,7 +182,7 @@ ROI_plugin_solution_status.OP_solution <- function(x) {
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_status.OP_solutions <- function(x) {
+ROI_plugin_solution_status.OP_solution_set <- function(x) {
     lapply(x, ROI_plugin_solution_status)
 }
 
@@ -202,7 +202,7 @@ ROI_plugin_solution_objval.OP_solution <- function(x) {
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_objval.OP_solutions <- function(x) {
+ROI_plugin_solution_objval.OP_solution_set <- function(x) {
     lapply(x, ROI_plugin_solution_objval)
 }
 
@@ -250,7 +250,7 @@ print.OP_solution <- function(x, ...){
 
 ##' @noRd
 ##' @export
-print.OP_solutions <- function(x, ...) {
+print.OP_solution_set <- function(x, ...) {
     success <- x[[1L]]$status$code == 0
     if( !success ){
         writeLines( "No optimal solution found." )
