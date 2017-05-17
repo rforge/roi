@@ -4,15 +4,13 @@
 \alias{ROI_plugin_build_inequality_constraints}
 \title{Build Functional Inequality Constraints}
 \usage{
-ROI_plugin_build_inequality_constraints(x, type = c("leq_zero", "geq_zero",
-  "leq_geq_rhs"))
+ROI_plugin_build_inequality_constraints(x, type = c("leq_zero", "geq_zero"))
 }
 \arguments{
 \item{x}{an object of type \code{"OP"}.}
 
 \item{type}{an character giving the type of the function to be returned,
-possible values are \code{"leq\_zero"} or \code{"geq\_zero"} or
-or \code{"leq\_rhs"} or \code{"geq\_rhs"} or \code{"leq\_geq\_rhs"}.
+possible values are \code{"leq\_zero"} and \code{"geq\_zero"}.
 For more information see Details.}
 }
 \value{

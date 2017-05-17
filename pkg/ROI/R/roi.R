@@ -7,7 +7,7 @@
 
 ## Imports
 #' @importFrom stats variable.names setNames na.omit terms aggregate
-#' @importFrom utils str tail
+#' @importFrom utils str tail download.file
 #' @import slam
 #
 
@@ -197,8 +197,7 @@ select_solver <- function(x, signature, methods) {
 ##' @title Solver Tools
 ##' @description Retrieve the names of installed or registered solvers.
 ##' @details
-##'   Whereas \code{ROI_installed_solvers()} and
-##'   \code{ROI_available_solvers()} may list the names of installed
+##'   Whereas \code{ROI_installed_solvers()} may lists the names of installed
 ##'   solvers that do not necessarily work,
 ##'   \code{ROI_registered_solvers()} lists all solvers that can be used
 ##'   to solve optimization problems.
@@ -222,10 +221,76 @@ ROI_installed_solvers <- function( ... ) {
     structure( pkgs, names = ROI_plugin_get_solver_name(pkgs) )
 }
 
-##' @rdname ROI_registered_solvers
+signature_in_df <- function(x, signature) {
+    if ( !is.data.frame(x) )
+        return(FALSE)
+    any(apply(mapply(function(a, b) a == b, signature, x), 1, all))
+}
+
+##' @title Available Solvers
+##' @description ROI_available_solvers returns a data.frame of details corresponding to 
+##'   solvers currently available at one or more repositories. 
+##'   The current list of packages is downloaded over the Internet.
+##' @details
+##'   To get an overview about the available solvers 
+##'   \code{ROI_available_solvers()} can be used.
+##'   If a signature or an object of class \code{"OP"}
+##'   is provided \pkg{ROI} will only return the solvers
+##'   applicable the optimization problem. Note since NLP solver
+##'   are also applicable for LP and QP they will also be listed.
+##'
+##' @param x an object used to select a method. It can be either 
+##'          an object of class \code{"OP"} or an object of class \code{"ROI_signature"}
+##'          or \code{NULL}.
+##' @param method a character string giving the method to be used for downloading files.
+##'        For more information see \code{\link[utils]{download.file}}.
+##' @return a data.frame with one row per package and repository.
+##' @examples
+##' \dontrun{
+##' ROI_available_solvers()
+##' op <- OP(1:2)
+##' ROI_available_solvers(op)
+##' ROI_available_solvers(OP_signature(op))
+##' }
 ##' @export
-ROI_available_solvers <- function( ... ){
-    ROI_installed_solvers( ... )
+ROI_available_solvers <- function( x = NULL, method = getOption("download.file.method")) {
+    UseMethod( "ROI_available_solvers" )
+}
+
+.ROI_available_solvers <- function(method) {
+    url <- "http://roi.r-forge.r-project.org/db/SOLVERS.rds"
+    tmp_folder <- tempdir()
+    dest <- file.path(tmp_folder, "ROI_SOLVERS.rds")
+    z <- tryCatch({download.file(url = url,
+                                 destfile = dest, method = method,
+                                 cacheOK = FALSE, quiet = TRUE, mode = "wb")
+                  }, error = identity)
+
+    if ( inherits(z, "error") )
+        stop("The requested URL 'http://roi.r-forge.r-project.org' was not found.")
+    
+    readRDS(dest)
+}
+
+##' @noRd
+##' @export
+ROI_available_solvers.NULL <- function( x = NULL, method = getOption("download.file.method")) {
+    y <- .ROI_available_solvers(method)
+    y[, -which(colnames(y) == "Signature")]
+}
+
+##' @noRd
+##' @export
+ROI_available_solvers.ROI_signature <- function( x = NULL, method = getOption("download.file.method")) {
+    y <- .ROI_available_solvers(method)
+    i <- which(sapply(y$Signature, signature_in_df, signature = x))
+    y[i, -which(colnames(y) == "Signature")]
+}
+
+##' @noRd
+##' @export
+ROI_available_solvers.OP <- function( x = NULL, method = getOption("download.file.method")) {
+    ROI_available_solvers(OP_signature(x), method)
 }
 
 ## ---------------------------------------------------------

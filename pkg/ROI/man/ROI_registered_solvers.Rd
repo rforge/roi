@@ -3,14 +3,11 @@
 \name{ROI_registered_solvers}
 \alias{ROI_registered_solvers}
 \alias{ROI_installed_solvers}
-\alias{ROI_available_solvers}
 \title{Solver Tools}
 \usage{
 ROI_registered_solvers(...)
 
 ROI_installed_solvers(...)
-
-ROI_available_solvers(...)
 }
 \arguments{
 \item{...}{arguments passed on to \code{\link{installed.packages}}.}
@@ -22,8 +19,7 @@ a named character vector.
 Retrieve the names of installed or registered solvers.
 }
 \details{
-Whereas \code{ROI_installed_solvers()} and
-  \code{ROI_available_solvers()} may list the names of installed
+Whereas \code{ROI_installed_solvers()} may lists the names of installed
   solvers that do not necessarily work,
   \code{ROI_registered_solvers()} lists all solvers that can be used
   to solve optimization problems.

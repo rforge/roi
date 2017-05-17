@@ -162,7 +162,8 @@ ROI_required_signature <- function()
 ##'
 ##' @title Make Signatures
 ##' @param ... signature definitions
-##' @return a data.frame with the supported signatures
+##' @return an object of class \code{"ROI_signature"} 
+##'         (inheriting from data.frame) with the supported signatures.
 ##' @examples
 ##' ## ROI_make_LP_signatures
 ##' lp_signature <- ROI_plugin_make_signature( objective = "L",
@@ -196,7 +197,7 @@ ROI_plugin_make_signature <- function(...){
     dotargs <- mapply(set_defaults, names(dotargs), dotargs, SIMPLIFY=FALSE)
 
     dotargs <- lapply(dotargs, function(x) if( is.null(x) ) FALSE else x)
-    .make_signature(do.call(ROI_expand, dotargs))
+    .make_signature(do.call(ROI_expand, dotargs))#
 }
 
 .make_signature <- function( x ){
@@ -215,7 +216,9 @@ ROI_plugin_make_signature <- function(...){
     types <- strsplit(as.character(x[["types"]]), "")
     types <- do.call(rbind, lapply( types, function(t) available_types() %in% t) )
     colnames(types) <- available_types()
-    cbind(x[, colnames(x) != "types"], types)
+    y <- cbind(x[, colnames(x) != "types"], types)
+    class(y) <- c("ROI_signature", class(y))
+    y
 }
 
 
@@ -413,8 +416,7 @@ build_equality_constraints_rhs_x <- function(F, J, x0) {
 ##'              forms commonly used by \R optimization solvers.
 ##' @param x an object of type \code{"OP"}.
 ##' @param type an character giving the type of the function to be returned,
-##'        possible values are \code{"leq\_zero"} or \code{"geq\_zero"} or
-##'        or \code{"leq\_rhs"} or \code{"geq\_rhs"} or \code{"leq\_geq\_rhs"}.
+##'        possible values are \code{"leq\_zero"} and \code{"geq\_zero"}.
 ##'        For more information see Details.
 ##' @details There are three types of inequality constraints commonly used in \R
 ##' \enumerate{
@@ -427,8 +429,8 @@ build_equality_constraints_rhs_x <- function(F, J, x0) {
 ##' @family plugin functions
 ##' @rdname ROI_plugin_build_inequality_constraints
 ##' @export
-ROI_plugin_build_inequality_constraints <- function(x, type=c("leq_zero", "geq_zero", "leq_geq_rhs")) {
-    stopifnot(type %in% c("leq_zero", "geq_zero", "leq_geq_rhs"))
+ROI_plugin_build_inequality_constraints <- function(x, type=c("leq_zero", "geq_zero")) {
+    stopifnot(type %in% c("leq_zero", "geq_zero"))
     co <- as.F_constraint(constraints(x))
     if ( any(is.NO_constraint(co), is.null(co)) )
         return( list(F=NULL, J=NULL) )

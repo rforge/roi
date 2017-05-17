@@ -10,7 +10,8 @@ ROI_plugin_make_signature(...)
 \item{...}{signature definitions}
 }
 \value{
-a data.frame with the supported signatures
+an object of class \code{"ROI_signature"} 
+        (inheriting from data.frame) with the supported signatures.
 }
 \description{
 Create a solver signature, the solver signatures are used to indicate
