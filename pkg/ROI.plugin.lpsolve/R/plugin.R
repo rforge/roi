@@ -154,7 +154,7 @@ solve_OP <- function(x, control=list()) {
         solutions <- .find_up_to_n_binary_MILP_solutions(lp, x, control$nsol_max)
         i <- which(!sapply(solutions, is.null))
         solutions <- solutions[i]
-        class(solutions) <- c("lpsolve_solutions", "OP_solutions")
+        class(solutions) <- c("lpsolve_solution_set", "OP_solution_set")
         return(solutions)
     } else {
         ## return 1 solution
