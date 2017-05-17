@@ -4,7 +4,7 @@
 \alias{write.op}
 \title{Write Optimization Problems}
 \usage{
-write.op(x, file, type, solver = NULL)
+write.op(x, file, type, solver = NULL, ...)
 }
 \arguments{
 \item{x}{an optimization problem of class \code{"OP"}.}
@@ -18,6 +18,8 @@ is to be written.}
 
 \item{solver}{an optional character giving the name of the plugin 
 (e.g. \code{"lpsolve"}).}
+
+\item{...}{further arguments passed on to the write method.}
 }
 \description{
 Write an optimization problem to file.

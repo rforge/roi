@@ -4,7 +4,7 @@
 \alias{read.op}
 \title{Read Optimization Problems}
 \usage{
-read.op(file, type, solver = NULL)
+read.op(file, type, solver = NULL, ...)
 }
 \arguments{
 \item{file}{a character giving the name of the file the optimization problem
@@ -16,6 +16,8 @@ is to be read from.}
 
 \item{solver}{an optional character giving the name of the plugin 
 (e.g. \code{"lpsolve"}).}
+
+\item{...}{further arguments passed on to the read method.}
 }
 \value{
 x an optimization problem of class \code{"OP"}.
