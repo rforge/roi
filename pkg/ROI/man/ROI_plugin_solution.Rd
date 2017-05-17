@@ -3,7 +3,7 @@
 \name{ROI_plugin_solution_prim}
 \alias{ROI_plugin_solution_prim}
 \alias{ROI_plugin_solution_prim.OP_solution}
-\alias{ROI_plugin_solution_prim.OP_solutions}
+\alias{ROI_plugin_solution_prim.OP_solution_set}
 \alias{ROI_plugin_solution_dual}
 \alias{ROI_plugin_solution_aux}
 \alias{ROI_plugin_solution_psd}
@@ -17,7 +17,7 @@ ROI_plugin_solution_prim(x)
 
 \method{ROI_plugin_solution_prim}{OP_solution}(x)
 
-\method{ROI_plugin_solution_prim}{OP_solutions}(x)
+\method{ROI_plugin_solution_prim}{OP_solution_set}(x)
 
 ROI_plugin_solution_dual(x)
 
