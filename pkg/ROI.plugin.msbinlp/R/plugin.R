@@ -309,7 +309,7 @@ solve_OP <- function(x, control=list()) {
                                                   add = TRUE, 
                                                   solver = method,
                                                   control = control )
-    class(out) <- "OP_solutions"
+    class(out) <- c("msbinlp_solution_set", "OP_solution_set")
     return(out)
 }
 
