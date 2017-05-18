@@ -1,5 +1,6 @@
 stopifnot(require(DEoptim))
 
+
 library(ROI)
 library(ROI.plugin.deoptim)
 
