@@ -1,6 +1,7 @@
 \name{Example-1}
 \title{Quadratic Problem 1}
 
+
 \description{
 \deqn{maximize \ \ x_1^2 + x_2^2 + x_3^2 - 5 x_2}
 \deqn{subject \ to:}
