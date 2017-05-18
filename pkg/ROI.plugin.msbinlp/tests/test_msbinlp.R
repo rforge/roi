@@ -2,6 +2,10 @@ library(slam)
 library(ROI)
 library(ROI.plugin.msbinlp)
 
+
+## to simulate cran conditions
+## Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+
 check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
     if ( isTRUE(condition) ) return(invisible(NULL))
     msg <- sprintf("in %s", domain)
@@ -10,6 +14,7 @@ check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
     return(invisible(NULL))
 }
 
+
 ## LP - Multiple Solutions
 ## solver <- "msbinlp"
 test_blp_multisol_01 <- function(solver) {
@@ -17,7 +22,7 @@ test_blp_multisol_01 <- function(solver) {
              constraints = L_constraint(c(1, 1), "==", 1),
              types = c("B", "B"))
 
-    method <- head(ROI_applicable_solvers(x), 1)
+    method <- head(setdiff(ROI_applicable_solvers(x), solver), 1)
     if ( length(method) == 0L )
         return(NULL)
 
@@ -51,7 +56,7 @@ test_blp_multisol_02 <- function(solver) {
                                    rhs = rep.int(1, 3))
     types(x) <- rep("B", length(x))
 
-    method <- head(ROI_applicable_solvers(x), 1)
+    method <- head(setdiff(ROI_applicable_solvers(x), solver), 1)
     if ( length(method) == 0L )
         return(NULL)
 
