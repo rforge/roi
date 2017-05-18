@@ -1,6 +1,7 @@
 library(ROI)
 library(ROI.plugin.ecos)
 
+
 check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
     if ( isTRUE(condition) ) return(invisible(NULL))
     msg <- sprintf("in %s", domain)
