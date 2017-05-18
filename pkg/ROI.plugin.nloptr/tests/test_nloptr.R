@@ -1,5 +1,6 @@
 stopifnot(require(nloptr))
 
+
 library(ROI)
 library(ROI.plugin.nloptr)
 
