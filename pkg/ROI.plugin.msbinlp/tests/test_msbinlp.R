@@ -33,6 +33,7 @@ test_blp_multisol_01 <- function(solver) {
     check("BLPMS-01@01", equal(nrow(sol), 2L))
     check("BLPMS-01@02", equal(ncol(sol), 2L))
     check("BLPMS-01@03", (equal(sol, diag(2)) | equal(sol, diag(2)[2:1, ])))
+    sol
 }
 
 ## -----------------------------------------------------------------------------
@@ -68,6 +69,7 @@ test_blp_multisol_02 <- function(solver) {
     check("BLPMS-02@01", equal(nrow(sol), 2L))
     check("BLPMS-02@02", equal(ncol(sol), 5L))
     check("BLPMS-02@03", (equal(sol, y) | equal(sol, y[2:1, ])))
+    sol
 }
 
 if ( !any("msbinlp" %in% names(ROI_registered_solvers())) ) {
