@@ -1,5 +1,6 @@
 ## ROI test suite
 
+
 ## Configuration
 suppressPackageStartupMessages( require("ROI") )
 ## solver to check
