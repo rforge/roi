@@ -7,11 +7,17 @@ make_MILP_signatures <- function() {
                         maximum = c(TRUE, FALSE) )
 }
 
-.add_reader <- function(solver) {
+.add_reader_writer <- function(solver) {
     ROI_plugin_register_reader("mps_fixed", solver, make_MILP_signatures(), read_lp_mps_fixed)
     ROI_plugin_register_reader("mps_free", solver, make_MILP_signatures(), read_lp_mps_free)
     ROI_plugin_register_reader("lp_cplex", solver, make_MILP_signatures(), read_lp_cplex_lp)
     ROI_plugin_register_reader("mathprog", solver, make_MILP_signatures(), read_lp_math_prog)
+
+    ROI_plugin_register_writer("mps_fixed", solver, make_MILP_signatures(), write_lp_mps_fixed)
+    ROI_plugin_register_writer("mps_free", solver, make_MILP_signatures(), write_lp_mps_free)
+    ROI_plugin_register_writer("lp_cplex", solver, make_MILP_signatures(), write_lp_cplex_lp)
+    ## If I write out and read in again I get an error.
+    ## ROI_plugin_register_writer("mathprog", solver, make_MILP_signatures(), write_lp_math_prog)
     invisible(NULL)
 }
 
@@ -29,7 +35,7 @@ make_MILP_signatures <- function() {
         .add_status_codes()
         ## Finally, for control argument canonicalization add controls to data base
         .add_controls()
-        .add_reader(solver)
+        .add_reader_writer(solver)
     }
 }
 

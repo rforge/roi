@@ -145,6 +145,40 @@ read_lp_math_prog <- function(file, ...) {
 }
 
 
+write_lp <- function(x, file, type, ...) {
+    var_types <- if ( all(types(x) == "C") ) NULL else types(x)
+    Rglpk_call <- getNamespace("Rglpk")$Rglpk_call
+    out <- Rglpk_call( obj = terms(objective(x))[["L"]], 
+                       mat = constraints(x)$L, 
+                       dir = constraints(x)$dir, 
+                       rhs = constraints(x)$rhs, 
+                       bounds = bounds(x), 
+                       types = var_types, 
+                       max = maximum(x), 
+                       canonicalize_status = logical(1L), 
+                       presolve = logical(1L), time_limit = integer(1L), 
+                       verb = logical(1L), ## default values should be ignored
+                       file = file, file_type = type )
+    invisible( out$status )
+}
+
+
+write_lp_mps_fixed <- function(x, file, ...) {
+    write_lp(x, file, type = 1L, ...)
+}
+
+write_lp_mps_free <- function(x, file, ...) {
+    write_lp(x, file, type = 2L, ...)   
+}
+
+write_lp_cplex_lp <- function(x, file, ...) {
+    write_lp(x, file, type = 3L, ...)
+}
+
+write_lp_math_prog <- function(x, file, ...) {
+    write_lp(x, file, type = 4L, ...)
+}
+
 as.OP.MILP <- function(x){
     p <- OP()
     ## objective
