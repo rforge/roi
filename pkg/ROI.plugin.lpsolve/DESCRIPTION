@@ -6,5 +6,6 @@ Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the 'R' Optimization Infrastructure ('ROI') package
              with the 'lp_solve' solver.
 Imports: stats, methods, utils, ROI (>= 0.2-5), lpSolveAPI (>= 5.5.2.0-1)
+Suggests: slam
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
