@@ -1,5 +1,6 @@
 stopifnot(require(optimx))
 
+
 library(ROI)
 library(ROI.plugin.optimx)
 
