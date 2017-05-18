@@ -1,5 +1,6 @@
 stopifnot(require(alabama))
 
+
 library(ROI)
 library(ROI.plugin.alabama)
 
