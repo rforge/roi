@@ -4,7 +4,7 @@
 make_MIQCP_signatures <- function()
     ROI_plugin_make_signature( objective = c("L", "Q"),
                                 constraints = c("X", "L"),## "Q",
-                                types = c("C", "I", "B"),##, "CI", "CB", "IB", "CIB"),
+                                types = c("C", "I", "B", "CI", "CB", "IB", "CIB"),
                                 bounds = c("X", "V"),
                                 cones = c("X"),
                                 maximum = c(TRUE, FALSE) )
