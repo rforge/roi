@@ -8,6 +8,7 @@ test_solver("ecos")
 test_solver("scs")
 
 test_solver("glpk")
+
 test_solver("quadprog")
 test_solver("ipop")
 test_solver("symphony")

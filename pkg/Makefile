@@ -147,6 +147,20 @@ lpsolve.check: lpsolve.build
 lpsolve.install: lpsolve.build
 	$(RR) CMD INSTALL ROI.plugin.lpsolve*.tar.gz
 
+## miplib
+## ======
+miplib.docs:
+	$(RR) -e "library(roxygen2); roxygenise(package.dir = 'ROI.models.MIPLIB', roclets=c('rd', 'namespace'))"
+
+miplib.build:
+	$(RR) CMD build ROI.plugin.miplib
+
+miplib.check: miplib.build 
+	$(RR) CMD check ROI.plugin.miplib*.tar.gz
+
+miplib.install: miplib.build
+	$(RR) CMD INSTALL ROI.plugin.miplib*.tar.gz
+
 ## mosek
 ## =====
 mosek.build:

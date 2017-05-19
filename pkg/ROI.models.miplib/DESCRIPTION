@@ -1,6 +1,5 @@
 Package: ROI.models.miplib
 Version: 0.0-1
-Date: 2016-12-23
 Title: R Optimization Infrastructure: 'MIPLIB' 2010 Benchmark Instances
 Authors@R: c( person("Florian", "Schwendinger", 
                      role = c("aut", "cre"), 
@@ -16,4 +15,4 @@ Depends:
 Imports: R.utils, Rglpk, ROI (>= 0.2-0)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
