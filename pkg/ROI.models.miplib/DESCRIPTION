@@ -5,11 +5,13 @@ Authors@R: c( person("Florian", "Schwendinger",
                      role = c("aut", "cre"), 
                      email = "FlorianSchwendinger@gmx.at"),
               person("Stefan", "Theussl", role = "aut") )
-Description: This 'R' Optimization Infrastructure ('ROI') models package provides
-    the well-known standard test set used to compare the performance of
-    mixed integer optimizers (see <http://miplib.zib.de/>).
-    The paper by Koch et al. describing the test set can be found
-    at: <http://mpc.zib.de/index.php/MPC/article/viewFile/56/28>.
+Description: The mixed integer programming library 'MIPLIB' (see <http://miplib.zib.de/>) 
+	is commonly used to compare the performance of mixed integer optimization solvers.
+	This package provides functions to access 'MIPLIB' from the 
+	'R' Optimization Infrastructure ('ROI'). More information about 'MIPLIB'
+	can be found in the paper by Koch et al. available at
+	<http://mpc.zib.de/index.php/MPC/article/viewFile/56/28>.
+	The 'README.md' file illustrates how to use this package.
 Depends:
     R (>= 2.10)
 Imports: R.utils, Rglpk, ROI (>= 0.2-0)
