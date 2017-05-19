@@ -26,7 +26,7 @@ as.OP.NULL <- function(x) NULL
 
 download_library <- function(url, path, method=NULL, quiet=TRUE) {
     if ( !quiet )
-        cat("\ndownload MIPLIB\n\n")
+        cat("\n download MIPLIB\n\n")
     if ( is.null(method) ) {
         method <- if ( .Platform[['OS.type']] == "unix" ) "wget" else "internal"
     }
@@ -49,7 +49,7 @@ untar_all <- function(path, quiet=TRUE) {
     fps <- file.path(path, dir(path, pattern=".gz"))
     n <- length(fps)
     if ( !quiet ) {
-        cat("\nunzip MIPLIB\n\n")
+        cat("\n unzip MIPLIB\n\n")
         pb <- txtProgressBar(min = 0, max = n, style=3)
     }
     for (i in seq_len(n)) {
@@ -66,7 +66,7 @@ build_miplib <- function(in_path, out_path, quiet=TRUE) {
     fps <- file.path(in_path, files)
     n <- length(fps)
     if ( !quiet ) {
-        cat("\nconvert mps to ROI:\n\n")
+        cat("\n convert mps to ROI:\n\n")
         pb <- txtProgressBar(min = 0, max = n, style=3)
     }
     for (i in seq_len(n)) {
