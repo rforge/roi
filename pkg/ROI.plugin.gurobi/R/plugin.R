@@ -59,8 +59,13 @@ map_dir <- function(x) {
     x
 }
 
+is.LP <- function(x) {
+    ( ( is.NO_constraint(constraints(x)) | is.L_constraint(constraints(x)) )
+      & inherits( objective(x), "L_objective" ) )
+}
+
 solve_OP <- function(x, control) {
-    if ( is.L_constraint(constraints(x)) & inherits( objective(x), "L_objective" ) )
+    if ( is.LP(x) )
         out <- .solve_LP( x, control )
     else
         out <- .solve_QP( x, control )
@@ -96,7 +101,7 @@ canonicalize_control <- function(x) {
 
     out <- gurobi(model, canonicalize_control(control))
 
-    ROI_plugin_canonicalize_solution( solution = out$x,
+    ROI_plugin_canonicalize_solution(  solution = out$x,
                                        optimum  = out$objval,
                                        status   = gurobi_status_code[[out$status]],
                                        solver   = solver,

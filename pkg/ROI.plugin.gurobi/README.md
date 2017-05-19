@@ -1,0 +1,10 @@
+# Installation
+Before `ROI.plugin.gurobi` can be installed `gurobi` and its corresponding 
+**R** package need to be installed. Both can be obtained from
+[https://www.gurobi.com](https://www.gurobi.com) 
+and more information about the installation can be found in the `Quick Start Guides` at
+[https://www.gurobi.com/documentation](https://www.gurobi.com/documentation).    
+
+
+`ROI.plugin.gurobi` was tested on `Debian GNU/Linux 8 (jessie)` with the
+`gurobi` versions `6.5` and `7`.

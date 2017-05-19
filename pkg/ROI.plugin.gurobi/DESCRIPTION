@@ -1,12 +1,14 @@
 Package: ROI.plugin.gurobi
 Version: 0.2-5
-Date: 2016-11-16
-Title: ROI-Plugin Gurobi
+Title: 'Gurobi' Plugin for the 'R' Optimization Interface
 Authors@R: c( person("Kuo", "Liu", role = "ctb"),
               person("Florian", "Schwendinger", role = c("aut", "cre"), email = "FlorianSchwendinger@gmx.at") )
 Description: Enhances the 'R' 'Optimization' 'Infrastructure' ('ROI') package
-         with the 'Gorubi' mathematical programming solver.
+         with the 'Gurobi' mathematical programming solver.
+         More information about the system requirements and the installation
+         can be found in the 'README.md' file.
 Imports: methods, slam, Matrix, ROI (>= 0.2-5), gurobi (>= 6.5-0)
 License: GPL-3
-URL: http://R-Forge.R-project.org/projects/roi
+URL: https://r-forge.r-project.org/projects/roi
+SystemRequirements: GUROBI (>= 6.5) and GUROBI License
 NeedsCompilation: no
