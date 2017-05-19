@@ -34,7 +34,7 @@ By default the optimization problems are stored in the package folder as
 At `http://miplib.zib.de/` also solutions to the problem instances are 
 provided which can easily be obtained by executing.
 ```r
-miplib_download_metainfo(quiet = FALSE)
+miplib_download_metainfo()
 ```
 
 ## Using `MIPLI 2010`

@@ -34,15 +34,16 @@ download_library <- function(url, path, method=NULL, quiet=TRUE) {
         file.remove(file.path(path, "non_emtpy_folder"))
     }
     destfile <- file.path(path, tail(unlist(strsplit(url, "/", fixed=TRUE), TRUE, FALSE), 1))
-    exdir <- gsub(".tgz", "", destfile)
+    ## exdir <- gsub(".tgz", "", destfile)
     download.file(url, destfile, method=method, quiet=quiet)
     if ( file.exists(destfile) ) {
+        exdir <- head(untar(tarfile = destfile, list = TRUE, exdir=path), 1)
         untar(tarfile = destfile, exdir=path)
         file.remove(destfile)
     } else {
         stop("download error")
     }
-    return( exdir )
+    return( normalizePath(file.path(path, exdir)) )
 }
 
 untar_all <- function(path, quiet=TRUE) {
