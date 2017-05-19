@@ -18,12 +18,12 @@ which contains all benchmark instances.
     
 Download the **benchmark** instances.
 ```r
-miplib_download_benchmark()
+miplib_download_benchmark(quiet = FALSE)
 ```
     
 Download the **all** instances.
 ```r
-miplib_download_all()
+miplib_download_all(quiet = FALSE)
 ```
     
 By default the optimization problems are stored in the package folder as 
@@ -34,7 +34,7 @@ By default the optimization problems are stored in the package folder as
 At `http://miplib.zib.de/` also solutions to the problem instances are 
 provided which can easily be obtained by executing.
 ```r
-miplib_download_metainfo()
+miplib_download_metainfo(quiet = FALSE)
 ```
 
 ## Using `MIPLI 2010`

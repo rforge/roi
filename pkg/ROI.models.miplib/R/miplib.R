@@ -25,6 +25,8 @@ as.OP.MILP <- function(x){
 as.OP.NULL <- function(x) NULL
 
 download_library <- function(url, path, method=NULL, quiet=TRUE) {
+    if ( !quiet )
+        cat("\ndownload MIPLIB\n\n")
     if ( is.null(method) ) {
         method <- if ( .Platform[['OS.type']] == "unix" ) "wget" else "internal"
     }
@@ -43,11 +45,19 @@ download_library <- function(url, path, method=NULL, quiet=TRUE) {
     return( exdir )
 }
 
-untar_all <- function(path) {
+untar_all <- function(path, quiet=TRUE) {
     fps <- file.path(path, dir(path, pattern=".gz"))
-    for (f in fps) {
-        R.utils::gunzip(f)
+    n <- length(fps)
+    if ( !quiet ) {
+        cat("\nunzip MIPLIB\n\n")
+        pb <- txtProgressBar(min = 0, max = n, style=3)
     }
+    for (i in seq_len(n)) {
+        R.utils::gunzip(fps[i])
+        if ( !quiet ) setTxtProgressBar(pb, i)
+    }
+    if ( !quiet ) close(pb)
+    NULL
 }
 
 build_miplib <- function(in_path, out_path, quiet=TRUE) {
@@ -56,7 +66,7 @@ build_miplib <- function(in_path, out_path, quiet=TRUE) {
     fps <- file.path(in_path, files)
     n <- length(fps)
     if ( !quiet ) {
-        cat("convert mps to ROI:\n")
+        cat("\nconvert mps to ROI:\n\n")
         pb <- txtProgressBar(min = 0, max = n, style=3)
     }
     for (i in seq_len(n)) {
@@ -67,16 +77,14 @@ build_miplib <- function(in_path, out_path, quiet=TRUE) {
         if ( !quiet ) setTxtProgressBar(pb, i)
     }
     if ( !quiet ) close(pb)
+    NULL
 }
 
 miplib_download <- function(url, folder, method = NULL, quiet=TRUE) {
     stopifnot( dir.exists(folder) )
     folder <- normalizePath(folder)
-    
-    if ( !quiet )
-        cat("download MIPLIB\n")
     miplib_folder <- download_library(url, folder, method, quiet)
-    untar_all(miplib_folder)
+    untar_all(miplib_folder, quiet = quiet)
     build_miplib(miplib_folder, folder, quiet)
     unlink(miplib_folder, recursive=TRUE)    
 }
