@@ -7,4 +7,12 @@ and more information about the installation can be found in the `Quick Start Gui
 
 
 `ROI.plugin.gurobi` was tested on `Debian GNU/Linux 8 (jessie)` with the
-`gurobi` versions `6.5` and `7`.
+`gurobi` versions `6.5` and `7`.    
+
+
+After `gurobi` and `gurobi` (**R** package) are installed simply use
+```r
+install.packages("ROI.plugin.gurobi", repos="http://R-Forge.R-project.org")
+```
+to install `ROI.plugin.gurobi`.
+
