@@ -8,3 +8,4 @@ Description: Enhances the R Optimization Infrastructure ('ROI') package
 Imports: methods, stats, ROI (>= 0.2-5), alabama (>= 1.0.1)
 License: GPL-3
 URL: https://R-Forge.R-project.org/projects/roi
+
