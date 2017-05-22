@@ -7,4 +7,11 @@ and more information about the installation can be found in the `Rmosek` documen
 
 
 `ROI.plugin.mosek` was tested on `Debian GNU/Linux 8 (jessie)` with the
-`mosek` version `8`.
+`mosek` version `8`.      
+
+
+After `mosek` and `Rmosek` are installed simply use
+```r
+install.packages("ROI.plugin.mosek", repos="http://R-Forge.R-project.org")
+```
+to install `ROI.plugin.mosek`.
