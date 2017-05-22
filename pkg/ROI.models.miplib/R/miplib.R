@@ -54,8 +54,7 @@ untar_all <- function(path, quiet=TRUE) {
         pb <- txtProgressBar(min = 0, max = n, style=3)
     }
     for (i in seq_len(n)) {
-        cat("DEBUG: gunzip", fps[i], "\n")
-        R.utils::gunzip(fps[i])
+        suppressWarnings(R.utils::gunzip(fps[i]))
         if ( !quiet ) setTxtProgressBar(pb, i)
     }
     if ( !quiet ) close(pb)
