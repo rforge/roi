@@ -1,6 +1,6 @@
 PACKAGE=ROI
-R=$(shell which R-devel)
-#R=R
+#R=$(shell which R-devel)
+R=R
 RR=/home/florian/bin/R_dev/bin/R
 
 all: pkg plugins
