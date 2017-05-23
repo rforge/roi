@@ -6,3 +6,6 @@ solver_db_cran:
 solver_db_rforge:
 	$(RR) --vanilla < create_solver_db_rforge.R 
 
+solver_db_github:
+	$(RR) --vanilla < create_solver_db_github.R 
+

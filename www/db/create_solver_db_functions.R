@@ -36,6 +36,20 @@ install_package_rforge <- function(pkg, url, repos, lib.loc, r_version, type = "
     status
 }
 
+
+
+install_package_github <- function(repo, lib.loc, r_version) {
+    ## for now assume that the repo name and the package name are
+    ## the same
+    pkg <- gsub(".*/", "", repo)
+    cmd <- sprintf('%s --slave -e "remotes:::install_github(%s, lib = %s)"', 
+                   r_version, shQuote(repo), shQuote(lib.loc))
+    out <- system(cmd, intern = TRUE, ignore.stderr = TRUE)
+    status_error <- length(grep("error", out, ignore.case = TRUE))
+    status_dir <- !length(dir(lib.loc, pattern = pkg))
+    status_error + status_dir
+}
+
 get_signature_entries <- function() {
     x <- ROI_plugin_make_signature( objective = "L",
                                     constraints = c("X", "L"),
@@ -92,11 +106,6 @@ get_roi_solver_rforge <- function() {
                stringsAsFactors = FALSE)
 }
 
-
-get_roi_solver_github <- function() {
-
-}
-
 create_solver_db_cran <- function(r_version, lib.loc, repos = "https://cran.r-project.org") {
     
     ## .libPaths(c(lib.loc, .libPaths()))  
@@ -149,9 +158,36 @@ create_solver_db_rforge <- function(r_version, lib.loc, repos = "http://R-Forge.
         }
     }
     roi_solver_rforge <- do.call(rbind, roi_solver_rforge)
-
-    ## extract signature
-
-
     roi_solver_rforge
 }
+
+create_solver_db_github <- function(r_version, lib.loc, repos, cran) {
+    
+    install_dependencies()
+    Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+    library(ROI)
+    library(RCurl)
+
+    cnames <- c(colnames(available.packages(repos=cran)), "Signature")
+  
+    ## GITHUB
+    roi_solver_github <- vector("list", length(repos))
+    
+    for (i in seq_along(repos)) {
+        repo <- repos[i]
+        pkg <- gsub(".*/", "", repo)
+        status <- install_package_github(repo, lib.loc, r_version)
+        if (!status) {
+            roi_solver_github[[i]] <- parse_description(pkg, lib.loc, cnames)
+            suppressMessages( do.call(require, list(pkg)) )
+            solver <- gsub("^ROI\\.plugin\\.", "", pkg)
+            roi_solver_github[[i]]$Signature <- list(extract_signature(solver))
+        } else {
+            cat("NOTE: package '", pkg, "' could not be installed from '", repo, "'!\n", sep = "")
+        }
+    }
+    roi_solver_github <- do.call(rbind, roi_solver_github)
+    roi_solver_github$Repository <- "https://github.com"
+    roi_solver_github
+}
+

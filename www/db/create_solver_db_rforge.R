@@ -1,10 +1,9 @@
 
 setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
 
-source("create_solver_db.R")
+source("create_solver_db_functions.R")
 
 R <- "/home/florian/bin/R-devel/bin/R"
-CRAN <- "https://cran.r-project.org/"
 RFORGE <- "https://r-forge.r-project.org"
 
 ## r_version, lib.loc, repos 
@@ -15,7 +14,7 @@ saveRDS(solver_db_rforge, file = "SOLVERS_R-Forge.rds")
 if (FALSE) {
 
     r_version <- R
-    lib.loc <- head(.libPaths())
+    lib.loc <- head(.libPaths(), 1L)
     repos <- "http://R-Forge.R-project.org"
 
     rownames(roi_solver_cran)
