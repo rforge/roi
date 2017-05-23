@@ -516,6 +516,11 @@ cat("## Combine\n", file=file)
 cat("## Combine L_constraints\n", file=file)
 rt( test.combine_L_constraints() )
 
+##
+## deactivate numeric errors since they are tested in 
+## the plugins anyhow. 
+ROI_API_ERRORS <- ROI_TEST_ERRORS
+
 cat("# Optimization Problems\n", file=file)
 cat("## LP\n", file=file)
 rt( test.LP() )
@@ -553,6 +558,6 @@ cat("ROI_registered_solvers:\n", deparse(names(ROI_registered_solvers())), "\n",
 cat("\n\nNumber of Errors:", ROI_TEST_ERRORS, "\n", file = file)
 
 
-if ( ROI_TEST_ERRORS ) {
-    stop(ROI_TEST_ERRORS, " errors occured")
+if ( ROI_API_ERRORS ) {
+    stop(ROI_API_ERRORS, " errors occured")
 }
