@@ -6,7 +6,8 @@ source("create_solver_db_functions.R")
 R <- "/home/florian/bin/R-devel/bin/R"
 
 CRAN <- "https://cran.r-project.org/"
-REPOS <- c("dirkschumacher/ROI.plugin.cbc", "datastorm-open/ROI.plugin.clp")
+REPOS <- c("dirkschumacher/ROI.plugin.cbc", "datastorm-open/ROI.plugin.clp",
+           "Fl0Sch/ROI.plugin.gurobi", "Fl0Sch/ROI.plugin.mosek")
 
 ## r_version, lib.loc, repos 
 solver_db_github <- create_solver_db_github(R, head(.libPaths()), REPOS, CRAN)

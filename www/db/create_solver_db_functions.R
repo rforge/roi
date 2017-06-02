@@ -182,12 +182,13 @@ create_solver_db_github <- function(r_version, lib.loc, repos, cran) {
             suppressMessages( do.call(require, list(pkg)) )
             solver <- gsub("^ROI\\.plugin\\.", "", pkg)
             roi_solver_github[[i]]$Signature <- list(extract_signature(solver))
+            roi_solver_github[[i]]$Repository <- file.path("https://github.com", repo)
         } else {
             cat("NOTE: package '", pkg, "' could not be installed from '", repo, "'!\n", sep = "")
         }
     }
     roi_solver_github <- do.call(rbind, roi_solver_github)
-    roi_solver_github$Repository <- "https://github.com"
+    ##roi_solver_github$Repository <- "https://github.com"
     roi_solver_github
 }
 
