@@ -2,7 +2,7 @@
 #' @importFrom ROI as.OP OP L_objective L_constraint V_bound
 #' @importFrom Rglpk Rglpk_read_file
 #' @importFrom R.utils gunzip
-#' @importFrom utils download.file setTxtProgressBar tail txtProgressBar untar
+#' @importFrom utils download.file setTxtProgressBar tail txtProgressBar untar head
 #
 
 as.OP.MILP <- function(x){

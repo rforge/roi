@@ -150,16 +150,16 @@ lpsolve.install: lpsolve.build
 ## miplib
 ## ======
 miplib.docs:
-	$(RR) -e "library(roxygen2); roxygenise(package.dir = 'ROI.models.MIPLIB', roclets=c('rd', 'namespace'))"
+	$(RR) -e "library(roxygen2); roxygenise(package.dir = 'ROI.models.miplib', roclets=c('rd', 'namespace'))"
 
 miplib.build:
-	$(RR) CMD build ROI.plugin.miplib
+	$(RR) CMD build ROI.models.miplib
 
 miplib.check: miplib.build 
-	$(RR) CMD check ROI.plugin.miplib*.tar.gz
+	$(RR) CMD check ROI.models.miplib*.tar.gz
 
 miplib.install: miplib.build
-	$(RR) CMD INSTALL ROI.plugin.miplib*.tar.gz
+	$(RR) CMD INSTALL ROI.models.miplib*.tar.gz
 
 ## mosek
 ## =====
@@ -241,6 +241,38 @@ symphony.install: symphony.build
 check.plugins: clean.Rchecks ecos.check glpk.check ipop.check nloptr.check quadprog.check scs.check symphony.check
 
 
+## qpoases
+## =======
+qpoases.compile_attributes:
+	$(RR) -e "Rcpp:::compileAttributes('qpoases')"
+
+qpoases.build: qpoases.compile_attributes
+	$(RR) CMD build qpoases
+
+qpoases.check: qpoases.build
+	$(RR) CMD check qpoases*.tar.gz
+
+qpoases.install: qpoases.build
+	$(RR) CMD INSTALL qpoases*.tar.gz
+
+## ROI.plugin.qpoases
+## ==================
+qpoases_roi.compile_attributes:
+	$(RR) -e "Rcpp:::compileAttributes('ROI.plugin.qpoases')"
+
+qpoases_roi.replace_point:
+	$(RR) -e "setwd('ROI.plugin.qpoases/src'); x <- readLines('RcppExports.cpp'); x <- gsub('ROI.plugin.', 'ROI_plugin_', x, fixed = TRUE); writeLines(x, 'RcppExports.cpp')"
+
+qpoases_roi.build: qpoases_roi.compile_attributes qpoases_roi.replace_point
+	$(RR) CMD build ROI.plugin.qpoases
+
+qpoases_roi.check: qpoases_roi.build
+	$(RR) CMD check ROI.plugin.qpoases*.tar.gz
+
+qpoases_roi.install: qpoases_roi.build
+	$(RR) CMD INSTALL ROI.plugin.qpoases*.tar.gz
+
+
 ## Testing
 ## =======
 test.cplex:
@@ -272,4 +304,19 @@ test.symphony: symphony.install
 
 ## not all but all available
 test.all: test.ecos test.glpk test.ipop test.nloptr test.quadprog test.scs test.symphony
+
+
+## push GITHUB
+## ===========
+rsync_github_gurobi:
+	rsync -ruv --delete --exclude='.svn' --exclude=".git" --exclude="devel" /home/florian/work/Optimization/ROI/ROI_R-Forge/pkg/ROI.plugin.gurobi/ /home/florian/work/Optimization/ROI/GITHUB/ROI.plugin.gurobi/
+
+rsync_github_mosek:
+	rsync -ruv --delete --exclude='.svn' --exclude=".git" --exclude="devel" /home/florian/work/Optimization/ROI/ROI_R-Forge/pkg/ROI.plugin.mosek/ /home/florian/work/Optimization/ROI/GITHUB/ROI.plugin.mosek/
+
+git_push_gurobi: rsync_github_gurobi
+	cd /home/florian/work/Optimization/ROI/GITHUB/ROI.plugin.gurobi; git commit -am "R-Forge sync"; git push -u origin master
+
+git_push_mosek: rsync_github_mosek
+	cd /home/florian/work/Optimization/ROI/GITHUB/ROI.plugin.mosek; git commit -am "R-Forge sync"; git push -u origin master
 

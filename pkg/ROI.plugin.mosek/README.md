@@ -13,5 +13,9 @@ and more information about the installation can be found in the `Rmosek` documen
 After `mosek` and `Rmosek` are installed simply use
 ```r
 install.packages("ROI.plugin.mosek", repos="http://R-Forge.R-project.org")
+## or (recommended version)
+remotes:::install_svn("svn://svn.r-forge.r-project.org/svnroot/roi/pkg/ROI.plugin.mosek")
+## or
+remotes:::install_github("fl0sch/ROI.plugin.mosek")
 ```
 to install `ROI.plugin.mosek`.

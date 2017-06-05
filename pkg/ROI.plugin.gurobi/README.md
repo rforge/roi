@@ -13,6 +13,11 @@ and more information about the installation can be found in the `Quick Start Gui
 After `gurobi` and `gurobi` (**R** package) are installed simply use
 ```r
 install.packages("ROI.plugin.gurobi", repos="http://R-Forge.R-project.org")
+## or (recommended version)
+remotes:::install_svn("svn://svn.r-forge.r-project.org/svnroot/roi/pkg/ROI.plugin.gurobi")
+## or
+remotes:::install_github("fl0sch/ROI.plugin.gurobi")
 ```
 to install `ROI.plugin.gurobi`.
+
 

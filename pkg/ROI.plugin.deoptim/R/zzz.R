@@ -21,12 +21,12 @@
 ##' foreachArgs = list()
 
 ROI_make_NLP_FXCV_signatures <- function()
-    ROI_plugin_make_signature( objective = c("L", "Q", "F"),
-                                constraints = c("X"),
-                                types = c("C"),
-                                bounds = c("X", "V"),
-                                cones = c("X"),
-                                maximum = c(TRUE, FALSE) )
+    ROI_plugin_make_signature( objective = c("F"),
+                               constraints = c("X"),
+                               types = c("C"),
+                               bounds = c("X", "V"),
+                               cones = c("X"),
+                               maximum = c(TRUE, FALSE) )
 
 ## SOLVER CONTROLS
 .add_controls <- function(solver) {

@@ -14,7 +14,8 @@
   method = NULL, quiet = TRUE)
 
 
-  miplib_download_benchmark(url = "http://miplib.zib.de/download/miplib2010-benchmark.tgz",
+  miplib_download_benchmark(
+  url = "http://miplib.zib.de/download/miplib2010-benchmark.tgz",
   folder = system.file("roi_op", package = "ROI.models.miplib"),
   method = NULL, quiet = TRUE)
 
@@ -43,7 +44,7 @@ The \code{MIPLIB 2010} test problem set is downloaded and
 \itemize{
         \item{\code{miplib_download_all} download all MIPLIB-2010 instances (arround 1.3 GB).}
 
-        \item{\code{miplib_download_benchmark} download MIPLIB-2010 benchmark instances (arround 94 MB).}
+        \item{\code{miplib_download_benchmark} download the MIPLIB-2010 benchmark instances (arround 94 MB).}
 
         \item{\code{miplib_download_metinfo} download the available meta information.}
      }
@@ -63,6 +64,5 @@ miplib_download_benchmark(folder = "data/miplib")
 
 ## download meta information
 miplib_download_metinfo()
-
 }
 }
