@@ -20,4 +20,8 @@ if (FALSE) {
     cran <- CRAN
     repos <- REPOS
 
+
+    as <- ROI:::ROI_available_solvers(milp)[, c("Package", "Repository")]
+    sub("/ROI.plugin.*", "", as$Repository)
+
 }
