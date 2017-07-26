@@ -290,6 +290,7 @@ solve_OP <- function(x, control=list()) {
 
     if ( nrow(constr) > 0 ) {
         i <- with(cones, order(cone, id))
+        ordered_cones <- list(cone = cones$cone[i], id = cones$id[i])
         A <- A[i,]
         A.rhs <- A.rhs[i]
         dims <- calc_dims(cones)
@@ -300,8 +301,8 @@ solve_OP <- function(x, control=list()) {
     ## The NO_PSD_SCALING mode is only for testing purposes
     if ( !is.null(dims$s) & is.null(control$NO_PSD_SCALING) ) {
         psd_j <- list()
-        b <- cones$cone[i] == scs_cones["psd"]
-        roi_cones <- split(seq_along(cones$cone)[b], cones$id[b])         
+        b <- ordered_cones$cone == scs_cones["psd"]
+        roi_cones <- split(seq_along(ordered_cones$cone)[b], ordered_cones$id[b])
         for ( i in seq_along(roi_cones) ) {
             psd_dim <- dims$s[i]
             psd_j[[i]] <- roi_cones[[i]][scale_which( psd_dim )]
