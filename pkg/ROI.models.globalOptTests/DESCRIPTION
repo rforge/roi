@@ -1,0 +1,16 @@
+Package: ROI.models.globalOptTests
+Type: Package
+Title: 'ROI' Optimization Problems based on 'globalOptTests'
+Version: 1.0
+Date: 2017-07-26
+Author: Florian Schwendinger [aut, cre]
+Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
+Description: A collection of non-linear optimization problems with box bounds
+             transformed into 'ROI' optimization problems.
+             This package provides a wrapper around the 'globalOptTests'
+             which provides a collection of global optimization problems.
+             More information can be found in the 'README' file.
+Imports: ROI (>= 0.2-1), globalOptTests
+Suggests: Rglpk (>= 0.6-2)
+License: GPL-3
+RoxygenNote: 6.0.1

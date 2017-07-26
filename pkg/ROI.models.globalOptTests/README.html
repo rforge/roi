@@ -1,0 +1,20 @@
+<h1 id="roi.models.globalopttests">ROI.models.globalOptTests</h1>
+<h2 id="globalopttests"><code>globalOptTests</code></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ROI)
+<span class="kw">library</span>(ROI.models.globalOptTests)</code></pre></div>
+<p><code>globalOptTests</code> is a <code>R</code> package which contains several non-linear programming problems with box constraints. More information about <code>globalOptTests</code> can be found in <a href="http://dx.doi.org/10.18637/jss.v060.i06">Mullen (2014)</a>.</p>
+<h2 id="using-roi.models.globalopttests">Using <code>ROI.models.globalOptTests</code></h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">globopt</span>()</code></pre></div>
+<p>lists all the names of the <code>globalOptTests</code> instances.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">globopt</span>(<span class="dt">x =</span> <span class="st">&quot;all&quot;</span>)</code></pre></div>
+<p>gives all the <code>globalOptTests</code> instances converted into a <strong>ROI</strong> optimization problem.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">globopt</span>(<span class="dt">x =</span> <span class="st">&quot;metainfo&quot;</span>)</code></pre></div>
+<p>gives the available meta information.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">globopt</span>(<span class="dt">x =</span> <span class="st">&quot;Rastrigin&quot;</span>)</code></pre></div>
+<p>returns the <code>Rastrigin</code> optimization problem as an ROI optimization problem.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">z &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>( <span class="kw">globopt</span>(<span class="dt">x =</span> <span class="st">&quot;Rastrigin&quot;</span>), <span class="dt">start =</span>  <span class="kw">double</span>(<span class="dv">10</span>))
+<span class="kw">abs</span>(<span class="kw">solution</span>(z, <span class="st">&quot;objval&quot;</span>) -<span class="st"> </span><span class="kw">globopt</span>(<span class="st">&quot;metainfo&quot;</span>)[<span class="st">&quot;Rastrigin&quot;</span>, <span class="st">&quot;optimum&quot;</span>])</code></pre></div>
+<h2 id="references">References</h2>
+<ul>
+<li>Mullen, K. (2014). Continuous Global Optimization in R. Journal of Statistical Software, 60(6), 1 - 45. doi:<a href="http://dx.doi.org/10.18637/jss.v060.i06"><code>http://dx.doi.org/10.18637/jss.v060.i06</code></a></li>
+</ul>
