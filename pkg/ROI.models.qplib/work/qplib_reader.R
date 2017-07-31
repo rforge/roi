@@ -67,8 +67,39 @@ qplib_reader <- function(file) {
     infty <- as.double(strip(x[(iter <- iter + 1L)]))
     ## default value for entries in cl
     default_cl <- as.double(strip(x[(iter <- iter + 1L)]))
+    ncl <- as.integer(strip(x[(iter <- iter + 1L)]))
+    lhs <- rep.int(default_cl, op_ncol)
+    if ( ncl > 0 ) {
+        tmp <- strsplit(x[iter + seq_len(ncl)], "\\s+")
+        iter <- iter + ncl
+        j <- as.integer(lapply(tmp, "[[", 1))
+        v <- as.double(lapply(tmp, "[[", 2))
+        lhs[j] <- v
+    }
+    ## default value for entries in cu
+    default_cu <- as.double(strip(x[(iter <- iter + 1L)]))
+    ncu <- as.integer(strip(x[(iter <- iter + 1L)]))
+    rhs <- rep.int(default_cu, op_ncol)
+    if ( ncu > 0 ) {
+        tmp <- strsplit(x[iter + seq_len(ncu)], "\\s+")
+        iter <- iter + ncu
+        j <- as.integer(lapply(tmp, "[[", 1))
+        v <- as.double(lapply(tmp, "[[", 2))
+        rhs[j] <- v
+    }
+    ## ld
 
-    ## 
+    ## ud
+
+    ## xd
+
+    ## yd
+
+    ## zd
+
+    ## nxd
+
+    ## ncd
 
     x[iter + 1L]
     x[iter + 2L]
