@@ -82,7 +82,7 @@ ROI_solve <- function( x, solver, control = list(), ... ){
     control[names(dots)] <- dots
 
     x <- as.OP( x )
-    
+
     methods <- get_solver_methods( OP_signature(x) )
     sig <- OP_signature( x )
     if ( !length(methods) ) {
@@ -102,18 +102,18 @@ ROI_solve <- function( x, solver, control = list(), ... ){
         }
     } else {
         ## select the solver given on an ordering in ROI_options
-        SOLVE <- select_solver(x, sig, methods) 
+        SOLVE <- select_solver(x, sig, methods)
         solver <- names( SOLVE )[1]
         SOLVE <- SOLVE[[1]]
     }
 
     cntrl <- ROI_translate(control, solver)
     if( length(control) ) {
-        solver_control_names <- get_solver_controls_from_db(solver)    
+        solver_control_names <- get_solver_controls_from_db(solver)
         if( !all(names(cntrl) %in% solver_control_names) ) {
             missing_control_args <- names(cntrl)[which(!names(cntrl) %in% solver_control_names)]
             k <- min(length(missing_control_args), 2L)
-            warning("the control argument", c(" ", "s ")[k], 
+            warning("the control argument", c(" ", "s ")[k],
                     deparse(missing_control_args), c(" is ", " are ")[k],
                     "not available in solver '", solver, "'")
         }
@@ -217,7 +217,7 @@ ROI_installed_solvers <- function( ... ) {
     dots <- list(...)
     if ( "lib.loc" %in% names(dots) ) lib.loc <- dots$lib.loc
     else lib.loc <- .libPaths()
-    pkgs <- grep( .plugin_prefix(), unlist(lapply(lib.loc, dir)), value = TRUE )
+    pkgs <- c(ROI_get_included_plugins(), grep(.plugin_prefix(), unlist(lapply(lib.loc, dir)), value = TRUE) )
     structure( pkgs, names = ROI_plugin_get_solver_name(pkgs) )
 }
 
@@ -228,18 +228,18 @@ signature_in_df <- function(x, signature) {
 }
 
 ##' @title Available Solvers
-##' @description ROI_available_solvers returns a data.frame of details corresponding to 
-##'   solvers currently available at one or more repositories. 
+##' @description ROI_available_solvers returns a data.frame of details corresponding to
+##'   solvers currently available at one or more repositories.
 ##'   The current list of packages is downloaded over the Internet.
 ##' @details
-##'   To get an overview about the available solvers 
+##'   To get an overview about the available solvers
 ##'   \code{ROI_available_solvers()} can be used.
 ##'   If a signature or an object of class \code{"OP"}
 ##'   is provided \pkg{ROI} will only return the solvers
 ##'   applicable the optimization problem. Note since NLP solver
 ##'   are also applicable for LP and QP they will also be listed.
 ##'
-##' @param x an object used to select a method. It can be either 
+##' @param x an object used to select a method. It can be either
 ##'          an object of class \code{"OP"} or an object of class \code{"ROI_signature"}
 ##'          or \code{NULL}.
 ##' @param method a character string giving the method to be used for downloading files.
@@ -268,7 +268,7 @@ ROI_available_solvers <- function( x = NULL, method = getOption("download.file.m
 
     if ( inherits(z, "error") )
         stop("The requested URL 'http://roi.r-forge.r-project.org' was not found.")
-    
+
     readRDS(dest)
 }
 

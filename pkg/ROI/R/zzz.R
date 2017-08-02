@@ -19,6 +19,10 @@ local({
     }
 })
 
+## Plugins directly distributed with ROI
+ROI_get_included_plugins <- function()
+    sprintf( "%s.%s", .plugin_prefix(), c("nlminb") )
+
 ##' @noRd
 ##' @import registry methods
 NULL
@@ -79,7 +83,7 @@ solver_signature_db <- SolverDatabase()
 reformulation_db <- ReformulationDatabase()
 
 ## Input / Output Tools
-## 
+##
 io_db <- InputOutputDataBase()
 
 ##
@@ -125,9 +129,9 @@ id_generator <- IdGenerator()
 
     lbqp.cite <- paste("Boros, Endre, and Peter L. Hammer.",
                        '"Pseudo-boolean optimization."',
-                       "Discrete applied mathematics 123.1 (2002): 155-225.", 
+                       "Discrete applied mathematics 123.1 (2002): 155-225.",
                        collapse = " ")
-    lbqp.descr <- paste("Reformulate a binary optimization problem with", 
+    lbqp.descr <- paste("Reformulate a binary optimization problem with",
                         "quadratic objective and linear constraints",
                         "to a mixed integer problem with linear objective and",
                         "linear constraints.", collapse = " ")
@@ -147,7 +151,7 @@ id_generator <- IdGenerator()
     try(ROI_options("gradient", numDeriv::grad), silent=TRUE)
     try(ROI_options("jacobian", numDeriv::jacobian), silent=TRUE)
 
-    ROI_options("solver_selection_table", 
+    ROI_options("solver_selection_table",
         list(default = c("glpk", "ecos", "cplex", "quadprog", "nlminb"),
              LP   = c("glpk", "ecos", "cplex"),
              QP   = c("quadprog", "cplex", "ipop"),
@@ -175,7 +179,7 @@ id_generator <- IdGenerator()
         solvers <- NULL
     }
 
-    for ( pkgname in solvers ) { 
+    for ( pkgname in solvers ) {
         nmspc <- tryCatch(getNamespace(pkgname), error = identity)
         if( !inherits(nmspc, "error") ) {
             tryCatch({
