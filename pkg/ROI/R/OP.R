@@ -243,7 +243,7 @@ get_bound_type <- function(x) {
 ##'         the optimization problem.
 ##' @export
 OP_signature <- function( x ) {
-    x <- as.OP( x )
+    stopifnot(inherits(x, "OP"))
     ROI_plugin_make_signature( objective = get_objective_class(x),
                                constraints = get_constraint_class(x),
                                types = get_varibale_types(x),

@@ -342,18 +342,11 @@ qp_to_socp <- function(x) {
     L1 <- as.matrix(cbind(rbind(0, -F), c(-1, rep.int(0, nrow(F)))))
     rhs <- c(0, as.vector(t(Finv) %*% as.vector(L)))
 
-    ## lc <- L_constraint(L = L1, dir = eq(nrow(L1)), rhs = rhs)
-    ## x$constraints$L <- cbind(x$constraints$L, numeric(x$constraints$L$nrow))
-    ## lc <- rbind(lc, constraints(x))
-    ## n1 <- nrow(constraints(x))
-    ## bo <- c(C_bound(seq_len(nrow(L1)), type = "soc"),
-    ##         C_bound(nrow(L1) + seq_len(n1), type = "zero"),
-    ##         bounds(x), V_bound(li=length(a), lb=-Inf))
     c.L <- constraints(x)$L
     con <- C_constraint(L = rbind(L1, cbind(c.L, numeric(NROW(c.L)))),
                         cones = c(K_soc(NROW(L1)), K_zero(nrow(c.L))),
                         rhs = c(rhs, constraints(x)$rhs))
-    bo <- c(bounds(x), V_bound(li=length(a), lb=-Inf))
+    bo <- c(bounds(x), V_bound(li=1L, lb=-Inf))
 
     if ( is.null(x$types) ) {
         ty <- NULL

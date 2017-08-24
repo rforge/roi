@@ -314,6 +314,12 @@ equal.Q_constraint <- function(x, y, ...) {
     return(TRUE)
 }
 
+##' @rdname equal
+##' @export
+equal.V_bound <- function(x, y, ...) {
+    equal(unclass(x), unclass(y))
+}
+
 is_zero_matrix <- function(x) {
     if ( is.simple_triplet_matrix(x) ) {
         if ( isTRUE(length(x$v) > 0L) )

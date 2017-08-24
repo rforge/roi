@@ -323,7 +323,8 @@ ROI_applicable_solvers <- function( op ){
 get_solver_methods <- function( signatures ) {
     if ( nrow(signatures) == 1 ) return( get_solver_methods_from_signature(signatures) )
     solvers <- unlist(apply(signatures, 1, get_solver_methods_from_signature))
-    solver_names <- unique(names(solvers)[table(names(solvers)) == nrow(signatures)])
+    solver_tab <- table(names(solvers))
+    solver_names <- names(solver_tab[solver_tab == nrow(signatures)])
     solvers[solver_names]
 }
 

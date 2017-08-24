@@ -34,6 +34,26 @@ ROI_plugin_register_solver_control <- function( solver, args, roi_control = "X" 
     invisible( TRUE )
 }
 
+##  -----------------------------------------------------------
+##  ROI_registered_solver_control
+##  =============================
+##' @title Registered Solver Controls
+##'
+##' @description Retrieve the registered solver control arguments.
+##' @param solver a character string giving the solver name.
+##' @return a \code{data.frame} giving the control arguments.
+##' @family plugin functions
+##' @export
+ROI_registered_solver_control <- function(solver) {
+    x <- getNamespace("ROI")$control_db$get_entries(solver)
+    if ( is.null(x) ) {
+        stop("couldn't find solver '", solver, "'")
+    }
+    control <- as.character(lapply(x, "[[", "control"))
+    roi_control <- as.character(lapply(x, "[[", "roi_control"))
+    data.frame(control = control, roi_control = roi_control, stringsAsFactors = FALSE)
+}
+
 ROI_available_solver_controls <- function(){
     c( "X",                ## no corresponding ROI control
        "verbose",          ## LOGICAL: turn on/off solver output on terminal

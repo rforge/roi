@@ -50,7 +50,7 @@ c_2_bounds <- function(x, y) {
 
 ##' @rdname ROI_bound
 ##' @export
-c.bound <- function(...)  structure(Reduce(c_2_bounds, list(...)), class="bound")
+c.bound <- function(...)  structure(Reduce(c_2_bounds, list(...)), class=c("V_bound", "bound"))
 
 ##' @rdname ROI_bound
 ##' @export
@@ -83,6 +83,9 @@ print.bound <- function(x, ...) {
 ##' @param lb a numeric vector with lower bounds.
 ##' @param ub a numeric vector with upper bounds.
 ##' @param nobj an integer representing the number of objective variables
+##' @param ld a numeric giving lower default bound.
+##' @param ud a numeric giving upper default bound.
+##' @param names a character vector giving the names of the bounds.
 ##' @param x object to be coerced or tested.
 ##' @param \ldots objects to be combined.
 ##' @return An S3 object of class \code{"V_bound"} containing lower and
@@ -90,15 +93,41 @@ print.bound <- function(x, ...) {
 ##' @examples
 #' V_bound(li=1:3, lb=rep.int(-Inf, 3))
 #' V_bound(li=c(1, 5, 10), ui=13, lb=rep.int(-Inf, 3), ub=100, nobj=20)
-##' @author Stefan Theussl
 ##' @export
-V_bound <- function( li, ui, lb, ub, nobj) {
-    if ( missing(li) ) li <- integer()
-    if ( missing(ui) ) ui <- integer()
+V_bound <- function( li, ui, lb, ub, nobj, ld = 0, ud = Inf, names = NULL) {
+    stopifnot(is.numeric(ld), length(ld) == 1L, is.numeric(ud), length(ud) == 1L)
+    if ( missing(li) ) li <- NULL
+    if ( missing(ui) ) ui <- NULL
     if ( missing(lb) ) lb <- double()
     if ( missing(ub) ) ub <- double()
-    if ( missing(nobj) ) 
-        nobj <- max(li, ui)
+    if ( is.null(lb) ) lb <- double()
+    if ( is.null(ub) ) ub <- double()
+    if ( missing(nobj) ) nobj <- max(li, ui, length(lb), length(ub))
+
+    if ( is.null(li) ) {
+        if ( !length(lb) ) {
+            li <- integer()
+        } else {
+            if ( length(lb) == nobj ) {
+                li <- seq_len(nobj)
+            } else {
+                stop("length mismatch - length of 'lb' must be equal to ",
+                     "'nobj' if no index 'li' is provided.")
+            }
+        }
+    }
+    if ( is.null(ui) ) {
+        if ( !length(ub) ) {
+            ui <- integer()    
+        } else {
+            if ( length(ub) == nobj ) {
+                ui <- seq_len(nobj)
+            } else {
+                stop("length mismatch - length of 'ub' must be equal to ",
+                     "'nobj' if no index 'ui' is provided.")
+            }
+        }
+    }
     li <- as.integer(li)
     ui <- as.integer(ui)
     lb <- as.double(lb)
@@ -112,6 +141,20 @@ V_bound <- function( li, ui, lb, ub, nobj) {
         inf <- ub == Inf
         ub <- ub[!inf]
         ui <- ui[!inf]
+    }
+    if ( ld != 0 ) {
+        i <- li
+        tmp <- lb
+        li <- seq_len(nobj)
+        lb <- rep.int(ld, nobj)
+        lb[i] <- tmp
+    }
+    if ( ud != Inf ) {
+        i <- ui
+        tmp <- ub
+        ui <- seq_len(nobj)
+        ub <- rep.int(ud, nobj)
+        ub[i] <- tmp
     }
 
     ## Sanity checking
@@ -131,9 +174,11 @@ V_bound <- function( li, ui, lb, ub, nobj) {
         stop("upper bounds cannot be '-Inf'.")
     structure( list(lower = list(ind = li, val = lb),
                     upper = list(ind = ui, val = ub),
-                    nobj = as.integer(nobj)),
+                    nobj = as.integer(nobj),
+                    names = names),
               class = c("V_bound", "bound") )
 }
+
 
 ##  V_bound
 ##
@@ -153,6 +198,40 @@ as.V_bound.V_bound <- identity
 ##' @export
 as.V_bound.NULL <- function( x )
     .make_standard_bounds()
+
+##' @noRd
+##' @export
+as.V_bound.list <- function(x) {
+    stopifnot(any(c("lower", "upper", "nobj") %in% names(x)), 
+              all(names(x) %in% c("lower", "upper", "nobj")))
+
+    vb <- V_bound(nobj = max(0, x$nobj, len_vb(x$lower), len_vb(x$upper)))
+    vb[["lower"]] <- as.variable_bound(x$lower)
+    vb[["upper"]] <- as.variable_bound(x$upper)
+    vb
+}
+
+
+len_vb <- function(x) UseMethod("len_vb")
+len_vb.NULL <- function(x) 0L
+len_vb.numeric <- function(x) length(x)
+len_vb.list <- function(x) max(c(0L, x$ind))
+
+
+as.variable_bound <- function(x) UseMethod("as.variable_bound")
+
+as.variable_bound.NULL <- function(x) list(ind = integer(), val = double())
+
+as.variable_bound.numeric <- function(x) {
+    ind <- which(x != 0)
+    list(ind = ind, val = x[ind])
+}
+
+as.variable_bound.list <- function(x) {
+    stopifnot(all(sort(names(x)) == c("ind", "val")))
+    x
+}
+
 
 ##' @rdname V_bound
 ##' @export
@@ -250,7 +329,11 @@ bounds.OP <- function( x ) x$bounds
 ##' @export
 'bounds<-.OP' <- function( x, value ) {
     if ( is.null(value) ) {
-        x["bounds"] <- list(NULL)
+        if ( is.null(x$objective) ) {
+            x["bounds"] <- list(NULL)
+        } else {
+            x$bounds <- V_bound(nobj = length(x$objective))
+        }
     } else {
         x$bounds <- as.V_bound(value)
     }

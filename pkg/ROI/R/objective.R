@@ -68,6 +68,8 @@ objective.default <- function( x )
 ##' @export
 'objective<-.OP' <- function( x, value ) {
     x$objective <- as.objective(value)
+    if ( is.null(x$bounds) ) ## so we ensure that the bounds are always set
+        x$bounds <- V_bound(nobj = length(x$objective))
     x
 }
 
