@@ -322,6 +322,10 @@ ROI_applicable_solvers <- function( op ){
 ## returns solver method from signatures
 get_solver_methods <- function( signatures ) {
     if ( nrow(signatures) == 1 ) return( get_solver_methods_from_signature(signatures) )
+    ## NOTE (FS): Currently get_solver_methods is only used in combination 
+    ##            with OP_signature therefore I am quite sure that 
+    ##            nrow(signatures) == 1 will always be true! But I have to double
+    ##            check before altering the code.
     solvers <- unlist(apply(signatures, 1, get_solver_methods_from_signature))
     solver_tab <- table(names(solvers))
     solver_names <- names(solver_tab[solver_tab == nrow(signatures)])
