@@ -11,6 +11,7 @@
 \alias{equal.simple_triplet_matrix}
 \alias{equal.L_constraint}
 \alias{equal.Q_constraint}
+\alias{equal.V_bound}
 \title{Compare two Objects}
 \usage{
 equal(x, y, ...)
@@ -32,6 +33,8 @@ equal(x, y, ...)
 \method{equal}{L_constraint}(x, y, ...)
 
 \method{equal}{Q_constraint}(x, y, ...)
+
+\method{equal}{V_bound}(x, y, ...)
 }
 \arguments{
 \item{x}{an \R object to be compared with object y.}

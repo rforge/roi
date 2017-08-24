@@ -27,5 +27,6 @@ Other plugin functions: \code{\link{ROI_plugin_add_status_code_to_db}},
   \code{\link{ROI_plugin_get_solver_name}},
   \code{\link{ROI_plugin_make_signature}},
   \code{\link{ROI_plugin_register_solver_control}},
-  \code{\link{ROI_plugin_solution_prim}}
+  \code{\link{ROI_plugin_solution_prim}},
+  \code{\link{ROI_registered_solver_control}}
 }

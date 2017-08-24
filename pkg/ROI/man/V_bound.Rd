@@ -6,7 +6,7 @@
 \alias{is.V_bound}
 \title{Objective Variable Bounds}
 \usage{
-V_bound(li, ui, lb, ub, nobj)
+V_bound(li, ui, lb, ub, nobj, ld = 0, ud = Inf, names = NULL)
 
 as.V_bound(x)
 
@@ -24,6 +24,12 @@ is.V_bound(x)
 \item{ub}{a numeric vector with upper bounds.}
 
 \item{nobj}{an integer representing the number of objective variables}
+
+\item{ld}{a numeric giving lower default bound.}
+
+\item{ud}{a numeric giving upper default bound.}
+
+\item{names}{a character vector giving the names of the bounds.}
 
 \item{x}{object to be coerced or tested.}
 
@@ -43,7 +49,4 @@ This function returns a sparse representation of objective
 \examples{
 V_bound(li=1:3, lb=rep.int(-Inf, 3))
 V_bound(li=c(1, 5, 10), ui=13, lb=rep.int(-Inf, 3), ub=100, nobj=20)
-}
-\author{
-Stefan Theussl
 }
