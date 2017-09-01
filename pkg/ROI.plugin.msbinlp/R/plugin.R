@@ -315,20 +315,20 @@ solve_OP <- function(x, control=list()) {
     if ( is.null(control$nsol_max) ) {
         nos <- 1L    
     } else {
-        if ( is.numeric(control$nsol_max) ) {
+        if ( is.numeric(control$nsol_max) & isTRUE(control$nsol_max != Inf) ) {
             nos <- as.integer(control$nsol_max)
         } else {
             nos <- NA
         }
     }
 
+    method <- choose_method( control$method )
     control[['method']] <- NULL
     control[['nsol_max']] <- NULL
-    control[['dry_run']] <- NULL
 
     out <- .find_up_to_n_binary_MILP_solutions(x, nos = nos,
                                                   add = TRUE, 
-                                                  solver = choose_method( control$method ),
+                                                  solver = method,
                                                   control = control )
     class(out) <- c("msbinlp_solution_set", "OP_solution_set")
     return(out)

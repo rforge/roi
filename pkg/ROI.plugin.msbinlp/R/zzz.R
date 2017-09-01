@@ -9,7 +9,6 @@ make_BILP_signatures <- function()
 ## SOLVER CONTROLS
 .add_controls <- function(solver) {
     ## lp_solve
-    ROI_plugin_register_solver_control( solver, "dry_run", "dry_run" )
     ROI_plugin_register_solver_control( solver, "nsol_max", "nsol_max" )
     ROI_plugin_register_solver_control( solver, "verbose", "verbose" )
 
