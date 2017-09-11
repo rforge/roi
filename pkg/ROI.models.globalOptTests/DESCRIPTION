@@ -2,7 +2,6 @@ Package: ROI.models.globalOptTests
 Type: Package
 Title: 'ROI' Optimization Problems based on 'globalOptTests'
 Version: 1.0
-Date: 2017-07-26
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: A collection of non-linear optimization problems with box bounds
