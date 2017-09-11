@@ -1,5 +1,5 @@
 Package: ROI.plugin.mosek
-Version: 0.2-5
+Version: 0.2-6
 Title: 'Mosek' Plugin for the 'R' Optimization Interface
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>

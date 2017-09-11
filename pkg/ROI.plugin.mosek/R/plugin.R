@@ -117,7 +117,7 @@ solve_OP <- function(x, control=list()) {
     } 
 
     ## control
-    control$verbose <- as.integer(control$verbose)
+    control$verbose <- if (length(control$verbose)) control$verbose else 0L
 
     ## tmp <- Rmosek:::mosek(problem=m, 
     ##                       opts=control[intersect(names(control), .control_args)])
