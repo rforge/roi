@@ -54,3 +54,40 @@ solve_deoptim <- function( x, control ) {
                                         message   = out)
 }
 
+.deoptimr_control_names <- c("eps", "NP", "Fl", "Fu", "tau_F", "tau_CR", 
+                             "tau_pF", "jitter_factor", "tol", "maxiter",
+                             "fnscale", "compare_to", "add_to_init_pop", 
+                             "trace", "triter", "details")
+
+##
+## h_i(x) == 0   i = 1, ..., meq
+## g_i(x) <= 0
+solver_deoptimr <- function(x, control) {
+    solver <- "deoptimr"
+    
+    m <- list(DEoptimR::JDEoptim)
+
+    m$lower <- get_lb(x)
+    m$upper <- get_ub(x)
+
+    if ( isTRUE(x$maximum) ) {
+        objective_function <- terms(objective(x))$F
+        m$fn <- function(x) -objective_function(x)
+    } else {
+        m$fn <- terms(objective(x))$F
+    }
+
+    b <- constraints(x)$dir == "=="
+    args(JDEoptim)
+
+    m$meq <- sum(bg_constraint)
+    
+    m$fnMap <- control$fnMap
+    m$control <- control[intersect(names(control), .deoptimr_control_names)]
+
+}
+
+
+
+
+
