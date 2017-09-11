@@ -7,7 +7,7 @@
 ROI_available_solvers(x = NULL, method = getOption("download.file.method"))
 }
 \arguments{
-\item{x}{an object used to select a method. It can be either 
+\item{x}{an object used to select a method. It can be either
 an object of class \code{"OP"} or an object of class \code{"ROI_signature"}
 or \code{NULL}.}
 
@@ -18,12 +18,12 @@ For more information see \code{\link[utils]{download.file}}.}
 a data.frame with one row per package and repository.
 }
 \description{
-ROI_available_solvers returns a data.frame of details corresponding to 
-  solvers currently available at one or more repositories. 
+ROI_available_solvers returns a data.frame of details corresponding to
+  solvers currently available at one or more repositories.
   The current list of packages is downloaded over the Internet.
 }
 \details{
-To get an overview about the available solvers 
+To get an overview about the available solvers
   \code{ROI_available_solvers()} can be used.
   If a signature or an object of class \code{"OP"}
   is provided \pkg{ROI} will only return the solvers

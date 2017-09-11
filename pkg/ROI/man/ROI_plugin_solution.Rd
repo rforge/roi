@@ -13,11 +13,11 @@
 \alias{ROI_plugin_solution_objval}
 \title{Extract solution from the solver.}
 \usage{
-ROI_plugin_solution_prim(x)
+ROI_plugin_solution_prim(x, force = FALSE)
 
-\method{ROI_plugin_solution_prim}{OP_solution}(x)
+\method{ROI_plugin_solution_prim}{OP_solution}(x, force = FALSE)
 
-\method{ROI_plugin_solution_prim}{OP_solution_set}(x)
+\method{ROI_plugin_solution_prim}{OP_solution_set}(x, force = FALSE)
 
 ROI_plugin_solution_dual(x)
 
@@ -31,10 +31,17 @@ ROI_plugin_solution_status_code(x)
 
 ROI_plugin_solution_status(x)
 
-ROI_plugin_solution_objval(x)
+ROI_plugin_solution_objval(x, force = FALSE)
 }
 \arguments{
 \item{x}{an \code{R} object inheriting from \code{solution} or \code{solutions}.}
+
+\item{force}{a logical to control the return value in the case that the 
+status code is equal to 1 (i.e. something went wrong).
+By default force is \code{FALSE} and a solution is only provided
+if the status code is equal to 0 (i.e. success). If force is \code{TRUE}
+\pkg{ROI} ignores the status code and also returns solutions
+where the solver signaled an issue.}
 }
 \value{
 the corresponding solution/s.

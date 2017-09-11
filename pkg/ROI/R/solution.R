@@ -18,24 +18,32 @@
 ##' @description The solution can be accessed via the method \code{'solution'}.
 ##' @param x an object of type \code{'OP_solution'} or \code{'OP_solution_set'}.
 ##' @param type a character giving the name of the solution to be extracted.
+##' @param force a logical to control the return value in the case that the 
+##'        status code is equal to 1 (i.e. something went wrong).
+##'        By default force is \code{FALSE} and a solution is only provided
+##'        if the status code is equal to 0 (i.e. success). If force is \code{TRUE}
+##'        \pkg{ROI} ignores the status code and also returns solutions
+##'        where the solver signaled an issue.
 ##' @param ... further arguments passed to or from other methods.
 ##' @return the extracted solution.
 ##' @export
-solution <- function(x, type=c("primal", "dual", "aux", "psd", "msg", "objval", "status", "status_code"), ...) {
+solution <- function(x, type = c("primal", "dual", "aux", "psd", "msg", "objval", 
+                                 "status", "status_code"), force = FALSE, ...) {
     UseMethod("solution")
 }
 
 ##' @noRd
 ##' @export
-solution.default <- function(x, type=c("primal", "dual", "aux", "psd", "msg", "objval", "status", "status_code"), ...) {
+solution.default <- function(x, type = c("primal", "dual", "aux", "psd", "msg", 
+                                         "objval", "status", "status_code"), force = FALSE, ...) {
     type <- match.arg(type)
     switch(type,
-           primal = ROI_plugin_solution_prim(x),
+           primal = ROI_plugin_solution_prim(x, force = force),
            dual   = ROI_plugin_solution_dual(x),
            aux    = ROI_plugin_solution_aux(x),
            psd    = ROI_plugin_solution_psd(x),
            msg    = ROI_plugin_solution_msg(x),
-           objval = ROI_plugin_solution_objval(x),
+           objval = ROI_plugin_solution_objval(x, force = force),
            status = ROI_plugin_solution_status(x),
            status_code = ROI_plugin_solution_status_code(x) )
 }
@@ -46,25 +54,31 @@ solution.default <- function(x, type=c("primal", "dual", "aux", "psd", "msg", "o
 ##'     a solver specific getter function.
 ##' 
 ##' @param x an \code{R} object inheriting from \code{solution} or \code{solutions}.
+##' @param force a logical to control the return value in the case that the 
+##'        status code is equal to 1 (i.e. something went wrong).
+##'        By default force is \code{FALSE} and a solution is only provided
+##'        if the status code is equal to 0 (i.e. success). If force is \code{TRUE}
+##'        \pkg{ROI} ignores the status code and also returns solutions
+##'        where the solver signaled an issue.
 ##' @return the corresponding solution/s.
 ##' @family plugin functions
 ##' @rdname ROI_plugin_solution
 ##' @export
-ROI_plugin_solution_prim <- function(x) {
+ROI_plugin_solution_prim <- function(x, force = FALSE) {
     UseMethod("ROI_plugin_solution_prim")
 }
 
 ##' @rdname ROI_plugin_solution
 ##' @export
-ROI_plugin_solution_prim.OP_solution <- function(x) {
-    if ( isTRUE(as.logical(x[["status"]][["code"]])) )
+ROI_plugin_solution_prim.OP_solution <- function(x, force = FALSE) {
+    if ( isTRUE(as.logical(x[["status"]][["code"]])) & !force )
         return( rep(NA_real_, length(x$solution)) )
     x$solution
 }
 
 ##' @rdname ROI_plugin_solution
 ##' @export
-ROI_plugin_solution_prim.OP_solution_set <- function(x) {
+ROI_plugin_solution_prim.OP_solution_set <- function(x, force = FALSE) {
     lapply(x, ROI_plugin_solution_prim)
 }
 
@@ -188,21 +202,21 @@ ROI_plugin_solution_status.OP_solution_set <- function(x) {
 
 ##' @rdname ROI_plugin_solution
 ##' @export
-ROI_plugin_solution_objval <- function(x) {
+ROI_plugin_solution_objval <- function(x, force = FALSE) {
     UseMethod("ROI_plugin_solution_objval")
 }
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_objval.OP_solution <- function(x) {
-    if ( isTRUE(as.logical(x[["status"]][["code"]])) )
+ROI_plugin_solution_objval.OP_solution <- function(x, force = FALSE) {
+    if ( isTRUE(as.logical(x[["status"]][["code"]])) & !force )
         return( NA_real_ )
     x$objval
 }
 
 ##' @noRd
 ##' @export
-ROI_plugin_solution_objval.OP_solution_set <- function(x) {
+ROI_plugin_solution_objval.OP_solution_set <- function(x, force = FALSE) {
     lapply(x, ROI_plugin_solution_objval)
 }
 

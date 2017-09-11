@@ -5,12 +5,19 @@
 \title{Extract Solution}
 \usage{
 solution(x, type = c("primal", "dual", "aux", "psd", "msg", "objval",
-  "status", "status_code"), ...)
+  "status", "status_code"), force = FALSE, ...)
 }
 \arguments{
 \item{x}{an object of type \code{'OP_solution'} or \code{'OP_solution_set'}.}
 
 \item{type}{a character giving the name of the solution to be extracted.}
+
+\item{force}{a logical to control the return value in the case that the 
+status code is equal to 1 (i.e. something went wrong).
+By default force is \code{FALSE} and a solution is only provided
+if the status code is equal to 0 (i.e. success). If force is \code{TRUE}
+\pkg{ROI} ignores the status code and also returns solutions
+where the solver signaled an issue.}
 
 \item{...}{further arguments passed to or from other methods.}
 }

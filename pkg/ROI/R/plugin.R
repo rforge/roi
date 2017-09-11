@@ -24,6 +24,8 @@
 ##' @family plugin functions
 ##' @rdname ROI_plugin_register_solver_control
 ##' @export
+## TODO: We should add a field description since it would be nice to 
+##       be able to get the control arguments for each solver plus it's description.
 ROI_plugin_register_solver_control <- function( solver, args, roi_control = "X" ){
     args <- as.character( args )
     if( length(roi_control) == 1L )
@@ -45,7 +47,7 @@ ROI_plugin_register_solver_control <- function( solver, args, roi_control = "X" 
 ##' @family plugin functions
 ##' @export
 ROI_registered_solver_control <- function(solver) {
-    x <- getNamespace("ROI")$control_db$get_entries(solver)
+    x <- control_db$get_entries(solver)
     if ( is.null(x) ) {
         stop("couldn't find solver '", solver, "'")
     }
