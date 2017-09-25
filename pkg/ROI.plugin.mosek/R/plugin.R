@@ -62,16 +62,19 @@ is.LP <- function(x) {
 .control_types <- c("numeric", "logical", "logical", "numeric",   "logical", "character")
 
 ##
-solve_OP <- function(x, control=list()) {
-    solver <- ROI_plugin_get_solver_name( getPackageName() )
+solve_OP <- function(x, control = list()) {
     leno <- length(objective(x))
     m <- list()
     m$sense <- c("min", "max")[1 + x$maximum]
     
     ## objective
-    m$c <- as.numeric(as.matrix(terms(objective(x))$L))
+    m$c <- as.vector(terms(objective(x))$L)
     if ( !is.null(terms(objective(x))$Q) ) {
         m$qobj <- unclass(terms(objective(x))$Q)[c("i", "j", "v")]
+        i <- which(m$qobj$j <= m$qobj$i)
+        m$qobj$i <- m$qobj$i[i]
+        m$qobj$j <- m$qobj$j[i]
+        m$qobj$v <- m$qobj$v[i]
     }
 
     ## constraints
@@ -145,10 +148,11 @@ solve_OP <- function(x, control=list()) {
 
     optimum <- tryCatch({as.numeric(objective(x)(x.solution))}, 
                         error=function(e) as.numeric(NA))
+
     return( ROI_plugin_canonicalize_solution( solution = x.solution, 
                                                optimum  = optimum,
                                                status   = as.integer(out$response$code),
-                                               solver   = solver, 
+                                               solver   = "mosek", 
                                                message  = out ) 
     )
 }
