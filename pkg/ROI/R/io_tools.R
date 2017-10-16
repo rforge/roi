@@ -15,16 +15,12 @@ InputOutputDataBase <- function() {
         gsub(" ", "", apply(x, 1, paste, collapse = ""), fixed = TRUE)
     }
 
-    env$append_reader <- function(type, solver, signature, method) {
+    env$append_reader <- function(type, solver, method) {
         self <- parent.env(environment())$env
 
         id <- length(self$reader) + 1L
-        self$reader[[id]] <- list(type = type, solver = solver,
-                                  signature = signature, method = method)
-        signature_ids <- to_id(signature)
-        for (sig in signature_ids) {
-            self$inverted_index_reader[[sig]] <- c(self$inverted_index_reader[[sig]], id)
-        }
+        self$reader[[id]] <- list(type = type, solver = solver, method = method)
+        self$inverted_index_reader[[type]] <- c(self$inverted_index_reader[[type]], id)
         invisible(NULL)
     }
 
@@ -34,7 +30,9 @@ InputOutputDataBase <- function() {
         if ( is.null(type) ) {
             reader <- self$reader
         } else {
-            k <- which(as.logical(sapply(self$reader, function(x) isTRUE(x$type == type))))
+            k <- self$inverted_index_reader[[type]]
+            if ( is.null(k) )
+                return(no_reader_found)
             reader <- self$reader[k]
         }
         if ( !length(reader) )
@@ -46,12 +44,20 @@ InputOutputDataBase <- function() {
 
     env$get_reader <- function(type, solver = NULL) {
         self <- parent.env(environment())$env
-        k <- which(sapply(self$reader, "[[", "type") == type)
+
+        k <- self$inverted_index_reader[[type]]
+        if ( is.null(k) ) {
+            return(1L) ## no reader of type type found
+        }
         if ( is.null(solver) ) {
             return(self$reader[[k[1]]]$method)
         }
-        j <- which(sapply(self$reader, "[[", "solver") == solver)
-        return(self$reader[[intersect(k, j)[1]]]$method)
+        selected_reader <- self$reader[k]
+        j <- which(sapply(selected_reader, "[[", "solver") == solver)
+        if ( !length(j) ) {
+            return(2L) ## no reader of type type and solver solver found
+        }
+        return(selected_reader[[j]]$method)
     }
 
     env$append_writer <- function(type, solver, signature, method) {
@@ -87,14 +93,29 @@ InputOutputDataBase <- function() {
 
     env$get_writer <- function(signature, type, solver = NULL) {
         self <- parent.env(environment())$env
-        i <- self$inverted_index_writer[[to_id(signature)]]
-        k <- which(sapply(self$writer, "[[", "type") == type)
-        k <- intersect(i, k)
-        if ( is.null(solver) ) {
-            return(self$writer[[k[1]]]$method)
+
+        k <- self$inverted_index_writer[[to_id(signature)]]
+        if ( is.null(k) ) {
+            return(1L)  ## no with correct signature found
         }
-        j <- which(sapply(self$writer, "[[", "solver") == solver)
-        return(self$writer[[intersect(k, j)[1]]]$method)
+
+        selected_writer <- self$writer[k]
+
+        i <- which(sapply(selected_writer, "[[", "type") == type)
+        if ( !length(i) ) {
+            return(2L)
+        }
+
+        if ( is.null(solver) ) {
+            return(selected_writer[[i[1]]]$method)
+        }
+        
+        selected_writer <- selected_writer[i]
+        j <- which(sapply(selected_writer, "[[", "solver") == solver)
+        if ( !length(j) ) {
+            return(3L)
+        }
+        return(selected_writer[[j]]$method)
     }
 
     env
@@ -123,10 +144,10 @@ InputOutputDataBase <- function() {
 ##' @family input output
 ##' @name ROI_plugin_register_reader_writer
 ##' @export
-ROI_plugin_register_reader <- function(type, solver, signature, method) {
+ROI_plugin_register_reader <- function(type, solver, method) {
     stopifnot(is.character(type), is.character(solver), 
                   length(type) == 1L, length(solver) == 1L)
-    io_db$append_reader(type, solver, signature, method)
+    io_db$append_reader(type, solver, method)
 }
 
 ##' @name ROI_plugin_register_reader_writer
@@ -158,8 +179,13 @@ ROI_plugin_register_writer <- function(type, solver, signature, method) {
 read.op <- function(file, type, solver=NULL, ...) {
     stopifnot(is_string(file), is_string(type), file.exists(file))
     read_file <- io_db$get_reader(type, solver)
-    if (!is.function(read_file))
+    if ( !is.function(read_file) ) {
+        if ( isTRUE(read_file == 2L) ) {
+            stop(sprintf("no reader found for type '%s' and solver '%s'",
+                         paste(type), paste(solver)))
+        }
         stop(sprintf("no reader found for type '%s'", paste(type)))
+    }
     read_file(file, ...)
 }
 
@@ -184,8 +210,15 @@ write.op <- function(x, file, type, solver=NULL, ...) {
     stopifnot(inherits(x, "OP"), is_string(file), is_string(type))
     signature <- OP_signature(x)
     write_file <- io_db$get_writer(signature, type, solver)
-    if (!is.function(write_file))
-        stop(sprintf("no writer found for type '%s'", paste(type)))
+    if ( !is.function(write_file) ) {
+        if ( isTRUE(write_file == 2L) ) {
+            stop(sprintf("no writer found for the given signature and type '%s'", paste(type)))
+        } else if ( isTRUE(write_file == 3L) ) {
+            stop(sprintf("no writer found for the given signature and type '%s' and solver '%s'", 
+                         paste(type), paste(solver)))
+        }
+        stop(sprintf("no writer found for the given signature"))
+    }
     write_file(x, file, ...)
 }
 

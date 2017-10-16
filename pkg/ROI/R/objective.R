@@ -440,7 +440,8 @@ as.F_objective.function <- function( x ){
     }
     stopifnot( is.function(F), is_integer(n) )
     ans <- tryCatch( F(rep.int(0, n)), error = identity )
-    if( inherits(ans, "error") )
+
+    if( inherits(ans, "error") | (length(ans) != 1L) | !is.finite(ans) )
         stop(sprintf("cannot evaluate function 'F' using 'n' = %d parameters.", n))
     if( !is.numeric(ans) || (length(ans) != 1L) || !is.null(dim(ans)) )
         stop("function 'F' does not return a numeric vector of length 1.")

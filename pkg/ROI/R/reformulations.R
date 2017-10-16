@@ -82,7 +82,7 @@ LPLC.BCI.PSD <- function() {
                                maximum = c(TRUE, FALSE) )
 }
 
-.linearize_BQP <- function(x) {
+bqp_to_lp <- function(x) {
     ## Linearize an all-binary quadratic program
     ##   \sum_{i,j} q_{ij} x_i x_j / 2 + \sum_i c_i x_i
     ## as described e.g. in "Pseudo-Boolean Optimization" by E. Boros
@@ -396,10 +396,6 @@ qp_to_socp <- function(x) {
 ##' @export
 ROI_reformulate <- function(x, to, method = NULL) {
     from <- OP_signature(x)
-    is.signature <- function(x) {
-        cn <- c("objective", "constraints", "bounds", "cones", "maximum", "C",  "I", "B")
-        ( is.data.frame(x) & all(colnames(x) == cn) )
-    }
     stopifnot(inherits(x, "OP"), (is.character(to) | is.signature(to)), 
               (is.character(method) | is.null(method)))
 
