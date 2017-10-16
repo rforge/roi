@@ -30,8 +30,15 @@
 ##'     corresponding documentation.
 ##' @param ... a list of control parameters (overruling those
 ##'     specified in \code{control}).
-##' @return a list containing the solution and a message from the
-##'     solver.
+##' @return a list containing the solution and a message from the solver.
+##' \itemize{
+##' \item{solution}{the vector of optimal coefficients}
+##' \item{objval}{the value of the objective function at the optimum}
+##' \item{status}{a list giving the status code and message form the solver.
+##'               The status code is 0 on success (no error occurred) 
+##'               1 otherwise.}
+##' \item{message}{a list giving the original message provided by the solver.}
+##' }
 ##' @examples
 ##' ## Rosenbrock Banana Function
 ##' ## -----------------------------------------
@@ -46,7 +53,7 @@
 ##' }
 ##' ## bounds
 ##' b <- V_bound(li = 1:2, ui = 1:2, lb = c(-3, -3), ub = c(3, 3))
-##' op <- OP( objective = F_objective(f, n = 1L, G = g),
+##' op <- OP( objective = F_objective(f, n = 2L, G = g),
 ##'           bounds = b )
 ##' res <- ROI_solve( op, solver = "nlminb", control = list(start = c( -1.2, 1 )) )
 ##' solution( res )
@@ -321,11 +328,8 @@ ROI_applicable_solvers <- function( op ){
 
 ## returns solver method from signatures
 get_solver_methods <- function( signatures ) {
+    ## The nrow(signatures) > 1 for coninc solvers!
     if ( nrow(signatures) == 1 ) return( get_solver_methods_from_signature(signatures) )
-    ## NOTE (FS): Currently get_solver_methods is only used in combination 
-    ##            with OP_signature therefore I am quite sure that 
-    ##            nrow(signatures) == 1 will always be true! But I have to double
-    ##            check before altering the code.
     solvers <- unlist(apply(signatures, 1, get_solver_methods_from_signature))
     solver_tab <- table(names(solvers))
     solver_names <- names(solver_tab[solver_tab == nrow(signatures)])
