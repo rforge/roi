@@ -179,6 +179,11 @@ ROI_plugin_register_solver_method <- function( signatures, solver, method ){
 ROI_required_signature <- function()
     c("objective", "constraints", "types", "bounds", "cones", "maximum")
 
+is.signature <- function(x) {
+    cn <- c("objective", "constraints", "bounds", "cones", "maximum", "C",  "I", "B")
+    ( is.data.frame(x) & all(colnames(x) == cn) )
+}
+
 ##' Create a solver signature, the solver signatures are used to indicate
 ##' which problem types can be solved by a given solver.
 ##'
@@ -213,7 +218,7 @@ ROI_plugin_make_signature <- function(...){
     }
     stopifnot( all(names(dotargs) %in% required) )
 
-    signature_default <- list(objective="L", constraints="L", types="C", bounds="C",
+    signature_default <- list(objective="L", constraints="L", types="C", bounds="X",
                               cones="X", maximum=FALSE)
     set_defaults <- function(name, x) if (is.null(x)) signature_default[[name]] else x
     dotargs <- mapply(set_defaults, names(dotargs), dotargs, SIMPLIFY=FALSE)
