@@ -34,15 +34,7 @@ it.}
 \item{x}{an R object.}
 }
 \value{
-A list containing the optimal solution, with the following
-components.
-\item{solution}{the vector of optimal coefficients}
-\item{objval}{the value of the objective function at the optimum}
-\item{status}{an integer with status information about the
-solution returned: 0 if the optimal solution was found, a non-zero
-value otherwise}
-\item{msg}{the status code and additional
-information about the solution provided by the solver.}
+an object of class \code{"OP"}.
 }
 \description{
 Optimization problem constructor

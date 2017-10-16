@@ -21,8 +21,15 @@ corresponding documentation.}
 specified in \code{control}).}
 }
 \value{
-a list containing the solution and a message from the
-    solver.
+a list containing the solution and a message from the solver.
+\itemize{
+\item{solution}{the vector of optimal coefficients}
+\item{objval}{the value of the objective function at the optimum}
+\item{status}{a list giving the status code and message form the solver.
+              The status code is 0 on success (no error occurred) 
+              1 otherwise.}
+\item{message}{a list giving the original message provided by the solver.}
+}
 }
 \description{
 Solve a given optimization problem.  This function
@@ -43,7 +50,7 @@ g <- function(x) {
 }
 ## bounds
 b <- V_bound(li = 1:2, ui = 1:2, lb = c(-3, -3), ub = c(3, 3))
-op <- OP( objective = F_objective(f, n = 1L, G = g),
+op <- OP( objective = F_objective(f, n = 2L, G = g),
           bounds = b )
 res <- ROI_solve( op, solver = "nlminb", control = list(start = c( -1.2, 1 )) )
 solution( res )

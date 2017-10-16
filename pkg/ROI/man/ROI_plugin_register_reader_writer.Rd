@@ -7,7 +7,7 @@
 \alias{ROI_plugin_register_writer}
 \title{Register Reader / Writer Method}
 \usage{
-ROI_plugin_register_reader(type, solver, signature, method)
+ROI_plugin_register_reader(type, solver, method)
 
 ROI_plugin_register_writer(type, solver, signature, method)
 }
@@ -18,10 +18,10 @@ ROI_plugin_register_writer(type, solver, signature, method)
 
 \item{solver}{a character giving the name of the plugin (e.g. \code{"lpsolve"}).}
 
+\item{method}{a function registered as reader / writer method.}
+
 \item{signature}{a data.frame giving the signature of the optimization problems
 which can be read or written by the registered method.}
-
-\item{method}{a function registered as reader / writer method.}
 }
 \value{
 NULL on success
