@@ -21,7 +21,7 @@ test_nlp_01 <- function() {
              bounds = V_bound(li = 1:2, ui = 1:2, lb = c(-3, -3), ub = c(3, 3)) )
     
     # Solve Rosenbrock Banana function.
-    res <- ROI_solve(x, solver="optimx", start=c(-1, 1.5))
+    res <- ROI_solve(x, solver = "optimx", start = c(-1, 1.5), method = "L-BFGS-B")
     stopifnot(is.numeric(solution(res)))
     
     check("NLP-01@01", equal(res$objval, 0.0))

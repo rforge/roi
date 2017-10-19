@@ -32,6 +32,9 @@ solve_optimx <- function( x, control ) {
     if ( is.null(control$par) )
         stop("argument 'start' is missing with no default")
 
+    if ( is.null(control$method) )
+        control$method <- "L-BFGS-B"
+
     lb <- get_lb(x)
     ub <- get_ub(x)
 
