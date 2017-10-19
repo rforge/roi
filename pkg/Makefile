@@ -243,17 +243,17 @@ check.plugins: clean.Rchecks ecos.check glpk.check ipop.check nloptr.check quadp
 
 ## qpoases
 ## =======
-qpoases.compile_attributes:
-	$(RR) -e "Rcpp:::compileAttributes('qpoases')"
-
-qpoases.build: qpoases.compile_attributes
-	$(RR) CMD build qpoases
-
-qpoases.check: qpoases.build
-	$(RR) CMD check qpoases*.tar.gz
-
-qpoases.install: qpoases.build
-	$(RR) CMD INSTALL qpoases*.tar.gz
+##qpoases.compile_attributes:
+##	$(RR) -e "Rcpp:::compileAttributes('qpoases')"
+##
+##qpoases.build: qpoases.compile_attributes
+##	$(RR) CMD build qpoases
+##
+##qpoases.check: qpoases.build
+##	$(RR) CMD check qpoases*.tar.gz
+##
+##qpoases.install: qpoases.build
+##	$(RR) CMD INSTALL qpoases*.tar.gz
 
 ## ROI.plugin.qpoases
 ## ==================
@@ -271,6 +271,21 @@ qpoases_roi.check: qpoases_roi.build
 
 qpoases_roi.install: qpoases_roi.build
 	$(RR) CMD INSTALL ROI.plugin.qpoases*.tar.gz
+
+
+## couenne
+## =======
+couenne.compile_attributes:
+	$(RR) -e "Rcpp:::compileAttributes('ROI_plugin_couenne')"
+
+couenne.build: couenne.compile_attributes
+	$(RR) CMD build ROI_plugin_couenne
+
+couenne.check: couenne.build
+	$(RR) CMD check couenne_*.tar.gz
+
+couenne.install: couenne.build
+	$(RR) CMD INSTALL couenne_*.tar.gz
 
 
 ## Testing
