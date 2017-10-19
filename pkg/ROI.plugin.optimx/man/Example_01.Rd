@@ -22,7 +22,7 @@ f.gradient <- function(x) {
 }
 
 x <- OP( objective = F_objective(f, n = 2L, G = f.gradient), 
-         bounds = V_bound(ld = -3, ub = 3, nobj = 2L) )
+         bounds = V_bound(ld = -3, ud = 3, nobj = 2L) )
 
 nlp <- ROI_solve(x, solver="optimx", start=c(-1.2, 1), method = "Rvmmin")
 nlp
