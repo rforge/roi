@@ -44,9 +44,9 @@ make_MILP_signatures <- function()
 }
 
 .add_reader_writer <- function(solver) {
-    ROI_plugin_register_reader("lp_lpsolve", solver, make_MILP_signatures(), read.lp.lp)
-    ROI_plugin_register_reader("mps_fixed", solver, make_MILP_signatures(), read.lp.mps)
-    ROI_plugin_register_reader("mps_free", solver, make_MILP_signatures(), read.lp.freemps)
+    ROI_plugin_register_reader("lp_lpsolve", solver, read.lp.lp)
+    ROI_plugin_register_reader("mps_fixed", solver, read.lp.mps)
+    ROI_plugin_register_reader("mps_free", solver, read.lp.freemps)
 
     ROI_plugin_register_writer("lp_lpsolve", solver, make_MILP_signatures(), write.lp.lp)
     ROI_plugin_register_writer("mps_fixed", solver, make_MILP_signatures(), write.lp.mps)
