@@ -9,7 +9,7 @@
 ##
 ## get lower bound constraints
 get_lb <- function(x) {
-    lb <- numeric( length(x$objective) )
+    lb <- numeric( length(objective(x)) )
     lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
     return(lb)
 }
@@ -19,7 +19,7 @@ get_lb <- function(x) {
 ##
 ## get upper bound constraints
 get_ub <- function(x) {
-    ub <- rep.int(Inf, length(x$objective))
+    ub <- rep.int(Inf, length(objective(x)))
     ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
     return(ub)
 }
@@ -72,9 +72,7 @@ bounds_to_constraints <- function(x) {
 ##        control.outer=list(), control.optim = list(), ...)
 ##
 ## NOTE: check the bounds
-solve_alabama_auglag <- function( x, control ) {
-    solver <- ROI_plugin_get_solver_name( getPackageName() )
-
+solve_alabama_auglag <- function( x, control = list() ) {
     if ( is.null(control$par) ) {
         stop("no start value, please provide a start value via control$start!")
     }
@@ -106,19 +104,25 @@ solve_alabama_auglag <- function( x, control ) {
     }
 
     ## now we have to add the bounds to the constraints
-    bc <- bounds_to_constraints(x)
-    if ( !is.null(bc$hin) ) {
-        if ( is.null(args$hin) ) {
-            args$hin <- bc$hin
-            args$hin.jac <- bc$hin.jac
-        } else {
-            hin <- args$hin
-            args$hin <- function(x) c(hin(x), bc$hin(x))
-            hin.jac <- args$hin.jac
-            args$hin.jac <- function(x) rbind(hin.jac(x), bc$hin.jac(x))
-        }
+    ## if ( isTRUE(control$method != "L-BFGS-B") ) {
+    ## This can currently not be passed to auglang!
+        bc <- bounds_to_constraints(x)
+        if ( !is.null(bc$hin) ) {
+            if ( is.null(args$hin) ) {
+                args$hin <- bc$hin
+                args$hin.jac <- bc$hin.jac
+            } else {
+                hin <- args$hin
+                args$hin <- function(x) c(hin(x), bc$hin(x))
+                hin.jac <- args$hin.jac
+                args$hin.jac <- function(x) rbind(hin.jac(x), bc$hin.jac(x))
+            }
 
-    }
+        }
+    ## } else {
+    ##     args$lower <- get_lb(x)
+    ##     args$upper <- get_ub(x)
+    ## }
 
     heq <- ROI_plugin_build_equality_constraints(x, type="eq_zero")
     args$heq <- heq$F

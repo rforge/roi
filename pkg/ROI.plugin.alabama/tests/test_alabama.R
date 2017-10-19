@@ -49,7 +49,7 @@ test_nlp_02 <- function() {
                                           J=function(x) c(2*x[1], x[2]))),
              bounds = V_bound(li=1:2, ui=1:2, lb=c(-2, -Inf), ub=c(0.5,  1)) )
 
-    solver <- setdiff(ROI_applicable_solvers(x), "nlminb")
+    solver <- "alabama"
     if ( length(solver) ) {
         nlp <- ROI_solve(x, solver = solver[1L], start = c(-2, 1))
         stopifnot( equal(nlp$objval, 1/4) )

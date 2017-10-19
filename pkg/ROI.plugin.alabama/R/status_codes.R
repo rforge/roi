@@ -1,7 +1,6 @@
 ## STATUS CODES
-.solnp_add_status_codes <- function() {
+.add_status_codes <- function(solver) {
     ## success
-    solver <- "alabama"
     ROI_plugin_add_status_code_to_db(solver, 0L, "SUCCESS",
                                      "Generic success return value.", 0L)
     ## failure
