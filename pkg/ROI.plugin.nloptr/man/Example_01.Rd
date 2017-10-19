@@ -24,14 +24,15 @@ control <- list(algorithm  = "NLOPT_GD_MLSL",
               	population = 4,
               	local_opts = list(algorithm = "NLOPT_LD_LBFGS", xtol_rel  = 1e-4))
 
-x <- OP( objective = F_objective(f, n=1L, G=f.gradient), 
-         bounds = V_bound(li=1:2, ui=1:2, lb=c(-3, -3), ub=c(3,  3)) )
+x <- OP( objective = F_objective(f, n = 2L, G = f.gradient), 
+         bounds = V_bound(ld = -3, ud= 3, nobj = 2L) )
 
-nlp <- ROI_solve(x, solver="nloptr", control, start=c(-1.2, 1))
+nlp <- ROI_solve(x, solver = "nloptr", control, start = c(-1.2, 1))
 nlp
 ## Optimal solution found.
 ## The objective value is: 3.049556e-23
 solution(nlp)
 ## [1] 1 1
+
 }
 
