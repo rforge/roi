@@ -212,7 +212,7 @@ ROI_plugin_solution_dual.ecos_solution <- function(x) {
     ROI_plugin_add_status_code_to_db( solver,
                            10L,
                            "ECOS_OPTIMAL + ECOS_INACC_OFFSET",
-                           "Optimal solution found subject to reduced tolerances.", 0L)
+                           "Optimal solution found subject to reduced tolerances.", 1L)
     ROI_plugin_add_status_code_to_db( solver,
                            11L,
                            "ECOS_PINF + ECOS_INACC_OFFSET",
