@@ -1,7 +1,7 @@
 ## ROI.plugin.cplex: solver interfaces
 ## Description: provides problem object <-> solver mappings
 
-solve_OP <- function( x, control ){
+solve_OP <- function( x, control = list() ){
     if(is.null(control))
        control <- list()
 
