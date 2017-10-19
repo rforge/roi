@@ -57,7 +57,7 @@ test_nlp_01 <- function() {
                   local_opts = local_opts )
     control <- c(opts, start=list(x0))
 
-    x <- OP( objective = F_objective(eval_f, n=1L, G=eval_grad_f), 
+    x <- OP( objective = F_objective(eval_f, n=2L, G=eval_grad_f), 
              bounds = V_bound(li=1:2, ui=1:2, lb=lb, ub=ub) )
     
     # Solve Rosenbrock Banana function.
@@ -80,7 +80,7 @@ test_nlp_01 <- function() {
                   ranseed    = 2718 )
     control <- c(opts, start=list(x0))
 
-    x <- OP( objective = F_objective(eval_f, n=1L), 
+    x <- OP( objective = F_objective(eval_f, n=2L), 
              bounds = V_bound(li=1:2, ui=1:2, lb=lb, ub=ub) )
 
     # Solve Rosenbrock Banana function.
@@ -103,7 +103,7 @@ test_nlp_01 <- function() {
                   ranseed    = 2718 )
     control <- c(opts, start=list(x0))
 
-    x <- OP( objective = F_objective(eval_f, n=1L), 
+    x <- OP( objective = F_objective(eval_f, n=2L), 
              bounds = V_bound(li=1:2, ui=1:2, lb=lb, ub=ub) )
 
     ## Solve Rosenbrock Banana function.
@@ -213,7 +213,7 @@ test_nlp_02 <- function() {
                                        dir = leq(2), 
                                        rhs = double(2), 
                                        J = eval_jac_g0),
-            bounds = V_bound(li=1, lb=-Inf))
+            bounds = V_bound(li=1, lb=-Inf, nobj = 2))
 
     ## Solve Rosenbrock Banana function.
     res0 <- ROI_solve( x, solver="nloptr", control )
@@ -236,7 +236,7 @@ test_nlp_02 <- function() {
     ## Solve using NLOPT_LN_COBYLA with gradient information supplied in separate function
     x <- OP(objective = F_objective(F=eval_f0, n=2L), 
             constraints = F_constraint(F=eval_g0, dir=leq(2), rhs=double(2)),
-            bounds = V_bound(li=1, lb=-Inf))
+            bounds = V_bound(li=1, lb=-Inf, nobj = 2))
 
     ## Solve Rosenbrock Banana function.
     res1 <- ROI_solve( x, solver="nloptr", control )
