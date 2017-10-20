@@ -1,13 +1,13 @@
 Package: ROI.plugin.mosek
-Version: 0.2-6
-Title: 'Mosek' Plugin for the 'R' Optimization Interface
+Version: 0.3-0
+Title: 'Mosek' Plug-in for the 'R' Optimization Infrastructure
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the R Optimization Infrastructure ('ROI') package
 	     with the 'Mosek' solver. This package was built and tested
          with 'Rmosek_8.1.3'. More information about the system requirements 
          and the installation can be found in the 'README.md' file.
-Imports: stats, methods, Matrix, slam, ROI (>= 0.2-5), Rmosek
+Imports: stats, methods, Matrix, slam, ROI (>= 0.3-0), Rmosek
 SystemRequirements: MOSEK (>= 8) and MOSEK License
 License: GPL-3
 URL: https://R-Forge.R-project.org/projects/roi
