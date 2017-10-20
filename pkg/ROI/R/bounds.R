@@ -56,6 +56,30 @@ c.bound <- function(...)  structure(Reduce(c_2_bounds, list(...)), class=c("V_bo
 ##' @export
 is.bound <- function(x) inherits(x, "bound")
 
+## ---------------------------------------------------------
+##
+##  is.default_bound
+##  ================
+##' @title Check for default bounds
+##' @description tests if the given object is an variable bound
+##'              which represents default values only 
+##'              (i.e., all lower bounds are \code{0} 
+##'              and all upper bounds as \code{Inf}).
+##' @param x object to be tested
+##' @return a logical of length one indicating wether default bounds are given
+##' @export
+is.default_bound <- function(x) {
+    UseMethod("is.default_bound")
+}
+
+is.default_bound.NULL <- function(x) {
+    TRUE
+}
+
+is.default_bound.V_bound <- function(x) {
+    ( length(x$lower$ind) + length(x$upper$ind) ) == 0L
+}
+
 ##' @noRd
 ##' @export
 print.bound <- function(x, ...) {
