@@ -55,7 +55,7 @@ test_blp_multisol_02 <- function(solver) {
     constraints(x) <- L_constraint(mat, 
                                    dir = leq(3), 
                                    rhs = rep.int(1, 3))
-    types(x) <- rep("B", length(x))
+    types(x) <- rep("B", length(objective(x)))
 
     method <- head(setdiff(ROI_applicable_solvers(x), solver), 1)
     if ( length(method) == 0L )
