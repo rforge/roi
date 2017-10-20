@@ -1,6 +1,6 @@
 Package: ROI.plugin.msbinlp
-Version: 0.2-5
-Title: 'Multi-Solution' Binary Linear Problem Plugin for the 'R' Optimization Interface
+Version: 0.3-0
+Title: 'Multi-Solution' Binary Linear Problem Plug-in for the 'R' Optimization Interface
 Authors@R: c( person("Kurt", "Hornik", role = c("aut")),
               person("David", "Meyer", role = c("aut")),
               person("Florian", "Schwendinger", role =  c("aut", "cre"), 
@@ -9,7 +9,7 @@ Description: Enhances the 'R' Optimization Infrastructure ('ROI') package
              with the possibility to obtain multiple solutions for linear 
              problems with binary variables. The main function is copied 
              (with small modifications) from the relations package.
-Imports: stats, methods, utils, slam, ROI (>= 0.2-5)
+Imports: stats, methods, utils, slam, ROI (>= 0.3-0)
 Suggests: ROI.plugin.glpk
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
