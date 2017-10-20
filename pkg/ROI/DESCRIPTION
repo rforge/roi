@@ -1,5 +1,5 @@
 Package: ROI
-Version: 0.2-7
+Version: 0.3-0
 Title: R Optimization Infrastructure
 Authors@R: c( person("Kurt", "Hornik", role = "aut"),
               person("David", "Meyer", role = "aut"),
