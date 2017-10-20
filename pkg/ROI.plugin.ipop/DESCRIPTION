@@ -1,12 +1,11 @@
 Package: ROI.plugin.ipop
-Version: 0.2-5
-Date: 2017-05-17
+Version: 0.3-0
 Title: ROI Plug-in {ipop}
 Authors@R: c( person("Florian", "Schwendinger", role = "ctb"),
               person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"),
               person("Diethelm", "Wuertz", role = "ctb") )
 Description: Enhances the R Optimization Infrastructure ('ROI') package 
 	     by registering the ipop solver from package 'kernlab'.
-Imports: methods, ROI (>= 0.2-5), kernlab, slam
+Imports: methods, ROI (>= 0.3-0), kernlab, slam
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
