@@ -21,7 +21,7 @@ solve_OP <- function( x, control = list() ){
     ## variable bounds
     lb <- 0
     ub <- Inf
-    if( ! is.null(bounds(x)) ){
+    if( ! is.default_bound(bounds(x)) ){
       lb <- rep(lb, n_obj)
       ub <- rep(ub, n_obj)
       lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
