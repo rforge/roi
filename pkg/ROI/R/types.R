@@ -46,11 +46,16 @@ types.OP <- function( x )
 ##' @export
 'types<-.OP' <- function( x, value ) {
     if ( is.null(value) ) {
-        x["types"] <- list(NULL)
+        ## do nothing
+        ## x["types"] <- list(NULL)
     } else {
-        stopifnot(is.character(value)) 
-        if ( length(objective(x)) != length(value) ) {
-            stop( "dimensions of 'objective' and 'types' not conformable." )
+        stopifnot(is.character(value), length(value) > 0L)
+        if ( is.na(x[["n_of_variables"]]) ) {
+            x[["n_of_variables"]] <- length(value)
+        } else {
+            if ( x[["n_of_variables"]] != length(value) ) {
+                stop( "number of variables of 'OP' and 'types' not conformable." )
+            }    
         }
         x$types <- as.types(value)
     }   

@@ -223,6 +223,8 @@ bqp_to_lp <- function(x) {
                  rep.int(-1, npp))
     }
 
+    x$bounds$nobj <- length(s) + length(r)
+
     OP(objective = L_objective(L = c(s, r)),
        constraints = L_constraint(L = mat, dir = dir, rhs = rhs),
        bounds = bounds(x),

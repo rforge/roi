@@ -67,9 +67,14 @@ objective.default <- function( x )
 ##' @noRd
 ##' @export
 'objective<-.OP' <- function( x, value ) {
-    x$objective <- as.objective(value)
-    if ( is.null(x$bounds) ) ## so we ensure that the bounds are always set
-        x$bounds <- V_bound(nobj = length(x$objective))
+    obj <- as.objective(value)
+    nvar <- length(obj)
+    if ( is.na(x[["n_of_variables"]]) ) {
+        x[["n_of_variables"]] <- nvar
+    } else {
+        stopifnot(isTRUE(x[["n_of_variables"]] == nvar))
+    }
+    x[["objective"]] <- obj
     x
 }
 
@@ -114,8 +119,6 @@ length.objective <- function( x ) attr( as.objective(x), "nobj" )
 `[.L_objective` <- function(x, i) {
     as.numeric(as.matrix(terms(x)$L[1, i]))
 }
-
-str_default <- function(object, ...) getNamespace("utils")$str.default(object, ...)
 
 ##  NOTE: Since we override the length of the objective the str function which 
 ##        relies on length, doesn't work anymore.

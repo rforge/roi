@@ -121,10 +121,16 @@ constraints.OP <- function( x ){
 ##' @export
 'constraints<-.OP' <- function( x, value ) {
     if ( is.null(value) ) {
-        x[["constraints"]] <- NO_constraint(length(objective(x)))
+        if ( !is.na(x[["n_of_variables"]]) ) {
+            x[["constraints"]] <- NO_constraint(x[["n_of_variables"]])
+        }
     } else {
         constr <- as.constraint(value)
-        .check_constraints(constr, x)
+        if ( !is.F_constraint(constr) ) {
+            if ( is.na(x[["n_of_variables"]]) ) 
+                x[["n_of_variables"]] <- ncol(constr)
+            .check_constraints(constr, x) ## We can only check if we know the number of variables
+        }
         x$constraints <- constr
     }
     x
@@ -137,8 +143,10 @@ constraints.OP <- function( x ){
 .check_constraints.NO_constraint <- function(constr, x) NULL
 
 .check_constraints.L_constraint <- function(constr, x) {
-    if ( length(objective(x)) != ncol(constr) ) {
-        stop( "dimensions of 'objective' and 'constraints' not conformable." )
+    if ( !isTRUE(x[["n_of_variables"]] == ncol(constr)) ) {
+        msg <- sprintf("dimension missmatch! OP has %i variables the constraints have %i", 
+                       x[["n_of_variables"]], ncol(constr))
+        stop( msg )
     }
     NULL
 }
@@ -147,7 +155,8 @@ constraints.OP <- function( x ){
 .check_constraints.Q_constraint <- .check_constraints.L_constraint
 
 .check_constraints.F_constraint <- function(constr, x) {
-    x0 <- rep.int(1, length(objective(x)))
+    ## check nrow (number constraints is equal to number of rhs variables)
+    x0 <- rep.int(1, x[["n_of_variables"]])
     F_len <- sum(unlist(lapply(constr$F, function(f) length(f(x0))), FALSE, FALSE)) 
     if ( F_len != length(constr$rhs) ) {
         stop( "dimensions of 'rhs' and 'constraints' not conformable." )
@@ -960,6 +969,9 @@ as.constraint <- function( x )
 ##' @export
 as.constraint.NULL <- identity
 
+##' @noRd
+##' @export
+as.constraint.NO_constraint <- identity
 
 ##' @noRd
 ##' @export

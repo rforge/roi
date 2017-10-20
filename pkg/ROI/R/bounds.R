@@ -65,6 +65,20 @@ print.bound <- function(x, ...) {
     }
 }
 
+##' @noRd
+##' @export
+length.V_bound <- function(x) {
+    x[["nobj"]]
+}
+
+##' @noRd
+##' @export
+str.V_bound <- function(object, ...) {
+    str(unclass(object))
+    cat(sprintf(' - attr(*, "class")='))
+    str(class(object))
+}
+
 ################################################################################
 ## 'bounds'
 
@@ -203,7 +217,7 @@ as.V_bound.NULL <- function( x )
 ##' @export
 as.V_bound.list <- function(x) {
     stopifnot(any(c("lower", "upper", "nobj") %in% names(x)), 
-              all(names(x) %in% c("lower", "upper", "nobj")))
+              all(names(x) %in% c("lower", "upper", "nobj", "names")))
 
     vb <- V_bound(nobj = max(0, x$nobj, len_vb(x$lower), len_vb(x$upper)))
     vb[["lower"]] <- as.variable_bound(x$lower)
@@ -329,13 +343,20 @@ bounds.OP <- function( x ) x$bounds
 ##' @export
 'bounds<-.OP' <- function( x, value ) {
     if ( is.null(value) ) {
-        if ( is.null(x$objective) ) {
-            x["bounds"] <- list(NULL)
+        if ( is.na(x[["n_of_variables"]]) ) {
+            ## do nothing
+            ## x["bounds"] <- list(NULL)
         } else {
-            x$bounds <- V_bound(nobj = length(x$objective))
+            x$bounds <- V_bound(nobj = x[["n_of_variables"]])
         }
     } else {
-        x$bounds <- as.V_bound(value)
+        bounds <- as.V_bound(value)
+        if ( is.na(x[["n_of_variables"]]) ) {
+            x[["n_of_variables"]] <- length(bounds)
+        } else {
+            stopifnot(x[["n_of_variables"]] == length(bounds))
+        }
+        x$bounds <- bounds
     }
     x
 }

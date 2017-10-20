@@ -58,16 +58,18 @@
 ##' @export
 OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
                 maximum = FALSE ) {
-    x <- vector("list", 5)
-    names(x) <- c("objective", "constraints", "bounds", "types", "maximum")
+    x <- vector("list", 7)
+    names(x) <- c("objective", "constraints", "bounds", "types", "maximum",
+                  "n_of_variables", "n_of_constraints")
     class(x) <- "OP"
 
-    maximum(x)     <- maximum
+    x[["n_of_variables"]] <- NA_integer_
+    x[["n_of_constraints"]] <- NA_integer_
+    maximum(x) <- maximum
     
-    if ( missing(objective) )
-        return(x)
-    
-    objective(x)   <- objective
+    if ( !missing(objective) )
+        objective(x) <- objective
+
     constraints(x) <- constraints
     bounds(x)      <- bounds
     types(x)       <- types
