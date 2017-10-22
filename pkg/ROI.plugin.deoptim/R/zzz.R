@@ -22,7 +22,7 @@
 
 ROI_make_NLP_FXCV_signatures <- function()
     ROI_plugin_make_signature( objective = c("F"),
-                               constraints = c("X", "L", "Q", "F"),
+                               constraints = c("X", "F"),
                                types = c("C"),
                                bounds = c("X", "V"),
                                cones = c("X"),

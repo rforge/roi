@@ -61,7 +61,7 @@ solve_deoptim <- function( x, control ) {
 
 .deoptimr_default <- function(d) {
     list(DEoptimR::JDEoptim,
-         lower = NULL, upper = NULL, fn = NULL, constr = NULL, meq = 0, 
+         lower = NULL, upper = NULL, fn = NULL, constr = NULL, meq = 0L, 
          eps = 1e-05, NP = 10 * d, Fl = 0.1, Fu = 1, tau_F = 0.1, tau_CR = 0.1, 
          tau_pF = 0.1, jitter_factor = 0.001, tol = 1e-15, maxiter = 200 * d, 
          fnscale = 1, compare_to = c("median", "max"), add_to_init_pop = NULL, 
@@ -75,9 +75,11 @@ solver_deoptimr <- function(x, control) {
     solver <- "deoptim"
 
     m <- .deoptimr_default(length(objective(x)))
-
-    m$lower <- get_lb(x)
-    m$upper <- get_ub(x)
+  
+    lower <- get_lb(x)
+    m$lower <- replace(lower, lower == -Inf, .Machine[["double.xmin"]])
+    upper <- get_ub(x)
+    m$upper <- replace(upper, upper == Inf, .Machine[["double.xmax"]])
 
     if ( isTRUE(x$maximum) ) {
         objective_function <- terms(objective(x))$F
@@ -88,11 +90,11 @@ solver_deoptimr <- function(x, control) {
 
     eqcon <- ROI_plugin_build_equality_constraints(x, "eq_zero")
     leqcon <- ROI_plugin_build_inequality_constraints(x, "leq_zero")
-    if ( !is.null(eqcon$F) )
-        meq <- length(eqcon$F(control[["start"]]))
+    if ( !is.null(eqcon$F) ) {
+        m$meq <- length(eqcon$F(control[["start"]]))
+    }
 
     m$constr <- build_constraint(eqcon$F, leqcon$F)
-    m$meq <- meq
 
     for (key in intersect(names(control), .deoptimr_control_names)) {
         m[[key]] <- control[[key]]
@@ -115,6 +117,10 @@ solver_deoptimr <- function(x, control) {
 }
 
 build_constraint <- function(EQFUN, LEQFUN) {
+    if ( is.null(EQFUN) )
+        return(LEQFUN)
+    if ( is.null(LEQFUN) )
+        return(EQFUN)
     function(x) c(EQFUN(x), LEQFUN(x))
 }
 

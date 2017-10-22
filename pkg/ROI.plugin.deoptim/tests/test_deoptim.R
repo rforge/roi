@@ -1,5 +1,10 @@
-stopifnot(require(DEoptim))
 
+if ( FALSE ) {
+    q("no")
+    Rdevel
+}
+
+stopifnot(require(DEoptim))
 
 library(ROI)
 library(ROI.plugin.deoptim)
@@ -28,4 +33,64 @@ test_nlp_01 <- function() {
     check("NLP-01@02", equal(res$solution, c( 1.0, 1.0 )))
 }
 
-local({test_nlp_01()})
+test_nlp_02 <- function() {
+    f <- function(x) {
+        return( 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2 )
+    }
+
+    f.gradient <- function(x) {
+        return( c( -400 * x[1] * (x[2] - x[1] * x[1]) - 2 * (1 - x[1]),
+                   200 * (x[2] - x[1] * x[1])) )
+    }
+
+    x <- OP( objective = F_objective(f, n=2L, G=f.gradient), 
+             constraints = c(F_constraint(F=function(x) x[1] + x[2]^2, ">=", 0,
+                                          J=function(x) c(1, 2*x[2])),
+                             F_constraint(F=function(x) x[1]^2 + x[2], ">=", 0,
+                                          J=function(x) c(2*x[1], x[2]))),
+             bounds = V_bound(li=1:2, ui=1:2, lb=c(-2, -Inf), ub=c(0.5,  1)) )
+
+    nlp <- ROI_solve(x, solver = "deoptim")
+    stopifnot( equal(nlp$objval, 1/4) )
+    stopifnot( equal(solution(nlp), c(1/2, 1/4)) )
+}
+
+test_nlp_03 <- function() {
+    hs036_obj <- function(x) {
+        -x[1] * x[2] * x[3]
+    }
+
+    hs036_con <- function(x) {
+        x[1] + 2 * x[2] + 2 * x[3]
+    }
+
+    x <- OP( objective = F_objective(hs036_obj, n = 3L), 
+             constraints = F_constraint(hs036_con, "<=", 72),
+             bounds = V_bound(ub = c(20, 11, 42)) )
+
+    nlp <- ROI_solve(x, solver = "deoptim")
+    stopifnot( equal(nlp$objval, -3300) )
+    stopifnot( equal(solution(nlp), c(20, 11, 15)) )
+}
+
+if ( !any("alabama" %in% names(ROI_registered_solvers())) ) {
+    ## This should never happen.
+    cat("ROI.plugin.alabama cloud not be found among the registered solvers.\n")
+} else {
+    file = Sys.getenv("ROI_TEST_LOG_FILE")
+    ROI_TEST_ERRORS <- 0L
+    rt <- function(expr, silent = FALSE) {
+        err <- try(expr, silent = silent)
+        if ( inherits(err, "try-error") ) 
+            ROI_TEST_ERRORS <<- ROI_TEST_ERRORS + 1L
+        err
+    }
+
+    rt( test_nlp_01() )
+    rt( test_nlp_02() )
+    rt( test_nlp_03() )
+
+    if ( ROI_TEST_ERRORS > 0 ) {
+        stop("ROI_Test_Error ", ROI_TEST_ERRORS, " occurred during testing.")
+    }
+}
