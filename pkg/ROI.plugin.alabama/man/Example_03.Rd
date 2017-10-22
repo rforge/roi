@@ -33,7 +33,7 @@ nlp
 solution(nlp, "objval")
 ## [1] -3300
 solution(nlp)
-## [1] 1 1
+## [1] 20 11 15
 
 }
 
