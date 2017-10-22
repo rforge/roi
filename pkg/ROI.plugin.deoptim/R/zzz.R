@@ -22,7 +22,7 @@
 
 ROI_make_NLP_FXCV_signatures <- function()
     ROI_plugin_make_signature( objective = c("F"),
-                               constraints = c("X"),
+                               constraints = c("X", "L", "Q", "F"),
                                types = c("C"),
                                bounds = c("X", "V"),
                                cones = c("X"),
@@ -30,6 +30,9 @@ ROI_make_NLP_FXCV_signatures <- function()
 
 ## SOLVER CONTROLS
 .add_controls <- function(solver) {
+	ROI_plugin_register_solver_control( solver, "start", "start")
+	ROI_plugin_register_solver_control( solver, "dry_run", "dry_run")
+
     ## DEoptim
 
     ROI_plugin_register_solver_control( solver, "VTR", "X")
@@ -52,20 +55,38 @@ ROI_make_NLP_FXCV_signatures <- function()
     ROI_plugin_register_solver_control( solver, "parVar", "X")
     ROI_plugin_register_solver_control( solver, "foreachArgs", "X")
 
+    ## DEoptimR
+    ROI_plugin_register_solver_control( solver, "eps", "X")
+    ## ROI_plugin_register_solver_control( solver, "NP", "X")
+    ROI_plugin_register_solver_control( solver, "Fl", "X")
+    ROI_plugin_register_solver_control( solver, "Fu", "X")
+    ROI_plugin_register_solver_control( solver, "tau_F", "X")
+    ROI_plugin_register_solver_control( solver, "tau_CR", "X")
+    ROI_plugin_register_solver_control( solver, "tau_pF", "X")
+    ROI_plugin_register_solver_control( solver, "jitter_factor", "X")
+    ROI_plugin_register_solver_control( solver, "tol", "X")
+    ROI_plugin_register_solver_control( solver, "maxiter", "X")
+    ROI_plugin_register_solver_control( solver, "fnscale", "X")
+    ROI_plugin_register_solver_control( solver, "compare_to", "X")
+    ROI_plugin_register_solver_control( solver, "add_to_init_pop", "X")
+    ## ROI_plugin_register_solver_control( solver, "trace", "X")
+    ROI_plugin_register_solver_control( solver, "triter", "X")
+    ROI_plugin_register_solver_control( solver, "details", "X")
+
     invisible( TRUE )
 }
 
 .onLoad <- function( libname, pkgname ) {
+	solver <- "deoptim"
     ## Solver plugin name (based on package name)
     if( ! pkgname %in% ROI_registered_solvers() ){
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
-        solver <- ROI_plugin_get_solver_name( pkgname )
         ROI_plugin_register_solver_method(
             signatures = ROI_make_NLP_FXCV_signatures(),
             solver = solver,
-            method = getFunction( "solve_deoptim", where = getNamespace(pkgname)) )
-        .add_status_codes()
+            method = getFunction( "solve_op", where = getNamespace(pkgname)) )
+        .add_status_codes( solver )
         .add_controls( solver )
     }
 }

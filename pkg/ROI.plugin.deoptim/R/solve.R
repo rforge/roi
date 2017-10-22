@@ -48,10 +48,10 @@ solve_deoptim <- function( x, control ) {
     x.solution <- setNames(out$optim$bestmem, terms(objective(x))$names)
 
     ROI_plugin_canonicalize_solution(  solution  = x.solution,
-                                        optimum   = out$optim$bestval,
-                                        status    = 0L,
-                                        solver    = solver,
-                                        message   = out)
+                                       optimum   = out$optim$bestval,
+                                       status    = 0L,
+                                       solver    = solver,
+                                       message   = out)
 }
 
 .deoptimr_control_names <- c("eps", "NP", "Fl", "Fu", "tau_F", "tau_CR", 
@@ -59,13 +59,22 @@ solve_deoptim <- function( x, control ) {
                              "fnscale", "compare_to", "add_to_init_pop", 
                              "trace", "triter", "details")
 
+.deoptimr_default <- function(d) {
+    list(DEoptimR::JDEoptim,
+         lower = NULL, upper = NULL, fn = NULL, constr = NULL, meq = 0, 
+         eps = 1e-05, NP = 10 * d, Fl = 0.1, Fu = 1, tau_F = 0.1, tau_CR = 0.1, 
+         tau_pF = 0.1, jitter_factor = 0.001, tol = 1e-15, maxiter = 200 * d, 
+         fnscale = 1, compare_to = c("median", "max"), add_to_init_pop = NULL, 
+         trace = FALSE, triter = 1, details = FALSE)
+}
+
 ##
 ## h_i(x) == 0   i = 1, ..., meq
 ## g_i(x) <= 0
 solver_deoptimr <- function(x, control) {
-    solver <- "deoptimr"
-    
-    m <- list(DEoptimR::JDEoptim)
+    solver <- "deoptim"
+
+    m <- .deoptimr_default(length(objective(x)))
 
     m$lower <- get_lb(x)
     m$upper <- get_ub(x)
@@ -77,17 +86,45 @@ solver_deoptimr <- function(x, control) {
         m$fn <- terms(objective(x))$F
     }
 
-    b <- constraints(x)$dir == "=="
-    args(JDEoptim)
+    eqcon <- ROI_plugin_build_equality_constraints(x, "eq_zero")
+    leqcon <- ROI_plugin_build_inequality_constraints(x, "leq_zero")
+    if ( !is.null(eqcon$F) )
+        meq <- length(eqcon$F(control[["start"]]))
 
-    m$meq <- sum(bg_constraint)
+    m$constr <- build_constraint(eqcon$F, leqcon$F)
+    m$meq <- meq
+
+    for (key in intersect(names(control), .deoptimr_control_names)) {
+        m[[key]] <- control[[key]]
+    }
     
-    m$fnMap <- control$fnMap
-    m$control <- control[intersect(names(control), .deoptimr_control_names)]
+    mode(m) <- "call"
+
+    if ( isTRUE(control$dry_run) )
+        return(m)
+    
+    res <- eval(m)
+    obj_val <- objective(x)(res$par)
+
+    ROI_plugin_canonicalize_solution(solution  = res$par,
+                                     optimum   = obj_val,
+                                     status    = as.integer(res$convergence),
+                                     solver    = solver,
+                                     message   = res)
 
 }
 
+build_constraint <- function(EQFUN, LEQFUN) {
+    function(x) c(EQFUN(x), LEQFUN(x))
+}
 
-
-
-
+solve_op <- function(x, control) {
+    if ( is.null(control$trace) )
+        control$trace <- FALSE
+    if ( is.NO_constraint(constraints(x)) ) {
+        if ( !is.null(control$start) & is.null(control$initialpop) )
+            initialpop <- control$start
+        return(solve_deoptim(x, control))
+    }
+    return(solver_deoptimr(x, control))
+}
