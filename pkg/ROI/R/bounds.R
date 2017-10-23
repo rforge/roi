@@ -72,10 +72,14 @@ is.default_bound <- function(x) {
     UseMethod("is.default_bound")
 }
 
+##' @noRd
+##' @export
 is.default_bound.NULL <- function(x) {
     TRUE
 }
 
+##' @noRd
+##' @export
 is.default_bound.V_bound <- function(x) {
     ( length(x$lower$ind) + length(x$upper$ind) ) == 0L
 }
