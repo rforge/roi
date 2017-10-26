@@ -19,4 +19,6 @@
     ROI_plugin_add_status_code_to_db(solver,  11L, "ERROR_INTERNAL_SOLVER_FAILURE", "", 1L)
     ROI_plugin_add_status_code_to_db(solver,  12L, "SOLVE_PROCESSING_SKIPPED", "", 1L)
     ROI_plugin_add_status_code_to_db(solver,  13L, "ERROR_SYSTEM_FAILURE", "", 1L)
+
+    ROI_plugin_add_status_code_to_db(solver,  100L, "UNKNOWN_STATUS_CODE", "The status code is unkown.", 1L)
 }

@@ -29,45 +29,6 @@ is.slam_zero_matrix <- function(x) {
 
 strip <- function(x) gsub("(^\\s+|\\s+$)", "", x)
 
-create_sets <- function(x) {
-
-    if ( is.L_constraint(constraints(x)) ) {
-        lin_leq  <- which(constraints(x)$dir %in% c("<=", "<"))
-        lin_geq  <- which(constraints(x)$dir %in% c(">=", ">"))
-        lin_eq   <- which(constraints(x)$dir == "==")
-        quad_leq <- quad_geq <- quad_eq <- integer(0)
-    } else {
-        b <- unlist(lapply(constraints(x)$Q, is.slam_zero_matrix), 
-                    recursive = FALSE, use.names = FALSE)
-        
-        lin_leq  <- which( (constraints(x)$dir %in% c("<=", "<")) & b )
-        lin_geq  <- which( (constraints(x)$dir %in% c(">=", ">")) & b )
-        lin_eq   <- which( (constraints(x)$dir == "==") & b )
-        quad_leq <- which( (constraints(x)$dir %in% c("<=", "<")) & !b )
-        quad_geq <- which( (constraints(x)$dir %in% c(">=", ">")) & !b )
-        quad_eq  <- which( (constraints(x)$dir == "==") & !b )
-    }    
-
-    j_int <- which(types(x) == "I")
-    j_bin <- which(types(x) == "B")
-    
-    row_index <- function(i, name) {
-        if ( length(i) == 0L ) return(NULL)
-        sprintf("Set %s(i) / %s / ;", name, paste(sprintf("R%i", i), collapse = ", "))
-    }
-
-    col_index <- function(j, name) {
-        if ( length(j) == 0L ) return(NULL)
-        sprintf("Set %s(j) / %s / ;", name, paste(sprintf("C%i", j), collapse = ", "))
-    }
-
-    paste(c(sprintf("Set i / R1*R%i / ;\n", nrow(constraints(x))),
-            row_index(lin_leq, "ileq"), row_index(lin_geq, "igeq"), row_index(lin_eq, "ieq"),
-            row_index(quad_leq, "kleq"), row_index(quad_geq, "kgeq"), row_index(quad_eq, "keq"),
-            sprintf("Set j / C1*C%i / ;\n", length(objective(x))),
-            col_index(j_int, "jint"), col_index(j_bin, "jbin")), collapse = "\n")
-}
-
 prefix_spaces <- function(x, xnchar) {
     paste(c(rep.int(" ", xnchar - nchar(x)), x), collapse = "")
 }
@@ -144,7 +105,7 @@ has.geq <- function(x) {
     any(constraints(x)$dir %in% c(">=", ">"))
 }
 
-extract_results <- function(results, n) UseMethod("extract_results")
+extract_results <- function(results, jbin, jint, jcon) UseMethod("extract_results")
 
 extract_results.NeosAns <- function(results, n) {
     s <- gsub(".*\\-\\-\\-BEGIN\\.SOLUTION\\-\\-\\-\\s*", "", results@ans)
@@ -163,7 +124,12 @@ extract_results.NeosAns <- function(results, n) {
         cnames <- sapply(s, "[", 1)
         values <- sapply(s, "[", 2)
     }
-    setNames(as.double(values), cnames)
+    s <- setNames(as.double(values), cnames)
+    nam <- sprintf("C%s", seq_len(n))
+    s <- s[nam]
+    names(s) <- nam
+    s[is.na(s)] <- 0
+    s
 }
 
 select_method <- function(model_type, is_mip) {
@@ -212,7 +178,9 @@ ROI_to_gams <- function(x) UseMethod("ROI_to_gams")
 
 ROI_to_gams.OP <- function(x) {
     model_type <- which_model_type(x)
-    to_gams <- switch(model_type, lp = roi_lp_to_gams, qp = roi_qp_to_gams, qcqp = roi_qcqp_to_gams)
+    to_gams <- switch(model_type, lp   = roi_lp_to_gams, 
+                                  qp   = roi_qp_to_gams, 
+                                  qcqp = roi_qcqp_to_gams)
     to_gams(x)
 }
 
@@ -330,21 +298,34 @@ neos_solve_gams <- function(x, control = list()) {
 
     results <- NgetFinalResults(obj = job, convert = TRUE)
 
-    n <- length(objective(x))
-    xsol <- extract_results(results, n)
+    ## gams_errors <- extract_error(results@ans)
+    ##  if ( length(gams_errors) )
+    ##      stop(paste(gams_errors, collapse = "\n"))
 
-    sol <- setNames(double(n), sprintf("C%i", seq_len(n)))
-    sol[names(xsol)] <- xsol
+    n <- length(objective(x))
+    sol <- extract_results(results, n)
+    names(sol) <- names(objective(x))
+
     optimum <- objective(x)(sol)
 
-    status <- strip(unlist(regmatches(results@ans, gregexpr("SOLVER STATUS.*?\n", results@ans))))
-    status <- as.integer(gsub("\\D", "", status))
-
     ROI_plugin_canonicalize_solution( solution = sol, optimum  = optimum,
-                                      status   = status,
+                                      status   = extract_status(results@ans),
                                       solver   = "neos", message = results@ans )
+}
 
+extract_status <- function(msg) {
+    m <- gregexpr("SOLVER STATUS.*?\n", msg)
+    s <- gsub("\\D", "", strip(unlist(regmatches(msg, m))))
+    status <- suppressWarnings(as.integer(s))
+    if ( is.na(status) | isTRUE(status < 1L) | isTRUE(status > 13L) )
+        status <- 100L
+    status
+}
 
+extract_error <- function(msg) {
+    s <- strsplit(msg, "\n")[[1]]
+    i <- grep("error", s, ignore.case = TRUE)
+    s[i]
 }
 
 neos_solve_lp <- function(x, solver, language, user, email, interface = "", id = 0L) {
