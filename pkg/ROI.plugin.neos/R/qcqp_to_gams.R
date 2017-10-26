@@ -1,0 +1,178 @@
+roi_qcqp_to_gams <- function(x) {
+    n_of_variables <- length(objective(x))
+    n_of_constraints <- nrow(constraints(x))
+    ## TODO: handle case no constraint
+    stopifnot(length(objective(x)) > 0, nrow(constraints(x)) > 0)
+
+    signature <- unlist(OP_signature(x))
+
+    row_names <- sprintf("R%i", seq_len(nrow(constraints(x))))
+    col_names <- sprintf("C%i", seq_len(length(objective(x))))
+
+    ## Options
+    Options <- "Option IntVarUp = 0;"
+
+    ## Sets
+    Sets  <- create_sets(x)
+    Alias <- "alias (j, jj);"
+
+    ## Parameters
+    ## - Objective
+    if ( is.slam_zero_matrix(terms(objective(x))$L) ) {
+        objL <- NULL
+    } else {
+        objL <- create_sparse_vector(terms(objective(x))$L, "objL")
+    }
+    if ( is.slam_zero_matrix(terms(objective(x))$Q) ) {
+        objQ <- NULL
+    } else {
+        objQ <- create_sparse_matrix(terms(objective(x))$Q, "objQ(j, jj)", "C", "C")
+    }
+    
+    ## - Constraints
+    rhs <- create_parameter_vector(constraints(x)$rhs, "rhs", "i", row_names)
+
+    if ( nrow(constraints(x)) ) {
+        if ( is.slam_zero_matrix(constraints(x)$L) ) {
+            constrL <- NULL
+        } else {
+            constrL <- create_sparse_matrix(constraints(x)$L, "constrL(i, j)")
+        }
+        if ( is.L_constraint(constraints(x)) ) {
+            constrQ <- NULL
+        } else {
+            constrQ <- create_sparse_array_from_Q_constraint(constraints(x)$Q, "constrQ(i, j, jj)", "R", "C")
+        }
+    } else {
+        constrL <- NULL
+        constrQ <- NULL
+    }
+
+    j_binary <- which(types(x) == "B")
+    j_integer <- which(types(x) == "I")
+    j_continuous <- setdiff(seq_len(n_of_variables), union(j_binary, j_integer))
+
+    ## Variables
+    ## NOTE: We define the variables as positive to get the ROI
+    ##       default bounds but we can alter the bounds later anyways!
+    Variables <- paste(c("Variables obj;", 
+                         "Positive Variables x(j);",
+                         if (length(j_binary)) "Binary Variables bin(jbin);" else NULL,
+                         if (length(j_integer)) "Integer Variables int(jint);" else NULL),
+                       collapse = "\n")
+
+    ## Variable Bounds
+    ## x.lo
+    ## x.up
+    ## x.lo('C2') = -inf;
+    LoB <- build_lower_bounds(x, j_integer)
+    UpB <- build_upper_bounds(x, j_integer)
+
+    ## Equations
+    Equations_declaration <- "Equations\n    ObjSum"
+
+    if ( is.null(terms(objective(x))$Q) ) {
+        ObjSum <- "ObjSum .. obj =e= sum(j, x(j) * objL(j)) ;"
+    } else if ( is.slam_zero_matrix(terms(objective(x))$L) ) {
+        ObjSum <- "ObjSum .. obj =e= 0.5  * sum(j, x(j) * sum(jj, objQ(j, jj) * x(jj)) ) ;"
+    } else {
+        ObjSum <- "ObjSum .. obj =e= 0.5  * sum(j, x(j) * sum(jj, objQ(j, jj) * x(jj)) )  + sum(j, x(j) * objL(j)) ;"
+    }
+
+    is_quad <- !unlist(lapply(constraints(x)$Q, is.slam_zero_matrix), 
+                       recursive = FALSE, use.names = FALSE)
+    is_eq <- constraints(x)$dir == "=="
+
+    if ( any( (!is_quad) & is_eq ) & !is.slam_zero_matrix(constraints(x)$L) ) {
+        EqL <- "LinEq(ieq) .. sum(j, constrL(ieq, j) * x(j)) =e= rhs(ieq) ;\n"
+        Equations_declaration <- paste(Equations_declaration, "    LinEq(ieq)", sep = "\n")
+    } else {
+        EqL <- NULL
+    }
+
+    if ( any( is_quad & is_eq ) ) {
+        if ( is.slam_zero_matrix(constraints(x)$L) ) {
+            EqQ <- "QuadEq(keq) .. 0.5  * sum(j, x(j) * sum(jj, constrQ(keq, j, jj) * x(jj)) ) =e= rhs(keq) ;"
+        } else {
+            EqQ <- "QuadEq(keq) .. 0.5  * sum(j, x(j) * sum(jj, constrQ(keq, j, jj) * x(jj)) )  + sum(j, x(j) * constrL(keq, j)) =e= rhs(keq) ;"
+        }
+        Equations_declaration <- paste(Equations_declaration, "    QuadEq(keq)", sep = "\n")
+    } else {
+        EqQ <- NULL
+    }      
+
+    is_leq <- constraints(x)$dir %in% c("<", "<=")
+
+    if ( any( (!is_quad) & is_leq ) ) {
+        LeqL <- "LinLeq(ileq) .. sum(j, constrL(ileq, j) * x(j)) =l= rhs(ileq) ;\n"
+        Equations_declaration <- paste(Equations_declaration, "    LinLeq(ileq)", sep = "\n")
+    } else {
+        LeqL <- NULL
+    }
+
+    if ( any( is_quad & is_leq ) ) {
+        if ( is.slam_zero_matrix(constraints(x)$L) ) {
+            LeqQ <- "QuadLeq(kleq) .. 0.5  * sum(j, x(j) * sum(jj, constrQ(kleq, j, jj) * x(jj)) ) =l= rhs(kleq) ;"
+        } else {
+            LeqQ <- "QuadLeq(kleq) .. 0.5  * sum(j, x(j) * sum(jj, constrQ(kleq, j, jj) * x(jj)) )  + sum(j, x(j) * constrL(kleq, j)) =l= rhs(kleq) ;"
+        }
+        Equations_declaration <- paste(Equations_declaration, "    QuadLeq(kleq)", sep = "\n")
+    } else {
+        LeqQ <- NULL
+    }
+
+    is_geq <- constraints(x)$dir %in% c(">", ">=")
+    if ( any( (!is_quad) & is_geq ) ) {
+        GeqL <- "LinGeq(igeq) .. sum(j, constrL(igeq, j) * x(j)) =g= rhs(igeq) ;\n"
+        Equations_declaration <- paste(Equations_declaration, "    LinGeq(igeq)", sep = "\n")
+    } else {
+        GeqL <- NULL
+    }
+    if ( any( is_quad & is_geq ) ) {
+        if ( is.slam_zero_matrix(constraints(x)$L) ) {
+            GeqQ <- "QuadGeq(kgeq) .. 0.5  * sum(j, x(j) * sum(jj, constrQ(kgeq, j, jj) * x(jj)) ) =g= rhs(kgeq) ;"            
+        } else {
+            GeqQ <- "QuadGeq(kgeq) .. 0.5  * sum(j, x(j) * sum(jj, constrQ(kgeq, j, jj) * x(jj)) )  + sum(j, x(j) * constrL(kgeq, j)) =g= rhs(kgeq) ;"
+        }
+        Equations_declaration <- paste(Equations_declaration, "    QuadGeq(kgeq)", sep = "\n")
+    } else {
+        GeqQ <- NULL
+    }
+
+    if ( length(j_integer) ) {
+        IntEq <- "IntEq(jint) .. x(jint) =e= int(jint);"
+        Equations_declaration <- paste(Equations_declaration, "    IntEq(jint)", sep = "\n")
+    } else {
+        IntEq <- NULL
+    }
+
+    if ( length(j_binary) ) {
+        BinEq <- "BinEq(jbin) .. x(jbin) =e= bin(jbin);"
+        Equations_declaration <- paste(Equations_declaration, "    BinEq(jbin)", sep = "\n")
+    } else {
+        BinEq <- NULL
+    }
+
+    Equations_declaration <- sprintf("%s;\n", Equations_declaration)
+
+
+    ## Model
+    Model <- "Model LinearProblem /all/ ;\n"
+
+    ## Solve
+    model_type <- if ( any(types(x) %in% c("B", "I")) ) "MIQCP" else "QCP"
+    Solve <- sprintf("Solve LinearProblem using %s %s obj ;\n", model_type,
+                     if ( maximum(x) ) "maximizing" else "minimizing" )
+
+    ## Display
+    Display_options <- "option decimals = 8;\n" ## 8 is the maximum
+    Display <- "display '---BEGIN.SOLUTION---', x.l, '---END.SOLUTION---';\n\n"
+
+
+    model <- paste(c(Sets, Alias, "", objL, objQ, constrL, constrQ, rhs,
+                     Variables, LoB, UpB, "", Equations_declaration, ObjSum,
+                     EqL, EqQ, LeqL, LeqQ, GeqL, GeqQ, IntEq, BinEq, "",
+                     Model, Solve, Display_options, Display), collapse = "\n")
+    model
+}
+
