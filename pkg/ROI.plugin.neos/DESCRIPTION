@@ -1,12 +1,12 @@
 Package: ROI.plugin.neos
-Version: 0.2-5
-Title: 'NEOS' Plugin for the 'R' Optimization Interface
+Version: 0.3-0
+Title: 'NEOS' Plug-in for the 'R' Optimization Interface
 Authors@R: c( person("Ronald", "Hochreiter", role = "aut"),
               person("Florian", "Schwendinger", role = c("aut", "cre"), email = "FlorianSchwendinger@gmx.at"))
 Description: Enhances the 'R' Optimization Infrastructure ('ROI') package
              with a connection to the 'neos' server. 'ROI' optimization
              problems can be directly be sent to the 'neos' server
-             and solution obtained in the typicall 'ROI' style.
+             and solution obtained in the typical 'ROI' style.
 Imports: stats, methods, utils, ROI (>= 0.3-0), rneos
 Suggests: slam
 License: GPL-3
