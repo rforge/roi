@@ -1,0 +1,83 @@
+---
+title: "ROI Plug-in Neos"
+date: "`r Sys.Date()`"
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{ROI Plug-in Neos}
+output: knitr:::html_vignette
+---
+
+## Neos
+**TODO: Kurze Erklärung was Neos ist.**
+
+### Solvers
+```{r solver, echo = FALSE}
+library(knitr)
+
+neos_milp_solver <- c("Cbc", "CPLEX", "FICO-Xpress", "MOSEK", "scip")
+neos_lp_solver <- union(c("BDMLP", "CPLEX", "FICO-Xpress", "MOSEK"), neos_milp_solver)
+
+neos_miqcqp_solver <- union(c("AlphaECP", "BARON", "Bonmin", "Couenne", "DICOPT", 
+                              "Knitro",  "LINDOGlobal", "SBB", "scip"), 
+                            c("MOSEK", "CPLEX"))
+neos_miqp_solver <- neos_miqcqp_solver
+neos_qcqp_solver <- union(c("CONOPT", "Ipopt", "Knitro", "MINOS", "MOSEK", 
+                            "PATHNLP", "SNOPT"), 
+                          neos_miqcqp_solver)
+neos_qp_solver <- neos_qcqp_solver
+neos_solver <- unique(c(neos_lp_solver, neos_milp_solver, neos_qcqp_solver, neos_miqcqp_solver))
+n <- length(neos_solver)
+df <- data.frame(LP = character(n), MILP = character(n), 
+                 QP = character(n), MIQP = character(n), 
+                 QCQP = character(n), MIQCQP = character(n), stringsAsFactors = FALSE)
+rownames(df) <- sort(neos_solver)
+df$LP[rownames(df) %in% neos_lp_solver] <- "X"
+df$MILP[rownames(df) %in% neos_milp_solver] <- "X"
+df$QP[rownames(df) %in% neos_qp_solver] <- "X"
+df$MIQP[rownames(df) %in% neos_miqp_solver] <- "X"
+df$QCQP[rownames(df) %in% neos_qcqp_solver] <- "X"
+df$MIQCQP[rownames(df) %in% neos_miqcqp_solver] <- "X"
+kable(df)
+```
+
+## ROI Plug-in Neos
+Provides adds Neos as a solver to the R Optimization Infrastructure (ROI).
+
+
+## Examples
+```{r load_ROI}
+Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+library(ROI)
+library(ROI.plugin.neos)
+```
+
+### Basic Example
+```{r basic_example}
+obj <- c(3, 1, 3)
+A <- rbind(c(-1,  2,  1),
+           c( 0,  4, -3),
+           c( 1, -3,  2))
+b <- c(4, 2, 3)
+
+x <- OP(objective = obj,
+     constraints = L_constraint(L = A,
+                                dir = c("<=", "<=", "<="),
+                                rhs = b),
+     types = c("I", "C", "I"),
+     maximum = TRUE)
+
+cntrl <- list(method = "scip", user = "fschwend", 
+	          email = "fschwend@wu.ac.at")
+s <- ROI_solve(x, solver="neos", control = cntrl)
+solution(s)
+```
+
+The entire solver message can be obtained by.
+```{r basic_example_msg}
+cat(solution(s, "msg"))
+```
+
+### Application
+**TODO: Eine Beispielanwendung für die man einen speziellen Solver braucht.**
+
+
