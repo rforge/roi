@@ -247,7 +247,7 @@ neos_solve_gams <- function(x, control = list()) {
     if ( is.null(control$interface) ) control$interface <- ""
     if ( is.null(control$id) ) control$id <- 0
 
-    check_control_arguments(control)   
+    check_control_arguments(control)
     
     language <- "GAMS"
     model_type <- which_model_type(x)
@@ -259,9 +259,12 @@ neos_solve_gams <- function(x, control = list()) {
         control$method <- select_method(model_type, is_mip)
         warning("no method provided set to ", shQuote(control$method))
     } else {
-        control$method <- neos_solver_mapping[tolower(control$method)]
-        if ( is.na(control$method) )
+        solver_method <- neos_solver_mapping[tolower(control$method)]
+        if ( is.na(solver_method) ) {
             stop("unknown solver: ", shQuote(control$method))
+        } else {
+            control$method <- solver_method
+        }
     }
     check_method(control$method, model_type, is_mip)
 

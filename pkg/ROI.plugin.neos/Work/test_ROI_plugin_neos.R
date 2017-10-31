@@ -101,7 +101,12 @@ cat(ROI.plugin.neos:::roi_lp_to_gams(x))
 
 cplex1 <- ROI_solve(x, solver="cplex")
 
-control <- list(method = "cplex", user = "fschwend", email = "fschwend@wu.ac.at")
+
+control <- list(method = "gurobi", user = "fschwend", 
+                email = "fschwend@wu.ac.at")
+
+control <- list(method = "cplex", user = "fschwend", 
+                email = "fschwend@wu.ac.at")
 opt1 <- ROI_solve(x, solver = solver, control = control)
 opt1
 solution(opt1)
@@ -299,8 +304,8 @@ constraints(x) <- Q_constraint(Q = list(matrix(c(-89,  -8,   4,
                                         matrix(c(-75,  13,   1, 
                                                   13,  -6, -14, 
                                                    1, -14, -98), 3, 3)),
-                               L = matrix(c( 600, 5800, 1550, 
-                                            1050, 5500, 3650), 2, 3),
+                                 L = matrix(c( 600, 5800, 1550, 
+                                              1050, 5500, 3650), 2, 3),
                                dir = c(">=", ">="), 
                                rhs = c(50000, 10000))
 round(runif(3, 0, 100), 2)
@@ -320,6 +325,20 @@ as.F_constraint(constraints(x))$F[[2]](s)
 control <- list(method = "BARON", user = "fschwend", email = "fschwend@wu.ac.at")
 opt5 <- ROI_solve(x, solver = solver, control = control)
 opt5
+
+control <- list(method = "cplex", user = "fschwend", email = "fschwend@wu.ac.at")
+opt7 <- ROI_solve(x, solver = solver, control = control)
+opt7
+solution(opt7)
+emacs(strsplit(opt7$message, "\n"))
+
+control <- list(method = "scip", user = "fschwend", email = "fschwend@wu.ac.at")
+opt8 <- ROI_solve(x, solver = solver, control = control)
+opt8
+solution(opt8)
+
+cat(ROI.plugin.neos:::roi_qcqp_to_gams(x), file = "~/TEMP/QCQP.gms")
+
 
 job <- eval(opt5)
 results <- NgetFinalResults(obj = job, convert = TRUE)
