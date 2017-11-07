@@ -129,8 +129,11 @@ solve_op <- function(x, control) {
         control$trace <- FALSE
     if ( is.NO_constraint(constraints(x)) ) {
         if ( !is.null(control$start) & is.null(control$initialpop) )
-            initialpop <- control$start
+            control$initialpop <- control$start
         return(solve_deoptim(x, control))
+    }
+    if ( !is.null(control$start) & is.null(control$add_to_init_pop) ) {
+        control$add_to_init_pop <- control$start
     }
     return(solver_deoptimr(x, control))
 }
