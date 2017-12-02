@@ -43,3 +43,49 @@ z <- ROI_solve( globopt(x = "Rastrigin"), start =  double(10))
 abs(solution(z, "objval") - globopt("metainfo")["Rastrigin", "optimum"])
 
 
+
+##
+##
+##
+q("no")
+Rdevel
+
+library(globalOptTests)
+Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+library(ROI)
+library(ROI.models.globalOptTests)
+
+globopt()
+## get all test problems
+
+## get a single problem
+globopt("MieleCantrell")
+## get the meta information
+globopt("metainfo")
+
+x <- globopt("all")
+
+probs <- ROI.models.globalOptTests:::globopt_names()
+
+for ( i in seq_along(probs) ) {
+    test_name <- probs[i]
+    test_name
+    i
+    n <- getProblemDimen(test_name)
+    db <- getDefaultBounds(test_name)
+    vb <- V_bound(li=seq_along(db$lower), ui=seq_along(db$upper), 
+                  lb=db$lower, ub=db$upper)
+    fun <- function(x) {
+        finiteize(goTest(x, test_name))
+    }
+    fun(rep.int(0, n))
+    fobj <- F_objective(F= fun, n=n)
+    OP(objective=fobj, bounds=vb)
+}
+
+
+build_ROI_object(test_name)
+
+finiteize <- function(x) {
+    if ( !is.finite(x) ) .Machine[["double.xmax"]] else x
+}

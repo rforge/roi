@@ -5,10 +5,16 @@ build_ROI_object <- function(test_name) {
     db <- getDefaultBounds(test_name)
     vb <- V_bound(li=seq_along(db$lower), ui=seq_along(db$upper), 
                   lb=db$lower, ub=db$upper)
-    fobj <- F_objective(F=function(x) goTest(x, test_name), n=n)
+    fun <- function(x) {
+      finiteize(goTest(x, test_name))
+    }
+    fobj <- F_objective(F= fun, n=n)
     OP(objective=fobj, bounds=vb)
 }
 
+finiteize <- function(x) {
+    if ( !is.finite(x) ) .Machine[["double.xmax"]] else x
+}
 
 globopt_names <- function() {
     c("Ackleys", "AluffiPentini", "BeckerLago", "Bohachevsky1", "Bohachevsky2", 
