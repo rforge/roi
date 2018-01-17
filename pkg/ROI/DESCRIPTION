@@ -9,7 +9,7 @@ Authors@R: c( person("Kurt", "Hornik", role = "aut"),
 Description: The R Optimization Infrastructure ('ROI') is a
     sophisticated framework for handling optimization problems in R.
 Depends: R (>= 2.10)
-Imports: methods, registry, slam, utils
+Imports: methods, registry (>= 0.5), slam, utils
 Suggests: ROI.plugin.alabama, ROI.plugin.ecos, ROI.plugin.glpk,
         ROI.plugin.ipop, ROI.plugin.lpsolve, ROI.plugin.nloptr,
         ROI.plugin.optimx, ROI.plugin.scs, ROI.plugin.symphony,
