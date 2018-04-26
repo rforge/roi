@@ -20,6 +20,7 @@ if (FALSE) {
     rownames(roi_solver_cran)
 
     solver_db_rforge <- readRDS("SOLVERS_R-Forge.rds")
+    solver_db_rforge$Package
     head(solver_db_rforge, 1)
     class(solver_db_rforge[1, "Signature"])
 

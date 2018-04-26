@@ -18,6 +18,9 @@ if (FALSE) {
     rforge <- "http://R-Forge.R-project.org"
 
     rownames(roi_solver_cran)
+
+    solver_db_cran$Package
+    
 }
 
 
