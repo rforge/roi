@@ -3,7 +3,7 @@ setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
 
 source("create_solver_db_functions.R")
 
-R <- "/home/florian/bin/R-devel/bin/R"
+R <- "/home/florian/bin/R_dev/bin/R"
 RFORGE <- "https://r-forge.r-project.org"
 
 ## r_version, lib.loc, repos 

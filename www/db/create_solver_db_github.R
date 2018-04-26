@@ -3,7 +3,7 @@ setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
 
 source("create_solver_db_functions.R")
 
-R <- "/home/florian/bin/R-devel/bin/R"
+R <- "/home/florian/bin/R_dev/bin/R"
 
 CRAN <- "https://cran.r-project.org/"
 REPOS <- c("dirkschumacher/ROI.plugin.cbc", "datastorm-open/ROI.plugin.clp",
