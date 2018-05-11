@@ -321,42 +321,65 @@ ReformulationDatabase <- function() {
     env
 }
 
+dir_to_cone <- function(dir) {
+    if ( !length(dir) ) return(NULL)
+    .dir_to_cone <- function(dir) {
+        if ( isTRUE(dir == "== ") ) {
+            K_zero(1L)
+        } else {
+            K_lin(1L)
+        }        
+    }
+    do.call(c, lapply(dir, .dir_to_cone))
+}
+
+dir_to_sign <- function(dir) {
+    if ( !length(dir) ) return(1)
+    ifelse(dir == ">=", -1, 1)
+}
+
+## TODO:
+## - check maximize / minimize
 qp_to_socp <- function(x) {
+    n <- length(objective(x))
     Q <- terms(objective(x))[['Q']]
-    L <- terms(objective(x))[['L']]
+    q <- terms(objective(x))[['L']]
     if ( x$maximum ) {
         Q <- -Q
-        L <- -L
+        q <- -q
         x$maximum <- FALSE
     }
+    
     ## fix zeros in the diagonal
     k <- setdiff(seq_len(NROW(Q)), Q$i[Q$i == Q$j])
     if ( length(k) > 0 ) {
-        Q[k, k] <- 1e-12
+        Q[k, k] <- 1e-32
     }
-    ## Q <- as_dgCMatrix( Q )
+
     F <- chol(Q)
     Finv <- backsolve(F, diag(1, nrow(F)))
-    a <- numeric(length(objective(x)) + 1L)
-    a[length(a)] <- 1
-    lo <- L_objective(L = a)
+
+    op <- OP(L_objective(L = c(double(n), 1)))
 
     L1 <- as.matrix(cbind(rbind(0, -F), c(-1, rep.int(0, nrow(F)))))
-    rhs <- c(0, as.vector(t(Finv) %*% as.vector(L)))
+    rhs <- c(0, as.vector(t(Finv) %*% as.vector(q)))
 
-    c.L <- constraints(x)$L
-    con <- C_constraint(L = rbind(L1, cbind(c.L, numeric(NROW(c.L)))),
-                        cones = c(K_soc(NROW(L1)), K_zero(nrow(c.L))),
-                        rhs = c(rhs, constraints(x)$rhs))
-    bo <- c(bounds(x), V_bound(li=1L, lb=-Inf))
+    dir_sign <- dir_to_sign(constraints(x)$dir)
+    L <- dir_sign * constraints(x)$L
+    m <- NROW(L)
 
-    if ( is.null(x$types) ) {
-        ty <- NULL
-    } else {
-        ty <- c(x$types, "C")
+    constraints(op) <- C_constraint(
+        L = rbind(L1, cbind(L, numeric(m))),
+        cones = c(K_soc(NROW(L1)), dir_to_cone(constraints(x)$dir)),
+        rhs = c(rhs, dir_sign * constraints(x)$rhs))
+    bounds(op) <- c(bounds(x), V_bound(li = 1L, lb = -Inf, nobj = n+1))
+
+    if ( !is.null(x$types) ) {
+        types(op) <- c(types(op), "C")
     }
-    OP(objective = lo, constraints = con, types = ty, bounds = bo)
+    op
 }
+
 
 ##  -----------------------------------------------------------
 ##  ROI_reformulate
