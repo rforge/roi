@@ -1,4 +1,70 @@
 
+to_gams <- function(x) UseMethod("ROI_to_gams")
+
+to_gams.OP <- function(x) {
+    model_type <- which_model_type(x)
+    to_gams <- switch(model_type, lp   = roi_lp_to_gams, 
+                                  qp   = roi_qp_to_gams, 
+                                  qcqp = roi_qcqp_to_gams)
+    to_gams(x)
+}
+
+
+create_table <- function(mat, table_name, row_names, col_names) {
+    table_header <- sprintf("Table %s(i, j)", table_name)
+    A <- as.character(mat)
+    ncmax <- max(nchar(A), nchar(col_names))
+    A <- sapply(A, prefix_spaces, ncmax + 1L)
+    A <- matrix(A, nrow(mat))
+    col_names <- unname(sapply(col_names, prefix_spaces, ncmax + 1L))
+    A <- rbind(col_names, A)
+
+    row_names = sprintf("  %s", row_names)
+    nrmax <- max(nchar(row_names))
+    row_names <- unname(sapply(c("", row_names), subfix_spaces, nrmax + 1L))
+    A <- apply(cbind(row_names, A), 1, paste, collapse = "")
+
+    sprintf("%s\n%s;\n", table_header, paste(A, collapse = "\n"))
+}
+
+create_sparse_vector <- function(vec, par_name) {
+    header <- sprintf("Parameter %s(j)", par_name)
+    sprintf("%s\n/%s/;\n", header, 
+            paste(sprintf("C%i %s", vec$j, as.character(vec$v)), collapse = "\n"))
+}
+
+create_sparse_matrix <- function(mat, par_name, row_prefix = "R", col_prefix = "C") {
+    header <- sprintf("Parameter %s", par_name)
+    sprintf("%s\n/%s/;\n", header, 
+            paste(sprintf("%s%i.%s%i %s", row_prefix, mat$i, col_prefix, 
+                          mat$j, as.character(mat$v)), collapse = "\n"))
+}
+
+## constr is a list of sparse matrices
+create_sparse_array_from_Q_constraint <- function(constr, par_name, row_prefix = "R", col_prefix = "C") {
+    ## Parname should be (keq, j, j)
+    header <- sprintf("Parameter %s", par_name)
+    array_index <- function(id, x) {
+        if (is.slam_zero_matrix(x)) integer(0) else rep.int(id, length(x$v))
+    }
+    k <- unlist(mapply(array_index, seq_along(constr), constr, 
+                       SIMPLIFY = FALSE, USE.NAMES = FALSE))
+    i <- unlist(lapply(constr, "[[", "i"))
+    j <- unlist(lapply(constr, "[[", "j"))
+    v <- unlist(lapply(constr, "[[", "v"))
+
+    sprintf("%s\n/%s/;\n", header, 
+            paste(sprintf("%s%i.%s%i.%s%i %s", row_prefix, k, 
+                          col_prefix, i, col_prefix, j,
+                          as.character(v)), collapse = "\n"))
+}
+
+create_parameter_vector <- function(vec, name, index_name, names) {
+    vec <- as.character(vec)
+    param <- sprintf("%s %s", names, vec)
+    sprintf("Parameter %s(%s)\n/%s/ ;\n", name, index_name, paste(param, collapse = "\n"))
+}
+
 create_sets <- function(x) {
     if ( is.L_constraint(constraints(x)) ) {
         lin_leq  <- which(constraints(x)$dir %in% c("<=", "<"))
