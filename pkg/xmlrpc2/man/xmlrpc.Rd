@@ -31,5 +31,12 @@ the reponse of \code{curl} or the response converted to
         \R objects.
 }
 \description{
-abc
+Call a reomte procedure with the \code{XML-RPC} protocol.
+}
+\examples{
+\dontrun{
+url <- "https://www.neos-server.org"
+xmlrpc(url, "listAllSolvers")
+xmlrpc(url, "listSolversInCategory", params = list(category = "socp"))
+}
 }

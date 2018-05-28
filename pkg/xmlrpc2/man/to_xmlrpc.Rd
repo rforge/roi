@@ -19,3 +19,7 @@ an object of class \code{"xml_node"} containing a \code{XML-RPC} call.
 \description{
 abc
 }
+\examples{
+params <- list(1L, 1:3, rnorm(3), LETTERS[1:3], charToRaw("A"))
+cat(as.character(to_xmlrpc("some_method", params)))
+}

@@ -6,7 +6,7 @@
 #  xmlrpc 
 #  =======
 #' @title Call the Remote Procedure
-#' @description abc
+#' @description Call a reomte procedure with the \code{XML-RPC} protocol.
 #' @param url a character string giving the url to the server.
 #' @param method a character string giving the name of the method 
 #'               to be invoked.
@@ -20,6 +20,12 @@
 #' @param useragent a character string giving the name of the \code{"User-Agent"}. 
 #' @return the reponse of \code{curl} or the response converted to 
 #'         \R objects.
+#' @examples
+#' \dontrun{
+#' url <- "https://www.neos-server.org"
+#' xmlrpc(url, "listAllSolvers")
+#' xmlrpc(url, "listSolversInCategory", params = list(category = "socp"))
+#' }
 #' @export
 xmlrpc <- function(url, method, params = list(), 
     handle = NULL, opts = list(), convert = TRUE, useragent = "xmlrpc") {
@@ -80,6 +86,9 @@ request_error_msg <- function(x) {
 #' @param params a list containing the parmeters which are added to 
 #'               the \code{XML} file sent via the remote procedure call.
 #' @return an object of class \code{"xml_node"} containing a \code{XML-RPC} call.
+#' @examples
+#' params <- list(1L, 1:3, rnorm(3), LETTERS[1:3], charToRaw("A"))
+#' cat(as.character(to_xmlrpc("some_method", params)))
 #' @export
 to_xmlrpc <- function(method, params) {
     root <- read_xml("<methodCall></methodCall>")

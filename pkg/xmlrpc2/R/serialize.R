@@ -149,6 +149,10 @@ list_to_array <- function(x) {
 #' @param xml a character string containing \code{XML} in the 
 #'            remote procedure call protocol format.
 #' @return an R object derived from the input.
+#' @examples
+#' params <- list(1L, 1:3, rnorm(3), LETTERS[1:3], charToRaw("A"))
+#' xml <- to_xmlrpc("some_method", params)
+#' from_xmlrpc(xml)
 #' @export
 from_xmlrpc <- function(xml) {
     stopifnot( inherits(xml, c("xml_node", "character")) )

@@ -17,3 +17,8 @@ an R object derived from the input.
 Convert an object of class \code{"xml_code"} or
   a character in the \code{XML-RPC} Format into an \R Object.
 }
+\examples{
+params <- list(1L, 1:3, rnorm(3), LETTERS[1:3], charToRaw("A"))
+xml <- to_xmlrpc("some_method", params)
+from_xmlrpc(xml)
+}
