@@ -1,13 +1,13 @@
 Package: xmlrpc2
 Type: Package
-Title: Implementation of the Remote Procedure Call Protocol ("XML-RPC")
+Title: Implementation of the Remote Procedure Call Protocol ('XML-RPC')
 Version: 1.0
 Date: 2018-03-27
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
-Description: The "XML-RPC" is a remote procedure call protocol 
-    based on "XML". The "xmlrpc2" package is inspired by the "XMLRPC"
-	package but uses the "curl" and "xml2" packages instead "RCurl" and "XML".
+Description: The 'XML-RPC' is a remote procedure call protocol 
+    based on 'XML'. The 'xmlrpc2' package is inspired by the 'XMLRPC'
+	package but uses the 'curl' and 'xml2' packages instead 'RCurl' and 'XML'.
 License: GPL-3
 Imports: curl, xml2, base64enc
 RoxygenNote: 6.0.1
