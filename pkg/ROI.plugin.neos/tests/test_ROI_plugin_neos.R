@@ -4,6 +4,8 @@ if ( FALSE ) {
     Rdevel
 }
 
+writeLines(c("", paste(" Test date:", Sys.time()), ""))
+
 Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 
 library(slam)
@@ -118,7 +120,7 @@ test_lp_02 <- function(solver) {
 test_lp_03 <- function(solver) {
     x <- OP(objective = c(2, 4, 3), constraints = NULL, maximum = FALSE)
 
-    opt <- ROI_solve(x, solver = solver)
+    opt <- ROI_solve(x, solver = "neos", method = "cbc")
     check("LP-03@03", equal(opt$solution, c(0, 0, 0), tol=1e-4))
     check("LP-03@03", equal(opt$objval, 0, tol=1e-4))
 }
