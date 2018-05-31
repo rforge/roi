@@ -4,11 +4,17 @@
 \alias{from_xmlrpc}
 \title{Convert from the \code{XML-RPC} Format into an \R Object.}
 \usage{
-from_xmlrpc(xml)
+from_xmlrpc(xml, raise_error = TRUE)
 }
 \arguments{
 \item{xml}{a character string containing \code{XML} in the 
 remote procedure call protocol format.}
+
+\item{raise_error}{a logical controling the behavior if the
+\code{XML-RPC} signals a fault. If \code{TRUE}
+an error is raised, if \code{FALSE} an 
+object inheriting from \code{"c("xmlrpc_error", "error")"}
+is returned.}
 }
 \value{
 an R object derived from the input.

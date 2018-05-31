@@ -5,7 +5,7 @@
 \title{Call the Remote Procedure}
 \usage{
 xmlrpc(url, method, params = list(), handle = NULL, opts = list(),
-  convert = TRUE, useragent = "xmlrpc")
+  convert = TRUE, useragent = "xmlrpc", raise_error = TRUE)
 }
 \arguments{
 \item{url}{a character string giving the url to the server.}
@@ -25,6 +25,16 @@ the \code{curl} response is converted else it is
 left unchanged.}
 
 \item{useragent}{a character string giving the name of the \code{"User-Agent"}.}
+
+\item{raise_error}{a logical controling the behavior if the status code
+of \code{curl_fetch_memory} signals an error.
+If \code{raise_error} is \code{TRUE} an error is raised,
+if \code{raise_error} is \code{FALSE} 
+no error is raised and an object inheriting from
+\code{c("fetch_error", error")} is returned.
+This object is the return value from \code{curl_fetch_memory}
+where just the class \code{c("fetch_error", error")}
+is added.}
 }
 \value{
 the reponse of \code{curl} or the response converted to 

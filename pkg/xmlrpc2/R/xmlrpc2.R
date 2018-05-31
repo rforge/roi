@@ -18,6 +18,15 @@
 #'                the \code{curl} response is converted else it is 
 #'                left unchanged.
 #' @param useragent a character string giving the name of the \code{"User-Agent"}. 
+#' @param raise_error a logical controling the behavior if the status code
+#'                    of \code{curl_fetch_memory} signals an error.
+#'                    If \code{raise_error} is \code{TRUE} an error is raised,
+#'                    if \code{raise_error} is \code{FALSE} 
+#'                    no error is raised and an object inheriting from
+#'                    \code{c("fetch_error", error")} is returned.
+#'                    This object is the return value from \code{curl_fetch_memory}
+#'                    where just the class \code{c("fetch_error", error")}
+#'                    is added.
 #' @return the reponse of \code{curl} or the response converted to 
 #'         \R objects.
 #' @examples
@@ -28,7 +37,8 @@
 #' }
 #' @export
 xmlrpc <- function(url, method, params = list(), 
-    handle = NULL, opts = list(), convert = TRUE, useragent = "xmlrpc") {
+    handle = NULL, opts = list(), convert = TRUE, useragent = "xmlrpc",
+    raise_error = TRUE) {
     stopifnot(is.character(url), is.character(method), 
               all(nchar(names(opts)) > 0), is.logical(convert))
 
@@ -53,11 +63,17 @@ xmlrpc <- function(url, method, params = list(),
 
     response <- curl_fetch_memory(url, handle)
     
-    if ( !is_successful_request(response$status_code) )
-        stop(request_error_msg(response$content))
+    if ( !is_successful_request(response$status_code) ) {
+        if (raise_error) {
+            stop(request_error_msg(response$content))
+        } else {
+            class(response) <- c("fetch_error", "error", class(response))
+            return(response)
+        }
+    }
 
     if ( isTRUE(convert) ) {
-        from_xmlrpc( rawToChar(response$content) )
+        from_xmlrpc( rawToChar(response$content), raise_error = raise_error )
     } else {
         response
     }

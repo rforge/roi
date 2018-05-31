@@ -148,16 +148,31 @@ list_to_array <- function(x) {
 #'   a character in the \code{XML-RPC} Format into an \R Object.
 #' @param xml a character string containing \code{XML} in the 
 #'            remote procedure call protocol format.
+#' @param raise_error a logical controling the behavior if the
+#'                    \code{XML-RPC} signals a fault. If \code{TRUE}
+#'                    an error is raised, if \code{FALSE} an 
+#'                    object inheriting from \code{"c("xmlrpc_error", "error")"}
+#'                    is returned.
 #' @return an R object derived from the input.
 #' @examples
 #' params <- list(1L, 1:3, rnorm(3), LETTERS[1:3], charToRaw("A"))
 #' xml <- to_xmlrpc("some_method", params)
 #' from_xmlrpc(xml)
 #' @export
-from_xmlrpc <- function(xml) {
+from_xmlrpc <- function(xml, raise_error = TRUE) {
     stopifnot( inherits(xml, c("xml_node", "character")) )
     if ( inherits(xml, "character") )
         xml <- read_xml(xml)
+
+    fault <- xml_children(xml_find_all(xml, "//methodResponse/fault"))
+    if ( length(fault) ) {
+        ans <- unlist(lapply(fault, from_rpc))
+        if (raise_error) {
+            stop(paste(paste(names(ans), ans, sep = ": "), collapse = "\n"))
+        } else {
+            return(structure(ans, class = c("xmlrpc_error", "error")))
+        }
+    }
     
     values <- xml_children(xml_find_all(xml, "//param/value"))
     ans <- lapply(values, from_rpc)
