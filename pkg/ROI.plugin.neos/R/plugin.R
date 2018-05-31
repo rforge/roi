@@ -13,10 +13,6 @@ write_gams <- function(x, file, ...) {
     writeLines(model, con = file)
 }
 
-solve_OP <- function(x, control = list()) {
-    neos_solve_gams(x, control)
-}
-
 set_default_control_values <- function(x) {
     default_cntrl <- list(interface = "", id = 0, user = "rneos")
     modifyList(x, default_cntrl[!names(default_cntrl) %in% names(x)])
@@ -62,7 +58,7 @@ neos_xml_call <- function(model, solver_name, email) {
     xml
 }
 
-c(email = "flo", list(model = "model", options = ""))
+## c(email = "flo", list(model = "model", options = ""))
 
 raise_licence_error <- function(password) {
     stop(paste(password, collapse = "\n"), 
@@ -80,7 +76,7 @@ if (FALSE) {
     control <- list()
 }
 
-neos_solve_gams <- function(x, control = list()) {
+solve_OP <- function(x, control = list()) {
     control <- set_default_control_values(control)
 
     if ( inherits(constraints(x), "NO_constraint") ) {
