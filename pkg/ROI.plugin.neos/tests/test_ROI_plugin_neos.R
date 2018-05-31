@@ -309,7 +309,7 @@ if ( !any("neos" %in% names(ROI_registered_solvers())) ) {
     solver <- "neos"
     STATS <- list(success = character(), missmatch = character())
     ## Deactivate testing since we don't want to spam the neos server.
-    if ( TRUE ) {
+    if ( FALSE ) {
         ## A linear Problem with linear constraints.
         local({test_lp_01(solver)})
         local({test_lp_02(solver)})
