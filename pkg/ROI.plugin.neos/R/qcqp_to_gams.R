@@ -157,22 +157,32 @@ roi_qcqp_to_gams <- function(x) {
 
 
     ## Model
-    Model <- "Model LinearProblem /all/ ;\n"
+    Model <- "Model QCQPProblem /all/ ;\n"
 
     ## Solve
     model_type <- if ( any(types(x) %in% c("B", "I")) ) "MIQCP" else "QCP"
-    Solve <- sprintf("Solve LinearProblem using %s %s obj ;\n", model_type,
+    Solve <- sprintf("Solve QCQPProblem using %s %s obj ;\n", model_type,
                      if ( maximum(x) ) "maximizing" else "minimizing" )
 
     ## Display
     Display_options <- "option decimals = 8;\n" ## 8 is the maximum
     Display <- "display '---BEGIN.SOLUTION---', x.l, '---END.SOLUTION---';\n\n"
 
+    Export_results <- c("file results /results.txt/;", 
+        "results.nw = 0;", ## numeric field lenght, 0 means as much as needed
+        "results.nd = 15;", 
+        "results.nr = 2;", ## display in scientific notation
+        "results.nz = 0;", ## don't round for display reasons
+        "put results;",
+        "put 'solution:'/;", "loop(j, put, x.l(j)/);",
+        "put 'objval:'/;", "put QCQPProblem.objval/;",
+        "put 'solver_status:'/;", "put QCQPProblem.solvestat/;",
+        "put 'model_status:'/;", "put QCQPProblem.modelstat/;")
 
     model <- paste(c(Sets, Alias, "", objL, objQ, constrL, constrQ, rhs,
                      Variables, LoB, UpB, "", Equations_declaration, ObjSum,
                      EqL, EqQ, LeqL, LeqQ, GeqL, GeqQ, IntEq, BinEq, "",
-                     Model, Solve, Display_options, Display), collapse = "\n")
+                     Model, Solve, Display_options, Display, Export_results), collapse = "\n")
     model
 }
 

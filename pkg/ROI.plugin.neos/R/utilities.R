@@ -10,12 +10,16 @@ check_control_arguments <- function(control) {
     }
 }
 
+has_valid_objective <- function(x) inherits(objective(x), "Q_objective")
+
+has_valid_constraints <- function(x) inherits(constraints(x), c("Q_constraint", "NO_constraint"))
+
 which_model_type <- function(x) {
-    if ( !inherits(objective(x), "Q_objective") | !inherits(constraints(x), "Q_constraint") ) {
+    if ( !has_valid_objective(x) | !has_valid_constraints(x) ) {
         stop("'ROI_to_gams' only supports linear and quadratic objectives and ",
              "linear and quadratic constraints!", call. = FALSE)
     }
-    if ( inherits(objective(x), "L_objective") & is.L_constraint(constraints(x)) ) {
+    if ( is_lp(x) ) {
         model_type <- "lp"
     } else if ( is.L_constraint(constraints(x)) ) {
         model_type <- "qp"
@@ -25,8 +29,18 @@ which_model_type <- function(x) {
     model_type
 }
 
+is_lp <- function(x) {
+    ( inherits(objective(x), "L_objective") 
+    & inherits(constraints(x), c("L_constraint", "NO_constraint")) )
+}
+
 is.slam_zero_matrix <- function(x) {
+    if ( is.null(x) ) return(TRUE)
     inherits(x, "simple_triplet_matrix") & isTRUE(length(x$v) == 0L)
+}
+
+clean <- function(x) {
+    tolower(gsub("\\W", "", x))
 }
 
 strip <- function(x) gsub("(^\\s+|\\s+$)", "", x)

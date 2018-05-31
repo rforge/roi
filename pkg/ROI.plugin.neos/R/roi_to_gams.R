@@ -1,5 +1,5 @@
 
-to_gams <- function(x) UseMethod("ROI_to_gams")
+to_gams <- function(x) UseMethod("to_gams")
 
 to_gams.OP <- function(x) {
     model_type <- which_model_type(x)

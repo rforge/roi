@@ -1,57 +1,100 @@
 
-neos_milp_solver <- c("Cbc", "CPLEX", "FICO-Xpress", "MOSEK", "scip")
-neos_lp_solver <- union(c("BDMLP", "CPLEX", "FICO-Xpress", "MOSEK"), neos_milp_solver)
-
-neos_miqcqp_solver <- union(c("AlphaECP", "BARON", "Bonmin", "Couenne", "DICOPT", 
-                              "Knitro",  "LINDOGlobal", "SBB", "scip"), 
-                            c("MOSEK", "CPLEX"))
-neos_miqp_solver <- neos_miqcqp_solver
-neos_qcqp_solver <- union(c("CONOPT", "Ipopt", "Knitro", "MINOS", "MOSEK", 
-                            "PATHNLP", "SNOPT"), 
-                          neos_miqcqp_solver)
-neos_qp_solver <- neos_qcqp_solver
-
-neos_solver <- unique(c(neos_lp_solver, neos_milp_solver, neos_qcqp_solver, neos_miqcqp_solver))
-neos_solver_mapping <- setNames(neos_solver, tolower(neos_solver))
-
-select_method <- function(model_type, is_mip) {
-    if ( is_mip ) {
-        if ( model_type == "lp" )
-            method <- "CPLEX"
-        else 
-            method <- "Knitro"
-    } else {
-        if ( model_type == "lp" )
-            method <- "CPLEX"
-        else 
-            method <- "Knitro"
-    }
-    unname(method)
+neos_milp_solver <- function() {
+    c("Cbc", "CPLEX", "FICO-Xpress", "MOSEK", "scip")
+}
+neos_lp_solver <- function() {
+    union(c("BDMLP", "CPLEX", "FICO-Xpress", "MOSEK"), neos_milp_solver())
 }
 
-extract_results <- function(results, jbin, jint, jcon) UseMethod("extract_results")
+neos_miqcqp_solver <- function() {
+    union(c("AlphaECP", "BARON", "Bonmin", "Couenne", "DICOPT", 
+            "Knitro",  "LINDOGlobal", "SBB", "scip"), c("MOSEK", "CPLEX"))
+}
 
-extract_results.NeosAns <- function(results, n) {
-    s <- gsub(".*\\-\\-\\-BEGIN\\.SOLUTION\\-\\-\\-\\s*", "", results@ans)
-    s <- gsub("---END\\.SOLUTION---.*", "", s)
-    s <- unlist(strsplit(s, "\\n+"))
-    s <- strip(s)
-    s <- s[!substr(s, 1, 3) == "---"]
-    s <- paste(s, collapse = ", ")
-    if ( any(grep("ALL", s, ignore.case = TRUE)) ) {
-        cnames <- sprintf("C%i", seq_len(n))
-        values <- rep.int(as.double(gsub("[^0-9.]", "", s)), n)
-    } else {
-        s <- unlist(strsplit(s, ",", fixed = TRUE))
-        s <- strip(s)
-        s <- strsplit(s, "\\s+")
-        cnames <- sapply(s, "[", 1)
-        values <- sapply(s, "[", 2)
+neos_miqp_solver <- neos_miqcqp_solver
+
+neos_qcqp_solver <- function() {
+    union(c("CONOPT", "Ipopt", "Knitro", "MINOS", "MOSEK", "PATHNLP", "SNOPT"), 
+          neos_miqcqp_solver())   
+}
+
+neos_qp_solver <- neos_qcqp_solver
+
+neos_solver <- function() {
+    unique(c(neos_lp_solver(), neos_milp_solver(), neos_qcqp_solver(), neos_miqcqp_solver()))
+}
+
+neos_solver_mapping <- function() {
+    setNames(neos_solver(), clean(neos_solver()))
+}
+
+check_selected_solver <- function(method, model_type, is_mip) {
+    if ( isTRUE(tolower(method) == "gurobi") ) {
+        stop("The Gurobi license for NEOS does not permit connections via XML-RPC. ",
+             "Therefore Gurobi is not available via ROI.plugin.neos.")
     }
-    s <- setNames(as.double(values), cnames)
-    nam <- sprintf("C%s", seq_len(n))
-    s <- s[nam]
-    names(s) <- nam
-    s[is.na(s)] <- 0
-    s
+    if ( is_mip ) {
+        if ( model_type == "lp" ) {
+            if ( !method %in% neos_milp_solver() ) {
+                if ( method %in% neos_miqcqp_solver() ) {
+                    warning("a MINLP solver is used for a MILP problem. ", 
+                            "Most likely one of the following solver would be ",
+                            "better suited for solving this problem: ", 
+                            paste(shQuote(neos_milp_solver()), collapse = ", "))
+                } else {
+                    stop("solver ", shQuote(method), " not applicable. ",
+                         "Most likely one of the following solver would be ",
+                         "better suited for solving this problem: ", 
+                         paste(shQuote(neos_milp_solver()), collapse = ", "))
+                }
+            }
+        } else {
+            if ( !method %in% neos_miqcqp_solver() ) {
+                stop("solver ", shQuote(method), " not applicable. ",
+                     "Most likely one of the following solver would be ",
+                     "better suited for solving this problem: ", 
+                     paste(shQuote(neos_miqcqp_solver()), collapse = ", "))                
+            }
+        }
+    } else {
+        if ( model_type == "lp" ) {
+            if ( !method %in% neos_solver() ) {
+                stop("solver ", shQuote(method), " not applicable. ",
+                     "Most likely one of the following solver would be ",
+                     "better suited for solving this problem: ", 
+                     paste(shQuote(neos_lp_solver()), collapse = ", "))
+            }
+            if ( !method %in% neos_lp_solver() ) {
+                warning("a MINLP solver is used for a MILP problem. ", 
+                        "Most likely one of the following solver would be ",
+                        "better suited for solving this problem: ", 
+                        paste(shQuote(neos_lp_solver()), collapse = ", "))
+            }
+        } else {
+            if ( !method %in% neos_qcqp_solver() ) {
+                stop("solver ", shQuote(method), " not applicable. ",
+                     "Most likely one of the following solver would be ",
+                     "better suited for solving this problem: ", 
+                     paste(shQuote(neos_qcqp_solver()), collapse = ", "))
+            }
+        }
+    }
+}
+
+## returns the category given the solver name this 
+## is necessary since the neos solver classification is kind of strange.
+## I kind of assume that this actually has no influence on the solution!
+## NOTE: for now just return lp
+match_category <- function(solver) {
+    mapping <- c("alphaecp" = "minco", "baron" = "minco", "bdmlp" = "lp", 
+                 "bonmin" = "minco", "cbc" = "milp", "conopt" = "nco", 
+                 "couenne" = "minco", "cplex" = "milp", "dicopt" = "minco", 
+                 "fico-xpress" = "milp", "gurobi" = "lp", "ipopt" = "nco", 
+                 "knitro" = "minco", "lindoglobal" = "minco", "minos" = "nco", 
+                 "mosek" = "milp", "pathnlp" = "nco", "sbb" = "minco", 
+                 "scip" = "minco" , "snopt" = "nco")
+    x <- mapping[clean(solver)]
+    if ( is.na(x) )
+        stop("unknown solver: ", shQuote(solver))
+    x
 }

@@ -1,5 +1,7 @@
 import("ROI")
-import("rneos")
+import("xml2")
+import("xmlrpc2")
 importFrom("methods", "getPackageName", "getFunction")
 importFrom("stats", "setNames", "terms", "aggregate")
-importFrom("utils", "tail")
+importFrom("utils", "tail", "modifyList")
+

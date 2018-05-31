@@ -8,10 +8,13 @@ Rdevel
 setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/pkg/ROI.plugin.neos/Work")
 
 library(rneos)
+
 Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 library(ROI)
 library(ROI.plugin.neos)
 library(ROI.plugin.cplex)
+
+Nping()
 
 ## attach(getNamespace("ROI.plugin.neos"))
 
@@ -44,6 +47,8 @@ opt0 <- ROI_solve(x, "neos", control)
 
 opt0
 solution(opt0)
+
+control <- list(method = "cplex")
 
 ##
 ## LP (OK: 23.10.2017)

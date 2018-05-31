@@ -1,8 +1,8 @@
 roi_qp_to_gams <- function(x) {
     n_of_variables <- length(objective(x))
     n_of_constraints <- nrow(constraints(x))
-    ## TODO: handle case no constraint
-    stopifnot(length(objective(x)) > 0, nrow(constraints(x)) > 0)
+    
+    stopifnot(length(objective(x)) > 0)
 
     signature <- unlist(OP_signature(x))
 
@@ -30,7 +30,11 @@ roi_qp_to_gams <- function(x) {
     }
     
     ## - Constraints
-    rhs <- create_parameter_vector(constraints(x)$rhs, "rhs", "i", row_names)
+    if ( n_of_constraints > 0 ) {
+        rhs <- create_parameter_vector(constraints(x)$rhs, "rhs", "i", row_names)    
+    } else {
+        rhs <- NULL
+    }    
 
     if ( nrow(constraints(x)) ) {
         constrL <- create_sparse_matrix(constraints(x)$L, "constrL(i, j)")
@@ -120,11 +124,20 @@ roi_qp_to_gams <- function(x) {
     Display_options <- "option decimals = 8;\n" ## 8 is the maximum
     Display <- "display '---BEGIN.SOLUTION---', x.l, '---END.SOLUTION---';\n\n"
 
+    Export_results <- c("file results /results.txt/;", 
+        "results.nw = 0;", ## numeric field lenght, 0 means as much as needed
+        "results.nd = 15;", 
+        "results.nr = 2;", ## display in scientific notation
+        "results.nz = 0;", ## don't round for display reasons
+        "put results;",
+        "put 'solution:'/;", "loop(j, put, x.l(j)/);",
+        "put 'objval:'/;", "put QuadraticProblem.objval/;",
+        "put 'solver_status:'/;", "put QuadraticProblem.solvestat/;",
+        "put 'model_status:'/;", "put QuadraticProblem.modelstat/;")
 
     model <- paste(c(Options, Sets, Alias, "", objL, objQ, constrL, rhs,
                      Variables, LoB, UpB, "", Equations_declaration, ObjSum,
                      Eq, Leq, Geq, IntEq, BinEq, Model, Solve, 
-                     Display_options, Display), collapse = "\n")
+                     Display_options, Display, Export_results), collapse = "\n")
     model
 }
-
