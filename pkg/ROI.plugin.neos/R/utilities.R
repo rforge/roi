@@ -6,14 +6,21 @@ new_xml_node <- function(name, data) {
 }
 
 xml_copy <- function(x) {
-    write_con <- textConnection("deep_copy", open = "w")
-    xml_serialize(x, write_con)
-    close(write_con)
-    read_con <- textConnection(deep_copy)
-    x_copy <- xml_unserialize(read_con)
-    close(read_con)
-    x_copy
+    read_xml(as.character(x))
 }
+
+##
+## R CMD check doesn't like this version.
+##
+## xml_copy_2 <- function(x) {
+##     write_con <- textConnection("deep_copy", open = "w", local = TRUE)
+##     xml_serialize(x, write_con)
+##     close(write_con)
+##     read_con <- textConnection(deep_copy)
+##     x_copy <- xml_unserialize(read_con)
+##     close(read_con)
+##     x_copy
+## }
 
 check_control_arguments <- function(control) {
     stopifnot(is.numeric(control$id))

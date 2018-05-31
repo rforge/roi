@@ -1,3 +1,9 @@
 Work
 Makefile
 
+inst/doc/cache
+inst/doc/ROI.plugin.neos.aux
+inst/doc/ROI.plugin.neos.tex
+inst/doc/Makefile
+inst/doc/ROI.plugin.neos.out
+inst/doc/ROI.plugin.neos.Rnw
