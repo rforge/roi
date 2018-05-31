@@ -1,19 +1,47 @@
 
-new_xml_node <- function(name, data) {
-    node <- xml_new_root(name)
-    xml_add_child(node, xml_cdata(data))
-    xml_child(xml_parent(node))
+##
+## The idea is to create less traffic for neos we save request results
+## in an in-memory database.
+##
+db <- new.env(parent = emptyenv())
+db$help <- NULL
+db$emailHelp <- NULL
+db$welcome <- NULL
+db$version <- NULL
+db$listAllSolvers <- NULL
+db$listCategories <- NULL
+
+neos_get_db <- function(key) {
+    db <- getNamespace("ROI.plugin.neos")$db
+    if ( missing(key) ) return(db)
+    db[[key]]
+}
+
+neos_set_db <- function(key, value) {
+    db <- getNamespace("ROI.plugin.neos")$db
+    db[[key]] <- value
+    invisible(NULL)
 }
 
 neos_url <- function() "https://www.neos-server.org"
+
 neos_simple_call <- function(method) xmlrpc(neos_url(), method)
-neos_help <- function() writeLines(neos_simple_call("help"))
-neos_emailHelp <- function() writeLines(neos_simple_call("emailHelp"))
-neos_welcome <- function() writeLines(neos_simple_call("welcome"))
-neos_version <- function() neos_simple_call("version")
+
+neos_lazy_simple_call <- function(method) {
+    if ( is.null(neos_get_db(method)) ) {
+        neos_set_db(method, xmlrpc(neos_url(), method))
+    } else {
+    }
+    neos_get_db(method)
+}
+
+neos_help <- function() writeLines(neos_lazy_simple_call("help"))
+neos_emailHelp <- function() writeLines(neos_lazy_simple_call("emailHelp"))
+neos_welcome <- function() writeLines(neos_lazy_simple_call("welcome"))
+neos_version <- function() neos_lazy_simple_call("version")
 neos_ping <- function() neos_simple_call("ping")
-neos_ls_solvers <- function() neos_simple_call("listAllSolvers")
-neos_ls_categories <- function() neos_simple_call("listCategories")
+neos_ls_solvers <- function() neos_lazy_simple_call("listAllSolvers")
+neos_ls_categories <- function() neos_lazy_simple_call("listCategories")
 
 neos_queue <- function(as_character = FALSE) {
     queue <- neos_simple_call("printQueue")
@@ -21,10 +49,14 @@ neos_queue <- function(as_character = FALSE) {
 }
 
 neos_solver_template <- function(category, solver_name, input_method) {
-    params <- list(category = category, solvername = solver_name, 
-                   inputMethod = input_method)
-    template <- xmlrpc(neos_url(), "getSolverTemplate", params = params)
-    read_xml(template)
+    key <- paste(clean(c(category, solver_name, input_method)), collapse = ":")
+    if ( is.null(neos_get_db(key)) ) {
+        params <- list(category = category, solvername = solver_name, 
+                       inputMethod = input_method)
+        template <- xmlrpc(neos_url(), "getSolverTemplate", params = params)
+        neos_set_db(key, read_xml(template))
+    }
+    xml_copy(neos_get_db(key))
 }
 
 set_templanete_parameters <- function(xml_template, params) {

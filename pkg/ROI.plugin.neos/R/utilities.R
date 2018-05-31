@@ -1,4 +1,20 @@
 
+new_xml_node <- function(name, data) {
+    node <- xml_new_root(name)
+    xml_add_child(node, xml_cdata(data))
+    xml_child(xml_parent(node))
+}
+
+xml_copy <- function(x) {
+    write_con <- textConnection("deep_copy", open = "w")
+    xml_serialize(x, write_con)
+    close(write_con)
+    read_con <- textConnection(deep_copy)
+    x_copy <- xml_unserialize(read_con)
+    close(read_con)
+    x_copy
+}
+
 check_control_arguments <- function(control) {
     stopifnot(is.numeric(control$id))
     if ( !all( c("user", "email") %in% names(control) ) ) {
