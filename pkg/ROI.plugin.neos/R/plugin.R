@@ -49,6 +49,7 @@ neos_xml_call <- function(model, solver_name, email) {
     argslist <- c(email = email, list(model = model, options = "", gdx = "", 
                                       wantgdx = "", wantlog = "", comments = ""))
     xml <- set_templanete_parameters(xml_template = template, params = argslist)
+    ## NOTE: This is not necessary any more.
     ## some solvers need a working email address not supported by rneos therefore
     ## we inject it
     ## if ( !is.null(email) ) {
@@ -57,8 +58,6 @@ neos_xml_call <- function(model, solver_name, email) {
     ## }
     xml
 }
-
-## c(email = "flo", list(model = "model", options = ""))
 
 raise_licence_error <- function(password) {
     stop(paste(password, collapse = "\n"), 
@@ -69,12 +68,12 @@ raise_licence_error <- function(password) {
          " Or just use a alternative solver.")
 }
 
-if (FALSE) {
-    library(xml2)
-    library(xmlrpc2)
-    attach(getNamespace("ROI.plugin.neos"), name = "package:ROI.plugin.neos")
-    control <- list()
-}
+## if (FALSE) {
+##     library(xml2)
+##     library(xmlrpc2)
+##     attach(getNamespace("ROI.plugin.neos"), name = "package:ROI.plugin.neos")
+##     control <- list()
+## }
 
 solve_OP <- function(x, control = list()) {
     control <- set_default_control_values(control)
