@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}NEOS}{2}{section.1}
+\contentsline {subsection}{\numberline {1.1}Solvers}{2}{subsection.1.1}
+\contentsline {section}{\numberline {2}\textbf {ROI.plugin.neos} introduction}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}First example}{3}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Provide a user name}{4}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Obtain the original solver message}{4}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Obtain the model}{6}{subsection.2.4}
+\contentsline {section}{\numberline {3}Use cases}{8}{section.3}
+\contentsline {subsection}{\numberline {3.1}A seemingly simple optimization problem}{8}{subsection.3.1}
+\contentsline {subsubsection}{\numberline {3.1.1}Introduction}{8}{subsubsection.3.1.1}
+\contentsline {subsubsection}{\numberline {3.1.2}Basic problem}{8}{subsubsection.3.1.2}
+\contentsline {subsubsection}{\numberline {3.1.3}Extension}{9}{subsubsection.3.1.3}

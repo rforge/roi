@@ -1,0 +1,12 @@
+base
+knitr
+xtable
+ROI
+ROI.plugin.glpk
+ROI.plugin.neos
+dplyr
+ROI.plugin.qpoases
+ompr
+ompr.roi
+CVXR
+slam

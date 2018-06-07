@@ -1,0 +1,373 @@
+%\VignetteIndexEntry{ROI Plug-in NEOS}
+%
+\documentclass[a4paper]{article}
+%% margins to 2.8 since than I can easily show
+\usepackage[left=2.8cm, right=2.8cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[colorlinks=true, citecolor=blue, linkcolor=red, urlcolor=red]{hyperref}
+\usepackage[round]{natbib}
+\usepackage{amsmath,amsfonts,amsthm,enumerate,bm}
+\usepackage{verbatim}
+
+\setlength{\parindent}{0pt}
+
+\newcommand{\pkg}[1]{\textbf{#1}}
+\newcommand{\proglang}[1]{\textsf{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+
+\author{
+    Hochreiter, Ronald\\
+    \texttt{ron@hochreiter.net}
+    \and 
+    Schwendinger, Florian\\
+    \texttt{FlorianSchwendinger@gmx.at}
+}
+\title{ROI Plug-in NEOS}
+
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(tidy=FALSE, fig.width=8, fig.height=4)
+@
+
+\setkeys{Gin}{width=\textwidth}
+
+<<echo=FALSE, results='hide'>>=
+options(width=78, prompt = "R> ", continue = "+  ", useFancyQuotes = FALSE)
+@ 
+
+\begin{document}
+\sloppy
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{NEOS}
+The NEOS Server can be used to solve several types of optimization problems.
+The optimization problems can be uploaded to the server and solved 
+by a chosen solver. More information can be found at 
+\url{https://neos-server.org/neos/}.
+
+\subsection{Solvers}
+\begin{center}
+<<solver, echo = FALSE, results="asis">>=
+library(xtable)
+neos_milp_solver <- c("Cbc", "CPLEX", "FICO-Xpress", "MOSEK", "scip")
+neos_lp_solver <- union(c("BDMLP", "CPLEX", "FICO-Xpress", "MOSEK"), neos_milp_solver)
+
+neos_miqcqp_solver <- union(c("AlphaECP", "ANTIGONE", "BARON", "Bonmin", 
+                              "Couenne", "DICOPT","Knitro",  "LINDOGlobal", 
+                              "SBB", "scip"), 
+                            c("MOSEK", "CPLEX"))
+neos_miqp_solver <- neos_miqcqp_solver
+neos_qcqp_solver <- union(c("CONOPT", "Ipopt", "Knitro", "MINOS", "MOSEK", 
+                            "PATHNLP", "SNOPT"), 
+                          neos_miqcqp_solver)
+neos_qp_solver <- neos_qcqp_solver
+neos_solver <- unique(c(neos_lp_solver, neos_milp_solver, neos_qcqp_solver, neos_miqcqp_solver))
+n <- length(neos_solver)
+df <- data.frame(LP = character(n), MILP = character(n), 
+                 QP = character(n), MIQP = character(n), 
+                 QCQP = character(n), MIQCQP = character(n), stringsAsFactors = FALSE)
+rownames(df) <- sort(neos_solver)
+df$LP[rownames(df) %in% neos_lp_solver] <- "X"
+df$MILP[rownames(df) %in% neos_milp_solver] <- "X"
+df$QP[rownames(df) %in% neos_qp_solver] <- "X"
+df$MIQP[rownames(df) %in% neos_miqp_solver] <- "X"
+df$QCQP[rownames(df) %in% neos_qcqp_solver] <- "X"
+df$MIQCQP[rownames(df) %in% neos_miqcqp_solver] <- "X"
+
+print(xtable(df))
+@
+\end{center}
+
+
+\section{\pkg{ROI.plugin.neos} introduction}
+The R Optimization Infrastructure (\pkg{ROI}) plug-in \pkg{ROI.plugin.neos}
+allows to make use of the optimization solvers provided on the NEOS server.
+Thereby the optimization problem can be formulated directly in \proglang{R},
+the optimization problem is sent to the NEOS server and after the 
+problem is solved the solution is fetched from the NEOS server and
+transformed into the typical \pkg{ROI} solution format. \\
+
+We set \verb+ROI_LOAD_PLUGINS+ to \code{FALSE} so no plugin is loaded 
+automatically. This can speed up the loading of \pkg{ROI} if many plugins 
+are installed.
+
+<<load_ROI, cache = FALSE>>=
+Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+library(ROI)
+library(ROI.plugin.neos)
+@
+
+
+\subsection{First example}
+We define the problem like any other optimization problem in \pkg{ROI}
+<<roi_basic_example>>=
+x <- OP(objective = c(3, 1, 3), maximum = TRUE)
+constraints(x) <- L_constraint(L = rbind(c(-1,  2,  1), c( 0,  4, -3), 
+                                         c( 1, -3,  2)), 
+                               dir = leq(3), rhs = c(4, 2, 3))
+types(x) <- c("I", "C", "I")
+@
+
+but instead of solving the problem locally with \code{"glpk"} or
+\code{"lpsolve"} we send the problem to the NEOS server to be solved
+by the SCIP solver.
+
+<<neos_basic_example, cache = TRUE>>=
+(s <- ROI_solve(x, solver = "neos", method = "scip"))
+solution(s)
+@
+
+Note that \code{method} is matched after performing the following cleaning function
+<<clean>>=
+clean <- function(x) tolower(gsub("\\W", "", x))
+@
+which means 
+<<clean_baron>>=
+clean("SCIP")
+clean("scip")
+clean("-scip.")
+clean("ScIp.")
+@
+would all select the \code{"SCIP"} solver.
+
+\subsection{Provide a user name}
+Some solvers (e.g. \code{"cplex"}) need a working email address, furthermore
+NEOS gives a higher priority to registered users. 
+
+<<error_no_email, cache = TRUE>>=
+ROI_solve(x, solver = "neos", method = "cplex")
+@
+
+The username and email address can be provided as control argument.
+
+<<set_user_name, cache = FALSE, eval = FALSE>>=
+s <- ROI_solve(x, solver = "neos", method = "cplex", 
+               email = "your_mailaddress@somewhere.net")
+@
+
+\subsection{Obtain the original solver message}
+The entire solver message can be obtained as follows.
+
+<<basic_example_msg_str, cache = FALSE>>=
+str(solution(s, "msg"))
+@
+
+We remove \verb+"\f"+ since otherwise it would give an error in \pkg{knitr}.
+
+\begin{footnotesize}
+<<basic_example_msg, cache = FALSE>>=
+cat(gsub("\f", "", solution(s, "msg")$message))
+@
+\end{footnotesize}
+
+\subsection{Obtain the model}
+The optimization model \pkg{ROI.plugin.neos} sends to NEOS can be
+inspected by setting the argument \verb+dry_run+ to \code{TRUE}.
+
+<<dry_run, cache = TRUE>>=
+model_call <- ROI_solve(x, solver = "neos", method = "mosek",
+                        dry_run = TRUE)
+cat(as.list(model_call)$xmlstring)
+@
+
+
+\section{Use cases}
+\subsection{A seemingly simple optimization problem}
+\subsubsection{Introduction}
+We present a seemingly simple optimization problem which is in fact pretty 
+hard to solve and shows that an utilization of the NEOS server through the 
+package \pkg{ROI.plugin.neos} makes sense and is easy and fun to use. \\
+
+We need the following R packages for our demonstration:
+
+<<load_pkgs, warning=FALSE, message=FALSE, error=FALSE>>=
+library(dplyr)
+library(ROI)
+library(ROI.plugin.glpk)
+library(ROI.plugin.qpoases)
+library(ompr)
+library(ompr.roi)
+library(CVXR)
+@
+
+
+\subsubsection{Basic problem}
+Let's consider the following problem from \cite{BertsimasFreund2000} where 
+the Magnetron Company manufactures two types of microwave ovens: 
+full-size and compact. 
+Each full-size oven requires 2 hours of general assembly and 2 hours of 
+electronic assembly, whereas each compact oven requires 1 hours of general 
+assembly and 3 hours of electronic assembly. 
+For the current production period, there are 500 hours of general assembly 
+labor and 800 hours of electronic assembly labor available. 
+The company estimates that it can sell up to 220 full-size and 180 compact 
+ovens with an earnings contribution of EUR 120 per full-size oven and 
+EUR 130 per compact oven. 
+Magnetron wants to find a production plan that maximizes earnings! \\
+ 
+Of course, this is a standard linear program that can be solved manually 
+or using a modeling language, but let's start with the definition of an 
+abstract meta decision model, which solves our problem:
+\begin{verbatim}
+variable F, C
+maximize 120F + 130C
+subject to
+    2F + C <= 500;
+    2F + 3C <= 800;
+    F <= 220, C <= 180
+    F >= 0, C >= 0
+\end{verbatim}
+
+Solving it manually with \pkg{ROI} can be done the following way:
+<<ex1_roi>>=
+lp <- OP(L_objective(c(120, 130), c("full", "compact")), 
+         L_constraint(L = rbind(c(2, 1), c(2, 3)),
+                      dir = c("<=", "<="), rhs = c(500, 800)), 
+         maximum = TRUE,
+         bounds = V_bound(ub = c(220, 180)))
+(sol <- ROI_solve(lp, solver = "glpk"))
+solution(sol)
+@
+
+Solving it with a modeling approach like `ompr` reads as follows:
+
+<<ex1_ompr>>=
+result <- MIPModel() %>%
+  add_variable(full, type = "continuous", lb = 0, ub=220) %>%
+  add_variable(compact, type = "continuous", lb = 0, ub=180) %>%
+  set_objective(120*full + 130*compact, "max") %>%
+  add_constraint(2*full + 1*compact <= 500) %>%
+  add_constraint(2*full + 3*compact <= 800) %>%
+  solve_model(with_ROI(solver = "glpk")) 
+get_solution(result, full)
+get_solution(result, compact)
+@
+
+\subsubsection{Extension}
+It was assumed that the prices of full-size and compact microwave ovens are 
+set so that the resulting unit contributions to earnings are EUR 120 and 
+EUR 130 per oven for full-size and compact microwave ovens, respectively. 
+As it turns out, the unit earnings contribution of EUR 120 per oven for 
+full-size ovens derives from the fact that Magnetron has set the price of a 
+full-size oven to be EUR 270, and the variable production cost of a full-size 
+oven is EUR 150 (and so the unit contribution to earnings is $120 = 270 - 150$. 
+Also, the unit earnings contribution of EUR 130 per oven for compact ovens 
+derives from the fact that Magnetron has set the price of a compact oven to 
+be EUR 230, and the variable production cost of a compact oven is EUR 100 
+(and so the unit contribution to earnings is EUR $130 = 230 - 100$. 
+As a next step in the marketing/production planning process, the company 
+would like to determine the optimal combination of prices and production 
+levels to maximize the overall contribution to earnings. \\
+ 
+The changes in the prices of ovens will result in changes in demand. 
+Suppose that Magnetron has estimated that the demand for their ovens is 
+related to the prices they set as follows, i.e. $D_F = 490 - P_F$ and 
+$D_C = 640 - 2P_C$ where $D_F$ and $D_C$ are the demands for full-size and 
+compact ovens, and $P_F$ and $P_C$ are the respective prices set by Magnetron
+for full-size and compact ovens. It is obvious that that when $P_F = 270$ and 
+$P_C = 230$, the demands are as specified in the linear model. \\
+ 
+The resulting meta-model looks like this:
+ 
+\begin{verbatim}
+variable F, C, P_F, P_C
+maximize F(P_F - 150) + C(P_C - 100)
+subject to:
+    2F + C <= 500  
+    2F + 3C <= 800 
+    F <= 490 - P_F  
+    C <= 640 - 2P_C 
+    F, C, PF, PC >= 0
+\end{verbatim}
+ 
+If we want to solve this nonlinear optimization model to determine the optimal 
+pricing and production strategy, we actually run into a problem. 
+This seemingly easy extension is actually problematic. 
+
+First we try to solve this problem by making use of the \pkg{CVXR} package.
+
+<<ex1a_cvxr>>=
+full <- Variable(1)
+compact <- Variable(1)
+p_full <- Variable(1)
+p_compact <- Variable(1)
+
+objective <- Maximize(full * (p_full - 150) + compact * (p_compact - 100))
+constr <- list(2 * full + compact <= 500,
+    2 * full + 3 * compact <= 800, full <= 490 - p_full,
+    compact <= 640 - 2 * p_compact, full >= 0, compact >= 0, 
+    p_full >= 0, p_compact >= 0)
+magnetron <- Problem(objective, constr)
+cvxr_sol <- solve(magnetron)
+@
+
+Here we see that since the problem is non-convex it cannot be solved 
+by \pkg{CVXR}. \\
+
+<<echo = FALSE, results = 'hide'>>=
+detach("package:CVXR", unload=TRUE)
+detach("package:ompr.roi", unload=TRUE)
+detach("package:ompr", unload=TRUE)
+detach("package:dplyr", unload=TRUE)
+
+library(ROI)
+@
+
+
+Especially in the case of quadratic non-convex optimization problems
+\pkg{ROI.plugin.neos} comes in handy, as we just need to formulate the model 
+in \pkg{ROI} and can directly send it off to the NEOS server as shown below.
+<<ex1a_roi>>=
+library(slam)
+Q <- simple_triplet_matrix(i = 1:4, j = c(2, 1, 4, 3), rep(1, 4))
+as.matrix(Q)
+var_names <- c("full", "price_full", "compact", "price_compact")
+o <- OP(
+    Q_objective(Q = Q, L = c(-150, 0, -100, 0),  names = var_names),
+    L_constraint(rbind(c(2, 0, 1, 0), c(2, 0, 3, 0),
+                       c(1, 1, 0, 0), c(0, 0, 1, 2)),
+                 dir = leq(4), rhs = c(500, 800, 490, 640)),
+    maximum = TRUE)
+@
+
+%% To solve this problem with \pkg{ROI} we have several options
+%% 
+%% \pkg{ROI.plugin.alabama}
+%% <<ex1a_alabama>>=
+%% library(ROI.plugin.alabama)
+%% p <- o
+%% constraints(p) <- as.F_constraint(constraints(o))
+%% do_solve <- function(x) {
+%%     ROI_solve(p, solver = "alabama", start = runif(4, 0, 100))
+%% }
+%% sols <- lapply(1:100, do_solve)
+%% i <- which.max(sapply(sols, solution, type = "objval"))
+%% (s1 <- sols[[i]])
+%% solution(s1)
+%% @
+%% 
+%%     \item \pkg{ROI.plugin.qpoases}
+%% <<ex1a_qpoases>>=
+%% (s2 <- ROI_solve(o, solver = "qpoases", enableDriftCorrection = 1L))
+%% solution(s2)
+%% @
+
+On the NEOS server there exist several options to solve non-convex
+quadratic problems. In this example we make use of the BARON solver.
+<<ex1a_neos, cache = TRUE>>=
+(sol <- ROI_solve(o, solver = "neos", method = "BARON"))
+solution(sol)
+@
+
+
+\bibliographystyle{plainnat}
+\bibliography{neos}
+
+
+\end{document}

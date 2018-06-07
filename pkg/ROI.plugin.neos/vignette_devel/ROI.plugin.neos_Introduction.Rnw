@@ -1,0 +1,751 @@
+%\VignetteIndexEntry{ROI Plug-in NEOS}
+%
+\documentclass[a4paper]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0, 0, 0}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.741,0.553,0.545}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.675,0.125,0.125}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.612,0.125,0.933}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.125,0.537,0.125}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0,0,1}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+%% margins to 2.8 since than I can easily show
+\usepackage[left=2.8cm, right=2.8cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[colorlinks=true, citecolor=blue, linkcolor=red, urlcolor=red]{hyperref}
+\usepackage[round]{natbib}
+\usepackage{amsmath,amsfonts,amsthm,enumerate,bm}
+\usepackage{verbatim}
+
+\setlength{\parindent}{0pt}
+
+\newcommand{\pkg}[1]{\textbf{#1}}
+\newcommand{\proglang}[1]{\textsf{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+
+\author{
+    Hochreiter, Ronald\\
+    \texttt{ron@hochreiter.net}
+    \and 
+    Schwendinger, Florian\\
+    \texttt{FlorianSchwendinger@gmx.at}
+}
+\title{ROI Plug-in NEOS}
+
+
+
+
+\setkeys{Gin}{width=\textwidth}
+
+
+
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+\sloppy
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{NEOS}
+The NEOS Server can be used to solve several types of optimization problems.
+The optimization problems can be uploaded to the server and solved 
+by a chosen solver. More information can be found at 
+\url{https://neos-server.org/neos/}.
+
+\subsection{Solvers}
+\begin{center}
+% latex table generated in R 3.4.0 by xtable 1.8-2 package
+% Thu Jun  7 22:13:34 2018
+\begin{table}[ht]
+\centering
+\begin{tabular}{rllllll}
+  \hline
+ & LP & MILP & QP & MIQP & QCQP & MIQCQP \\ 
+  \hline
+AlphaECP &  &  & X & X & X & X \\ 
+  ANTIGONE &  &  & X & X & X & X \\ 
+  BARON &  &  & X & X & X & X \\ 
+  BDMLP & X &  &  &  &  &  \\ 
+  Bonmin &  &  & X & X & X & X \\ 
+  Cbc & X & X &  &  &  &  \\ 
+  CONOPT &  &  & X &  & X &  \\ 
+  Couenne &  &  & X & X & X & X \\ 
+  CPLEX & X & X & X & X & X & X \\ 
+  DICOPT &  &  & X & X & X & X \\ 
+  FICO-Xpress & X & X &  &  &  &  \\ 
+  Ipopt &  &  & X &  & X &  \\ 
+  Knitro &  &  & X & X & X & X \\ 
+  LINDOGlobal &  &  & X & X & X & X \\ 
+  MINOS &  &  & X &  & X &  \\ 
+  MOSEK & X & X & X & X & X & X \\ 
+  PATHNLP &  &  & X &  & X &  \\ 
+  SBB &  &  & X & X & X & X \\ 
+  scip & X & X & X & X & X & X \\ 
+  SNOPT &  &  & X &  & X &  \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+\end{center}
+
+
+\section{\pkg{ROI.plugin.neos} introduction}
+The R Optimization Infrastructure (\pkg{ROI}) plug-in \pkg{ROI.plugin.neos}
+allows to make use of the optimization solvers provided on the NEOS server.
+Thereby the optimization problem can be formulated directly in \proglang{R},
+the optimization problem is sent to the NEOS server and after the 
+problem is solved the solution is fetched from the NEOS server and
+transformed into the typical \pkg{ROI} solution format. \\
+
+We set \verb+ROI_LOAD_PLUGINS+ to \code{FALSE} so no plugin is loaded 
+automatically. This can speed up the loading of \pkg{ROI} if many plugins 
+are installed.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{Sys.setenv}\hlstd{(}\hlkwc{ROI_LOAD_PLUGINS} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlkwd{library}\hlstd{(ROI)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# }}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Registered solver plugins: nlminb.}}
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Default solver: auto.}}\begin{alltt}
+\hlkwd{library}\hlstd{(ROI.plugin.neos)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\subsection{First example}
+We define the problem like any other optimization problem in \pkg{ROI}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{x} \hlkwb{<-} \hlkwd{OP}\hlstd{(}\hlkwc{objective} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{3}\hlstd{),} \hlkwc{maximum} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlkwd{constraints}\hlstd{(x)} \hlkwb{<-} \hlkwd{L_constraint}\hlstd{(}\hlkwc{L} \hlstd{=} \hlkwd{rbind}\hlstd{(}\hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{1}\hlstd{,}  \hlnum{2}\hlstd{,}  \hlnum{1}\hlstd{),} \hlkwd{c}\hlstd{(} \hlnum{0}\hlstd{,}  \hlnum{4}\hlstd{,} \hlopt{-}\hlnum{3}\hlstd{),}
+                                         \hlkwd{c}\hlstd{(} \hlnum{1}\hlstd{,} \hlopt{-}\hlnum{3}\hlstd{,}  \hlnum{2}\hlstd{)),}
+                               \hlkwc{dir} \hlstd{=} \hlkwd{leq}\hlstd{(}\hlnum{3}\hlstd{),} \hlkwc{rhs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{))}
+\hlkwd{types}\hlstd{(x)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"I"}\hlstd{,} \hlstr{"C"}\hlstd{,} \hlstr{"I"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+but instead of solving the problem locally with \code{"glpk"} or
+\code{"lpsolve"} we send the problem to the NEOS server to be solved
+by the SCIP solver.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{(s} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"scip"}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## Optimal solution found.
+## The objective value is: 2.675000e+01
+\end{verbatim}
+\begin{alltt}
+\hlkwd{solution}\hlstd{(s)}
+\end{alltt}
+\begin{verbatim}
+## [1] 5.00 2.75 3.00
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Note that \code{method} is matched after performing the following cleaning function
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{clean} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{tolower}\hlstd{(}\hlkwd{gsub}\hlstd{(}\hlstr{"\textbackslash{}\textbackslash{}W"}\hlstd{,} \hlstr{""}\hlstd{, x))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+which means 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{clean}\hlstd{(}\hlstr{"SCIP"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "scip"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{clean}\hlstd{(}\hlstr{"scip"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "scip"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{clean}\hlstd{(}\hlstr{"-scip."}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "scip"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{clean}\hlstd{(}\hlstr{"ScIp."}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "scip"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+would all select the \code{"SCIP"} solver.
+
+\subsection{Provide a user name}
+Some solvers (e.g. \code{"cplex"}) need a working email address, furthermore
+NEOS gives a higher priority to registered users. 
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"cplex"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in SOLVE(x, cntrl): CPLEX will not run unless you provide a valid email address.}}\end{kframe}
+\end{knitrout}
+
+The username and email address can be provided as control argument.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{s} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"cplex"}\hlstd{,}
+               \hlkwc{email} \hlstd{=} \hlstr{"your_mailaddress@somewhere.net"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\subsection{Obtain the original solver message}
+The entire solver message can be obtained as follows.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{str}\hlstd{(}\hlkwd{solution}\hlstd{(s,} \hlstr{"msg"}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## List of 5
+##  $ solution     : num [1:3] 5 2.75 3
+##  $ objval       : num 26.8
+##  $ solver_status: num 1
+##  $ model_status : num 8
+##  $ message      : chr "Executed on prod-exec-4.neos-server.org\n\fGAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 06"| __truncated__
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+We remove \verb+"\f"+ since otherwise it would give an error in \pkg{knitr}.
+
+\begin{footnotesize}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{cat}\hlstd{(}\hlkwd{gsub}\hlstd{(}\hlstr{"\textbackslash{}f"}\hlstd{,} \hlstr{""}\hlstd{,} \hlkwd{solution}\hlstd{(s,} \hlstr{"msg"}\hlstd{)}\hlopt{$}\hlstd{message))}
+\end{alltt}
+\begin{verbatim}
+## Executed on prod-exec-4.neos-server.org
+## GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 06/06/18 08:54:00 Page 1
+## G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+## C o m p i l a t i o n
+## 
+## 
+## 
+## 
+## COMPILATION TIME     =        0.001 SECONDS      3 MB  24.9.2 r64480 LEX-LEG
+## GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 06/06/18 08:54:00 Page 2
+## G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+## Model Statistics    SOLVE LinearProblem Using MIP From line 48
+## 
+## 
+## MODEL STATISTICS
+## 
+## BLOCKS OF EQUATIONS           3     SINGLE EQUATIONS            6
+## BLOCKS OF VARIABLES           3     SINGLE VARIABLES            6
+## NON ZERO ELEMENTS            16     DISCRETE VARIABLES          2
+## 
+## 
+## GENERATION TIME      =        0.002 SECONDS      4 MB  24.9.2 r64480 LEX-LEG
+## 
+## 
+## EXECUTION TIME       =        0.002 SECONDS      4 MB  24.9.2 r64480 LEX-LEG
+## GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 06/06/18 08:54:00 Page 3
+## G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+## Solution Report     SOLVE LinearProblem Using MIP From line 48
+## 
+## 
+##                S O L V E      S U M M A R Y
+## 
+##      MODEL   LinearProblem       OBJECTIVE  obj
+##      TYPE    MIP                 DIRECTION  MAXIMIZE
+##      SOLVER  SCIP                FROM LINE  48
+## 
+## **** SOLVER STATUS     1 Normal Completion         
+## **** MODEL STATUS      8 Integer Solution          
+## **** OBJECTIVE VALUE               26.7500
+## 
+##  RESOURCE USAGE, LIMIT          0.002      1000.000
+##  ITERATION COUNT, LIMIT         6    2000000000
+## 
+## SCIP             24.9.2 r64480 Released Nov 14, 2017 LEG x86 64bit/Linux      
+## 
+##                        LOWER     LEVEL     UPPER
+## 
+## ---- EQU ObjSum          .         .         .         
+## 
+## ---- EQU LinLeq  
+## 
+##       LOWER     LEVEL     UPPER
+## 
+## R1     -INF      3.500     4.000      
+## R2     -INF      2.000     2.000      
+## R3     -INF      2.750     3.000      
+## 
+## ---- EQU IntEq  
+## 
+##       LOWER     LEVEL     UPPER
+## 
+## C1      .         .         .         
+## C3      .         .         .         
+## 
+##                        LOWER     LEVEL     UPPER
+## 
+## ---- VAR obj            -INF     26.750     +INF       
+## 
+## ---- VAR x  
+## 
+##       LOWER     LEVEL     UPPER
+## 
+## C1      .        5.000     +INF       
+## C2      .        2.750     +INF       
+## C3      .        3.000     +INF       
+## 
+## ---- VAR int  
+## 
+##       LOWER     LEVEL     UPPER
+## 
+## C1      .        5.000     +INF       
+## C3      .        3.000     +INF       
+## 
+## 
+## **** REPORT SUMMARY :        0     NONOPT
+##                              0 INFEASIBLE
+##                              0  UNBOUNDED
+## GAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 06/06/18 08:54:00 Page 4
+## G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+## E x e c u t i o n
+## 
+## 
+## ----     52 ---BEGIN.SOLUTION---
+## 
+## ----     52 VARIABLE x.L  
+## 
+## C1 5.00000000,    C2 2.75000000,    C3 3.00000000
+## 
+## 
+## ----     52 ---END.SOLUTION---
+## 
+## **** REPORT FILE SUMMARY
+## 
+## results /var/lib/condor/execute/dir_1203368/results.txt
+## 
+## 
+## EXECUTION TIME       =        0.000 SECONDS      3 MB  24.9.2 r64480 LEX-LEG
+## 
+## 
+## USER: Small MUD - 5 User License                     G170411/0001AS-LNX
+##       University of Wisconsin-Madison, Computer Sciences Dept.   DC8499
+##       License for teaching and research at degree granting institutions
+## 
+## 
+## **** FILE SUMMARY
+## 
+## Input      /var/lib/condor/execute/dir_1203368/MODEL.gms
+## Output     /var/lib/condor/execute/dir_1203368/solve.out
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+\end{footnotesize}
+
+\subsection{Obtain the model}
+The optimization model \pkg{ROI.plugin.neos} sends to NEOS can be
+inspected by setting the argument \verb+dry_run+ to \code{TRUE}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{model_call} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"mosek"}\hlstd{,}
+                        \hlkwc{dry_run} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\hlkwd{cat}\hlstd{(}\hlkwd{as.list}\hlstd{(model_call)}\hlopt{$}\hlstd{xmlstring)}
+\end{alltt}
+\begin{verbatim}
+## <?xml version="1.0" encoding="UTF-8"?>
+## <document>
+##   <category>milp</category>
+##   <solver>MOSEK</solver>
+##   <inputMethod>GAMS</inputMethod>
+##   <model><![CDATA[Option IntVarUp = 0;
+## 
+## Set i / R1*R0 / ;
+## Set j / C1*C3 / ;
+## Set jint(j) / C1, C3 / ;
+## 
+## Parameter objL(j)
+## /C1 3
+## C2 1
+## C3 3/ ;
+## 
+## 
+## Variables obj;
+## Positive Variables x(j);
+## Integer Variables int(jint);
+## 
+## 
+## Equations
+##     ObjSum
+##     IntEq(jint);
+## 
+## ObjSum .. obj =e= sum(j, x(j) * objL(j)) ;
+## IntEq(jint) .. x(jint) =e= int(jint);
+## 
+## Model LinearProblem /all/ ;
+## 
+## Solve LinearProblem using MIP maximizing obj ;
+## 
+## option decimals = 8;
+## 
+## display '---BEGIN.SOLUTION---', x.l, '---END.SOLUTION---';
+## 
+## 
+## file results /results.txt/;
+## results.nw = 0;
+## results.nd = 15;
+## results.nr = 2;
+## results.nz = 0;
+## put results;
+## put 'solution:'/;
+## loop(j, put, x.l(j)/);
+## put 'objval:'/;
+## put LinearProblem.objval/;
+## put 'solver_status:'/;
+## put LinearProblem.solvestat/;
+## put 'model_status:'/;
+## put LinearProblem.modelstat/;]]></model>
+##   <options><![CDATA[]]></options>
+##   <gdx><![CDATA[]]></gdx>
+##   <wantgdx><![CDATA[]]></wantgdx>
+##   <wantlog><![CDATA[]]></wantlog>
+##   <comments><![CDATA[]]></comments>
+## </document>
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\section{Use cases}
+\subsection{A seemingly simple optimization problem}
+\subsubsection{Introduction}
+We present a seemingly simple optimization problem which is in fact pretty 
+hard to solve and shows that an utilization of the NEOS server through the 
+package \pkg{ROI.plugin.neos} makes sense and is easy and fun to use. \\
+
+We need the following R packages for our demonstration:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(dplyr)}
+\hlkwd{library}\hlstd{(ROI)}
+\hlkwd{library}\hlstd{(ROI.plugin.glpk)}
+\hlkwd{library}\hlstd{(ROI.plugin.qpoases)}
+\hlkwd{library}\hlstd{(ompr)}
+\hlkwd{library}\hlstd{(ompr.roi)}
+\hlkwd{library}\hlstd{(CVXR)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\subsubsection{Basic problem}
+Let's consider the following problem from \cite{BertsimasFreund2000} where 
+the Magnetron Company manufactures two types of microwave ovens: 
+full-size and compact. 
+Each full-size oven requires 2 hours of general assembly and 2 hours of 
+electronic assembly, whereas each compact oven requires 1 hours of general 
+assembly and 3 hours of electronic assembly. 
+For the current production period, there are 500 hours of general assembly 
+labor and 800 hours of electronic assembly labor available. 
+The company estimates that it can sell up to 220 full-size and 180 compact 
+ovens with an earnings contribution of EUR 120 per full-size oven and 
+EUR 130 per compact oven. 
+Magnetron wants to find a production plan that maximizes earnings! \\
+ 
+Of course, this is a standard linear program that can be solved manually 
+or using a modeling language, but let's start with the definition of an 
+abstract meta decision model, which solves our problem:
+\begin{verbatim}
+variable F, C
+maximize 120F + 130C
+subject to
+    2F + C <= 500;
+    2F + 3C <= 800;
+    F <= 220, C <= 180
+    F >= 0, C >= 0
+\end{verbatim}
+
+Solving it manually with \pkg{ROI} can be done the following way:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{lp} \hlkwb{<-} \hlkwd{OP}\hlstd{(}\hlkwd{L_objective}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{120}\hlstd{,} \hlnum{130}\hlstd{),} \hlkwd{c}\hlstd{(}\hlstr{"full"}\hlstd{,} \hlstr{"compact"}\hlstd{)),}
+         \hlkwd{L_constraint}\hlstd{(}\hlkwc{L} \hlstd{=} \hlkwd{rbind}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{3}\hlstd{)),}
+                      \hlkwc{dir} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"<="}\hlstd{,} \hlstr{"<="}\hlstd{),} \hlkwc{rhs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{500}\hlstd{,} \hlnum{800}\hlstd{)),}
+         \hlkwc{maximum} \hlstd{=} \hlnum{TRUE}\hlstd{,}
+         \hlkwc{bounds} \hlstd{=} \hlkwd{V_bound}\hlstd{(}\hlkwc{ub} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{220}\hlstd{,} \hlnum{180}\hlstd{)))}
+\hlstd{(sol} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(lp,} \hlkwc{solver} \hlstd{=} \hlstr{"glpk"}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## Optimal solution found.
+## The objective value is: 4.050000e+04
+\end{verbatim}
+\begin{alltt}
+\hlkwd{solution}\hlstd{(sol)}
+\end{alltt}
+\begin{verbatim}
+##    full compact 
+##     175     150
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Solving it with a modeling approach like `ompr` reads as follows:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{result} \hlkwb{<-} \hlkwd{MIPModel}\hlstd{()} \hlopt{%>%}
+  \hlkwd{add_variable}\hlstd{(full,} \hlkwc{type} \hlstd{=} \hlstr{"continuous"}\hlstd{,} \hlkwc{lb} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{ub}\hlstd{=}\hlnum{220}\hlstd{)} \hlopt{%>%}
+  \hlkwd{add_variable}\hlstd{(compact,} \hlkwc{type} \hlstd{=} \hlstr{"continuous"}\hlstd{,} \hlkwc{lb} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{ub}\hlstd{=}\hlnum{180}\hlstd{)} \hlopt{%>%}
+  \hlkwd{set_objective}\hlstd{(}\hlnum{120}\hlopt{*}\hlstd{full} \hlopt{+} \hlnum{130}\hlopt{*}\hlstd{compact,} \hlstr{"max"}\hlstd{)} \hlopt{%>%}
+  \hlkwd{add_constraint}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{full} \hlopt{+} \hlnum{1}\hlopt{*}\hlstd{compact} \hlopt{<=} \hlnum{500}\hlstd{)} \hlopt{%>%}
+  \hlkwd{add_constraint}\hlstd{(}\hlnum{2}\hlopt{*}\hlstd{full} \hlopt{+} \hlnum{3}\hlopt{*}\hlstd{compact} \hlopt{<=} \hlnum{800}\hlstd{)} \hlopt{%>%}
+  \hlkwd{solve_model}\hlstd{(}\hlkwd{with_ROI}\hlstd{(}\hlkwc{solver} \hlstd{=} \hlstr{"glpk"}\hlstd{))}
+\hlkwd{get_solution}\hlstd{(result, full)}
+\end{alltt}
+\begin{verbatim}
+## full 
+##  175
+\end{verbatim}
+\begin{alltt}
+\hlkwd{get_solution}\hlstd{(result, compact)}
+\end{alltt}
+\begin{verbatim}
+## compact 
+##     150
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\subsubsection{Extension}
+It was assumed that the prices of full-size and compact microwave ovens are 
+set so that the resulting unit contributions to earnings are EUR 120 and 
+EUR 130 per oven for full-size and compact microwave ovens, respectively. 
+As it turns out, the unit earnings contribution of EUR 120 per oven for 
+full-size ovens derives from the fact that Magnetron has set the price of a 
+full-size oven to be EUR 270, and the variable production cost of a full-size 
+oven is EUR 150 (and so the unit contribution to earnings is $120 = 270 - 150$. 
+Also, the unit earnings contribution of EUR 130 per oven for compact ovens 
+derives from the fact that Magnetron has set the price of a compact oven to 
+be EUR 230, and the variable production cost of a compact oven is EUR 100 
+(and so the unit contribution to earnings is EUR $130 = 230 - 100$. 
+As a next step in the marketing/production planning process, the company 
+would like to determine the optimal combination of prices and production 
+levels to maximize the overall contribution to earnings. \\
+ 
+The changes in the prices of ovens will result in changes in demand. 
+Suppose that Magnetron has estimated that the demand for their ovens is 
+related to the prices they set as follows, i.e. $D_F = 490 - P_F$ and 
+$D_C = 640 - 2P_C$ where $D_F$ and $D_C$ are the demands for full-size and 
+compact ovens, and $P_F$ and $P_C$ are the respective prices set by Magnetron
+for full-size and compact ovens. It is obvious that that when $P_F = 270$ and 
+$P_C = 230$, the demands are as specified in the linear model. \\
+ 
+The resulting meta-model looks like this:
+ 
+\begin{verbatim}
+variable F, C, P_F, P_C
+maximize F(P_F - 150) + C(P_C - 100)
+subject to:
+    2F + C <= 500  
+    2F + 3C <= 800 
+    F <= 490 - P_F  
+    C <= 640 - 2P_C 
+    F, C, PF, PC >= 0
+\end{verbatim}
+ 
+If we want to solve this nonlinear optimization model to determine the optimal 
+pricing and production strategy, we actually run into a problem. 
+This seemingly easy extension is actually problematic. 
+
+First we try to solve this problem by making use of the \pkg{CVXR} package.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{full} \hlkwb{<-} \hlkwd{Variable}\hlstd{(}\hlnum{1}\hlstd{)}
+\hlstd{compact} \hlkwb{<-} \hlkwd{Variable}\hlstd{(}\hlnum{1}\hlstd{)}
+\hlstd{p_full} \hlkwb{<-} \hlkwd{Variable}\hlstd{(}\hlnum{1}\hlstd{)}
+\hlstd{p_compact} \hlkwb{<-} \hlkwd{Variable}\hlstd{(}\hlnum{1}\hlstd{)}
+
+\hlstd{objective} \hlkwb{<-} \hlkwd{Maximize}\hlstd{(full} \hlopt{*} \hlstd{(p_full} \hlopt{-} \hlnum{150}\hlstd{)} \hlopt{+} \hlstd{compact} \hlopt{*} \hlstd{(p_compact} \hlopt{-} \hlnum{100}\hlstd{))}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in full * (p\_full - 150): Forming a non-convex expression (affine) * (affine)}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning in compact * (p\_compact - 100): Forming a non-convex expression (affine) * (affine)}}\begin{alltt}
+\hlstd{constr} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlnum{2} \hlopt{*} \hlstd{full} \hlopt{+} \hlstd{compact} \hlopt{<=} \hlnum{500}\hlstd{,}
+    \hlnum{2} \hlopt{*} \hlstd{full} \hlopt{+} \hlnum{3} \hlopt{*} \hlstd{compact} \hlopt{<=} \hlnum{800}\hlstd{, full} \hlopt{<=} \hlnum{490} \hlopt{-} \hlstd{p_full,}
+    \hlstd{compact} \hlopt{<=} \hlnum{640} \hlopt{-} \hlnum{2} \hlopt{*} \hlstd{p_compact, full} \hlopt{>=} \hlnum{0}\hlstd{, compact} \hlopt{>=} \hlnum{0}\hlstd{,}
+    \hlstd{p_full} \hlopt{>=} \hlnum{0}\hlstd{, p_compact} \hlopt{>=} \hlnum{0}\hlstd{)}
+\hlstd{magnetron} \hlkwb{<-} \hlkwd{Problem}\hlstd{(objective, constr)}
+\hlstd{cvxr_sol} \hlkwb{<-} \hlkwd{solve}\hlstd{(magnetron)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in CVXR::psolve(a, b, ...): Problem does not follow DCP rules.}}\end{kframe}
+\end{knitrout}
+
+Here we see that since the problem is non-convex it cannot be solved 
+by \pkg{CVXR}. \\
+
+
+
+
+Especially in the case of quadratic non-convex optimization problems
+\pkg{ROI.plugin.neos} comes in handy, as we just need to formulate the model 
+in \pkg{ROI} and can directly send it off to the NEOS server as shown below.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(slam)}
+\hlstd{Q} \hlkwb{<-} \hlkwd{simple_triplet_matrix}\hlstd{(}\hlkwc{i} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{4}\hlstd{,} \hlkwc{j} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{3}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{4}\hlstd{))}
+\hlkwd{as.matrix}\hlstd{(Q)}
+\end{alltt}
+\begin{verbatim}
+##      [,1] [,2] [,3] [,4]
+## [1,]    0    1    0    0
+## [2,]    1    0    0    0
+## [3,]    0    0    0    1
+## [4,]    0    0    1    0
+\end{verbatim}
+\begin{alltt}
+\hlstd{var_names} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"full"}\hlstd{,} \hlstr{"price_full"}\hlstd{,} \hlstr{"compact"}\hlstd{,} \hlstr{"price_compact"}\hlstd{)}
+\hlstd{o} \hlkwb{<-} \hlkwd{OP}\hlstd{(}
+    \hlkwd{Q_objective}\hlstd{(}\hlkwc{Q} \hlstd{= Q,} \hlkwc{L} \hlstd{=} \hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{150}\hlstd{,} \hlnum{0}\hlstd{,} \hlopt{-}\hlnum{100}\hlstd{,} \hlnum{0}\hlstd{),}  \hlkwc{names} \hlstd{= var_names),}
+    \hlkwd{L_constraint}\hlstd{(}\hlkwd{rbind}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{),} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{3}\hlstd{,} \hlnum{0}\hlstd{),}
+                       \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{0}\hlstd{),} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{0}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{2}\hlstd{)),}
+                 \hlkwc{dir} \hlstd{=} \hlkwd{leq}\hlstd{(}\hlnum{4}\hlstd{),} \hlkwc{rhs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{500}\hlstd{,} \hlnum{800}\hlstd{,} \hlnum{490}\hlstd{,} \hlnum{640}\hlstd{)),}
+    \hlkwc{maximum} \hlstd{=} \hlnum{TRUE}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+%% To solve this problem with \pkg{ROI} we have several options
+%% 
+%% \pkg{ROI.plugin.alabama}
+%% <<ex1a_alabama>>=
+%% library(ROI.plugin.alabama)
+%% p <- o
+%% constraints(p) <- as.F_constraint(constraints(o))
+%% do_solve <- function(x) {
+%%     ROI_solve(p, solver = "alabama", start = runif(4, 0, 100))
+%% }
+%% sols <- lapply(1:100, do_solve)
+%% i <- which.max(sapply(sols, solution, type = "objval"))
+%% (s1 <- sols[[i]])
+%% solution(s1)
+%% @
+%% 
+%%     \item \pkg{ROI.plugin.qpoases}
+%% <<ex1a_qpoases>>=
+%% (s2 <- ROI_solve(o, solver = "qpoases", enableDriftCorrection = 1L))
+%% solution(s2)
+%% @
+
+On the NEOS server there exist several options to solve non-convex
+quadratic problems. In this example we make use of the BARON solver.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{(sol} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(o,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"BARON"}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## Optimal solution found.
+## The objective value is: 5.128182e+04
+\end{verbatim}
+\begin{alltt}
+\hlkwd{solution}\hlstd{(sol)}
+\end{alltt}
+\begin{verbatim}
+##          full    price_full       compact price_compact 
+##      151.8182      338.1818      165.4545      237.2727
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+\bibliographystyle{plainnat}
+\bibliography{neos}
+
+
+\end{document}
