@@ -7,7 +7,7 @@ neos_lp_solver <- function() {
 }
 
 neos_miqcqp_solver <- function() {
-    union(c("AlphaECP", "BARON", "Bonmin", "Couenne", "DICOPT", 
+    union(c("AlphaECP", "ANTIGONE", "BARON", "Bonmin", "Couenne", "DICOPT", 
             "Knitro",  "LINDOGlobal", "SBB", "scip"), c("MOSEK", "CPLEX"))
 }
 
@@ -86,7 +86,7 @@ check_selected_solver <- function(method, model_type, is_mip) {
 ## I kind of assume that this actually has no influence on the solution!
 ## NOTE: for now just return lp
 match_category <- function(solver) {
-    mapping <- c("alphaecp" = "minco", "baron" = "minco", "bdmlp" = "lp", 
+    mapping <- c("alphaecp" = "minco", "antigone" = "minco", "baron" = "minco", "bdmlp" = "lp", 
                  "bonmin" = "minco", "cbc" = "milp", "conopt" = "nco", 
                  "couenne" = "minco", "cplex" = "milp", "dicopt" = "minco", 
                  "fico-xpress" = "milp", "gurobi" = "lp", "ipopt" = "nco", 
