@@ -1,8 +1,6 @@
 \documentclass[a4paper]{article}\usepackage[]{graphicx}\usepackage[]{color}
 %% maxwidth is the original width if it is less than linewidth
 %% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\usepackage{Sweave}
-
 \makeatletter
 \def\maxwidth{ %
   \ifdim\Gin@nat@width>\linewidth
@@ -27,10 +25,10 @@
 
 \usepackage{framed}
 \makeatletter
-\newenvironment{sframe}{%
- \def\at@end@of@sframe{}%
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
  \ifinner\ifhmode%
-  \def\at@end@of@sframe{\end{minipage}}%
+  \def\at@end@of@kframe{\end{minipage}}%
   \begin{minipage}{\columnwidth}%
  \fi\fi%
  \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
@@ -41,14 +39,14 @@
    \@totalleftmargin\z@ \linewidth\hsize
    \@setminipage}}%
  {\par\unskip\endMakeFramed%
- \at@end@of@sframe}
+ \at@end@of@kframe}
 \makeatother
 
 \definecolor{shadecolor}{rgb}{.97, .97, .97}
 \definecolor{messagecolor}{rgb}{0, 0, 0}
 \definecolor{warningcolor}{rgb}{1, 0, 1}
 \definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{sweaverout}{}{} % an empty environment to be redefined in TeX
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
 %% margins to 2.8 since than I can easily show
@@ -87,15 +85,10 @@
 \sloppy
 \maketitle
 
-\tableofcontents
-
-\SweaveOpts{eps=false, keep.source=true, width=8, height=4}
-\setkeys{Gin}{width=\textwidth}
-
 %\VignetteIndexEntry{ROI Plug-in NEOS}
 %\VignettePackage{ROI.plugin.neos}
-%
 
+\tableofcontents
 
 \newpage
 
@@ -108,7 +101,7 @@ by a chosen solver. More information can be found at
 \subsection{Solvers}
 \begin{center}
 % latex table generated in R 3.4.0 by xtable 1.8-2 package
-% Thu Jun  7 22:15:04 2018
+% Fri Jun  8 00:19:22 2018
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -154,8 +147,8 @@ We set \verb+ROI_LOAD_PLUGINS+ to \code{FALSE} so no plugin is loaded
 automatically. This can speed up the loading of \pkg{ROI} if many plugins 
 are installed.
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{Sys.setenv}\hlstd{(}\hlkwc{ROI_LOAD_PLUGINS} \hlstd{=} \hlnum{FALSE}\hlstd{)}
 \hlkwd{library}\hlstd{(ROI)}
@@ -169,14 +162,14 @@ are installed.
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# Default solver: auto.}}\begin{alltt}
 \hlkwd{library}\hlstd{(ROI.plugin.neos)}
 \end{alltt}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 
 \subsection{First example}
 We define the problem like any other optimization problem in \pkg{ROI}
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{x} \hlkwb{<-} \hlkwd{OP}\hlstd{(}\hlkwc{objective} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{3}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{3}\hlstd{),} \hlkwc{maximum} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 \hlkwd{constraints}\hlstd{(x)} \hlkwb{<-} \hlkwd{L_constraint}\hlstd{(}\hlkwc{L} \hlstd{=} \hlkwd{rbind}\hlstd{(}\hlkwd{c}\hlstd{(}\hlopt{-}\hlnum{1}\hlstd{,}  \hlnum{2}\hlstd{,}  \hlnum{1}\hlstd{),} \hlkwd{c}\hlstd{(} \hlnum{0}\hlstd{,}  \hlnum{4}\hlstd{,} \hlopt{-}\hlnum{3}\hlstd{),}
@@ -184,15 +177,15 @@ We define the problem like any other optimization problem in \pkg{ROI}
                                \hlkwc{dir} \hlstd{=} \hlkwd{leq}\hlstd{(}\hlnum{3}\hlstd{),} \hlkwc{rhs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,} \hlnum{2}\hlstd{,} \hlnum{3}\hlstd{))}
 \hlkwd{types}\hlstd{(x)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"I"}\hlstd{,} \hlstr{"C"}\hlstd{,} \hlstr{"I"}\hlstd{)}
 \end{alltt}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 but instead of solving the problem locally with \code{"glpk"} or
 \code{"lpsolve"} we send the problem to the NEOS server to be solved
 by the SCIP solver.
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{(s} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"scip"}\hlstd{))}
 \end{alltt}
@@ -206,20 +199,20 @@ by the SCIP solver.
 \begin{verbatim}
 ## [1] 5.00 2.75 3.00
 \end{verbatim}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 Note that \code{method} is matched after performing the following cleaning function
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{clean} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{tolower}\hlstd{(}\hlkwd{gsub}\hlstd{(}\hlstr{"\textbackslash{}\textbackslash{}W"}\hlstd{,} \hlstr{""}\hlstd{, x))}
 \end{alltt}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 which means 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{clean}\hlstd{(}\hlstr{"SCIP"}\hlstd{)}
 \end{alltt}
@@ -244,40 +237,40 @@ which means
 \begin{verbatim}
 ## [1] "scip"
 \end{verbatim}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 would all select the \code{"SCIP"} solver.
 
 \subsection{Provide a user name}
 Some solvers (e.g. \code{"cplex"}) need a working email address, furthermore
 NEOS gives a higher priority to registered users. 
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"cplex"}\hlstd{)}
 \end{alltt}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in SOLVE(x, cntrl): CPLEX will not run unless you provide a valid email address.}}\end{sframe}
-\end{sweaverout}
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in SOLVE(x, cntrl): CPLEX will not run unless you provide a valid email address.}}\end{kframe}
+\end{knitrout}
 
 The username and email address can be provided as control argument.
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{s} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"cplex"}\hlstd{,}
                \hlkwc{email} \hlstd{=} \hlstr{"your_mailaddress@somewhere.net"}\hlstd{)}
 \end{alltt}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 \subsection{Obtain the original solver message}
 The entire solver message can be obtained as follows.
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{str}\hlstd{(}\hlkwd{solution}\hlstd{(s,} \hlstr{"msg"}\hlstd{))}
 \end{alltt}
@@ -289,14 +282,14 @@ The entire solver message can be obtained as follows.
 ##  $ model_status : num 8
 ##  $ message      : chr "Executed on prod-exec-4.neos-server.org\n\fGAMS 24.9.2  r64480 Released Nov 14, 2017 LEX-LEG x86 64bit/Linux 06"| __truncated__
 \end{verbatim}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 We remove \verb+"\f"+ since otherwise it would give an error in \pkg{knitr}.
 
 \begin{footnotesize}
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{cat}\hlstd{(}\hlkwd{gsub}\hlstd{(}\hlstr{"\textbackslash{}f"}\hlstd{,} \hlstr{""}\hlstd{,} \hlkwd{solution}\hlstd{(s,} \hlstr{"msg"}\hlstd{)}\hlopt{$}\hlstd{message))}
 \end{alltt}
@@ -420,16 +413,16 @@ We remove \verb+"\f"+ since otherwise it would give an error in \pkg{knitr}.
 ## Input      /var/lib/condor/execute/dir_1203368/MODEL.gms
 ## Output     /var/lib/condor/execute/dir_1203368/solve.out
 \end{verbatim}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 \end{footnotesize}
 
 \subsection{Obtain the model}
 The optimization model \pkg{ROI.plugin.neos} sends to NEOS can be
 inspected by setting the argument \verb+dry_run+ to \code{TRUE}.
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{model_call} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"mosek"}\hlstd{,}
                         \hlkwc{dry_run} \hlstd{=} \hlnum{TRUE}\hlstd{)}
@@ -495,8 +488,8 @@ inspected by setting the argument \verb+dry_run+ to \code{TRUE}.
 ##   <comments><![CDATA[]]></comments>
 ## </document>
 \end{verbatim}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 
 \section{Use cases}
@@ -508,19 +501,18 @@ package \pkg{ROI.plugin.neos} makes sense and is easy and fun to use. \\
 
 We need the following R packages for our demonstration:
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{library}\hlstd{(dplyr)}
 \hlkwd{library}\hlstd{(ROI)}
 \hlkwd{library}\hlstd{(ROI.plugin.glpk)}
-\hlkwd{library}\hlstd{(ROI.plugin.qpoases)}
 \hlkwd{library}\hlstd{(ompr)}
 \hlkwd{library}\hlstd{(ompr.roi)}
 \hlkwd{library}\hlstd{(CVXR)}
 \end{alltt}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 
 \subsubsection{Basic problem}
@@ -551,8 +543,8 @@ subject to
 \end{verbatim}
 
 Solving it manually with \pkg{ROI} can be done the following way:
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{lp} \hlkwb{<-} \hlkwd{OP}\hlstd{(}\hlkwd{L_objective}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{120}\hlstd{,} \hlnum{130}\hlstd{),} \hlkwd{c}\hlstd{(}\hlstr{"full"}\hlstd{,} \hlstr{"compact"}\hlstd{)),}
          \hlkwd{L_constraint}\hlstd{(}\hlkwc{L} \hlstd{=} \hlkwd{rbind}\hlstd{(}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{1}\hlstd{),} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{3}\hlstd{)),}
@@ -572,13 +564,13 @@ Solving it manually with \pkg{ROI} can be done the following way:
 ##    full compact 
 ##     175     150
 \end{verbatim}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 Solving it with a modeling approach like `ompr` reads as follows:
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{result} \hlkwb{<-} \hlkwd{MIPModel}\hlstd{()} \hlopt{%>%}
   \hlkwd{add_variable}\hlstd{(full,} \hlkwc{type} \hlstd{=} \hlstr{"continuous"}\hlstd{,} \hlkwc{lb} \hlstd{=} \hlnum{0}\hlstd{,} \hlkwc{ub}\hlstd{=}\hlnum{220}\hlstd{)} \hlopt{%>%}
@@ -600,8 +592,8 @@ Solving it with a modeling approach like `ompr` reads as follows:
 ## compact 
 ##     150
 \end{verbatim}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 \subsubsection{Extension}
 It was assumed that the prices of full-size and compact microwave ovens are 
@@ -646,8 +638,8 @@ This seemingly easy extension is actually problematic.
 
 First we try to solve this problem by making use of the \pkg{CVXR} package.
 
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{full} \hlkwb{<-} \hlkwd{Variable}\hlstd{(}\hlnum{1}\hlstd{)}
 \hlstd{compact} \hlkwb{<-} \hlkwd{Variable}\hlstd{(}\hlnum{1}\hlstd{)}
@@ -670,8 +662,8 @@ First we try to solve this problem by making use of the \pkg{CVXR} package.
 \end{alltt}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in CVXR::psolve(a, b, ...): Problem does not follow DCP rules.}}\end{sframe}
-\end{sweaverout}
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in CVXR::psolve(a, b, ...): Problem does not follow DCP rules.}}\end{kframe}
+\end{knitrout}
 
 Here we see that since the problem is non-convex it cannot be solved 
 by \pkg{CVXR}. \\
@@ -682,8 +674,8 @@ by \pkg{CVXR}. \\
 Especially in the case of quadratic non-convex optimization problems
 \pkg{ROI.plugin.neos} comes in handy, as we just need to formulate the model 
 in \pkg{ROI} and can directly send it off to the NEOS server as shown below.
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{library}\hlstd{(slam)}
 \hlstd{Q} \hlkwb{<-} \hlkwd{simple_triplet_matrix}\hlstd{(}\hlkwc{i} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{4}\hlstd{,} \hlkwc{j} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,} \hlnum{1}\hlstd{,} \hlnum{4}\hlstd{,} \hlnum{3}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{4}\hlstd{))}
@@ -705,35 +697,14 @@ in \pkg{ROI} and can directly send it off to the NEOS server as shown below.
                  \hlkwc{dir} \hlstd{=} \hlkwd{leq}\hlstd{(}\hlnum{4}\hlstd{),} \hlkwc{rhs} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{500}\hlstd{,} \hlnum{800}\hlstd{,} \hlnum{490}\hlstd{,} \hlnum{640}\hlstd{)),}
     \hlkwc{maximum} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 \end{alltt}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
-%% To solve this problem with \pkg{ROI} we have several options
-%% 
-%% \pkg{ROI.plugin.alabama}
-%% <<ex1a_alabama>>=
-%% library(ROI.plugin.alabama)
-%% p <- o
-%% constraints(p) <- as.F_constraint(constraints(o))
-%% do_solve <- function(x) {
-%%     ROI_solve(p, solver = "alabama", start = runif(4, 0, 100))
-%% }
-%% sols <- lapply(1:100, do_solve)
-%% i <- which.max(sapply(sols, solution, type = "objval"))
-%% (s1 <- sols[[i]])
-%% solution(s1)
-%% @
-%% 
-%%     \item \pkg{ROI.plugin.qpoases}
-%% <<ex1a_qpoases>>=
-%% (s2 <- ROI_solve(o, solver = "qpoases", enableDriftCorrection = 1L))
-%% solution(s2)
-%% @
 
 On the NEOS server there exist several options to solve non-convex
 quadratic problems. In this example we make use of the BARON solver.
-\begin{sweaverout}
-\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{sframe}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlstd{(sol} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(o,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"BARON"}\hlstd{))}
 \end{alltt}
@@ -748,8 +719,8 @@ quadratic problems. In this example we make use of the BARON solver.
 ##          full    price_full       compact price_compact 
 ##      151.8182      338.1818      165.4545      237.2727
 \end{verbatim}
-\end{sframe}
-\end{sweaverout}
+\end{kframe}
+\end{knitrout}
 
 
 \bibliographystyle{plainnat}
