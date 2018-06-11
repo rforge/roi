@@ -1,5 +1,3 @@
-%\VignetteIndexEntry{ROI Plug-in NEOS}
-%
 \documentclass[a4paper]{article}
 %% margins to 2.8 since than I can easily show
 \usepackage[left=2.8cm, right=2.8cm]{geometry}
@@ -40,6 +38,9 @@ options(width=78, prompt = "R> ", continue = "+  ", useFancyQuotes = FALSE)
 \begin{document}
 \sloppy
 \maketitle
+
+%\VignetteIndexEntry{ROI Plug-in NEOS}
+%\VignettePackage{ROI.plugin.neos}
 
 \tableofcontents
 
@@ -190,7 +191,6 @@ We need the following R packages for our demonstration:
 library(dplyr)
 library(ROI)
 library(ROI.plugin.glpk)
-library(ROI.plugin.qpoases)
 library(ompr)
 library(ompr.roi)
 library(CVXR)
