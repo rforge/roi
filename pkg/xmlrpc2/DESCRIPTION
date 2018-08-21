@@ -9,4 +9,4 @@ Description: The 'XML-RPC' is a remote procedure call protocol
 	package but uses the 'curl' and 'xml2' packages instead 'RCurl' and 'XML'.
 License: GPL-3
 Imports: curl, xml2, base64enc
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

@@ -205,24 +205,31 @@ from_rpc <- function(x) {
     )
 }
 
+## from_rpc_struct <- function(x) {
+##     keys <- xml_text(xml_find_all(x, "//name"))
+##     get_values <- function(rec) {
+##         xml_children(rec)[xml_name(xml_children(rec)) == "value"]
+##     }
+##     values <- lapply(xml_children(x), function(rec) from_rpc(get_values(rec)))
+##     names(values) <- keys
+##     list(names = keys, values = values)
+## }
+
 from_rpc_struct <- function(x) {
-    keys <- xml_text(xml_find_all(x, "//name"))
-    get_values <- function(rec) {
-        xml_children(rec)[xml_name(xml_children(rec)) == "value"]
-    }
-    values <- lapply(xml_children(x), function(rec) from_rpc(get_values(rec)))
+    keys <- xml_text(xml_find_all(x, ".//name"))
+    values <- lapply(xml_find_all(x, ".//value"), from_rpc)
     names(values) <- keys
     values
 }
 
 from_rpc_array <- function(x) {
-    recs <- xml_children(xml_children(x)[[1L]])
-    v <- lapply(recs, function(rec) from_rpc(xml_children(rec)[[1L]]))
-    if ( all_same_type(v) ) {
-        unlist(v, FALSE, FALSE)
+    values <- lapply(xml_children(xml_children(x)[[1L]]), from_rpc)
+    if ( all_same_type(values) ) {
+        unlist(values, FALSE, FALSE)
     } else {
-        v
+        values
     }
+    values
 }
 
 all_same_type <- function(x) {
