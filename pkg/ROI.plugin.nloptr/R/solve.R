@@ -117,19 +117,20 @@ build_options <- function(control) {
     if ( is.null(opts$xtol_rel) ) 
         opts[['xtol_rel']] <- nloptr_defaults('xtol_rel')
 
-    if ( is.null(opts$tol_constraints_ineq) ) 
-        opts[['tol_constraints_ineq']] <- nloptr_defaults("tol_constraints_ineq")
+    ##if ( is.null(opts$tol_constraints_ineq) ) 
+    ##    opts[['tol_constraints_ineq']] <- nloptr_defaults("tol_constraints_ineq")
 
-    if ( is.null(opts$tol_constraints_eq) ) 
-        opts[['tol_constraints_eq']] <- nloptr_defaults("tol_constraints_eq")
+    ##if ( is.null(opts$tol_constraints_eq) ) 
+    ##    opts[['tol_constraints_eq']] <- nloptr_defaults("tol_constraints_eq")
 
     opts
 }
 
-solve_nloptr <- function( x, control) {
+solve_nloptr <- function( x, control = list()) {
 
     args <- list()
     args$call_fun <- nloptr::nloptr
+    ## args$x0 <- control$start
     args$x0 <- control$x0 ## FIXME
 
     ## objective function
@@ -180,33 +181,14 @@ solve_nloptr <- function( x, control) {
     if ( isTRUE(control$dry_run) )
         return(args)
 
-    for ( i in seq_len(3) ) {
-        ## NLOPTR has some unfixed issues!
-        capture.output(res <- try(eval(args), silent=TRUE))
-        if ( class(res) != "try-error") {
-            check_ineq <- check_eval_g_ineq(inequality_constraint[["F"]], 
-                                            res$solution, opts[["tol_constraints_ineq"]])
-            check_eq <- check_eval_g_eq(equality_constraint[["F"]], 
-                                        res$solution, opts[["tol_constraints_eq"]])
-            if ( check_ineq & check_eq ) {
-                break
-            }
-        }
-    }
-    
-    ## TODO: check the conditions since nloptr sometimes gives
-    ##       results which violate the constraints
-    if (class(res) == "try-error") {
-        stop(attr(res, 'condition')[["message"]])
-    }
-    
+    res <- eval(args)
+
     ROI_plugin_canonicalize_solution( solution  = res$solution,
                                       optimum   = objective(x)(res$solution),
                                       status    = res$status,
                                       solver    = "nloptr",
                                       message   = res,
                                       algorithm = control$algorithm )
-
 }
 
 check_eval_g_ineq <- function(eval_g_ineq, sol, tol) {
