@@ -289,7 +289,7 @@ div.tocify {
   <a href="use_cases.html">Use Cases</a>
 </li>
 <li>
-  <a href="faq.html">FAQ</a>
+  <a href="news.html">News</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -321,9 +321,9 @@ div.tocify {
 </div>
 <div id="roi.plugin.cbc" class="section level2">
 <h2><strong>ROI.plugin.cbc</strong></h2>
-<p><a href="https://github.com/dirkschumacher/ROI.plugin.cbc"><strong>ROI.plugin.cbc</strong></a> it self doesn’t contain compiled code but it imports <strong>rcbc</strong>. The <a href="https://github.com/dirkschumacher/rcbc"><strong>rcbc</strong></a> package requires the <a href="https://projects.coin-or.org/Cbc">cbc</a> and the <a href="https://projects.coin-or.org/Clp">clp</a> library to be installed before the installation of <strong>rcbc</strong>. Depending on the distribution, these libraries may be installed via one of the following commands.</p>
 <div id="unix" class="section level3">
 <h3>Unix</h3>
+<p><a href="https://github.com/dirkschumacher/ROI.plugin.cbc"><strong>ROI.plugin.cbc</strong></a> it self doesn’t contain compiled code but it imports <strong>rcbc</strong>. The <a href="https://github.com/dirkschumacher/rcbc"><strong>rcbc</strong></a> package requires the <a href="https://projects.coin-or.org/Cbc">cbc</a> and the <a href="https://projects.coin-or.org/Clp">clp</a> library to be installed before the installation of <strong>rcbc</strong>. Depending on the distribution, these libraries may be installed via one of the following commands.</p>
 <div id="debian-ubuntu-mint-and-other-debian-based-distributions" class="section level4">
 <h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
 <pre class="bash"><code>sudo apt-get install coinor-libcbc-dev coinor-libclp-dev</code></pre>
@@ -336,10 +336,15 @@ div.tocify {
 <h4>macOS</h4>
 <pre class="bash"><code>brew tap coin-or-tools/coinor
 brew install cbc</code></pre>
-<p>After the installation of the the linear programming kit - development files <strong>rcbc</strong> and <strong>ROI.plugin.cbc</strong> can be installed.</p>
+<p>After the installation of the required libraries <strong>rcbc</strong> and <strong>ROI.plugin.cbc</strong> may be installed as usual.</p>
 <pre class="r"><code>remotes::install_github(&quot;dirkschumacher/rcbc&quot;)
 remotes::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
 </div>
+</div>
+<div id="windows" class="section level3">
+<h3>Windows</h3>
+<pre class="r"><code>devtools::install_github(&quot;dirkschumacher/rcbc&quot;)
+devtools::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
 </div>
 </div>
 <div id="roi.plugin.clp" class="section level2">
@@ -374,18 +379,19 @@ remotes::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
 <div id="macos-1" class="section level4">
 <h4>macOS</h4>
 <pre class="bash"><code>brew install glpk</code></pre>
-<p>After the installation of the the linear programming kit - development files <strong>Rglpk</strong> and <strong>ROI.plugin.glpk</strong> can be installed.</p>
-<pre class="r"><code>install.packages(&quot;Rglpk&quot;)
-install.packages(&quot;ROI.plugin.glpk&quot;)</code></pre>
+<p>After the installation of the linear programming kit - development files <strong>Rglpk</strong> and <strong>ROI.plugin.glpk</strong> may be installed as usual.</p>
+<pre class="r"><code>install.packages(&quot;ROI.plugin.glpk&quot;)</code></pre>
 </div>
 </div>
-<div id="windows" class="section level3">
+<div id="windows-1" class="section level3">
 <h3>Windows</h3>
+<pre class="r"><code>install.packages(&quot;ROI.plugin.glpk&quot;)</code></pre>
 </div>
 </div>
 <div id="roi.plugin.gurobi" class="section level2">
 <h2><strong>ROI.plugin.gurobi</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.gurobi&quot;)</code></pre>
+<p><strong>ROI.plugin.gurobi</strong> imports the <strong>gurobi</strong> package which is available at <a href="http://www.gurobi.com/">http://www.gurobi.com</a>. Since the <strong>gurobi</strong> package is not on <code>CRAN</code> <strong>ROI.plugin.gurobi</strong> is also not available on <code>CRAN</code>.</p>
+<pre class="r"><code>remotes:::install_github(&quot;fl0sch/ROI.plugin.gurobi&quot;)</code></pre>
 </div>
 <div id="roi.plugin.ipop" class="section level2">
 <h2><strong>ROI.plugin.ipop</strong></h2>
@@ -397,7 +403,8 @@ install.packages(&quot;ROI.plugin.glpk&quot;)</code></pre>
 </div>
 <div id="roi.plugin.mosek" class="section level2">
 <h2><strong>ROI.plugin.mosek</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.mosek&quot;)</code></pre>
+<p><strong>ROI.plugin.mosek</strong> imports the <strong>Rmosek</strong> package which is available at <a href="http://www.mosek.com/">http://www.mosek.com</a>. There is also an <strong>Rmosek</strong> version on <code>CRAN</code> but since the <strong>Rmosek</strong> version on <code>CRAN</code> is very old we recommend to install the version available from <a href="http://www.mosek.com/">http://www.mosek.com</a>.</p>
+<pre class="r"><code>remotes:::install_github(&quot;fl0sch/ROI.plugin.mosek&quot;)</code></pre>
 </div>
 <div id="roi.plugin.msbinlp" class="section level2">
 <h2><strong>ROI.plugin.msbinlp</strong></h2>
@@ -405,13 +412,21 @@ install.packages(&quot;ROI.plugin.glpk&quot;)</code></pre>
 </div>
 <div id="roi.plugin.neos" class="section level2">
 <h2><strong>ROI.plugin.neos</strong></h2>
+<div id="unix-2" class="section level3">
+<h3>Unix</h3>
 <p><a href="https://cran.r-project.org/package=ROI.plugin.neos"><strong>ROI.plugin.neos</strong></a> it self doesn’t contain compiled code but it imports xml2. The <a href="https://cran.r-project.org/package=xml2"><strong>xml2</strong></a> package requires that the <code>libxml2</code> development library is installed. The <code>libxml2</code> development library can be installed via</p>
 <pre class="bash"><code>sudo apt-get install libxml2-dev </code></pre>
 <p>on Debian, Ubuntu, Mint and other Debian based distributions and via</p>
 <pre class="r"><code>sudo yum install libxml2-devel</code></pre>
 <p>on Red Hat Enterprise Linux, Fedora, CentOS, and similar distributions.</p>
+<p>After the installation of the the <code>libxml2</code> development libraries <strong>xml2</strong> may be installed as usual.</p>
 <pre class="r"><code>install.packages(&quot;xml2&quot;)
 install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
+</div>
+<div id="windows-2" class="section level3">
+<h3>Windows</h3>
+<pre class="r"><code>install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
+</div>
 </div>
 <div id="roi.plugin.nloptr" class="section level2">
 <h2><strong>ROI.plugin.nloptr</strong></h2>
@@ -435,8 +450,9 @@ install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
 </div>
 <div id="roi.plugin.symphony" class="section level2">
 <h2><strong>ROI.plugin.symphony</strong></h2>
-<div id="unix-2" class="section level3">
+<div id="unix-3" class="section level3">
 <h3>Unix</h3>
+<p><a href="https://cran.r-project.org/package=ROI.plugin.symphony"><strong>ROI.plugin.symphony</strong></a> it self doesn’t contain compiled code but it imports <strong>Rsymphony</strong>. The <a href="https://cran.r-project.org/package=Rsymphony"><strong>Rsymphony</strong></a> package requires the SYMPHONY libraries and headers to be installed before the installation of <strong>Rsymphony</strong>. Depending on the distribution, the SYMPHONY libraries and headers may be installed via one of the following commands.</p>
 <div id="debian-ubuntu-mint-and-other-debian-based-distributions-2" class="section level4">
 <h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
 <pre class="bash"><code>sudo apt install coinor-libsymphony-dev</code></pre>
@@ -449,8 +465,13 @@ install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
 <h4>macOS</h4>
 <pre class="bash"><code>brew tap coin-or-tools/coinor
 brew install symphony</code></pre>
+<p>After the installation of the SYMPHONY libraries and headers <strong>ROI.plugin.symphony</strong> may be installed as usual.</p>
 <pre class="r"><code>install.packages(&quot;ROI.plugin.symphony&quot;)</code></pre>
 </div>
+</div>
+<div id="windows-3" class="section level3">
+<h3>Windows</h3>
+<pre class="r"><code>install.packages(&quot;ROI.plugin.symphony&quot;)</code></pre>
 </div>
 </div>
 </div>
