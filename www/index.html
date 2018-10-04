@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>ROI - R Optimization Infrastructure</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">ROI - R Optimization Infrastructure</h1>
+
+</div>
+
+
+<style type="text/css">
+.title {
+  display: none;
+}
+
+#getting-started img {
+  margin-right: 10px;
+}
+
+</style>
+<div class="row" style="padding-top: 30px;">
+<h1 id="roi"><strong>ROI</strong></h1>
+<p>The R Optimization Infrastructure (ROI) package provides an extensible infrastructure to model linear, quadratic, conic and general nonlinear optimization problems in a consistent way.</p>
+<pre class="r"><code>library(ROI)</code></pre>
+<p>Furthermore, the infrastructure administers many different solvers, reformulations, problem collections and functions to read and write optimization problems in various formats.</p>
+<h1 id="extensions">Extensions</h1>
+<p><strong>ROI</strong> provides the modeling capabilities and manages the plugins, the plugins add the solvers to <strong>ROI</strong>.</p>
+<h3 id="plugins">Plugins</h3>
+<pre class="r"><code>plugins &lt;- ROI_available_solvers()[,c(&quot;Package&quot;, &quot;Repository&quot;)]
+plugins &lt;- aggregate(Repository ~ Package,  data = plugins, 
+                     FUN = paste, collapse = &quot;, &quot;)
+knitr::kable(plugins, row.names = TRUE)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="left">Package</th>
+<th align="left">Repository</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td align="left">ROI.plugin.alabama</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td align="left">ROI.plugin.cbc</td>
+<td align="left"><a href="https://github.com/dirkschumacher" class="uri">https://github.com/dirkschumacher</a></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td align="left">ROI.plugin.clp</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="https://github.com/datastorm-open" class="uri">https://github.com/datastorm-open</a></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td align="left">ROI.plugin.cplex</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td align="left">ROI.plugin.deoptim</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td align="left">ROI.plugin.ecos</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td align="left">ROI.plugin.glpk</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td align="left">ROI.plugin.gurobi</td>
+<td align="left"><a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a>, <a href="https://github.com/Fl0Sch" class="uri">https://github.com/Fl0Sch</a></td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td align="left">ROI.plugin.ipop</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td align="left">ROI.plugin.lpsolve</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td align="left">ROI.plugin.mosek</td>
+<td align="left"><a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a>, <a href="https://github.com/Fl0Sch" class="uri">https://github.com/Fl0Sch</a></td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td align="left">ROI.plugin.msbinlp</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td align="left">ROI.plugin.neos</td>
+<td align="left"><a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td align="left">ROI.plugin.nloptr</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td align="left">ROI.plugin.optimx</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td align="left">ROI.plugin.qpoases</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="odd">
+<td>17</td>
+<td align="left">ROI.plugin.quadprog</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="even">
+<td>18</td>
+<td align="left">ROI.plugin.scs</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+<tr class="odd">
+<td>19</td>
+<td align="left">ROI.plugin.symphony</td>
+<td align="left"><a href="https://cran.r-project.org/src/contrib" class="uri">https://cran.r-project.org/src/contrib</a>, <a href="http://R-Forge.R-project.org" class="uri">http://R-Forge.R-project.org</a></td>
+</tr>
+</tbody>
+</table>
+<!-- 
+| Plugin                        | Objective | Constraints | Bounds | Types | Repository |
+| ----------------------------- | --------- | ----------- | ------ | ----- | ---------- |
+| ROI.plugin.alabama            | F         |             |        |       |            |
+| ROI.plugin.clp                | L         |             |        |       |            |
+| ROI.plugin.cplex              | Q         |             |        |       |            |
+| ROI.plugin.deoptim            | F         |             |        |       |            |
+| ROI.plugin.ecos               | L         |             |        |       |            |
+| ROI.plugin.glpk               | L         |             |        |       |            |
+| ROI.plugin.ipop               | Q         |             |        |       |            |
+| ROI.plugin.lpsolve            | L         |             |        |       |            |
+| ROI.plugin.msbinlp            | L         |             |        |       |            |
+| ROI.plugin.neos               | X, L, Q   | X, L, Q     |        |       |            |
+| ROI.plugin.nloptr             |           |             |        |       |            |
+| ROI.plugin.optimx             |           |             |        |       |            |
+| ROI.plugin.qpoases            |           |             |        |       |            |
+| ROI.plugin.quadprog           |           |             |        |       |            |
+| ROI.plugin.scs                |           |             |        |       |            |
+| ROI.plugin.symphony           |           |             |        |       |            |
+-->
+<h3 id="models">Models</h3>
+<ul>
+<li><a href="https://CRAN.R-project.org/package=ROI.models.globalOptTests">ROI.models.globalOptTests</a></li>
+<li><a href="https://CRAN.R-project.org/package=ROI.models.miplib">ROI.models.miplib</a></li>
+<li><a href="https://CRAN.R-project.org/package=ROI.models.netlib">ROI.models.netlib</a></li>
+</ul>
+<h1 id="installation">Installation</h1>
+<p>The following pages contain information to assist with the installation of the plugin packages.</p>
+<ul>
+<li><p><a href="installation_unix.html">Install ROI on Unix</a></p></li>
+<li><p><a href="install_windows.html">Install ROI on Windows</a></p></li>
+</ul>
+<h1 id="additional-resources">Additional resources</h1>
+<p>Additional to this web page there exist several resources:</p>
+<ul>
+<li><a href="https://CRAN.R-project.org/package=ROI/ROI.pdf">ROI - Manual</a></li>
+<li><a href="http://epub.wu.ac.at/5858/">ROI - Working paper</a></li>
+<li><a href="https://CRAN.R-project.org/package=ROI.plugin.neos/vignettes/ROI.plugin.neos_Introduction.pdf">ROI.plugin.neos - Introduction</a></li>
+</ul>
+<h1 id="planed-extensions">Planed extensions</h1>
+<h3 id="planed-plugins-roi.plugin.">Planed plugins (<strong>ROI.plugin.</strong>*)</h3>
+<ul>
+<li><a href="https://osqp.org/">OSQP</a> there exist already the <strong>R</strong> package <a href="https://cran.r-project.org/package=osqp">osqp</a>, <a href="https://cran.r-project.org/package=rosqp">rosqp</a></li>
+<li><a href="https://projects.coin-or.org/Couenne">Couenne</a></li>
+</ul>
+<h3 id="planed-models-roi.model.">Planed models (<strong>ROI.model.</strong>*)</h3>
+<ul>
+<li><a href="http://qplib.zib.de/">QPLIB</a></li>
+</ul>
+<h1 id="contribute">Contribute</h1>
+<p>There are several possible ways to contribute to the <strong>ROI</strong> project.</p>
+<ul>
+<li>Since <strong>ROI</strong> was designed to allow decentralized development anyone is free and invited to extend <strong>ROI</strong> by creating a new plugin or model collection.</li>
+<li>The source code of this page is stored on <a href="TODO">GitHub</a> modifications to this page can be suggested by raising an issue or creating a pull request.</li>
+<li>If you find <strong>ROI</strong> useful we would be happy to add your particular use case to the <a href="use_cases.html">Use Cases</a> page. To do so you can again raise and issue or create a pull request on <a href="TODO">GitHub</a>, or send an e-mail to <a href="mailto:roi-commits@lists.r-forge.r-project.org">roi-commits[at]lists.r-forge.r-project.org</a>. The use case should be either written in <strong>Sweave</strong>, <strong>knitr</strong> or <strong>R Markdown</strong> and contain an author and a license (e.g. <a href="https://en.wikipedia.org/wiki/Creative_Commons_license">Creative Commons license</a>).</li>
+</ul>
+<h1 id="citation">Citation</h1>
+<p>Theußl, Stefan and Schwendinger, Florian and Hornik, Kurt (2017) ROI: The R Optimization Infrastructure Package. Research Report Series / Department of Statistics and Mathematics, 133. WU Vienna University of Economics and Business, Vienna.</p>
+<pre><code>@techreport{epubwu5858,
+  number = {133},
+  month = {October},
+  author = {Stefan Theu{\ss}l and Florian Schwendinger and Kurt Hornik},
+  address = {Vienna},
+  title = {ROI: The R Optimization Infrastructure Package},
+  type = {Research Report Series / Department of Statistics and Mathematics},
+  institution = {WU Vienna University of Economics and Business},
+  year = {2017},
+  keywords = {optimization, mathematical programming,
+    linear programming, quadratic programming, convex
+    programming, nonlinear programming, mixed integer programming, R},
+  url = {http://epub.wu.ac.at/5858/},
+  abstract = {Optimization plays an important role in many methods routinely 
+    used in statistics, machine learning and data science. Often, 
+    implementations of these methods rely on highly specialized (non-reusable) 
+    optimization algorithms. However, in many instances recent advances, in 
+    particular in the field of convex optimization, make it possible to 
+    conveniently and straightforwardly use modern solvers (reusable) instead
+    with the advantage of enabling broader usage scenarios and thus
+    promoting reusability. This paper introduces the ROI
+    (R Optimization Infrastructure) package which provides an
+    extensible infrastructure to model linear, quadratic, conic and general
+    nonlinear optimization problems in a consistent way. Furthermore, the
+    infrastructure administers many different solvers, reformulations,
+    problem collections and functions to read and write optimization
+    problems in various formats.}</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Modeling with ROI</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Modeling with <strong>ROI</strong></h1>
+
+</div>
+
+
+<pre class="r"><code>Sys.setenv(ROI_LOAD_PLUGINS = &quot;FALSE&quot;)
+library(ROI)
+library(ROI.plugin.glpk)
+library(ROI.plugin.qpoases)
+library(ROI.plugin.ecos)
+library(ROI.plugin.scs)
+library(ROI.plugin.alabama)
+library(ROI.plugin.lpsolve)</code></pre>
+<pre class="r"><code>library(ROI.plugin.gurobi)</code></pre>
+<div id="constructors" class="section level1">
+<h1>Constructors</h1>
+<div id="optimization-problem" class="section level2">
+<h2>Optimization Problem</h2>
+<pre class="r"><code>str(OP)</code></pre>
+<pre><code>## function (objective, constraints = NULL, types = NULL, bounds = NULL, 
+##     maximum = FALSE)</code></pre>
+</div>
+<div id="objective" class="section level2">
+<h2>Objective</h2>
+<div id="linear-objective" class="section level3">
+<h3>Linear objective</h3>
+<pre class="r"><code>str(L_objective)</code></pre>
+<pre><code>## function (L, names = NULL)</code></pre>
+<p><span class="math display">\[1 x + 2 y + 3 z\]</span></p>
+<pre class="r"><code>lo &lt;- L_objective(c(1, 2, 3), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;))</code></pre>
+</div>
+<div id="quadratic-objective" class="section level3">
+<h3>Quadratic objective</h3>
+<pre class="r"><code>str(Q_objective)</code></pre>
+<pre><code>## function (Q, L = NULL, names = NULL)</code></pre>
+<p><span class="math display">\[\frac{1}{2} (x_1^2 + x_2^2 + x_3^2) + 1 x_1 + 2x_2 + 3x_3\]</span></p>
+<pre class="r"><code>qo &lt;- Q_objective(diag(3), c(1, 2, 3), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot;x_3&quot;))</code></pre>
+</div>
+<div id="functional-objective" class="section level3">
+<h3>Functional objective}</h3>
+<pre class="r"><code>str(F_objective)</code></pre>
+<pre><code>## function (F, n, G = NULL, H = NULL, names = NULL)</code></pre>
+<p><span class="math display">\[x_1^2 + x_2^2\]</span></p>
+<pre class="r"><code>fo &lt;- F_objective(F = function(x) sum(x^2), n = 2, 
+                  G = function(x) 2*x, names = c(&quot;x_1&quot;, &quot;x_2&quot;))</code></pre>
+</div>
+</div>
+<div id="constraints" class="section level2">
+<h2>Constraints</h2>
+<div id="linear-constraints" class="section level3">
+<h3>Linear constraints</h3>
+<pre class="r"><code>str(L_constraint)</code></pre>
+<pre><code>## function (L, dir, rhs, names = NULL)</code></pre>
+<p><span class="math display">\[
+\nonumber
+\begin{array}{rrrrrrr}
+3 x &amp; + &amp; 4 y &amp; + &amp; 1 z &amp; \leq &amp; 90 \\
+1 x &amp; + &amp; 0 y &amp; + &amp; 2 z &amp; \geq &amp; 5  \\
+1 x &amp; + &amp; 1 y &amp; + &amp; 0 z &amp;   =  &amp; 2
+\end{array}
+\]</span></p>
+<pre class="r"><code>lc &lt;- L_constraint(L = rbind(c(3, 4, 1), c(1, 0, 2), c(1, 1, 0)),
+                   dir = c(&quot;&lt;=&quot;, &quot;&gt;=&quot;, &quot;==&quot;), rhs = c(90, 5, 2),
+                   names = c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;))</code></pre>
+</div>
+<div id="quadratic-constraints" class="section level3">
+<h3>Quadratic constraints</h3>
+<pre class="r"><code>str(Q_constraint)</code></pre>
+<pre><code>## function (Q, L, dir, rhs, names = NULL)</code></pre>
+<p><span class="math display">\[\frac{1}{2} (x^2 + y^2) + 1x + 2y \leq 3\]</span></p>
+<pre class="r"><code>qc1 &lt;- Q_constraint(Q = diag(2), L = 1:2, dir = &quot;&lt;=&quot;, 
+                    rhs = 3, names = c(&quot;x&quot;, &quot;y&quot;))</code></pre>
+<p><span class="math display">\[
+\begin{array}
+x^2 + y^2 + 3x + 1y &amp; \leq &amp; 3 \nonumber \\
+x + y &amp; \leq &amp; 4 \nonumber \\
+\frac{1}{2} (3x^2 + 3y^2 + 2xy) + 2x + 5y &amp; \leq &amp; 9 \nonumber
+\end{array}
+\]</span></p>
+<pre class="r"><code>qc2 &lt;- Q_constraint(Q = list(diag(2, 2), NULL, matrix(c(3, 1, 1, 3), 2)), 
+                    L = rbind(c(3, 1), c(1, 1), c(2, 5)),
+                    dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;, &quot;&lt;=&quot;),
+                    rhs = c(3, 4, 9), names = c(&quot;x&quot;, &quot;y&quot;))</code></pre>
+</div>
+<div id="functional-constraints" class="section level3">
+<h3>Functional constraints</h3>
+<pre class="r"><code>str(F_constraint)</code></pre>
+<pre><code>## function (F, dir, rhs, J = NULL, names = NULL)</code></pre>
+<p><span class="math display">\[
+\begin{array}
+x^2 &amp; \leq &amp; 2 \nonumber \\
+y^2 &amp; \leq &amp; 4 \nonumber
+\end{array}
+\]</span></p>
+<pre class="r"><code>fc1 &lt;- F_constraint(F = function(x) x^2, dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;), rhs = c(2, 4),
+                    J = function(x) diag(x = 2, nrow = 2) * x,
+                    names = c(&quot;x&quot;, &quot;y&quot;))</code></pre>
+<p>or equivalently</p>
+<pre class="r"><code>fc2 &lt;- F_constraint(F = list(function(x) x[1]^2, function(x) x[2]^2), 
+                    dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;), rhs = c(2, 4),
+                    J = list(function(x) rbind(c(2, 0) * x), 
+                             function(x) rbind(c(0, 2) * x)),
+                    names = c(&quot;x&quot;, &quot;y&quot;))
+
+## TODO: create an example
+## x &lt;- OP(L_objective(c(1, 1)), fc1, maximum=TRUE)
+## x &lt;- OP(L_objective(c(1, 1)), fc2, maximum=TRUE)
+## solution(ROI_solve(x, start=c(0, 1), solver=&quot;alabama&quot;))</code></pre>
+</div>
+</div>
+<div id="bounds" class="section level2">
+<h2>Bounds</h2>
+<div id="variable-bounds" class="section level3">
+<h3>Variable bounds</h3>
+<p>By default the variable bounds are set to <span class="math inline">\(0 \leq x_i \leq \infty \text{ for all } i = 1, ..., n.\)</span></p>
+<pre class="r"><code>str(V_bound)</code></pre>
+<pre><code>## function (li, ui, lb, ub, nobj, ld = 0, ud = Inf, names = NULL)</code></pre>
+<p><span class="math display">\[ -3 \leq x_1 \leq 3, \ -\infty \leq x_2 \leq 7, \ -9 \leq x_3 \leq \infty \]</span></p>
+<pre class="r"><code>vb &lt;- V_bound(li = 1:3, ui = 1:3, lb = c(-3, -Inf, -9), ub = c(3, 7, Inf))</code></pre>
+</div>
+</div>
+</div>
+<div id="basic-examples" class="section level1">
+<h1>Basic examples</h1>
+<div id="linear-programming-lp" class="section level2">
+<h2>Linear programming (LP)</h2>
+<div id="example-1" class="section level3">
+<h3>Example 1</h3>
+<p><span class="math display">\[
+\begin{array}{rrrrr}
+\text{minimize}
+&amp; 7 x_1 &amp; + &amp; 8 x_2 \\
+\text{subject to}
+&amp; 3 x_1 &amp; + &amp; 4 x_2 &amp;  =   9 \\
+&amp; 2 x_1 &amp; + &amp; 1 x_2 &amp; \geq 3
+\end{array}
+\]</span></p>
+<p><span class="math display">\[ -100 \leq x_1, x_2, \leq 100\]</span></p>
+<pre class="r"><code>lp  &lt;- OP(objective = L_objective(c(7, 8), names=c(&quot;x&quot;, &quot;y&quot;)),
+          constraints = L_constraint(L = rbind(c(3, 4), c(2, 1)), 
+                                     dir = c(&quot;==&quot;, &quot;&gt;=&quot;), rhs = c(9, 3)),
+          bounds = V_bound(li = 1:2, ui = 1:2, 
+                           lb = c(-100, -100), ub = c(100, 100)))
+ROI_applicable_solvers(lp)</code></pre>
+<pre><code>## [1] &quot;glpk&quot;    &quot;qpoases&quot; &quot;ecos&quot;    &quot;scs&quot;     &quot;alabama&quot; &quot;lpsolve&quot; &quot;gurobi&quot;</code></pre>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.860000e+01</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##   x   y 
+## 0.6 1.8</code></pre>
+<p>The solution can be accessed via the function , where</p>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##   x   y 
+## 0.6 1.8</code></pre>
+<pre class="r"><code>solution(sol, type = &quot;primal&quot;)</code></pre>
+<pre><code>##   x   y 
+## 0.6 1.8</code></pre>
+<p>gives the primal solution,</p>
+<pre class="r"><code>solution(sol, type = &quot;dual&quot;)</code></pre>
+<pre><code>## [1] 0 0</code></pre>
+<p>the dual solution,</p>
+<pre class="r"><code>solution(sol, type = &quot;msg&quot;)</code></pre>
+<pre><code>## $optimum
+## [1] 18.6
+## 
+## $solution
+## [1] 0.6 1.8
+## 
+## $status
+## [1] 5
+## 
+## $solution_dual
+## [1] 0 0
+## 
+## $auxiliary
+## $auxiliary$primal
+## [1] 9 3
+## 
+## $auxiliary$dual
+## [1] 1.8 0.8</code></pre>
+<p>the original message returned from the solver.</p>
+</div>
+<div id="example-2" class="section level3">
+<h3><strong>Example 2</strong></h3>
+<p><span class="math display">\[\begin{array}{rrrrrrr}
+\text{maximize}
+&amp; 7 x_1 &amp; + &amp; 3 x_2 &amp; + &amp; 1 x_3 &amp; \\
+\text{subject to}
+&amp; 6 x_1 &amp; + &amp; 4 x_2 &amp; + &amp; 5 x_3 &amp; \leq 60 \\
+&amp; 8 x_1 &amp; + &amp;   x_2 &amp; + &amp; 2 x_3 &amp; \leq 80 \\
+&amp; 9 x_1 &amp; + &amp; 1 x_2 &amp; + &amp; 7 x_3 &amp; \leq 70 
+\end{array}
+\]</span> <span class="math display">\[x_1, x_2, x_3 \geq 0\]</span></p>
+<pre class="r"><code>lp &lt;- OP(objective = L_objective(c(7, 1, 3), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
+         constraints = L_constraint(L = rbind(c(6, 4, 5), c(8, 0, 2), c(9, 1, 7)),
+                                    dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;, &quot;&lt;=&quot;),
+                                    rhs = c(60, 80, 70)),
+         maximum = TRUE)
+(sol &lt;- ROI_solve(lp))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 5.533333e+01</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##        x        y        z 
+## 7.333333 4.000000 0.000000</code></pre>
+</div>
+</div>
+<div id="mixed-integer-linear-programming-milp" class="section level2">
+<h2>Mixed integer linear programming (MILP)</h2>
+<p><span class="math display">\[\begin{array}{rrrrrrr}
+\text{maximize}
+&amp; 7 x_1 &amp; + &amp; 3 x_2 &amp; + &amp; 1 x_3 &amp; \\
+\text{subject to}
+&amp; 6 x_1 &amp; + &amp; 4 x_2 &amp; + &amp; 5 x_3 &amp; \leq 60 \\
+&amp; 8 x_1 &amp; + &amp;   x_2 &amp; + &amp; 2 x_3 &amp; \leq 80 \\
+&amp; 9 x_1 &amp; + &amp; 1 x_2 &amp; + &amp; 7 x_3 &amp; \leq 70 
+\end{array}
+\]</span> <span class="math display">\[x_1, x_3 \in \mathbb{Z}_{\geq 0}\]</span> <span class="math display">\[x_2 \geq 0\]</span></p>
+<pre class="r"><code>A &lt;- rbind(c(6, 4, 5), c(8, 0, 2), c(9, 1, 7))
+milp &lt;- OP(objective = L_objective(c(7, 1, 3), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
+           constraints = L_constraint(L = rbind(c(6, 4, 5), c(8, 0, 2), c(9, 1, 7)),
+                                      dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;, &quot;&lt;=&quot;),
+                                      rhs = c(60, 80, 70)),
+           types = c(&quot;I&quot;, &quot;C&quot;, &quot;I&quot;), 
+           maximum = TRUE)
+(sol &lt;- ROI_solve(milp))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 5.350000e+01</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##   x   y   z 
+## 7.0 4.5 0.0</code></pre>
+</div>
+<div id="quadratic-programming" class="section level2">
+<h2>Quadratic programming</h2>
+<div id="quadratic-objective-with-linear-constraints-qp" class="section level3">
+<h3>Quadratic objective with linear constraints (QP)</h3>
+<p><span class="math display">\[
+\begin{array}
+\text{minimize}   &amp; &amp; x_1 &amp; + &amp; 2x_2 &amp; + &amp; 3x_3 &amp;  +   &amp; \frac{1}{2} (x_1^2 + x_2^2 + x_3^2)  \\
+\text{subject to} &amp; &amp; x_1 &amp; + &amp;  x_2 &amp;   &amp;      &amp; \geq &amp; 1 \nonumber \\
+                  &amp; &amp;     &amp;   &amp;  x_2 &amp; + &amp;  x_3 &amp; \geq &amp; 2 \nonumber \\
+                  &amp; &amp; x_1 &amp;   &amp;      &amp; + &amp;  x_3 &amp; \geq &amp; 3 \nonumber \\
+\end{array}
+\]</span></p>
+<pre class="r"><code>qp &lt;- OP(Q_objective(diag(3), c(1, 2, 3), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
+         L_constraint(L = rbind(c(1, 1, 0), c(0, 1, 1), c(1, 0, 1)), 
+                      dir = c(&quot;&gt;=&quot;, &quot;&gt;=&quot;, &quot;&gt;=&quot;), rhs = c(1, 2, 3)))
+(sol &lt;- ROI_solve(qp, solver = &quot;qpoases&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 9.333333e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##         x         y         z 
+## 1.3333333 0.3333333 1.6666667</code></pre>
+</div>
+<div id="quadratic-objective-with-quadratic-constraints-qcqp" class="section level3">
+<h3>Quadratic objective with quadratic constraints (QCQP)</h3>
+<p><span class="math display">\[
+\text{maximize} \ \ 90 x_1 + 110 x_2 + 160 x_3 - \frac{1}{2} (x_1^2 + x_2^2 + x_3^2)
+\]</span> <span class="math display">\[
+\begin{array}{rrrrr}
+\text{subject to} &amp; x_1^2 + x_2^2 + 4 x_3     &amp; \leq &amp; 4 &amp; \\
+                  &amp; x_2^2 + x_3^2 + x_1 + x_3 &amp; \leq &amp; 3 &amp; \\
+                  &amp; x_1^2 + x_3^2 + 2 x_1 x_3 &amp; \leq &amp; 2 &amp; \\
+                  &amp; x_1, x_2, x_3 \geq 0      &amp;      &amp;   &amp;
+\end{array}
+\]</span></p>
+<pre class="r"><code>qcqp &lt;- OP(Q_objective(-diag(3), c(90, 110, 160), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
+           Q_constraint(Q = list(rbind(c(2, 0, 0), c(0, 2, 0), c(0, 0, 0)),
+                                 rbind(c(0, 0, 0), c(0, 2, 0), c(0, 0, 2)),
+                                 rbind(c(2, 0, 2), c(0, 0, 0), c(2, 0, 2))),
+                        L = rbind(c(0, 0, 4), c(1, 0, 1), c(0, 0, 0)),
+                        dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
+           maximum = TRUE)</code></pre>
+<pre class="r"><code>(sol &lt;- ROI_solve(qcqp, solver = &quot;gurobi&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.836219e+02</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##         x         y         z 
+## 1.0606575 1.2086302 0.3535547</code></pre>
+<p>or equivalently</p>
+<pre class="r"><code>qc1 &lt;- Q_constraint(Q = rbind(c(2, 0, 0), c(0, 2, 0), c(0, 0, 0)),
+                    L = c(0, 0, 4), dir = &quot;&lt;=&quot;, rhs = 4)
+qc2 &lt;- Q_constraint(Q = rbind(c(0, 0, 0), c(0, 2, 0), c(0, 0, 2)),
+                    L = c(1, 0, 1), dir = &quot;&lt;=&quot;, rhs = 3)
+qc3 &lt;- Q_constraint(Q = rbind(c(2, 0, 2), c(0, 0, 0), c(2, 0, 2)),
+                    L = NULL, dir = &quot;&lt;=&quot;, rhs = 2)
+qcqp &lt;- OP(Q_objective(-diag(3), c(90, 110, 160), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
+           c(qc1, qc2, qc3), maximum = TRUE)
+
+(sol &lt;- ROI_solve(qcqp, solver = &quot;gurobi&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.836219e+02</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##         x         y         z 
+## 1.0606575 1.2086302 0.3535547</code></pre>
+<p>Check how tight the bounds are.</p>
+<pre class="r"><code>sapply(as.function(constraints(qcqp)), function(F) F(solution(sol)))</code></pre>
+<pre><code>## [1] 4.000000 3.000000 1.999996</code></pre>
+</div>
+</div>
+<div id="conic-programming-cp" class="section level2">
+<h2>Conic programming (CP)</h2>
+<div id="second-order-cone-programming-socp" class="section level3">
+<h3>Second-order cone programming (SOCP)</h3>
+<p><span class="math display">\[\text{maximize } \ \ x + y\]</span> <span class="math display">\[\text{subject to } \ \ \sqrt{x^2 + y^2} \leq \sqrt{2}\]</span> <span class="math display">\[x, y \geq 0\]</span></p>
+<pre class="r"><code>socp1 &lt;- OP(objective = L_objective(c(1, 1), names = c(&quot;x&quot;, &quot;y&quot;)),
+            constraints = C_constraint(rbind(c(0, 0), c(-1, 0), c(0, -1)),
+                                       cones = K_soc(3), 
+                                       rhs = c(sqrt(2), 0, 0)),
+            maximum = TRUE)
+(sol &lt;- ROI_solve(socp1))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.000000e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>## x y 
+## 1 1</code></pre>
+</div>
+<div id="positive-semidefinite-programming-sdp" class="section level3">
+<h3>Positive semidefinite programming (SDP)</h3>
+<p><span class="math display">\[
+\begin{array}{rl}
+\text{minimize}   &amp; x_1 + x_2 - x_3 \\
+\text{subject to} &amp;
+x_1
+\begin{pmatrix}
+10 &amp; 3 \\
+3  &amp; 10
+\end{pmatrix}
++
+x_2
+\begin{pmatrix}
+6  &amp; -4 \\
+-4 &amp; 10
+\end{pmatrix}
++
+x_3
+\begin{pmatrix}
+8  &amp;  1 \\
+1  &amp;  6
+\end{pmatrix}
+\preceq
+\begin{pmatrix}
+ 16  &amp; -13 \\
+-13  &amp;  60
+\end{pmatrix}
+\\
+&amp; x_1, x_2, x_3 \geq 0
+\nonumber
+\end{array}
+\]</span></p>
+<pre class="r"><code>A1 &lt;- rbind(c(10, 3), c(3, 10))
+A2 &lt;- rbind(c(6, -4), c(-4, 10))
+A3 &lt;- rbind(c(8, 1), c(1, 6))
+A4 &lt;- rbind(c(16, -13), c(-13, 60))
+psd &lt;- OP(objective = L_objective(c(1, 1, -1)),
+          constraints = C_constraint(L = vech(A1, A2, A3), 
+                                     cones = K_psd(3),
+                                     rhs = vech(A4)))
+(sol &lt;- ROI_solve(psd))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: -1.486461e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>## [1] -1.937019e-08 -5.371359e-08  1.486461e+00</code></pre>
+<pre class="r"><code>as.matrix(solution(sol, &quot;psd&quot;)[[1]])</code></pre>
+<pre><code>##            [,1]        [,2]
+## [1,] 0.11050022 0.031337481
+## [2,] 0.03133748 0.008887201</code></pre>
+<p>The following example taken from the <a href="http://cvxopt.org/userguide/coneprog.html#semidefinite-programming">CVXOPT homepage</a>.</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\text{minimize}   &amp; x_1 - x_2 + x_3 \\
+\text{subject to} &amp;
+x_1 \
+\begin{pmatrix}
+ -7 &amp; -11 \\
+-11 &amp;   3
+\end{pmatrix}
++ x_2 \
+\begin{pmatrix}
+  7 &amp; -18 \\
+-18 &amp;   8
+\end{pmatrix}
++ x_3 \
+\begin{pmatrix}
+ -2 &amp;  -8 \\
+ -8 &amp;   1
+\end{pmatrix}
+\ \preceq \
+\begin{pmatrix}
+ 33 &amp;  -9 \\
+ -9 &amp;  26
+\end{pmatrix} 
+\ \\
+&amp;
+x_1 \
+\begin{pmatrix}
+-21 &amp; -11 &amp;   0 \\
+-11 &amp;  10 &amp;   8 \\
+  0 &amp;   8 &amp;   5
+\end{pmatrix}
++ x_2 \
+\begin{pmatrix}
+  0 &amp;  10 &amp;  16 \\
+ 10 &amp; -10 &amp; -10 \\
+ 16 &amp; -10 &amp;   3
+\end{pmatrix}
++ x_3 \
+\begin{pmatrix}
+ -5 &amp;   2 &amp; -17 \\
+  2 &amp;  -6 &amp;   8 \\
+-17 &amp;   8 &amp;   6
+\end{pmatrix}
+\ \preceq \
+\begin{pmatrix}
+ 14 &amp;   9 &amp;  40 \\
+  9 &amp;  91 &amp;  10 \\
+ 40 &amp;  10 &amp;  15
+\end{pmatrix}
+\ \\
+&amp; x_1, x_2, x_3 \in \mathbb{R}
+\end{array}
+\nonumber
+\]</span></p>
+<pre class="r"><code>obj &lt;- c(1, -1, 1)
+A1 &lt;- matrix(c(-7, -11, -11,  3), 2)
+A2 &lt;- matrix(c( 7, -18, -18,  8), 2)
+A3 &lt;- matrix(c(-2,  -8,  -8,  1), 2)
+A4 &lt;- matrix(c(33,  -9,  -9, 26), 2)
+B1 &lt;- matrix(c(-21, -11,  0, -11,  10,   8,  0,    8, 5), 3)
+B2 &lt;- matrix(c(  0,  10,  16, 10, -10, -10,  16, -10, 3), 3)
+B3 &lt;- matrix(c( -5,   2, -17,  2,  -6,   8, -17,   8, 6), 3)
+B4 &lt;- matrix(c( 14,   9,  40,  9,  91,  10,  40,  10,15), 3)
+rhs &lt;- c(vech(A4), vech(B4))
+
+psd &lt;- OP(objective = obj,
+          constraints = C_constraint(L = rbind(vech(A1, A2, A3), vech(B1, B2, B3)), 
+                                     cones = K_psd(c(3, 6)), rhs = rhs),
+          bounds = V_bound(li=1:3, lb=rep(-Inf, 3)))
+
+(sol &lt;- ROI_solve(psd, solver = &quot;scs&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: -3.153545e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>## [1] -0.3677513  1.8983332 -0.8874604</code></pre>
+<pre class="r"><code>lapply(solution(sol, type=&quot;psd&quot;), as.matrix)</code></pre>
+<pre><code>## $`5`
+##              [,1]         [,2]
+## [1,]  0.003961386 -0.004339146
+## [2,] -0.004339146  0.004752929
+## 
+## $`6`
+##              [,1]          [,2]         [,3]
+## [1,]  0.055803080 -0.0024106686  0.024214084
+## [2,] -0.002410669  0.0001041398 -0.001046038
+## [3,]  0.024214084 -0.0010460378  0.010506980</code></pre>
+</div>
+<div id="exponential-cone" class="section level3">
+<h3>Exponential cone</h3>
+<p><span class="math display">\[
+\begin{array}
+\mathcal{K}_{exp} &amp;=&amp;
+            \{(x, y, z) | y  &gt; 0, y e^{\frac{x}{y}} \leq z \} \cup
+            \{(x, 0, z) | x \leq 0, z \geq 0\} \\
+\mathcal{K}_{exp}^* &amp;=&amp;
+            \{(u, v, w) | u &lt; 0, -ue^\frac{v}{u} \leq ew\} \cup
+            \{(0, v, w) | v \geq 0, w \geq 0\}
+\end{array}
+\]</span></p>
+<div id="primal-exponential-cone" class="section level4">
+<h4>Primal exponential cone</h4>
+<p><span class="math display">\[
+\begin{array}
+\text{maximize}   &amp; x + y + z \\
+\text{subject to} &amp; y   e^{\frac{x}{y}} \leq z \\
+&amp; x \geq 0, y &gt; 0, z \in [0, e]
+\end{array}
+\]</span></p>
+<pre class="r"><code>expp &lt;- OP(objective = L_objective(c(1, 1, 1)),
+           constraints = C_constraint(diag(-1, 3), cones = K_expp(1), 
+                                      rhs = rep(0, 3)),
+           bounds = V_bound(li = 2, lb = 1e-12, ui = 3, ub = exp(1)),
+           maximum = TRUE)
+(sol &lt;- ROI_solve(expp, tol=1e-8, solver=&quot;scs&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 5.436564e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>## [1] 2.614608e-08 2.718282e+00 2.718282e+00</code></pre>
+</div>
+<div id="dual-exponential-cone" class="section level4">
+<h4>Dual exponential cone</h4>
+<p><span class="math display">\[
+\begin{array}
+\text{minimize}   &amp; u + v + w \\
+\text{subject to} &amp; -u e^{\frac{v}{u}} \leq ew \\
+&amp; u \in [-1, 0], y, z \geq 0
+\end{array}
+\]</span></p>
+<pre class="r"><code>expd &lt;- OP(objective = L_objective(c(1, 1, 1), names = c(&quot;u&quot;, &quot;v&quot;, &quot;w&quot;)),
+           constraints = C_constraint(diag(x=-1, 3), cones = K_expd(1), 
+                                      rhs = rep(0, 3)), 
+           bounds = V_bound(li = 1, lb = -1, ui = 1, ub = 0, nobj = 3L))
+(sol &lt;- ROI_solve(expd))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: -6.321204e-01</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##             u             v             w 
+## -9.999999e-01  3.483107e-07  3.678791e-01</code></pre>
+</div>
+</div>
+<div id="power-cone" class="section level3">
+<h3>Power cone</h3>
+<p><span class="math display">\[
+\begin{array}
+\mathcal{K}_{pwr}^\alpha &amp;=&amp; 
+                \{(x, y, z) | x^\alpha y^{1-\alpha} \geq |z|, x, y \geq 0\},
+                \text{ where } \alpha \in [0, 1] \\
+\left(\mathcal{K}_{pwr}^\alpha\right)^* &amp;=&amp;
+                \left\{(u, v, w) | \left(\frac{u}{a}\right)^\alpha \left(\frac{v}{1-a}\right)^{(1-a)} 
+                \geq |w|, u \geq 0, v \geq 0 \right\} 
+\end{array}
+\]</span></p>
+<div id="primal-power-cone" class="section level4">
+<h4>Primal power cone</h4>
+<p><span class="math display">\[
+\begin{array}
+\text{minimize}   &amp; x + y \\
+\text{subject to} &amp; \sqrt{x} * \sqrt{y} \geq z \\
+&amp; x, y \geq 0, z = 4
+\end{array}
+\]</span></p>
+<pre class="r"><code>powp &lt;- OP(objective = L_objective(c(1, 1, 0), names = c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)), 
+           constraints = C_constraint(diag(-1, 3), cones = K_powp(0.5), rhs = rep(0, 3)),
+           bounds = V_bound(li = 3, ui = 3, lb = 4, ub = 4))
+(sol &lt;- ROI_solve(powp))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 7.999993e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##        x        y        z 
+## 3.999996 3.999996 4.000000</code></pre>
+</div>
+<div id="dual-power-cone" class="section level4">
+<h4>Dual power cone</h4>
+<p><span class="math display">\[
+\begin{array}
+\text{minimize}   &amp; u + v \\
+\text{subject to} &amp; \sqrt{2 u} * \sqrt{2 v} \geq 4 \\
+&amp; u, v \geq 0, z = 4
+\end{array}
+\]</span></p>
+<pre class="r"><code>powd &lt;- OP(objective = L_objective(c(1, 1, 0), names = c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)), 
+           constraints = C_constraint(diag(-1, 3), cones = K_powd(0.5), rhs = rep(0, 3)),
+           bounds = V_bound(li = 3, ui = 3, lb = 4, ub = 4))
+(sol &lt;- ROI_solve(powd))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 4.000001e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##        x        y        z 
+## 2.000001 2.000001 4.000000</code></pre>
+</div>
+</div>
+</div>
+<div id="nonlinear-programming" class="section level2">
+<h2>Nonlinear Programming</h2>
+<p>The quadratic problem from above can also be solved by a general purpose solver.</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(qcqp, solver = &quot;alabama&quot;, start = double(3)))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.836219e+02</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##         x         y         z 
+## 1.0606602 1.2086300 0.3535534</code></pre>
+<p>or equivalently</p>
+<pre class="r"><code>f &lt;- function(x) {
+    90 * x[1] + 110 * x[2] + 160 * x[3] - 1 / 2 * (x[1]^2 + x[2]^2 + x[3]^2)
+}
+g &lt;- function(x) {
+    c((x[1]^2 + x[2]^2 + 4 * x[3]),
+      (x[2]^2 + x[3]^2 + x[1] + x[3]),
+      (x[1]^2 + x[3]^2 + 2 * x[1] * x[3]))
+}
+nlp &lt;- OP(F_objective(f, n=3), 
+          F_constraint(g, dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
+          maximum = TRUE)
+(sol &lt;- ROI_solve(nlp, solver = &quot;alabama&quot;, start = double(3)))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.836219e+02</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>## [1] 1.0606602 1.2086300 0.3535534</code></pre>
+<p>or equivalently</p>
+<pre class="r"><code>nlp &lt;- OP(Q_objective(-diag(3), c(90, 110, 160), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)), 
+          F_constraint(g, dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
+          maximum = TRUE)
+(sol &lt;- ROI_solve(nlp, solver = &quot;alabama&quot;, start = double(3)))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.836219e+02</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##         x         y         z 
+## 1.0606602 1.2086300 0.3535534</code></pre>
+<p>or equivalently</p>
+<pre class="r"><code>nlp &lt;- OP(F_objective(f, n=3), 
+          Q_constraint(Q = list(rbind(c(2, 0, 0), c(0, 2, 0), c(0, 0, 0)),
+                                rbind(c(0, 0, 0), c(0, 2, 0), c(0, 0, 2)),
+                                rbind(c(2, 0, 2), c(0, 0, 0), c(2, 0, 2))),
+                       L = rbind(c(0, 0, 4), c(1, 0, 1), c(0, 0, 0)),
+                       dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
+          maximum = TRUE)
+(sol &lt;- ROI_solve(nlp, solver = &quot;alabama&quot;, start = double(3)))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.836219e+02</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>## [1] 1.0606602 1.2086300 0.3535534</code></pre>
+</div>
+</div>
+<div id="read-writing-optimization-problems" class="section level1">
+<h1>Read / Writing optimization problems</h1>
+<p>Optimization problems are commonly stored and shared in specialized plain text files. For LP and MIP the file formats <code>'mps'</code>, <code>'lp'</code>, <code>'sif'</code> and <code>'freemps'</code> are commonly used.</p>
+<div id="read-lp-milp" class="section level2">
+<h2>Read LP / MILP</h2>
+<pre class="r"><code>ROI_registered_reader()</code></pre>
+<pre><code>##         type  solver
+## 1  mps_fixed    glpk
+## 2   mps_free    glpk
+## 3   lp_cplex    glpk
+## 4   mathprog    glpk
+## 5 lp_lpsolve lpsolve
+## 6  mps_fixed lpsolve
+## 7   mps_free lpsolve</code></pre>
+<p>To read the capri example from the netlib connection the following code can be used.</p>
+<pre class="r"><code>tmpfile &lt;- tempfile()
+con &lt;- gzcon(url(&quot;http://www.zib.de/koch/perplex/data/netlib/mps/capri.mps.gz&quot;))
+writeLines(readLines(con), tmpfile)
+close(con)
+(capri &lt;- read.op(tmpfile, type=&quot;mps_fixed&quot;, &quot;lpsolve&quot;))</code></pre>
+<pre><code>## ROI Optimization Problem:
+## 
+## Minimize a linear objective function of length 353 with
+## - 353 continuous objective variables,
+## 
+## subject to
+## - 271 constraints of type linear.
+## - 30 lower and 147 upper non-standard variable bounds.</code></pre>
+<pre class="r"><code>(sol &lt;- ROI_solve(capri))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.690013e+03</code></pre>
+</div>
+<div id="write-lp-milp" class="section level2">
+<h2>Write LP / MILP</h2>
+<pre class="r"><code>ROI_registered_writer()</code></pre>
+<pre><code>##         type  solver
+## 1  mps_fixed    glpk
+## 2   mps_free    glpk
+## 3   lp_cplex    glpk
+## 4 lp_lpsolve lpsolve
+## 5  mps_fixed lpsolve
+## 6   mps_free lpsolve</code></pre>
+<pre class="r"><code>tmpfile &lt;- tempfile()
+write.op(milp, tmpfile, type = &quot;lp_lpsolve&quot;)
+cat(readLines(tmpfile), sep=&quot;\n&quot;)</code></pre>
+<pre><code>## /* Objective function */
+## max: +7 C1 +C2 +3 C3;
+## 
+## /* Constraints */
+## +6 C1 +4 C2 +5 C3 &lt;= 60;
+## +8 C1 +2 C3 &lt;= 80;
+## +9 C1 +C2 +7 C3 &lt;= 70;
+## 
+## /* Integer definitions */
+## int C1,C3;</code></pre>
+</div>
+</div>
+<div id="test-collections" class="section level1">
+<h1>Test collections</h1>
+<div id="netlib-lp" class="section level2">
+<h2>NETLIB-LP</h2>
+<p>The software repository <code>NETLIB</code> contains among many other software also a linear programming test collection.</p>
+<pre class="r"><code>library(&quot;ROI.models.netlib&quot;)
+netlib()</code></pre>
+<pre><code>##  [1] &quot;adlittle&quot; &quot;afiro&quot;    &quot;agg&quot;      &quot;agg2&quot;     &quot;agg3&quot;     &quot;bandm&quot;   
+##  [7] &quot;beaconfd&quot; &quot;blend&quot;    &quot;bnl1&quot;     &quot;bnl2&quot;     &quot;boeing1&quot;  &quot;boeing2&quot; 
+## [13] &quot;bore3d&quot;   &quot;brandy&quot;   &quot;capri&quot;    &quot;cycle&quot;    &quot;czprob&quot;   &quot;d2q06c&quot;  
+## [19] &quot;d6cube&quot;   &quot;degen2&quot;   &quot;degen3&quot;   &quot;dfl001&quot;   &quot;e226&quot;     &quot;etamacro&quot;
+## [25] &quot;fffff800&quot; &quot;finnis&quot;   &quot;fit1d&quot;    &quot;fit1p&quot;    &quot;fit2d&quot;    &quot;fit2p&quot;   
+## [31] &quot;forplan&quot;  &quot;ganges&quot;   &quot;gfrd.pnc&quot; &quot;greenbea&quot; &quot;greenbeb&quot; &quot;grow15&quot;  
+## [37] &quot;grow22&quot;   &quot;grow7&quot;    &quot;israel&quot;   &quot;kb2&quot;      &quot;lotfi&quot;    &quot;maros.r7&quot;
+## [43] &quot;maros&quot;    &quot;modszk1&quot;  &quot;nesm&quot;     &quot;perold&quot;   &quot;pilot.ja&quot; &quot;pilot&quot;   
+## [49] &quot;pilot.we&quot; &quot;pilot4&quot;   &quot;pilot87&quot;  &quot;pilotnov&quot; &quot;recipe&quot;   &quot;sc105&quot;   
+## [55] &quot;sc205&quot;    &quot;sc50a&quot;    &quot;sc50b&quot;    &quot;scagr25&quot;  &quot;scagr7&quot;   &quot;scfxm1&quot;  
+## [61] &quot;scfxm2&quot;   &quot;scfxm3&quot;   &quot;scorpion&quot; &quot;scrs8&quot;    &quot;scsd1&quot;    &quot;scsd6&quot;   
+## [67] &quot;scsd8&quot;    &quot;sctap1&quot;   &quot;sctap2&quot;   &quot;sctap3&quot;   &quot;seba&quot;     &quot;share1b&quot; 
+## [73] &quot;share2b&quot;  &quot;shell&quot;    &quot;ship04l&quot;  &quot;ship04s&quot;  &quot;ship08l&quot;  &quot;ship08s&quot; 
+## [79] &quot;ship12l&quot;  &quot;ship12s&quot;  &quot;sierra&quot;   &quot;stair&quot;    &quot;standata&quot; &quot;standmps&quot;
+## [85] &quot;stocfor1&quot; &quot;stocfor2&quot; &quot;stocfor3&quot; &quot;truss&quot;    &quot;tuff&quot;     &quot;vtp.base&quot;
+## [91] &quot;wood1p&quot;   &quot;woodw&quot;    &quot;x25fv47&quot;  &quot;x80bau3b&quot;</code></pre>
+<pre class="r"><code>problem_name &lt;- &quot;boeing1&quot;
+netlib(&quot;metainfo&quot;)[problem_name, -(2:5)]</code></pre>
+<pre><code>##            name br     optimal_value       opt
+## boeing1 BOEING1 BR -3.3521356751E+02 -335.2136</code></pre>
+<pre class="r"><code>(model &lt;- netlib(problem_name))</code></pre>
+<pre><code>## ROI Optimization Problem:
+## 
+## Minimize a linear objective function of length 384 with
+## - 384 continuous objective variables,
+## 
+## subject to
+## - 440 constraints of type linear.
+## - 6 lower and 156 upper non-standard variable bounds.</code></pre>
+<pre class="r"><code>(x &lt;- ROI_solve(model))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: -3.352136e+02</code></pre>
+</div>
+<div id="milp" class="section level2">
+<h2>MILP</h2>
+<pre class="r"><code>library(&quot;ROI.models.miplib&quot;)
+miplib(&quot;air04&quot;)</code></pre>
+<pre><code>## ROI Optimization Problem:
+## 
+## Minimize a linear objective function of length 8904 with
+## - 8904 binary objective variables,
+## 
+## subject to
+## - 823 constraints of type linear.
+## - 0 lower and 8904 upper non-standard variable bounds.</code></pre>
+</div>
+</div>
+<div id="options" class="section level1">
+<h1>Options</h1>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
