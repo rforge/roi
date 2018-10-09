@@ -4,11 +4,12 @@ setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
 source("create_solver_db_functions.R")
 
 R <- "/home/florian/bin/R_dev/bin/R"
-CRAN <- "https://cran.r-project.org/"
+CRAN <- "https://CRAN.R-project.org"
 
 ## r_version, lib.loc, repos 
 solver_db_cran <- create_solver_db_cran(R, head(.libPaths()), CRAN)
-solver_db_cran$Repository <- gsub("/src/contrib", "", solver_db_cran$Repository, fixed = TRUE)
+solver_db_cran$Repository <- "https://CRAN.R-project.org"
+solver_db_cran$Repository
 
 saveRDS(solver_db_cran, file = "SOLVERS_CRAN.rds")
 
