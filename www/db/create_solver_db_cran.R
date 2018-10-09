@@ -8,6 +8,8 @@ CRAN <- "https://cran.r-project.org/"
 
 ## r_version, lib.loc, repos 
 solver_db_cran <- create_solver_db_cran(R, head(.libPaths()), CRAN)
+solver_db_cran$Repository <- gsub("/src/contrib", "", solver_db_cran$Repository, fixed = TRUE)
+
 saveRDS(solver_db_cran, file = "SOLVERS_CRAN.rds")
 
 if (FALSE) {
