@@ -20,13 +20,18 @@ get_ub <- function(x, .machine.max=Inf) {
 
 .deoptim_control_names <- c("VTR", "strategy", "NP", "itermax", "CR", "F", "bs", "trace",  "initialpop", "storepopfrom", "storepopfreq", "p", "c", "reltol",  "steptol", "parallelType", "packages", "parVar", "foreachArgs")
 
-solve_deoptim <- function( x, control ) {
-    solver <- ROI_plugin_get_solver_name( getPackageName() )
+solve_op_deoptim <- function( x, control ) {
+    solver <- "deoptim"
+
+    if ( is.null(control$trace) )
+        control$trace <- FALSE
+    if ( !is.null(control$start) & is.null(control$initialpop) )
+        control$initialpop <- control$start
 
     lb <- get_lb(x)
     ub <- get_ub(x)
 
-    ##opti <- list(DEoptim)
+    opti <- list(DEoptim)
     if ( isTRUE(x$maximum) ) {
         objective_function <- terms(objective(x))$F
         opti$fn <- function(x) -objective_function(x)
@@ -71,8 +76,13 @@ solve_deoptim <- function( x, control ) {
 ##
 ## h_i(x) == 0   i = 1, ..., meq
 ## g_i(x) <= 0
-solver_deoptimr <- function(x, control) {
-    solver <- "deoptim"
+solve_op_deoptimr <- function(x, control) {
+    solver <- "deoptimr"
+    if ( is.null(control$trace) )
+        control$trace <- FALSE
+    if ( !is.null(control$start) & is.null(control$add_to_init_pop) ) {
+        control$add_to_init_pop <- control$start
+    }
 
     m <- .deoptimr_default(length(objective(x)))
   
@@ -126,16 +136,3 @@ build_constraint <- function(EQFUN, LEQFUN) {
     function(x) c(EQFUN(x), LEQFUN(x))
 }
 
-solve_op <- function(x, control) {
-    if ( is.null(control$trace) )
-        control$trace <- FALSE
-    ##if ( is.NO_constraint(constraints(x)) ) {
-        ## if ( !is.null(control$start) & is.null(control$initialpop) )
-        ##    control$initialpop <- control$start
-        ## return(solve_deoptim(x, control))
-    ##}
-    if ( !is.null(control$start) & is.null(control$add_to_init_pop) ) {
-        control$add_to_init_pop <- control$start
-    }
-    return(solver_deoptimr(x, control))
-}

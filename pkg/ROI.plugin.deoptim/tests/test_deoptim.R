@@ -7,7 +7,9 @@ if ( FALSE ) {
 ## stopifnot(require(DEoptim))
 Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 library(ROI)
-library(ROI.plugin.deoptimr)
+library(ROI.plugin.deoptim)
+
+ROI_registered_solvers()
 
 check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
     if ( isTRUE(condition) ) return(invisible(NULL))
@@ -26,7 +28,14 @@ test_nlp_01 <- function() {
              bounds = V_bound(li = 1:2, ui = 1:2, lb = c(-3, -3), ub = c(3, 3)) )
     
     # Solve Rosenbrock Banana function.
-    res <- ROI_solve(x, solver="deoptimr")
+    res <- ROI_solve(x, solver = "deoptim")
+    stopifnot(is.numeric(solution(res)))
+    
+    check("NLP-01@01", equal(res$objval, 0.0))
+    check("NLP-01@02", equal(res$solution, c( 1.0, 1.0 )))
+
+    # Solve Rosenbrock Banana function.
+    res <- ROI_solve(x, solver = "deoptimr")
     stopifnot(is.numeric(solution(res)))
     
     check("NLP-01@01", equal(res$objval, 0.0))
@@ -73,7 +82,7 @@ test_nlp_03 <- function() {
     stopifnot( equal(solution(nlp), c(20, 11, 15)) )
 }
 
-if ( !any("alabama" %in% names(ROI_registered_solvers())) ) {
+if ( !any("deoptim" %in% names(ROI_registered_solvers())) ) {
     ## This should never happen.
     cat("ROI.plugin.alabama cloud not be found among the registered solvers.\n")
 } else {
