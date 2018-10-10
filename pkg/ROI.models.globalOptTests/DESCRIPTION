@@ -1,6 +1,6 @@
 Package: ROI.models.globalOptTests
 Type: Package
-Title: 'ROI' Optimization Problems based on 'globalOptTests'
+Title: 'ROI' Optimization Problems Based on 'globalOptTests'
 Version: 1.0
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>

@@ -1,5 +1,10 @@
-q("no")
-Rdevel
+if ( FALSE ) {
+    q("no")
+    Rdevel    
+}
+
+
+library(globalOptTests)
 
 Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 library(ROI)
@@ -47,8 +52,10 @@ abs(solution(z, "objval") - globopt("metainfo")["Rastrigin", "optimum"])
 ##
 ##
 ##
-q("no")
-Rdevel
+if ( FALSE ) {
+    q("no")
+    Rdevel    
+}
 
 library(globalOptTests)
 Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
