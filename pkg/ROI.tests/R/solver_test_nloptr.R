@@ -319,7 +319,7 @@ test_nloptr03 <- function(solver) {
 
     ## Solve using NLOPT_LD_MMA with gradient information supplied in separate function
     x <- OP(objective = F_objective(F=f_objective, n=2L, G=f_gradient), 
-            constraints = F_constraint(F=g_constraint, dir="<=", rhs=0, J=g_jacobian),
+            constraints = F_constraint(F=g_constraint, dir=leq(5), rhs=double(5), J=g_jacobian),
             bounds = V_bound(li=1:2, ui=1:2, lb=c(-50,-50), ub=c(50,50)) )
 
     ## Solve Rosenbrock Banana function.

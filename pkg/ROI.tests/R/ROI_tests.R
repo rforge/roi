@@ -98,6 +98,40 @@ get_test <- function(x) {
     TESTS[[x]]
 }
 
+needs_start_value <- function(solver) {
+    isTRUE("start" %in% ROI_registered_solver_control(solver)[,"roi_control"])
+}
+
+solver_control <- function(solver, solution, ...) {
+    cntrl <- list(...)
+    if ( is.null(cntrl$start) & needs_start_value(solver) )
+        cntrl$start <- jitter(solution, amount = 1L)
+
+    if ( isTRUE("verbosity_level" %in% ROI_registered_solver_control(solver)[,"roi_control"]) ) {
+        if (is.null(cntrl$verbosity_level))
+            cntrl$verbosity_level <- 0L
+    }
+    cntrl
+}
+
+correct_types <- function(x, solution) {
+    i <- which(types(x) %in% c("B", "I"))
+    if ( !equal(solution[i], as.numeric(as.integer(solution[i]))) )
+        return(FALSE)
+    i <- which(types(x) %in% "B")
+    if ( !all(as.integer(solution[i]) %in% c(0L, 1L)) )
+        return(FALSE)
+    return(TRUE)
+}
+
+check_bounds <- function(x, solution) {
+    lb <- rep.int(0L, length(solution))
+    ub <- rep.int(Inf, length(solution))
+    lb[bounds(x)$lower$ind] <- bounds(x)$lower$val
+    ub[bounds(x)$upper$ind] <- bounds(x)$upper$val
+    all( lb <= solution & solution <= ub )
+}
+
 
 ## ROI:::ROI_required_signature()
 ##     ROI_plugin_make_signature( objective = c("L", "Q", "F"),

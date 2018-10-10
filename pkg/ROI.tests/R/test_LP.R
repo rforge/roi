@@ -15,9 +15,11 @@ test_lp_01 <- function(solver) {
                                        rhs = c(60, 40, 80)),
             maximum = TRUE)
 
-
-    opt <- ROI_solve(x, solver = solver)
-    check("LP-01@01", equal(opt$solution, c(0, 20/3, 50/3), tol=1e-4))
+    sol <- c(0, 20/3, 50/3)
+    
+    opt <- ROI_solve(x, solver = solver, 
+                     control = solver_control(solver, sol))
+    check("LP-01@01", equal(opt$solution, sol, tol=1e-4))
     check("LP-01@02", equal(opt$objval, 230/3, tol=1e-4))
 }
 
@@ -28,8 +30,11 @@ test_lp_02 <- function(solver) {
                                        dir=character(), rhs=double()),
             maximum = FALSE)
 
-    opt <- ROI_solve(x, solver = solver)
-    check("LP-02@01", equal(opt$solution, c(0, 0, 0), tol=1e-4))
+    sol <- c(0, 0, 0)
+
+    opt <- ROI_solve(x, solver = solver, 
+                     control = solver_control(solver, sol))
+    check("LP-02@01", equal(opt$solution, sol, tol=1e-4))
     check("LP-02@02", equal(opt$objval, 0, tol=1e-4))
 }
 
@@ -37,7 +42,12 @@ test_lp_02 <- function(solver) {
 test_lp_03 <- function(solver) {
     x <- OP(objective = c(2, 4, 3), constraints = NULL, maximum = FALSE)
 
-    opt <- ROI_solve(x, solver = solver)
-    check("LP-03@03", equal(opt$solution, c(0, 0, 0), tol=1e-4))
+    sol <- c(0, 0, 0)
+
+    opt <- ROI_solve(x, solver = solver, 
+                     control = solver_control(solver, sol))
+    check("LP-03@03", equal(opt$solution, sol, tol=1e-4))
     check("LP-03@03", equal(opt$objval, 0, tol=1e-4))
 }
+
+

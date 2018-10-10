@@ -33,9 +33,12 @@ test_qp_01 <- function(solver) {
                          dir = rep(">=", 3),
                          rhs = c(-8, 2, 0)))
 
-    opt <- ROI_solve(x, solver=solver)
-    solution <- c(0.476190476190476, 1.04761904761905, 2.0952380952381)
-    check("QP-01@01", equal(opt$solution, solution) )
+    sol <- c(0.476190476190476, 1.04761904761905, 2.0952380952381)
+
+    opt <- ROI_solve(x, solver = solver,
+                     control = solver_control(solver, sol))
+
+    check("QP-01@01", equal(opt$solution, sol) )
     check("QP-01@02", equal(opt$objval, -2.38095238095238) )
 
 }
@@ -53,12 +56,17 @@ test_qp_02 <- function(solver) {
     lc2 <- L_constraint(L=matrix(c(1, 0), nrow=1), dir=">=", rhs=0)
     x <- OP(qo, c(lc1, lc2))
 
-    opt <- ROI_solve(x, solver=solver)
-    solution <- c(2, 0)
-    check("QP-02@01", equal(opt$solution, solution) )
+    sol <- c(2, 0)
+
+    opt <- ROI_solve(x, solver = solver,
+                     control = solver_control(solver, sol))
+    
+    check("QP-02@01", equal(opt$solution, sol) )
     check("QP-02@02", equal(opt$objval, -2) )
 
 }
+
+
 
 
 
