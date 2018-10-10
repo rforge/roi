@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // qproblemb
 SEXP qproblemb(int number_of_varibales, int hessian_type, int alloc_dense_matrix);
-RcppExport SEXP ROI_plugin_qpoases_qproblemb(SEXP number_of_varibalesSEXP, SEXP hessian_typeSEXP, SEXP alloc_dense_matrixSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_qproblemb(SEXP number_of_varibalesSEXP, SEXP hessian_typeSEXP, SEXP alloc_dense_matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // qproblem
 SEXP qproblem(int number_of_varibales, int number_of_constraints, int hessian_type);
-RcppExport SEXP ROI_plugin_qpoases_qproblem(SEXP number_of_varibalesSEXP, SEXP number_of_constraintsSEXP, SEXP hessian_typeSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_qproblem(SEXP number_of_varibalesSEXP, SEXP number_of_constraintsSEXP, SEXP hessian_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -33,7 +33,7 @@ END_RCPP
 }
 // sqproblem
 SEXP sqproblem(int number_of_varibales, int number_of_constraints, int hessian_type, int alloc_dense_matrix);
-RcppExport SEXP ROI_plugin_qpoases_sqproblem(SEXP number_of_varibalesSEXP, SEXP number_of_constraintsSEXP, SEXP hessian_typeSEXP, SEXP alloc_dense_matrixSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_sqproblem(SEXP number_of_varibalesSEXP, SEXP number_of_constraintsSEXP, SEXP hessian_typeSEXP, SEXP alloc_dense_matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,7 +47,7 @@ END_RCPP
 }
 // set_options
 SEXP set_options(SEXP r_model, Rcpp::List control);
-RcppExport SEXP ROI_plugin_qpoases_set_options(SEXP r_modelSEXP, SEXP controlSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_set_options(SEXP r_modelSEXP, SEXP controlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -59,7 +59,7 @@ END_RCPP
 }
 // init_qproblem
 SEXP init_qproblem(SEXP r_model, NumericVector r_H, NumericVector r_g, NumericVector r_A, NumericVector r_lb, NumericVector r_ub, NumericVector r_lbA, NumericVector r_ubA, int r_nWSRm, double r_cputime);
-RcppExport SEXP ROI_plugin_qpoases_init_qproblem(SEXP r_modelSEXP, SEXP r_HSEXP, SEXP r_gSEXP, SEXP r_ASEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_lbASEXP, SEXP r_ubASEXP, SEXP r_nWSRmSEXP, SEXP r_cputimeSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_init_qproblem(SEXP r_modelSEXP, SEXP r_HSEXP, SEXP r_gSEXP, SEXP r_ASEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_lbASEXP, SEXP r_ubASEXP, SEXP r_nWSRmSEXP, SEXP r_cputimeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -79,7 +79,7 @@ END_RCPP
 }
 // init_qproblemb
 SEXP init_qproblemb(SEXP r_model, NumericVector r_H, NumericVector r_g, NumericVector r_lb, NumericVector r_ub, int r_nWSRm, double r_cputime);
-RcppExport SEXP ROI_plugin_qpoases_init_qproblemb(SEXP r_modelSEXP, SEXP r_HSEXP, SEXP r_gSEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_nWSRmSEXP, SEXP r_cputimeSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_init_qproblemb(SEXP r_modelSEXP, SEXP r_HSEXP, SEXP r_gSEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_nWSRmSEXP, SEXP r_cputimeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -96,7 +96,7 @@ END_RCPP
 }
 // init_sqproblem
 SEXP init_sqproblem(SEXP r_model, NumericVector r_H, NumericVector r_g, NumericVector r_A, NumericVector r_lb, NumericVector r_ub, NumericVector r_lbA, NumericVector r_ubA, int r_nWSRm, double r_cputime);
-RcppExport SEXP ROI_plugin_qpoases_init_sqproblem(SEXP r_modelSEXP, SEXP r_HSEXP, SEXP r_gSEXP, SEXP r_ASEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_lbASEXP, SEXP r_ubASEXP, SEXP r_nWSRmSEXP, SEXP r_cputimeSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_init_sqproblem(SEXP r_modelSEXP, SEXP r_HSEXP, SEXP r_gSEXP, SEXP r_ASEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_lbASEXP, SEXP r_ubASEXP, SEXP r_nWSRmSEXP, SEXP r_cputimeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -116,7 +116,7 @@ END_RCPP
 }
 // hotstart_qproblem
 SEXP hotstart_qproblem(SEXP r_model, NumericVector r_g, NumericVector r_lb, NumericVector r_ub, NumericVector r_lbA, NumericVector r_ubA, int r_nWSR);
-RcppExport SEXP ROI_plugin_qpoases_hotstart_qproblem(SEXP r_modelSEXP, SEXP r_gSEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_lbASEXP, SEXP r_ubASEXP, SEXP r_nWSRSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_hotstart_qproblem(SEXP r_modelSEXP, SEXP r_gSEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_lbASEXP, SEXP r_ubASEXP, SEXP r_nWSRSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -133,7 +133,7 @@ END_RCPP
 }
 // hotstart_qproblemb
 SEXP hotstart_qproblemb(SEXP r_model, NumericVector r_g, NumericVector r_lb, NumericVector r_ub, int r_nWSR);
-RcppExport SEXP ROI_plugin_qpoases_hotstart_qproblemb(SEXP r_modelSEXP, SEXP r_gSEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_nWSRSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_hotstart_qproblemb(SEXP r_modelSEXP, SEXP r_gSEXP, SEXP r_lbSEXP, SEXP r_ubSEXP, SEXP r_nWSRSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -148,7 +148,7 @@ END_RCPP
 }
 // print_options
 SEXP print_options(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_print_options(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_print_options(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -159,7 +159,7 @@ END_RCPP
 }
 // get_objval
 double get_objval(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_objval(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_objval(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -170,7 +170,7 @@ END_RCPP
 }
 // get_number_of_variables
 int get_number_of_variables(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_number_of_variables(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_number_of_variables(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -181,7 +181,7 @@ END_RCPP
 }
 // get_number_of_free_variables
 int get_number_of_free_variables(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_number_of_free_variables(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_number_of_free_variables(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -192,7 +192,7 @@ END_RCPP
 }
 // get_number_of_fixed_variables
 int get_number_of_fixed_variables(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_number_of_fixed_variables(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_number_of_fixed_variables(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -203,7 +203,7 @@ END_RCPP
 }
 // get_number_of_constraints
 int get_number_of_constraints(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_number_of_constraints(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_number_of_constraints(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -214,7 +214,7 @@ END_RCPP
 }
 // get_number_of_equality_constraints
 int get_number_of_equality_constraints(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_number_of_equality_constraints(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_number_of_equality_constraints(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -225,7 +225,7 @@ END_RCPP
 }
 // get_number_of_active_constraints
 int get_number_of_active_constraints(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_number_of_active_constraints(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_number_of_active_constraints(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -236,7 +236,7 @@ END_RCPP
 }
 // get_number_of_inactive_constraints
 int get_number_of_inactive_constraints(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_number_of_inactive_constraints(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_number_of_inactive_constraints(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -247,7 +247,7 @@ END_RCPP
 }
 // is_initialised
 int is_initialised(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_is_initialised(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_is_initialised(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -258,7 +258,7 @@ END_RCPP
 }
 // is_solved
 int is_solved(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_is_solved(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_is_solved(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -269,7 +269,7 @@ END_RCPP
 }
 // is_infeasible
 int is_infeasible(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_is_infeasible(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_is_infeasible(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -280,7 +280,7 @@ END_RCPP
 }
 // is_unbounded
 int is_unbounded(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_is_unbounded(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_is_unbounded(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -291,7 +291,7 @@ END_RCPP
 }
 // get_primal_solution
 SEXP get_primal_solution(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_primal_solution(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_primal_solution(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -302,7 +302,7 @@ END_RCPP
 }
 // get_dual_solution
 SEXP get_dual_solution(SEXP r_model);
-RcppExport SEXP ROI_plugin_qpoases_get_dual_solution(SEXP r_modelSEXP) {
+RcppExport SEXP _ROI_plugin_qpoases_get_dual_solution(SEXP r_modelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -311,32 +311,44 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// read_oqp_dimensions
+SEXP read_oqp_dimensions(std::string r_path);
+RcppExport SEXP _ROI_plugin_qpoases_read_oqp_dimensions(SEXP r_pathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type r_path(r_pathSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_oqp_dimensions(r_path));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"ROI_plugin_qpoases_qproblemb", (DL_FUNC) &ROI_plugin_qpoases_qproblemb, 3},
-    {"ROI_plugin_qpoases_qproblem", (DL_FUNC) &ROI_plugin_qpoases_qproblem, 3},
-    {"ROI_plugin_qpoases_sqproblem", (DL_FUNC) &ROI_plugin_qpoases_sqproblem, 4},
-    {"ROI_plugin_qpoases_set_options", (DL_FUNC) &ROI_plugin_qpoases_set_options, 2},
-    {"ROI_plugin_qpoases_init_qproblem", (DL_FUNC) &ROI_plugin_qpoases_init_qproblem, 10},
-    {"ROI_plugin_qpoases_init_qproblemb", (DL_FUNC) &ROI_plugin_qpoases_init_qproblemb, 7},
-    {"ROI_plugin_qpoases_init_sqproblem", (DL_FUNC) &ROI_plugin_qpoases_init_sqproblem, 10},
-    {"ROI_plugin_qpoases_hotstart_qproblem", (DL_FUNC) &ROI_plugin_qpoases_hotstart_qproblem, 7},
-    {"ROI_plugin_qpoases_hotstart_qproblemb", (DL_FUNC) &ROI_plugin_qpoases_hotstart_qproblemb, 5},
-    {"ROI_plugin_qpoases_print_options", (DL_FUNC) &ROI_plugin_qpoases_print_options, 1},
-    {"ROI_plugin_qpoases_get_objval", (DL_FUNC) &ROI_plugin_qpoases_get_objval, 1},
-    {"ROI_plugin_qpoases_get_number_of_variables", (DL_FUNC) &ROI_plugin_qpoases_get_number_of_variables, 1},
-    {"ROI_plugin_qpoases_get_number_of_free_variables", (DL_FUNC) &ROI_plugin_qpoases_get_number_of_free_variables, 1},
-    {"ROI_plugin_qpoases_get_number_of_fixed_variables", (DL_FUNC) &ROI_plugin_qpoases_get_number_of_fixed_variables, 1},
-    {"ROI_plugin_qpoases_get_number_of_constraints", (DL_FUNC) &ROI_plugin_qpoases_get_number_of_constraints, 1},
-    {"ROI_plugin_qpoases_get_number_of_equality_constraints", (DL_FUNC) &ROI_plugin_qpoases_get_number_of_equality_constraints, 1},
-    {"ROI_plugin_qpoases_get_number_of_active_constraints", (DL_FUNC) &ROI_plugin_qpoases_get_number_of_active_constraints, 1},
-    {"ROI_plugin_qpoases_get_number_of_inactive_constraints", (DL_FUNC) &ROI_plugin_qpoases_get_number_of_inactive_constraints, 1},
-    {"ROI_plugin_qpoases_is_initialised", (DL_FUNC) &ROI_plugin_qpoases_is_initialised, 1},
-    {"ROI_plugin_qpoases_is_solved", (DL_FUNC) &ROI_plugin_qpoases_is_solved, 1},
-    {"ROI_plugin_qpoases_is_infeasible", (DL_FUNC) &ROI_plugin_qpoases_is_infeasible, 1},
-    {"ROI_plugin_qpoases_is_unbounded", (DL_FUNC) &ROI_plugin_qpoases_is_unbounded, 1},
-    {"ROI_plugin_qpoases_get_primal_solution", (DL_FUNC) &ROI_plugin_qpoases_get_primal_solution, 1},
-    {"ROI_plugin_qpoases_get_dual_solution", (DL_FUNC) &ROI_plugin_qpoases_get_dual_solution, 1},
+    {"_ROI_plugin_qpoases_qproblemb", (DL_FUNC) &_ROI_plugin_qpoases_qproblemb, 3},
+    {"_ROI_plugin_qpoases_qproblem", (DL_FUNC) &_ROI_plugin_qpoases_qproblem, 3},
+    {"_ROI_plugin_qpoases_sqproblem", (DL_FUNC) &_ROI_plugin_qpoases_sqproblem, 4},
+    {"_ROI_plugin_qpoases_set_options", (DL_FUNC) &_ROI_plugin_qpoases_set_options, 2},
+    {"_ROI_plugin_qpoases_init_qproblem", (DL_FUNC) &_ROI_plugin_qpoases_init_qproblem, 10},
+    {"_ROI_plugin_qpoases_init_qproblemb", (DL_FUNC) &_ROI_plugin_qpoases_init_qproblemb, 7},
+    {"_ROI_plugin_qpoases_init_sqproblem", (DL_FUNC) &_ROI_plugin_qpoases_init_sqproblem, 10},
+    {"_ROI_plugin_qpoases_hotstart_qproblem", (DL_FUNC) &_ROI_plugin_qpoases_hotstart_qproblem, 7},
+    {"_ROI_plugin_qpoases_hotstart_qproblemb", (DL_FUNC) &_ROI_plugin_qpoases_hotstart_qproblemb, 5},
+    {"_ROI_plugin_qpoases_print_options", (DL_FUNC) &_ROI_plugin_qpoases_print_options, 1},
+    {"_ROI_plugin_qpoases_get_objval", (DL_FUNC) &_ROI_plugin_qpoases_get_objval, 1},
+    {"_ROI_plugin_qpoases_get_number_of_variables", (DL_FUNC) &_ROI_plugin_qpoases_get_number_of_variables, 1},
+    {"_ROI_plugin_qpoases_get_number_of_free_variables", (DL_FUNC) &_ROI_plugin_qpoases_get_number_of_free_variables, 1},
+    {"_ROI_plugin_qpoases_get_number_of_fixed_variables", (DL_FUNC) &_ROI_plugin_qpoases_get_number_of_fixed_variables, 1},
+    {"_ROI_plugin_qpoases_get_number_of_constraints", (DL_FUNC) &_ROI_plugin_qpoases_get_number_of_constraints, 1},
+    {"_ROI_plugin_qpoases_get_number_of_equality_constraints", (DL_FUNC) &_ROI_plugin_qpoases_get_number_of_equality_constraints, 1},
+    {"_ROI_plugin_qpoases_get_number_of_active_constraints", (DL_FUNC) &_ROI_plugin_qpoases_get_number_of_active_constraints, 1},
+    {"_ROI_plugin_qpoases_get_number_of_inactive_constraints", (DL_FUNC) &_ROI_plugin_qpoases_get_number_of_inactive_constraints, 1},
+    {"_ROI_plugin_qpoases_is_initialised", (DL_FUNC) &_ROI_plugin_qpoases_is_initialised, 1},
+    {"_ROI_plugin_qpoases_is_solved", (DL_FUNC) &_ROI_plugin_qpoases_is_solved, 1},
+    {"_ROI_plugin_qpoases_is_infeasible", (DL_FUNC) &_ROI_plugin_qpoases_is_infeasible, 1},
+    {"_ROI_plugin_qpoases_is_unbounded", (DL_FUNC) &_ROI_plugin_qpoases_is_unbounded, 1},
+    {"_ROI_plugin_qpoases_get_primal_solution", (DL_FUNC) &_ROI_plugin_qpoases_get_primal_solution, 1},
+    {"_ROI_plugin_qpoases_get_dual_solution", (DL_FUNC) &_ROI_plugin_qpoases_get_dual_solution, 1},
+    {"_ROI_plugin_qpoases_read_oqp_dimensions", (DL_FUNC) &_ROI_plugin_qpoases_read_oqp_dimensions, 1},
     {NULL, NULL, 0}
 };
 
