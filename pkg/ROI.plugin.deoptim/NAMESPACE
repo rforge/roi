@@ -1,5 +1,4 @@
 import("ROI")
-import("DEoptim")
 import("DEoptimR")
 importFrom("stats", "terms")
 importFrom("stats", "setNames")

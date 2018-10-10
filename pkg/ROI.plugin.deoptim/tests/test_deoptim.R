@@ -4,8 +4,8 @@ if ( FALSE ) {
     Rdevel
 }
 
-stopifnot(require(DEoptim))
-
+## stopifnot(require(DEoptim))
+Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 library(ROI)
 library(ROI.plugin.deoptim)
 

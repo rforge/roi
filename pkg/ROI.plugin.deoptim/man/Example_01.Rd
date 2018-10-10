@@ -9,8 +9,10 @@ Solution: \code{c(1, 1)}
 }
 
 \examples{
-
+Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 library(ROI)
+library(ROI.plugin.deoptim)
+
 
 f <- function(x) {
     return( 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2 )
@@ -19,7 +21,7 @@ f <- function(x) {
 x <- OP( objective = F_objective(f, n=2L, names=c("x_1", "x_2")), 
          bounds = V_bound(li=1:2, ui=1:2, lb=c(-3, -3), ub=c(3,  3)) )
 
-nlp <- ROI_solve(x, solver="deoptim")
+nlp <- ROI_solve(x, solver = "deoptim")
 nlp
 ## Optimal solution found.
 ## The objective value is: 3.828383e-22

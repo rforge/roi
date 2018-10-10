@@ -26,7 +26,7 @@ solve_deoptim <- function( x, control ) {
     lb <- get_lb(x)
     ub <- get_ub(x)
 
-    opti <- list(DEoptim)
+    ##opti <- list(DEoptim)
     if ( isTRUE(x$maximum) ) {
         objective_function <- terms(objective(x))$F
         opti$fn <- function(x) -objective_function(x)
@@ -94,7 +94,9 @@ solver_deoptimr <- function(x, control) {
         m$meq <- length(eqcon$F(control[["start"]]))
     }
 
-    m$constr <- build_constraint(eqcon$F, leqcon$F)
+    if ( !is.NO_constraint(constraints(x)) ) {
+        m$constr <- build_constraint(eqcon$F, leqcon$F)    
+    }
 
     for (key in intersect(names(control), .deoptimr_control_names)) {
         m[[key]] <- control[[key]]
@@ -127,11 +129,11 @@ build_constraint <- function(EQFUN, LEQFUN) {
 solve_op <- function(x, control) {
     if ( is.null(control$trace) )
         control$trace <- FALSE
-    if ( is.NO_constraint(constraints(x)) ) {
-        if ( !is.null(control$start) & is.null(control$initialpop) )
-            control$initialpop <- control$start
-        return(solve_deoptim(x, control))
-    }
+    ##if ( is.NO_constraint(constraints(x)) ) {
+        ## if ( !is.null(control$start) & is.null(control$initialpop) )
+        ##    control$initialpop <- control$start
+        ## return(solve_deoptim(x, control))
+    ##}
     if ( !is.null(control$start) & is.null(control$add_to_init_pop) ) {
         control$add_to_init_pop <- control$start
     }

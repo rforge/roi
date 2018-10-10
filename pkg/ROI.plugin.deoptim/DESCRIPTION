@@ -1,12 +1,10 @@
 Package: ROI.plugin.deoptim
 Version: 0.3-0
-Title: 'DEoptim' and 'DEoptimR' Plugin for the 'R' Optimization Interface
+Title: 'DEoptimR' Plugin for the 'R' Optimization Interface
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the R Optimization Infrastructure ('ROI') package
-        	 with the 'DEoptim' and 'DEoptimR' package. 'DEoptim' is
-        	 used for unconstrained optimization and 'DEoptimR' for
-        	 constrained optimization.
-Imports: methods, stats, utils, ROI (>= 0.3-0), DEoptim, DEoptimR (>= 1.0-4)
+        	 with the 'DEoptimR' package for constrained optimization.
+Imports: methods, stats, utils, ROI (>= 0.3-0), DEoptimR (>= 1.0-4)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
