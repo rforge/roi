@@ -350,8 +350,11 @@ get_solvers_from_db <- function( ) {
 
 ## returns package names of available solvers from db
 get_solver_packages_from_db <- function ( ){
-    solvers <- get_solvers_from_db()
-    structure( get_package_name(solvers), names = solvers )
+    d <- data.frame(solvers = solver_db$get_field_entries("solver", unlist = TRUE),
+                    plugins = solver_db$get_field_entries("plugin", unlist = TRUE),
+                    stringsAsFactors = FALSE)
+    d <- unique(d)
+    structure( get_package_name(d$plugins), names = d$solvers )
 }
 
 .sort_types <- function(x){

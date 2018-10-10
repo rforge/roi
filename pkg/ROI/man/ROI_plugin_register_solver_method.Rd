@@ -4,7 +4,7 @@
 \alias{ROI_plugin_register_solver_method}
 \title{Register Solver Method}
 \usage{
-ROI_plugin_register_solver_method(signatures, solver, method)
+ROI_plugin_register_solver_method(signatures, solver, method, plugin = solver)
 }
 \arguments{
 \item{signatures}{a data.frame with the supported signatures.}
@@ -12,6 +12,8 @@ ROI_plugin_register_solver_method(signatures, solver, method)
 \item{solver}{a character string giving the solver name.}
 
 \item{method}{a function registered as solver method.}
+
+\item{plugin}{a character string giving the plgug-in name.}
 }
 \value{
 TRUE on success
