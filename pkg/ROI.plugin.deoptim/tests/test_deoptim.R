@@ -9,8 +9,6 @@ Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 library(ROI)
 library(ROI.plugin.deoptim)
 
-ROI_registered_solvers()
-
 check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
     if ( isTRUE(condition) ) return(invisible(NULL))
     msg <- sprintf("in %s", domain)
