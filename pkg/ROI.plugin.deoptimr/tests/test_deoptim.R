@@ -7,7 +7,7 @@ if ( FALSE ) {
 ## stopifnot(require(DEoptim))
 Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 library(ROI)
-library(ROI.plugin.deoptim)
+library(ROI.plugin.deoptimr)
 
 check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
     if ( isTRUE(condition) ) return(invisible(NULL))
@@ -26,7 +26,7 @@ test_nlp_01 <- function() {
              bounds = V_bound(li = 1:2, ui = 1:2, lb = c(-3, -3), ub = c(3, 3)) )
     
     # Solve Rosenbrock Banana function.
-    res <- ROI_solve(x, solver="deoptim")
+    res <- ROI_solve(x, solver="deoptimr")
     stopifnot(is.numeric(solution(res)))
     
     check("NLP-01@01", equal(res$objval, 0.0))
@@ -50,7 +50,7 @@ test_nlp_02 <- function() {
                                           J=function(x) c(2*x[1], x[2]))),
              bounds = V_bound(li=1:2, ui=1:2, lb=c(-2, -Inf), ub=c(0.5,  1)) )
 
-    nlp <- ROI_solve(x, solver = "deoptim")
+    nlp <- ROI_solve(x, solver = "deoptimr")
     stopifnot( equal(nlp$objval, 1/4) )
     stopifnot( equal(solution(nlp), c(1/2, 1/4)) )
 }
@@ -68,7 +68,7 @@ test_nlp_03 <- function() {
              constraints = F_constraint(hs036_con, "<=", 72),
              bounds = V_bound(ub = c(20, 11, 42)) )
 
-    nlp <- ROI_solve(x, solver = "deoptim")
+    nlp <- ROI_solve(x, solver = "deoptimr")
     stopifnot( equal(nlp$objval, -3300) )
     stopifnot( equal(solution(nlp), c(20, 11, 15)) )
 }

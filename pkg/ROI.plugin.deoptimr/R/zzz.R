@@ -77,7 +77,7 @@ ROI_make_NLP_FXCV_signatures <- function()
 }
 
 .onLoad <- function( libname, pkgname ) {
-	solver <- "deoptim"
+	solver <- "deoptimr"
     ## Solver plugin name (based on package name)
     if( ! pkgname %in% ROI_registered_solvers() ){
         ## Register solver methods here.
