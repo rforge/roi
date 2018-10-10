@@ -1,5 +1,6 @@
-library(ROI)
 library(slam)
+library(ROI)
+
 suppressPackageStartupMessages( require("ROI") )
 suppressPackageStartupMessages( require("ROI.plugin.alabama") )
 suppressPackageStartupMessages( require("ROI.plugin.ecos") )

@@ -135,6 +135,17 @@ register_reformulations <- function() {
                                       method = qp_to_socp, description = qpsoc.descr, cite = "", author = "")
 }
 
+## A try to speed up the loading of the package, but since most of the loading
+## time goes into loading the matrix package using this method could only
+## improve the loding time at 0.04 seconds.
+## get_namespace <- function(name) {
+##     if ( isNamespaceLoaded(name) ) {
+##         getNamespace(name)
+##     } else {
+##         loadNamespace(name, keep.source = FALSE, partial = TRUE)
+##     }
+## }
+
 .onLoad <- function( libname, pkgname ) {
     if( ! "ROI.plugin.nlminb" %in% ROI_registered_solvers() ){
         ## Register solver methods here.

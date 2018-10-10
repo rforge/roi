@@ -17,4 +17,4 @@ Suggests: ROI.plugin.alabama, ROI.plugin.ecos, ROI.plugin.glpk,
 Enhances: ROI.plugin.cplex
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
-RoxygenNote: 6.0.1
+RoxygenNote: 6.0.1.9000
