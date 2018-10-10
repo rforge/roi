@@ -2,6 +2,8 @@ PACKAGE=ROI
 #R=$(shell which R-devel)
 R=R
 RR=/home/florian/bin/R_dev/bin/R
+## RR=/home/florian/bin/R-3.4.2/bin/R
+##RR=/home/florian/bin/R_3.5.0/bin/R
 
 all: pkg plugins
 
@@ -81,16 +83,27 @@ alabama.check: alabama.build
 alabama.install: alabama.build
 	$(RR) CMD INSTALL ROI.plugin.alabama*.tar.gz
 
-## deoptim
+## cplex
+## =====
+cplex.build:
+	$(RR) CMD build ROI.plugin.cplex
+
+cplex.check: cplex.build 
+	$(RR) CMD check ROI.plugin.cplex*.tar.gz
+
+cplex.install: cplex.build
+	$(RR) CMD INSTALL ROI.plugin.cplex*.tar.gz
+
+## deoptimr
 ## =======
-deoptim.build:
-	$(RR) CMD build ROI.plugin.deoptim
+deoptimr.build:
+	$(RR) CMD build ROI.plugin.deoptimr
 
-deoptim.check: deoptim.build 
-	$(RR) CMD check ROI.plugin.deoptim*.tar.gz
+deoptimr.check: deoptimr.build 
+	$(RR) CMD check ROI.plugin.deoptimr*.tar.gz
 
-deoptim.install: deoptim.build
-	$(RR) CMD INSTALL ROI.plugin.deoptim*.tar.gz
+deoptimr.install: deoptimr.build
+	$(RR) CMD INSTALL ROI.plugin.deoptimr*.tar.gz
 
 ## ecos
 ## ====
@@ -182,6 +195,17 @@ msbinlp.check: msbinlp.build
 
 msbinlp.install: msbinlp.build
 	$(RR) CMD INSTALL ROI.plugin.msbinlp*.tar.gz
+
+## neos
+## ====
+neos.build:
+	$(RR) CMD build ROI.plugin.neos
+
+neos.check: neos.build
+	$(RR) CMD check ROI.plugin.neos*.tar.gz
+
+neos.install: neos.build 
+	$(RR) CMD INSTALL ROI.plugin.neos*.tar.gz
 
 ## nloptr
 ## ======
@@ -286,6 +310,21 @@ couenne.check: couenne.build
 
 couenne.install: couenne.build
 	$(RR) CMD INSTALL couenne_*.tar.gz
+
+
+## xmlrpc2
+## =======
+xmlrpc2.docs:
+	$(RR) -e "roxygen2:::roxygenise(package.dir = 'xmlrpc2', roclets=c('namespace', 'rd'))"
+
+xmlrpc2.build: xmlrpc2.docs
+	$(RR) CMD build xmlrpc2
+
+xmlrpc2.check: xmlrpc2.build
+	$(RR) CMD check xmlrpc2_*.tar.gz
+
+xmlrpc2.install: xmlrpc2.build
+	$(RR) CMD INSTALL xmlrpc2_*.tar.gz
 
 
 ## Testing
