@@ -1,9 +1,3 @@
-##
-## NOTES:
-##
-##  - There is no option to specify variable bounds
-##  - Default variable bounds are -Machine.min < x < Machine.max
-
 ## get_lb
 ## ======
 ##
@@ -53,25 +47,12 @@ bounds_to_constraints <- function(x) {
     return( list(hin=hin, hin.jac=hin.jac) )
 }
 
-## auglag defaults
-## control.outer.default <- list(lam0 = 10, sig0 = 100, eps = 1e-07,
-##        itmax = 50, method = "BFGS", trace = TRUE, NMinit = FALSE, ilack.max=6,
-## i.scale = 1, e.scale = 1, kkt2.check=TRUE)
-## 
-## control.optim.default <- list(trace = 0, fnscale = 1, parscale = rep.int(1,
-##        length(par)), ndeps = rep.int(0.001, length(par)), maxit = 100L,
-##        abstol = -Inf, reltol = sqrt(.Machine$double.eps), alpha = 1,
-##        beta = 0.5, gamma = 2, REPORT = 10, type = 1, lmm = 5,
-##        factr = 1e+07, pgtol = 0, tmax = 10, temp = 10)
+outer_control_names <- c("lam0", "sig0", "eps", "itmax", "method", 
+    "trace", "NMinit", "ilack.max", "i.scale", "e.scale", "kkt2.check")
 
 
 ## alabama
 ## =======
-##
-## auglag(par, fn, gr, hin, hin.jac, heq, heq.jac,
-##        control.outer=list(), control.optim = list(), ...)
-##
-## NOTE: check the bounds
 solve_alabama_auglag <- function( x, control = list() ) {
     if ( is.null(control$par) ) {
         stop("no start value, please provide a start value via control$start!")
@@ -103,26 +84,23 @@ solve_alabama_auglag <- function( x, control = list() ) {
         args$hin.jac <- hin$J
     }
 
-    ## now we have to add the bounds to the constraints
-    ## if ( isTRUE(control$method != "L-BFGS-B") ) {
-    ## This can currently not be passed to auglang!
-        bc <- bounds_to_constraints(x)
-        if ( !is.null(bc$hin) ) {
-            if ( is.null(args$hin) ) {
-                args$hin <- bc$hin
-                args$hin.jac <- bc$hin.jac
-            } else {
-                hin <- args$hin
-                args$hin <- function(x) c(hin(x), bc$hin(x))
-                hin.jac <- args$hin.jac
-                args$hin.jac <- function(x) rbind(hin.jac(x), bc$hin.jac(x))
-            }
-
+    ## NOTE: 
+    ##  Since auglag doesn't pass lower and upper bounds to optim and
+    ##  nlminb we can not set them directly but have to provide them
+    ##  as functions. Sneeking it in via the ... operator is just to
+    ##  unsafe.
+    bc <- bounds_to_constraints(x)
+    if ( !is.null(bc$hin) ) {
+        if ( is.null(args$hin) ) {
+            args$hin <- bc$hin
+            args$hin.jac <- bc$hin.jac
+        } else {
+            hin <- args$hin
+            args$hin <- function(x) c(hin(x), bc$hin(x))
+            hin.jac <- args$hin.jac
+            args$hin.jac <- function(x) rbind(hin.jac(x), bc$hin.jac(x))
         }
-    ## } else {
-    ##     args$lower <- get_lb(x)
-    ##     args$upper <- get_ub(x)
-    ## }
+    }
 
     heq <- ROI_plugin_build_equality_constraints(x, type="eq_zero")
     args$heq <- heq$F
@@ -136,10 +114,9 @@ solve_alabama_auglag <- function( x, control = list() ) {
         args$heq.jac <- heq$J
     }
 
-    ## TODO: I have to look up the additional arguments
-    ## args <- c(args, control[setdiff(names(control), names(args))])
-    
-    args$control.outer <- if ( is.null(control$control.outer) ) list() else control$control.outer
+    args$control.outer <- modifyList(as.list(control$control.outer), 
+                                     control[names(control) %in% outer_control_names])
+
     if ( is.null(args$control.outer$trace) )
         args$control.outer$trace <- FALSE
     args$control.optim <- control$control.optim

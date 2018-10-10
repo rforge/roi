@@ -1,16 +1,9 @@
 stopifnot(require(alabama))
 
+Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 
 library(ROI)
 library(ROI.plugin.alabama)
-
-check <- function(domain, condition, level=1, message="", call=sys.call(-1L)) {
-    if ( isTRUE(condition) ) return(invisible(NULL))
-    msg <- sprintf("in %s", domain)
-    if ( all(nchar(message) > 0) ) msg <- sprintf("%s\n\t%s", msg, message)
-    stop(msg)
-    return(invisible(NULL))
-}
 
 test_nlp_01 <- function() {
     f <- function(x) {
@@ -25,14 +18,35 @@ test_nlp_01 <- function() {
     x <- OP( objective = F_objective(f, n=2L, G=f.gradient), 
              bounds = V_bound(li=1:2, ui=1:2, lb=c(-3, -3), ub=c(3, 3)) )
 
-    if ( length(ROI_applicable_solvers(x)) ) {
-        nlp <- ROI_solve(x, start=c(-2, 2.4))
-        stopifnot( equal(nlp$objval, 0) )
-        stopifnot( equal(solution(nlp), c(1, 1)) )
-    }
+    nlp <- ROI_solve(x, solver = "alabama", start = c(-2, 2.4), 
+                     method = "BFGS")
+    stopifnot( equal(nlp$objval, 0) )
+    stopifnot( equal(solution(nlp), c(1, 1)) )
 }
 
-test_nlp_02 <- function() {
+test_nlp_02_a <- function() {
+    f <- function(x) {
+        return( 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2 )
+    }
+
+    f.gradient <- function(x) {
+        return( c( -400 * x[1] * (x[2] - x[1] * x[1]) - 2 * (1 - x[1]),
+                   200 * (x[2] - x[1] * x[1])) )
+    }
+
+    x <- OP( objective = F_objective(f, n = 2L, G = f.gradient), 
+             constraints = c(F_constraint(F=function(x) x[1] + x[2]^2, ">=", 0,
+                                          J=function(x) c(1, 2*x[2])),
+                             F_constraint(F=function(x) x[1]^2 + x[2], ">=", 0,
+                                          J=function(x) c(2*x[1], x[2]))),
+             bounds = V_bound(li=1:2, ui=1:2, lb=c(-2, -Inf), ub=c(0.5,  1)))
+
+    nlp <- ROI_solve(x, solver = "alabama", start = c(-1, 0.5), method = "nlminb")
+    stopifnot( equal(nlp$objval, 1/4) )
+    stopifnot( equal(solution(nlp), c(1/2, 1/4)) )
+}
+
+test_nlp_02_b <- function() {
     f <- function(x) {
         return( 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2 )
     }
@@ -49,13 +63,11 @@ test_nlp_02 <- function() {
                                           J=function(x) c(2*x[1], x[2]))),
              bounds = V_bound(li=1:2, ui=1:2, lb=c(-2, -Inf), ub=c(0.5,  1)) )
 
-    solver <- "alabama"
-    if ( length(solver) ) {
-        nlp <- ROI_solve(x, solver = solver[1L], start = c(-2, 1))
-        stopifnot( equal(nlp$objval, 1/4) )
-        stopifnot( equal(solution(nlp), c(1/2, 1/4)) )
-    }
+    nlp <- ROI_solve(x, solver = "alabama", start = c(-2, 1), method = "BFGS")
+    stopifnot( equal(nlp$objval, 1/4) )
+    stopifnot( equal(solution(nlp), c(1/2, 1/4)) )
 }
+
 
 ## SOURCE: Rglpk manual
 ## https://cran.r-project.org/web/packages/Rglpk/Rglpk.pdf
@@ -77,8 +89,7 @@ test_nlp_03 <- function() {
     lp <- OP(objective = lo, constraints = lc, maximum = TRUE)
     opt.solution <- c(0, 6.66666666666667, 16.6666666666667)
 
-    nlp_opt <- ROI_solve(lp, solver="alabama", start=c(1, 1, 1))
-    
+    nlp_opt <- ROI_solve(lp, solver="alabama", start=c(1, 1, 1), method = "nlminb")   
     stopifnot( equal(solution(nlp_opt), opt.solution) )
 }
 
@@ -94,9 +105,6 @@ test_qcqp_01 <- function() {
     x <- OP(qo, qc)
 
     opt <- ROI_solve(x, solver="alabama", start=c(3, 3))
-   
-    ## local_opts <- list( algorithm = "NLOPT_LD_LBFGS", xtol_rel  = 1e-4 )
-    ## opt <- ROI_solve(x, solver="nloptr", start=c(2, 2), method="NLOPT_LD_MMA")
 
     stopifnot( equal(solution(opt), c(1, 0)) )
     stopifnot( equal(opt$objval, 0.5) )
@@ -116,7 +124,8 @@ if ( !any("alabama" %in% names(ROI_registered_solvers())) ) {
     }
 
     rt( test_nlp_01() )
-    rt( test_nlp_02() )
+    rt( test_nlp_02_a() )
+    rt( test_nlp_02_b() )
     rt( test_nlp_03() )
     rt( test_qcqp_01() )
 

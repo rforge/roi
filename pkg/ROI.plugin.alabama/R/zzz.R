@@ -9,16 +9,6 @@ make_signature <- function()
                                cones = c("X"),
                                maximum = c(TRUE, FALSE) )
 
-## control.outer.default <- list(lam0 = 10, sig0 = 100, eps = 1e-07,
-##        itmax = 50, method = "BFGS", trace = TRUE, NMinit = FALSE, ilack.max=6,
-## i.scale = 1, e.scale = 1, kkt2.check=TRUE)
-## 
-## control.optim.default <- list(trace = 0, fnscale = 1, parscale = rep.int(1,
-##        length(par)), ndeps = rep.int(0.001, length(par)), maxit = 100L,
-##        abstol = -Inf, reltol = sqrt(.Machine$double.eps), alpha = 1,
-##        beta = 0.5, gamma = 2, REPORT = 10, type = 1, lmm = 5,
-##        factr = 1e+07, pgtol = 0, tmax = 10, temp = 10)
-
 ## SOLVER CONTROLS
 .add_controls <- function(solver) {
     ## alabama
@@ -28,6 +18,7 @@ make_signature <- function()
     ##
     ## outer loop
     ##
+    ROI_plugin_register_solver_control( solver, "control.outer", "X" )         ## initial value for lagrangian parameter
     ROI_plugin_register_solver_control( solver, "lam0", "X" )         ## initial value for lagrangian parameter
     ROI_plugin_register_solver_control( solver, "sig0", "X" )         ## 
     ROI_plugin_register_solver_control( solver, "eps", "tol" )        ##
