@@ -36,7 +36,7 @@ make_ECOS_signatures <- function()
     if( ! pkgname %in% ROI_registered_solvers() ){
         ## Register solver methods here.
         ## One can assign several signatures a single solver method
-        solver <- ROI_plugin_get_solver_name( pkgname )
+        solver <- "ecos"
         ROI_plugin_register_solver_method(
             signatures = make_ECOS_signatures(),
             solver = solver,

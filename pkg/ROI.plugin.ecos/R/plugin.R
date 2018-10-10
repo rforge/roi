@@ -184,9 +184,9 @@ solve_OP <- function(x, control = list()){
     optimum <- tryCatch({as.numeric(x_sol %*% obj)}, error=function(e) as.numeric(NA))
     optimum <- ((-1)^maximum(x) * optimum)
 
-    ROI_plugin_canonicalize_solution( solution = x_sol, optimum  = optimum,
-                                       status   = out[["retcodes"]]["exitFlag"],
-                                       solver   = solver, message = out )
+    ROI_plugin_canonicalize_solution(solution = x_sol, optimum  = optimum,
+                                     status   = out[["retcodes"]]["exitFlag"],
+                                     solver   = solver, message = out )
 }
 
 ROI_plugin_solution_dual.ecos_solution <- function(x) {
@@ -195,7 +195,7 @@ ROI_plugin_solution_dual.ecos_solution <- function(x) {
 
 ## STATUS CODES
 .add_status_codes <- function() {
-    solver <- ROI_plugin_get_solver_name( getPackageName() )
+    solver <- "ecos"
     ROI_plugin_add_status_code_to_db( solver,
                            0L,
                            "ECOS_OPTIMAL",
