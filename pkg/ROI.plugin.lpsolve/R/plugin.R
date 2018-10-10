@@ -162,28 +162,34 @@ solve_OP <- function(x, control=list()) {
 
         sol <- list()
         sol$solution_count <- get.solutioncount(lp)
-        sol$solutions <- vector("list", sol$solution_count)
-        sol$dual_solutions <- vector("list", sol$solution_count)
-        for ( i in seq_len(sol$solution_count) ) {
-            select.solution(lp, i)
-            sol$solutions[[i]] <- get.variables(lp)
-            sol$dual_solutions[[i]] <- get.dual.solution(lp)
-        }
-    
-        if ( all( x$types == "C" ) ) { ## these two functions are only for lp available
-            sol$sensitivity_objfun <- get.sensitivity.objex(lp)
-            sol$sensitivity_rhs <- get.sensitivity.rhs(lp)
-        }
-        sol$total_iter <- get.total.iter(lp)
-        sol$total_nodes <- get.total.nodes(lp)
+        if ( sol$solution_count > 0 ) {
+            sol$solutions <- vector("list", sol$solution_count)
+            sol$dual_solutions <- vector("list", sol$solution_count)
+            for ( i in seq_len(sol$solution_count) ) {
+                select.solution(lp, i)
+                sol$solutions[[i]] <- get.variables(lp)
+                sol$dual_solutions[[i]] <- get.dual.solution(lp)
+            }
+        
+            if ( all( x$types == "C" ) ) { ## these two functions are only for lp available
+                sol$sensitivity_objfun <- get.sensitivity.objex(lp)
+                sol$sensitivity_rhs <- get.sensitivity.rhs(lp)
+            }
+            sol$total_iter <- get.total.iter(lp)
+            sol$total_nodes <- get.total.nodes(lp)
 
-        optimum <- objective_value(objective(x), sol$solutions[[1L]])
+            optimum <- objective_value(objective(x), sol$solutions[[1L]])
+        } else {
+            sol$solutions <- list(rep.int(NA_real_, nc))
+            sol$dual_solutions <- list(rep.int(NA_real_, nr))
+            optimum <- NA_real_
+        }
 
         return( ROI_plugin_canonicalize_solution( solution = sol$solutions[[1L]], 
-                                                   optimum  = optimum,
-                                                   status   = status,
-                                                   solver   = solver, 
-                                                   message  = sol ) )
+                                                  optimum  = optimum,
+                                                  status   = status,
+                                                  solver   = solver, 
+                                                  message  = sol ) )
     }
 }
 
