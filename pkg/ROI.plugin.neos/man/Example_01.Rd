@@ -23,7 +23,7 @@ x <- OP(objective = c(2, 4, 3),
         maximum = TRUE)
 
 
-opt <- ROI_solve(x, solver = "neos", method = "cplex")
+opt <- ROI_solve(x, solver = "neos", method = "scip")
 opt
 ## Optimal solution found.
 ## The objective value is: 7.666667e+01

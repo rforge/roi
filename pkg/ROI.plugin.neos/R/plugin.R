@@ -14,7 +14,7 @@ write_gams <- function(x, file, ...) {
 }
 
 set_default_control_values <- function(x) {
-    default_cntrl <- list(interface = "", id = 0, user = "rneos")
+    default_cntrl <- list(user = "rneos")
     modifyList(x, default_cntrl[!names(default_cntrl) %in% names(x)])
 }
 
