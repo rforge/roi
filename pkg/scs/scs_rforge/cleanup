@@ -1,0 +1,4 @@
+#!/bin/bash
+rm -f config.* src/scs.so src/scsr.o src/symbols.rds
+rm -rf autom4te.cache
+

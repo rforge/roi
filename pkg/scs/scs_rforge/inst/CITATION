@@ -1,0 +1,18 @@
+citHeader("To cite scs in publications use:")
+
+citEntry(entry = "Article",
+  title        = "Operator Splitting for Conic Optimization via Homogeneous Self-Dual Embedding",
+  author       = personList(as.person("O'Donoghue Brendan"),
+                            as.person("Chu Eric"),
+                            as.person("Parikh Neal"),
+                            as.person("Boyd Stephen")),
+  journal      = "arxiv",
+  year         = "2013",
+  url          = "http://arxiv.org/abs/1312.3039",
+
+  textVersion  =
+  paste("O'Donoghue Brendan, Chu Eric, Parikh Neal, Boyd Stephen (2013).",
+        "Operator Splitting for Conic Optimization via Homogeneous Self-Dual Embedding",
+        "URL http://arxiv.org/abs/1312.3039.")
+)
+

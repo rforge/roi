@@ -1,0 +1,5 @@
+useDynLib(scs)
+importFrom(methods, as)
+importFrom(Matrix, sparseMatrix)
+importClassesFrom(Matrix, dgCMatrix)
+export(scs)
