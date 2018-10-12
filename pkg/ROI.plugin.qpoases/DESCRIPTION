@@ -1,5 +1,5 @@
 Package: ROI.plugin.qpoases
-Version: 0.3-1
+Version: 0.3-2
 Title: 'qpOASES' Plugin for the 'R' Optimization Infrastructure 
 Authors@R: c( person("Florian", "Schwendinger", role = c("aut", "cre"), email = "FlorianSchwendinger@gmx.at"),
               person("Hans Joachim", "Ferreau", role = "cph"),
@@ -10,7 +10,7 @@ Authors@R: c( person("Florian", "Schwendinger", role = c("aut", "cre"), email = 
 Description: Enhances the 'R' Optimization Infrastructure ('ROI') package
          with the quadratic solver 'qpOASES'. More information about
          'qpOASES' can be found at <https://projects.coin-or.org/qpOASES/>.
-Imports: methods, slam, Matrix, ROI (>= 0.2-5), Rcpp (>= 0.12.11), checkmate
+Imports: methods, slam, ROI (>= 0.2-5), Rcpp (>= 0.12.11), checkmate
 License: GPL-3
 LinkingTo: Rcpp
 URL: http://R-Forge.R-project.org/projects/roi
