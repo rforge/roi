@@ -1,0 +1,48 @@
+/* HessianType 
+    #define HST_ZERO             0
+    #define HST_IDENTITY         1
+    #define HST_POSDEF           2
+    #define HST_POSDEF_NULLSPACE 3
+    #define HST_SEMIDEF          4
+    #define HST_INDEF            5
+    #define HST_UNKNOWN          6
+*/
+
+// Solving Simply Bounded QPs
+// 
+// SEXP qpb_new_model(int number_of_varibales, int hessian_type) {
+// 
+//     Rcpp::XPtr< qpOASES::QProblemB > p(new qpOASES::QProblemB(number_of_varibales, hessian_type), true);
+//     return p;
+// }
+
+// Default Method
+// [[Rcpp::export]]
+SEXP qp_new_model(int number_of_varibales, int number_of_constraints, int hessian_type) {
+
+    Rcpp::XPtr< qpOASES::QProblem > p(new qpOASES::QProblem(number_of_varibales, number_of_constraints, hessian_type), true);
+    return p;
+}
+
+//
+// 
+// SEXP sqp_new_model(int number_of_varibales, int number_of_constraints, int hessian_type, int alloc_dense_matrix) {
+// 
+//     BooleanType alloc_dense_mat = (alloc_dense_matrix < 1) ? BT_FALSE : BT_TRUE;
+//     Rcpp::XPtr< qpOASES::SQProblem > p(new qpOASES::SQProblem(number_of_varibales, number_of_constraints, hessian_type, alloc_dense_mat), true);
+//     return p;
+// }
+
+// 
+// int qp_set_options(Rcpp::List options) {
+//     return R_NilValue;
+// }
+// 
+// 
+//
+// int qp_init(NumericVector H, NumericVector g, NumericVector A, 
+//             NumericVector lb, NumericVector ub, NumericVector lbA, NumericVector ubA, 
+//             int nWSRm, double cputime) {
+//     return R_NilValue;
+// }
+
