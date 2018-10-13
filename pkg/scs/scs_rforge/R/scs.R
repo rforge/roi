@@ -60,7 +60,7 @@
 #'    \tab \code{eps}       \tab numeric        \tab convergence tolerance                                                   \tab   1e-3
 #' } }
 #' @examples
-#' A <- matrix(c(1, 1), ncol=1)
+#' A <- matrix(c(1, 1), ncol = 1)
 #' b <- c(1, 1)
 #' obj <- 1
 #' cone <- list(f = 2)
@@ -73,17 +73,30 @@
 scs <- function(A, b, obj, cone, control=list(max_iters=2500L, normalize=TRUE, verbose=FALSE,
                 cg_rate=2.0, scale=5.0, rho_x=1e-03, alpha=1.5, eps=1e-6)) {
 
-    if ( class(A) == "simple_triplet_matrix" ) {
-        ## sparseMatrix returns an object of class "dgCMatrix"
-        A <- sparseMatrix( i=A$i, j=A$j, x=A$v, dims=c(A$nrow, A$ncol) )
-    } else {
-        A <- as(A, "dgCMatrix")
-    }
-
-    data <- list(m = dim(A)[1], n = dim(A)[2], 
-                 Ax = A@x, Ai = A@i, Ap = A@p, b = b, c = obj)
-    
+    csc <- as.csc_matrix(A)
+    data <- list(m = csc$nrow, n = csc$ncol, Ax = csc$x, Ai = csc$i, Ap = csc$p, b = b, c = obj)
     ret <- .Call("scsr", data, cone, control, PACKAGE="scs")
     return(ret)
+}
+
+as.csc_matrix <- function(x) {
+    if ( isTRUE(class(x) == "matrix") ) {
+        i <- which(x != 0, arr.ind = TRUE, useNames = FALSE)   
+        list(i = i[, 1] - 1L, p = c(0L, cumsum(tabulate(i[, 2L], ncol(x)))), 
+             x = x[i], nrow = nrow(x), ncol = ncol(x))
+    } else if ( inherits(x, "simple_triplet_matrix") ) {
+        i <- order(x$j, x$i)
+        list(i = x$i[i] - 1L, p = c(0L, cumsum(tabulate(x$j[i], x$ncol))), 
+             x = x$v[i], nrow = nrow(x), ncol = ncol(x))
+    } else if ( inherits(x, "dgCMatrix") ) {
+        list(i = x@i, p = x@p, x = x@x, nrow = x@Dim[1L], ncol = x@Dim[2L])
+    } else if ( inherits(x, "dgTMatrix") ) {
+        i <- order(x@j, x@i)
+        list(i = x@i[i], p = c(0L, cumsum(tabulate(x@j[i] + 1L, x@Dim[2L]))),
+             x = x@x[i], nrow = x@Dim[1L], ncol = x@Dim[2L])
+    } else {
+        mc <- paste(as.character(class(x)), collapse = ", ")
+        stop(sprintf("matrix of class '%s' is not supported by scs.", mc))
+    }
 }
 

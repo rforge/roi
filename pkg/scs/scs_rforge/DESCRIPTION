@@ -11,7 +11,6 @@ Description: Solves convex cone programs via operator splitting. Can solve:
     (SDPs), exponential cone programs (ECPs), and power cone programs (PCPs), or
     problems with any combination of those cones.    SCS uses AMD (a set of routines for permuting sparse matrices prior to factorization) and LDL (a sparse LDL' factorization and solve package) from 'SuiteSparse' (<http://www.suitesparse.com>).
 Depends: R (>= 2.15)
-Imports: Matrix, methods
 License: GPL-3
 URL: https://github.com/cvxgrp/scs
 NeedsCompilation: yes
