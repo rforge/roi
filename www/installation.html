@@ -283,10 +283,19 @@ div.tocify {
   <a href="index.html">ROI</a>
 </li>
 <li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
   <a href="introduction.html">Introduction</a>
 </li>
 <li>
   <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
 </li>
 <li>
   <a href="news.html">What's new?</a>
@@ -414,14 +423,42 @@ devtools::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
 <h2><strong>ROI.plugin.neos</strong></h2>
 <div id="unix-2" class="section level3">
 <h3>Unix</h3>
-<p><a href="https://cran.r-project.org/package=ROI.plugin.neos"><strong>ROI.plugin.neos</strong></a> it self doesn’t contain compiled code but it imports xml2. The <a href="https://cran.r-project.org/package=xml2"><strong>xml2</strong></a> package requires that the <code>libxml2</code> development library is installed. The <code>libxml2</code> development library can be installed via</p>
+<p><a href="https://cran.r-project.org/package=ROI.plugin.neos"><strong>ROI.plugin.neos</strong></a> it self doesn’t contain compiled code but it imports xml2 and curl. The <a href="https://cran.r-project.org/package=xml2"><strong>xml2</strong></a> package requires that the <code>libxml2</code> development library is installed. Depending on the distribution, this library may is installed via one of the following commands.</p>
+</div>
+<div id="unix-3" class="section level3">
+<h3>Unix</h3>
+<div id="debian-ubuntu-mint-and-other-debian-based-distributions-2" class="section level4">
+<h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
 <pre class="bash"><code>sudo apt-get install libxml2-dev </code></pre>
-<p>on Debian, Ubuntu, Mint and other Debian based distributions and via</p>
+</div>
+<div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions-2" class="section level4">
+<h4>Red Hat Enterprise Linux, Fedora, CentOS and similar distributions</h4>
 <pre class="r"><code>sudo yum install libxml2-devel</code></pre>
-<p>on Red Hat Enterprise Linux, Fedora, CentOS, and similar distributions.</p>
+</div>
+<div id="macos-2" class="section level4">
+<h4>macOS</h4>
 <p>After the installation of the the <code>libxml2</code> development libraries <strong>xml2</strong> may be installed as usual.</p>
-<pre class="r"><code>install.packages(&quot;xml2&quot;)
-install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
+<pre class="r"><code>install.packages(&quot;xml2&quot;)</code></pre>
+<p>The <a href="https://cran.r-project.org/package=curl"><strong>curl</strong></a> package requires that the <code>curl</code> development library is installed. Depending on the distribution, this library may is installed via one of the following commands.</p>
+</div>
+</div>
+<div id="unix-4" class="section level3">
+<h3>Unix</h3>
+<div id="debian-ubuntu-mint-and-other-debian-based-distributions-3" class="section level4">
+<h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
+<pre class="bash"><code>sudo apt-get install libcurl4-openssl-dev</code></pre>
+</div>
+<div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions-3" class="section level4">
+<h4>Red Hat Enterprise Linux, Fedora, CentOS and similar distributions</h4>
+<pre class="r"><code>sudo yum install libcurl-devel</code></pre>
+</div>
+<div id="macos-3" class="section level4">
+<h4>macOS</h4>
+<p>After the installation of the the <code>libxml2</code> development libraries <strong>xmle</strong> can be installed.</p>
+<pre class="r"><code>install.packages(&quot;curl&quot;)</code></pre>
+<p>After the <strong>curl</strong> and <strong>xml2</strong> packages are installed <strong>ROI.plugin.neos</strong> can be installed.</p>
+<pre class="r"><code>install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
+</div>
 </div>
 <div id="windows-2" class="section level3">
 <h3>Windows</h3>
@@ -450,18 +487,18 @@ install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
 </div>
 <div id="roi.plugin.symphony" class="section level2">
 <h2><strong>ROI.plugin.symphony</strong></h2>
-<div id="unix-3" class="section level3">
+<div id="unix-5" class="section level3">
 <h3>Unix</h3>
 <p><a href="https://cran.r-project.org/package=ROI.plugin.symphony"><strong>ROI.plugin.symphony</strong></a> it self doesn’t contain compiled code but it imports <strong>Rsymphony</strong>. The <a href="https://cran.r-project.org/package=Rsymphony"><strong>Rsymphony</strong></a> package requires the SYMPHONY libraries and headers to be installed before the installation of <strong>Rsymphony</strong>. Depending on the distribution, the SYMPHONY libraries and headers may be installed via one of the following commands.</p>
-<div id="debian-ubuntu-mint-and-other-debian-based-distributions-2" class="section level4">
+<div id="debian-ubuntu-mint-and-other-debian-based-distributions-4" class="section level4">
 <h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
 <pre class="bash"><code>sudo apt install coinor-libsymphony-dev</code></pre>
 </div>
-<div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions-2" class="section level4">
+<div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions-4" class="section level4">
 <h4>Red Hat Enterprise Linux, Fedora, CentOS and similar distributions</h4>
 <pre class="bash"><code>sudo yum install coin-or-SYMPHONY-devel</code></pre>
 </div>
-<div id="macos-2" class="section level4">
+<div id="macos-4" class="section level4">
 <h4>macOS</h4>
 <pre class="bash"><code>brew tap coin-or-tools/coinor
 brew install symphony</code></pre>
