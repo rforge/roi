@@ -317,8 +317,60 @@ div.tocify {
 </div>
 
 
+<pre class="r"><code>Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+library(ROI)</code></pre>
 <p>The following example is based on <a href="https://non-contradiction.github.io/autodiffr/articles/autodiffr_intro.html"><code>Automatic Differentiation in R by autodiffr</code> (Changcheng and Nash and Borchers 2018)</a> which is part of the <strong>autodiffr</strong> documentation.</p>
-<p>As an first simple example</p>
+<p>First we load the package.</p>
+<pre class="r"><code>library(autodiffr)
+ad_setup()</code></pre>
+<pre><code>## Julia version 1.0.1 at location /home/florian/bin/julia/bin will be used.</code></pre>
+<pre><code>## Loading setup script for JuliaCall...</code></pre>
+<pre><code>## Finish loading setup script for JuliaCall.</code></pre>
+<pre><code>## Loading ReverseDiff...</code></pre>
+<pre><code>## Loading ForwardDiff...</code></pre>
+<pre><code>## Finish autodiffr setup.</code></pre>
+<p>Users which want to use <strong>autodiffr</strong> with <strong>ROI</strong> have several options to do so. The easiest and recommended way is just to make the gradient function with <strong>autodiffr</strong> and provide the gradient when constructing the optimization problem.</p>
+<pre class="r"><code>fun &lt;- function(x) sum(x^2L)
+grad &lt;- makeGradFunc(fun)
+hess &lt;- makeHessianFunc(fun)
+
+o &lt;- OP(F_objective(F = fun, n = 3L, G = grad, H = hess))
+s &lt;- ROI_solve(o, solver = &quot;nlminb&quot;, start = rnorm(3))
+solution(s)</code></pre>
+<pre><code>## [1] 0 0 0</code></pre>
+<p>In general users can change the default differentiation function via <code>ROI_options</code> but it is not recommended to change the default to <strong>autodiffr</strong>. Since not every function works out of the box.</p>
+<pre class="r"><code>fun0 &lt;- function(x) {
+    stopifnot(is.numeric(x), length(x) == 4L)
+    det(matrix(x^c(1, 2, 1, 3), 2, 2))
+}
+
+x0 &lt;- c(1.2, 1.4, 1.6, 1.8)
+fun0(x0)</code></pre>
+<pre><code>## [1] 3.8624</code></pre>
+<pre class="r"><code>tryCatch(ad_grad(fun0, x0), error = function(e) e)</code></pre>
+<pre><code>## &lt;simpleError: Error happens in Julia.
+## REvalError: &gt;</code></pre>
+<p><a href="https://non-contradiction.github.io/autodiffr/articles/autodiffr_intro.html">Changcheng and Nash and Borchers (2018)</a> find a way to resolve this problem by replacing <code>matrix</code> with <code>array</code> in the <code>fun0()</code> function.</p>
+<pre class="r"><code>fun2 &lt;- function(x) {
+    stopifnot(is.numeric(x), length(x) == 4L)
+    det(array(x^c(1, 2, 1, 3), c(2, 2)))
+}
+
+x0 &lt;- c(1.2, 1.4, 1.6, 1.8)
+fun2(x0)</code></pre>
+<pre><code>## [1] 3.8624</code></pre>
+<pre class="r"><code>ad_grad(fun2, x0)</code></pre>
+<pre><code>## [1]  5.832 -4.480 -1.960 11.664</code></pre>
+<p>However this example shows that a function (e.g. <code>fun0()</code>) which works perfectly fine in <code>R</code> and with <strong>numDeriv</strong></p>
+<pre class="r"><code>library(numDeriv)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;numDeriv&#39;</code></pre>
+<pre><code>## The following object is masked _by_ &#39;.GlobalEnv&#39;:
+## 
+##     grad</code></pre>
+<pre class="r"><code>numDeriv::grad(fun0, x0)</code></pre>
+<pre><code>## [1]  5.832 -4.480 -1.960 11.664</code></pre>
+<p>can cause errors in <strong>autodiffr</strong>. Therefore it is not recommended to set <strong>autodiffr</strong> as default option to derive the gradient (via <code>ROI_option</code>). Since this is likely to cause errors which are hard to debug.</p>
 
 
 
