@@ -6,7 +6,7 @@ Description: Enhances the 'R' 'Optimization' 'Infrastructure' ('ROI') package
          with the Cone Constrained Convex Problems ('cccp') solver.
          The 'cccp' package contains routines for solving convex optimization problems 
          with cone constraints by means of interior-point methods. 
-Imports: methods, slam, ROI (>= 0.3-0), cccp
+Imports: methods, slam, ROI (>= 0.3-0), cccp, numDeriv
 License: GPL-3
 URL: http://roi.r-forge.r-project.org/
 NeedsCompilation: no

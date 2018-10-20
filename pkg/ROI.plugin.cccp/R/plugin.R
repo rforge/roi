@@ -95,22 +95,19 @@ solveLobjLcon <- function( x, control = list() ) {
         z = as.double(getz(s)), state = getstate(s), status = getstatus(s), niter = getniter(s), 
         params = tryCatch(getparams(s), error = function(e) NULL))
 
-    
-
     status <- switch(message$status, optimal = 0L, unknown = 1L, 1L)
     obj_val <- as.vector(crossprod(as.vector(terms(objective(x))$L), message$x))
     
-    ## ROI_plugin_canonicalize_solution
-    list(solution  = message$x,
-                                     optimum   = obj_val,
-                                     status    = status,
-                                     solver    = "cccp",
-                                     message   = message)
+    ROI_plugin_canonicalize_solution(solution = message$x,
+                                     optimum  = obj_val,
+                                     status   = status,
+                                     solver   = "cccp",
+                                     message  = message)
 }
 
 .dcp_default <- function() {
     list(solve_dcp, x0 = NULL, f0 = NULL, g0 = NULL, h0 = NULL, cList = list(), 
-         nlfList = list(), nlgList = list(), nlhList = list(), A = NULL, b = NULL, control = control)
+         nlfList = list(), nlgList = list(), nlhList = list(), A = NULL, b = NULL, control = NULL)
 }
 
 Hessian <- function(x) {
@@ -198,10 +195,62 @@ solveFobjLcon <- function( x, control = list() ) {
     status <- switch(message$status, optimal = 0L, 1L)
     obj_val <- tryCatch(objective(x)(message$x), error = function(e) NA_real_)
 
-    ## ROI_plugin_canonicalize_solution
-    list(solution  = message$x,
-                                     optimum   = obj_val,
-                                     status    = status,
-                                     solver    = "cccp",
-                                     message   = message)
+    ROI_plugin_canonicalize_solution(solution = message$x,
+                                     optimum  = obj_val,
+                                     status   = status,
+                                     solver   = "cccp",
+                                     message  = message)
+}
+
+solve_OP <- function( x, control = list() ) {
+    obj <- objective(x)
+    con <- constraints(x)
+
+    if ( inherits(obj, "L_objective") ) {
+        if ( is.NO_constraint(con) ) {
+            sol <- solveLobjLcon(x, control)
+        } else if ( is.L_constraint(con) ) {
+            sol <- solveLobjLcon(x, control)
+        } else if ( is.Q_constraint(con) ) {
+            stop("TODO")
+        } else if ( is.C_constraint(con) ) {
+            stop("TODO")
+        } else if ( is.F_constraint(con) ) {
+            stop("TODO")
+        } else {
+            stop("TODO")
+        }
+    } else if ( inherits(obj, "Q_objective") ) {
+        if ( is.NO_constraint(con) ) {
+            stop("TODO")
+        } else if ( is.L_constraint(con) ) {
+            stop("TODO")
+        } else if ( is.Q_constraint(con) ) {
+            stop("TODO")
+        } else if ( is.C_constraint(con) ) {
+            stop("TODO")
+        } else if ( is.F_constraint(con) ) {
+            stop("TODO")
+        } else {
+            stop("TODO")
+        }
+    } else if ( inherits(obj, "F_objective") ) {
+        if ( is.NO_constraint(con) ) {
+            sol <- solveFobjLcon(x, control)
+        } else if ( is.L_constraint(con) ) {
+            sol <- solveFobjLcon(x, control)
+        } else if ( is.Q_constraint(con) ) {
+            stop("TODO")
+        } else if ( is.C_constraint(con) ) {
+            stop("TODO")
+        } else if ( is.F_constraint(con) ) {
+            stop("TODO")
+        } else {
+            stop("TODO")
+        }
+    } else {
+        stop("TODO")
+    }
+
+    sol
 }
