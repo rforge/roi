@@ -124,6 +124,7 @@ constraints.OP <- function( x ){
         if ( !is.na(x[["n_of_variables"]]) ) {
             x[["constraints"]] <- NO_constraint(x[["n_of_variables"]])
         }
+        x[["n_of_constraints"]] <- 0L
     } else {
         constr <- as.constraint(value)
         if ( !is.F_constraint(constr) ) {
@@ -132,6 +133,7 @@ constraints.OP <- function( x ){
             .check_constraints(constr, x) ## We can only check if we know the number of variables
         }
         x$constraints <- constr
+        x[["n_of_constraints"]] <- nrow(constr)
     }
     x
 }
