@@ -223,7 +223,19 @@ get_varibale_types <- function(x) {
 }
 
 get_bound_type <- function(x) {
-    if ( class(bounds(x))[1] == "V_bound" ) "V" else  "X"
+    bo <- bounds(x)
+    if ( inherits(bo, "V_bound") ) {
+        if ( isTRUE(length(bo$upper$ind) == 0L) ) {
+            if ( isTRUE(length(bo$lower$ind) == bo$nobj) ) {
+                if ( all(bo$lower$val == -Inf) ) {
+                    return("X")
+                }
+            }
+        }
+        return("V")
+    } else {
+        return("X")
+    }  
 }
 
 ## NOTE: objective(x) returns something which inherits from function and class(x).

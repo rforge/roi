@@ -286,6 +286,23 @@ as.list.V_bound <- function( x, ... )
 
 ##' @noRd
 ##' @export
+as.data.frame.V_bound <- function(x) {
+    n_of_variables <- length(x)
+    to_dense <- function(sparse, n) {
+        dense <- double(n)
+        if ( !is.null(sparse$ind) ) 
+            dense[sparse$ind]  <- sparse$val
+        dense
+    }
+    d <- data.frame(lower = to_dense(x$lower, n_of_variables), 
+                    upper = to_dense(x$upper, n_of_variables), stringsAsFactors = FALSE)
+    if (!is.null(x$names))
+        d$names <- x$names
+    d
+}
+
+##' @noRd
+##' @export
 print.V_bound <- function(x, ...){
     writeLines( "ROI Variable Bounds:\n" )
 
@@ -391,3 +408,20 @@ bounds.OP <- function( x ) x$bounds
 
 .make_standard_bounds <- function( x )
     NULL
+
+
+##
+## TODO: Create explicit NO_bound class
+##
+## noRd
+## export
+## NO_bound <- function() {
+##     structure(list(), class = c("NO_bound", "bound"))
+## }
+
+## noRd
+## export
+## print.NO_bound <- function(x, ...){
+##     writeLines( "ROI NO Bound (-Inf, Inf)\n" )
+## }
+
