@@ -37,8 +37,7 @@ ROI_make_signature_deoptim <- function()
                                maximum = c(TRUE, FALSE) )
 
 ## SOLVER CONTROLS
-.add_controls_deoptimr <- function() {
-    solver <- "deoptimr"
+.add_controls_deoptimr <- function( solver ) {
     ROI_plugin_register_solver_control( solver, "start", "start")
     ROI_plugin_register_solver_control( solver, "dry_run", "dry_run")
 
@@ -63,8 +62,7 @@ ROI_make_signature_deoptim <- function()
     invisible( TRUE )
 }
 
-.add_controls_deoptim <- function() {
-    solver <- "deoptim"
+.add_controls_deoptim <- function( solver ) {
     ROI_plugin_register_solver_control( solver, "start", "start")
     ROI_plugin_register_solver_control( solver, "dry_run", "dry_run")
 
@@ -105,15 +103,16 @@ ROI_make_signature_deoptim <- function()
             method = getFunction( "solve_op_deoptimr", where = getNamespace(pkgname)),
             plugin = "deoptim" )
         .add_status_codes( solver )
-        .add_controls_deoptimr()
+        .add_controls_deoptimr( solver )
 
         solver <- "deoptim"
         ROI_plugin_register_solver_method(
             signatures = ROI_make_signature_deoptim(),
             solver = solver,
-            method = getFunction( "solve_op_deoptim", where = getNamespace(pkgname)) )
+            method = getFunction( "solve_op_deoptim", where = getNamespace(pkgname)), 
+            plugin = "deoptim" )
         .add_status_codes( solver )
-        .add_controls_deoptim()
+        .add_controls_deoptim( solver )
     }
 }
 
