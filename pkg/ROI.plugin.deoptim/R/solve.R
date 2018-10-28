@@ -98,6 +98,7 @@ solve_op_deoptimr <- function(x, control) {
         m$fn <- terms(objective(x))$F
     }
 
+    constraints(x) <- as.F_constraint(constraints(x))
     eqcon <- ROI_plugin_build_equality_constraints(x, "eq_zero")
     leqcon <- ROI_plugin_build_inequality_constraints(x, "leq_zero")
     if ( !is.null(eqcon$F) ) {

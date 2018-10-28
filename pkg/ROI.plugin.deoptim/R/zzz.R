@@ -22,7 +22,7 @@
 
 ROI_make_signature_deoptimr <- function()
     ROI_plugin_make_signature( objective = c("F"),
-                               constraints = c("X", "F"),
+                               constraints = c("X", "L", "Q", "F"),
                                types = c("C"),
                                bounds = c("X", "V"),
                                cones = c("X"),
@@ -51,12 +51,12 @@ ROI_make_signature_deoptim <- function()
     ROI_plugin_register_solver_control( solver, "tau_CR", "X")
     ROI_plugin_register_solver_control( solver, "tau_pF", "X")
     ROI_plugin_register_solver_control( solver, "jitter_factor", "X")
-    ROI_plugin_register_solver_control( solver, "tol", "X")
-    ROI_plugin_register_solver_control( solver, "maxiter", "X")
+    ROI_plugin_register_solver_control( solver, "tol", "tol")
+    ROI_plugin_register_solver_control( solver, "maxiter", "max_iter")
     ROI_plugin_register_solver_control( solver, "fnscale", "X")
     ROI_plugin_register_solver_control( solver, "compare_to", "X")
     ROI_plugin_register_solver_control( solver, "add_to_init_pop", "X")
-    ROI_plugin_register_solver_control( solver, "trace", "X")
+    ROI_plugin_register_solver_control( solver, "trace", "verbose")
     ROI_plugin_register_solver_control( solver, "triter", "X")
     ROI_plugin_register_solver_control( solver, "details", "X")
 
