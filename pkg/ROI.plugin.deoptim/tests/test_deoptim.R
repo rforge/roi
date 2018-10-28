@@ -75,14 +75,14 @@ test_nlp_03 <- function() {
              constraints = F_constraint(hs036_con, "<=", 72),
              bounds = V_bound(ub = c(20, 11, 42)) )
 
-    nlp <- ROI_solve(x, solver = "deoptimr")
+    nlp <- ROI_solve(x, solver = "deoptimr", start = c(10, 10, 10))
     stopifnot( equal(nlp$objval, -3300) )
-    stopifnot( equal(solution(nlp), c(20, 11, 15)) )
+    stopifnot( equal(solution(nlp, force = TRUE), c(20, 11, 15)) )
 }
 
 if ( !any("deoptim" %in% names(ROI_registered_solvers())) ) {
     ## This should never happen.
-    cat("ROI.plugin.alabama cloud not be found among the registered solvers.\n")
+    cat("ROI.plugin.deoptim cloud not be found among the registered solvers.\n")
 } else {
     file = Sys.getenv("ROI_TEST_LOG_FILE")
     ROI_TEST_ERRORS <- 0L
