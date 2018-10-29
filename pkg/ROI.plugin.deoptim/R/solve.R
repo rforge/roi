@@ -4,7 +4,7 @@
 ## get lower bound constraints
 get_lb <- function(x) {
     lb <- numeric( length(x$objective) )
-    lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
+    lb[ ROI::bounds(x)$lower$ind ] <- ROI::bounds(x)$lower$val
     return(lb)
 }
 
@@ -14,7 +14,7 @@ get_lb <- function(x) {
 ## get upper bound constraints
 get_ub <- function(x, .machine.max=Inf) {
     ub <- rep.int(.machine.max, length(x$objective))
-    ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
+    ub[ ROI::bounds(x)$upper$ind ] <- ROI::bounds(x)$upper$val
     return(ub)
 }
 
@@ -30,15 +30,15 @@ solve_op_deoptim <- function( x, control ) {
     ub <- get_ub(x)
 
     if ( !is.null(control$start) & is.null(control$initialpop) ) {
-    	if ( is.vector(control$start) ) {
-    		if ( is.null(control$NP) ) {
-    			n <- length(objective(x))
-    			control$NP <- 10 * n ## the default value of deoptim
-    			brunif <- function(min, max) runif(1, min, max)
-    			start <- lapply(seq_len(control$NP), function(z) mapply(brunif, lb, ub))
-    			control$initialpop <- do.call(rbind, start)
-    		}
-    	}
+        if ( is.vector(control$start) ) {
+            if ( is.null(control$NP) ) {
+                n <- length(objective(x))
+                control$NP <- 10 * n ## the default value of deoptim
+                brunif <- function(min, max) runif(1, min, max)
+                start <- lapply(seq_len(control$NP), function(z) mapply(brunif, lb, ub))
+                control$initialpop <- do.call(rbind, start)
+            }
+        }
     }
 
     opti <- list(DEoptim)
@@ -86,7 +86,7 @@ solve_op_deoptim <- function( x, control ) {
 ##
 ## h_i(x) == 0   i = 1, ..., meq
 ## g_i(x) <= 0
-solve_op_deoptimr <- function(x, control) {
+solve_op_deoptimr <- function(x, control = list()) {
     solver <- "deoptimr"
     if ( is.null(control$trace) )
         control$trace <- FALSE
@@ -97,9 +97,9 @@ solve_op_deoptimr <- function(x, control) {
     m <- .deoptimr_default(length(objective(x)))
   
     lower <- get_lb(x)
-    m$lower <- replace(lower, lower == -Inf, -.Machine[["double.xmax"]])
+    m$lower <- replace(lower, lower == -Inf, -1e64)
     upper <- get_ub(x)
-    m$upper <- replace(upper, upper == Inf, .Machine[["double.xmax"]])
+    m$upper <- replace(upper, upper == Inf, 1e64)
 
     if ( isTRUE(x$maximum) ) {
         objective_function <- terms(objective(x))$F
@@ -127,8 +127,9 @@ solve_op_deoptimr <- function(x, control) {
 
     if ( isTRUE(control$dry_run) )
         return(m)
-    
+
     res <- eval(m)
+
     obj_val <- objective(x)(res$par)
 
     ROI_plugin_canonicalize_solution(solution  = res$par,
@@ -141,9 +142,9 @@ solve_op_deoptimr <- function(x, control) {
 
 build_constraint <- function(EQFUN, LEQFUN) {
     if ( is.null(EQFUN) )
-        return(LEQFUN)
+        return(function(x, ...) LEQFUN(x))
     if ( is.null(LEQFUN) )
-        return(EQFUN)
-    function(x) c(EQFUN(x), LEQFUN(x))
+        return(function(x, ...) EQFUN(x))
+    function(x, ...) c(EQFUN(x), LEQFUN(x))
 }
 
