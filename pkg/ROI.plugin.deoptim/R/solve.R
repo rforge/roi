@@ -25,11 +25,21 @@ solve_op_deoptim <- function( x, control ) {
 
     if ( is.null(control$trace) )
         control$trace <- FALSE
-    if ( !is.null(control$start) & is.null(control$initialpop) )
-        control$initialpop <- control$start
 
     lb <- get_lb(x)
     ub <- get_ub(x)
+
+    if ( !is.null(control$start) & is.null(control$initialpop) ) {
+    	if ( is.vector(control$start) ) {
+    		if ( is.null(control$NP) ) {
+    			n <- length(objective(x))
+    			control$NP <- 10 * n ## the default value of deoptim
+    			brunif <- function(min, max) runif(1, min, max)
+    			start <- lapply(seq_len(control$NP), function(z) mapply(brunif, lb, ub))
+    			control$initialpop <- do.call(rbind, start)
+    		}
+    	}
+    }
 
     opti <- list(DEoptim)
     if ( isTRUE(x$maximum) ) {
@@ -87,7 +97,7 @@ solve_op_deoptimr <- function(x, control) {
     m <- .deoptimr_default(length(objective(x)))
   
     lower <- get_lb(x)
-    m$lower <- replace(lower, lower == -Inf, .Machine[["double.xmin"]])
+    m$lower <- replace(lower, lower == -Inf, -.Machine[["double.xmax"]])
     upper <- get_ub(x)
     m$upper <- replace(upper, upper == Inf, .Machine[["double.xmax"]])
 
