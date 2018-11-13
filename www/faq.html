@@ -289,6 +289,9 @@ div.tocify {
   <a href="introduction.html">Introduction</a>
 </li>
 <li>
+  <a href="introduction_conic_optimization.html">Conic Optimization</a>
+</li>
+<li>
   <a href="use_cases.html">Use Cases</a>
 </li>
 <li>
@@ -317,8 +320,8 @@ div.tocify {
 </div>
 
 
-<div id="why-roi-loads-so-slow" class="section level2">
-<h2>Why <strong>ROI</strong> loads so slow?</h2>
+<div id="why-roi-loads-so-slowly" class="section level2">
+<h2>Why <strong>ROI</strong> loads so slowly?</h2>
 <p><strong>ROI</strong> loads all the plug-ins automatically this takes time one can avoid this by setting the environment variable <code>ROI_LOAD_PLUGINS</code> to <code>FALSE</code> <code>Sys.setenv(ROI_LOAD_PLUGINS = &quot;FALSE&quot;)</code>. The main reason why the loading of the package takes so much time is that many optimization solvers use the <strong>Matrix</strong> package which takes quite some time to load. In the long run we will try remove this overhead by replacing the <strong>Matrix</strong> package with <strong>slam</strong> not only in the plug-ins but also in the wrapped packages.</p>
 </div>
 

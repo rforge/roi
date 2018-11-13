@@ -289,6 +289,9 @@ div.tocify {
   <a href="introduction.html">Introduction</a>
 </li>
 <li>
+  <a href="introduction_conic_optimization.html">Conic Optimization</a>
+</li>
+<li>
   <a href="use_cases.html">Use Cases</a>
 </li>
 <li>
@@ -522,8 +525,9 @@ brew install symphony</code></pre>
 <h2><strong>ROI.models.miplib</strong></h2>
 <pre class="r"><code>install.packages(&quot;ROI.models.miplib&quot;)
 library(ROI.models.miplib)
-miplib_download_metainfo()
-miplib_download_benchmark(quiet = FALSE)</code></pre>
+miplib_download_metainfo(&quot;http://miplib2010.zib.de/download/miplib2010_all.solu&quot;)
+miplib_download_benchmark(&quot;http://miplib2010.zib.de/download/miplib2010-benchmark.tgz&quot;,
+    quiet = FALSE)</code></pre>
 </div>
 </div>
 

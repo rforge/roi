@@ -289,6 +289,9 @@ div.tocify {
   <a href="introduction.html">Introduction</a>
 </li>
 <li>
+  <a href="introduction_conic_optimization.html">Conic Optimization</a>
+</li>
+<li>
   <a href="use_cases.html">Use Cases</a>
 </li>
 <li>
@@ -456,7 +459,7 @@ y^2 &amp; \leq &amp; 4 \nonumber
           bounds = V_bound(li = 1:2, ui = 1:2, 
                            lb = c(-100, -100), ub = c(100, 100)))
 ROI_applicable_solvers(lp)</code></pre>
-<pre><code>## [1] &quot;glpk&quot;    &quot;qpoases&quot; &quot;ecos&quot;    &quot;scs&quot;     &quot;alabama&quot; &quot;lpsolve&quot; &quot;gurobi&quot;</code></pre>
+<pre><code>## [1] &quot;ecos&quot;    &quot;glpk&quot;    &quot;scs&quot;     &quot;qpoases&quot; &quot;alabama&quot; &quot;lpsolve&quot;</code></pre>
 <pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
 <pre><code>## Optimal solution found.
 ## The objective value is: 1.860000e+01</code></pre>
@@ -585,12 +588,8 @@ milp &lt;- OP(objective = L_objective(c(7, 1, 3), c(&quot;x&quot;, &quot;y&quot;
                         L = rbind(c(0, 0, 4), c(1, 0, 1), c(0, 0, 0)),
                         dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
            maximum = TRUE)</code></pre>
-<pre class="r"><code>(sol &lt;- ROI_solve(qcqp, solver = &quot;gurobi&quot;))</code></pre>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.836219e+02</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
-<pre><code>##         x         y         z 
-## 1.0606575 1.2086302 0.3535547</code></pre>
+<pre class="r"><code>(sol &lt;- ROI_solve(qcqp, solver = &quot;gurobi&quot;))
+solution(sol)</code></pre>
 <p>or equivalently</p>
 <pre class="r"><code>qc1 &lt;- Q_constraint(Q = rbind(c(2, 0, 0), c(0, 2, 0), c(0, 0, 0)),
                     L = c(0, 0, 4), dir = &quot;&lt;=&quot;, rhs = 4)
@@ -601,15 +600,11 @@ qc3 &lt;- Q_constraint(Q = rbind(c(2, 0, 2), c(0, 0, 0), c(2, 0, 2)),
 qcqp &lt;- OP(Q_objective(-diag(3), c(90, 110, 160), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
            c(qc1, qc2, qc3), maximum = TRUE)
 
-(sol &lt;- ROI_solve(qcqp, solver = &quot;gurobi&quot;))</code></pre>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.836219e+02</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
-<pre><code>##         x         y         z 
-## 1.0606575 1.2086302 0.3535547</code></pre>
+(sol &lt;- ROI_solve(qcqp, solver = &quot;gurobi&quot;))
+solution(sol)</code></pre>
 <p>Check how tight the bounds are.</p>
 <pre class="r"><code>sapply(as.function(constraints(qcqp)), function(F) F(solution(sol)))</code></pre>
-<pre><code>## [1] 4.000000 3.000000 1.999996</code></pre>
+<pre><code>## [1] 8.555556 5.888889 9.000000</code></pre>
 </div>
 </div>
 <div id="conic-programming-cp" class="section level2">
@@ -752,26 +747,21 @@ psd &lt;- OP(objective = obj,
           bounds = V_bound(li=1:3, lb=rep(-Inf, 3)))
 
 (sol &lt;- ROI_solve(psd, solver = &quot;scs&quot;))</code></pre>
-<pre><code>## FATAL: Cannot solve SDPs with &gt; 2x2 matrices without linked blas+lapack libraries
-## Install blas+lapack and re-compile SCS with blas+lapack libray locations
-## ERROR: init_cone failure
-## Failure:could not initialize work</code></pre>
-<pre><code>## No optimal solution found.
-## The solver message was: SCS_FAILED
-## The objective value is: NaN</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: -3.153545e+00</code></pre>
 <pre class="r"><code>solution(sol)</code></pre>
-<pre><code>## [1] NA NA NA</code></pre>
+<pre><code>## [1] -0.3677513  1.8983332 -0.8874604</code></pre>
 <pre class="r"><code>lapply(solution(sol, type=&quot;psd&quot;), as.matrix)</code></pre>
-<pre><code>## $`5`
-##      [,1] [,2]
-## [1,]  NaN  NaN
-## [2,]  NaN  NaN
+<pre><code>## $`30`
+##              [,1]         [,2]
+## [1,]  0.003961386 -0.004339146
+## [2,] -0.004339146  0.004752929
 ## 
-## $`6`
-##      [,1] [,2] [,3]
-## [1,]  NaN  NaN  NaN
-## [2,]  NaN  NaN  NaN
-## [3,]  NaN  NaN  NaN</code></pre>
+## $`31`
+##              [,1]          [,2]         [,3]
+## [1,]  0.055803080 -0.0024106686  0.024214084
+## [2,] -0.002410669  0.0001041398 -0.001046038
+## [3,]  0.024214084 -0.0010460378  0.010506980</code></pre>
 </div>
 <div id="exponential-cone" class="section level3">
 <h3>Exponential cone</h3>
@@ -803,7 +793,7 @@ psd &lt;- OP(objective = obj,
 <pre><code>## Optimal solution found.
 ## The objective value is: 5.436564e+00</code></pre>
 <pre class="r"><code>solution(sol)</code></pre>
-<pre><code>## [1] 5.703897e-09 2.718282e+00 2.718282e+00</code></pre>
+<pre><code>## [1] 2.614608e-08 2.718282e+00 2.718282e+00</code></pre>
 </div>
 <div id="dual-exponential-cone" class="section level4">
 <h4>Dual exponential cone</h4>
@@ -823,7 +813,7 @@ psd &lt;- OP(objective = obj,
 ## The objective value is: -6.321204e-01</code></pre>
 <pre class="r"><code>solution(sol)</code></pre>
 <pre><code>##             u             v             w 
-## -9.999999e-01  3.491707e-07  3.678791e-01</code></pre>
+## -9.999999e-01  3.483107e-07  3.678791e-01</code></pre>
 </div>
 </div>
 <div id="power-cone" class="section level3">

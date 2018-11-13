@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Conic optimization with ROI</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="introduction_conic_optimization.html">Conic Optimization</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+<li>
+  <a href="news.html">What's new?</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Conic optimization with <strong>ROI</strong></h1>
+
+</div>
+
+
+<p>Currently only the conic optimization solvers <strong>ECOS</strong> (<a href="#ecos:Domahidi:2013">Domahidi, Chu, and Boyd 2013</a>) and <strong>SCS</strong> <a href="#scs:ODonoghue:2016">O’Donoghue, Chu, Parikh, and Boyd 2016</a>) are available in <strong>ROI</strong>.</p>
+<pre class="r"><code>Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+suppressMessages(library(ROI))
+library(ROI.plugin.ecos)
+library(ROI.plugin.glpk)
+library(ROI.plugin.scs)</code></pre>
+<p>A conic optimization problem is commonly defined as (see e.g., <a href="#BoydVandenbergheBook2004">Boyd and Vandenberghe 2004</a>) <a name="eq:1"></a> <span class="math display">\[
+\begin{array}{rl}
+\text{minimize}     &amp; a_0^\top x      \\
+\text{subject to}   &amp; A x + s   = b ~~~~~~~~ (1)  \\
+                    &amp; s \in \mathcal{K}.
+\end{array}
+\]</span></p>
+<p>The representation in <a href="#eq:1">Equation 1</a> looks similar to a linear equality constraint. However since <span class="math inline">\(s\)</span> can be restricted to non-linear cones this standard form can also be used to represent non-linear functions.</p>
+<div id="zero-cone" class="section level1">
+<h1>Zero Cone</h1>
+<p>The zero cone can be used to model linear optimization problems with equality constraints. <span class="math display">\[\text{maximize} ~~~~~~ 10 x_1 + 6 x_2 + 4 x_3\]</span> <span class="math display">\[\text{subject to:} ~~~~~~ x_1 + ~ x_2 + ~ x_3 = 100\]</span> <span class="math display">\[~~~~~~~~~~~~~~~~~~~~~~~ 4 x_1 + 2 x_2 + 7 x_3 = 200\]</span></p>
+<p>Equality constraints can be either modeled as linear constraints</p>
+<pre class="r"><code>L &lt;- rbind(c(1, 1, 1), c(4, 2, 7))
+rhs &lt;- c(100, 200)
+op &lt;- OP(c(10, 6, 4), L_constraint(L, eq(2), rhs), maximum = TRUE)
+(s &lt;- ROI_solve(op, &quot;ecos&quot;)) ## we choose ecos here so we get the same solution as below</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 6.000000e+02</code></pre>
+<pre class="r"><code>solution(s)</code></pre>
+<pre><code>## [1] -1.275186e-08  1.000000e+02  5.144393e-09</code></pre>
+<p>or as conic constraints.</p>
+<pre class="r"><code>constraints(op) &lt;- C_constraint(L, K_zero(2), rhs)
+(s &lt;- ROI_solve(op))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 6.000000e+02</code></pre>
+<pre class="r"><code>solution(s)</code></pre>
+<pre><code>## [1] -1.275186e-08  1.000000e+02  5.144393e-09</code></pre>
+</div>
+<div id="linear-cone-non-negative-orthant" class="section level1">
+<h1>Linear cone (non-negative orthant)</h1>
+<p>The linear cone allows us to model inequality constraints. The following linear optimization problem</p>
+<p><span class="math display">\[
+\begin{array}{rrrrr}
+\text{minimize}
+&amp; 7 x_1 &amp; + &amp; 8 x_2 \\
+\text{subject to}
+&amp; 3 x_1 &amp; + &amp; 4 x_2 &amp;  =   9 \\
+&amp; 2 x_1 &amp; + &amp; 1 x_2 &amp; \geq 3 \\
+&amp; 0 x_1 &amp; + &amp; 1 x_2 &amp; \leq 1
+\end{array}
+\]</span> <span class="math display">\[ x \geq 0 \]</span></p>
+<p>can again be modeled as an <code>OP</code> with linear objective and linear constraints</p>
+<pre class="r"><code>L &lt;- rbind(c(3, 4), c(2, 1), c(0, 1))
+rhs &lt;- c(9, 3, 1)
+op  &lt;- OP(objective = L_objective(c(7, 8), names = c(&quot;x_1&quot;, &quot;x_2&quot;)),
+          constraints = L_constraint(L = L, dir = c(&quot;==&quot;, &quot;&gt;=&quot;, &quot;&lt;=&quot;), rhs = rhs))
+(sol &lt;- ROI_solve(op, solver = &quot;ecos&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.966667e+01</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##      x_1      x_2 
+## 1.666667 1.000000</code></pre>
+<p>or equivalently as conic optimization problem.</p>
+<pre class="r"><code>L &lt;- rbind(c(3, 4), -c(2, 1), c(0, 1))
+rhs &lt;- c(9, -3, 1)
+constraints(op) &lt;- C_constraint(L = L, cones = c(K_zero(1), K_lin(2)), rhs = rhs)
+(sol &lt;- ROI_solve(op, solver = &quot;ecos&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.966667e+01</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##      x_1      x_2 
+## 1.666667 1.000000</code></pre>
+</div>
+<div id="second-order-cone" class="section level1">
+<h1>Second-order cone</h1>
+<p>Second-order cone programming (SOCP) is mainly used to model the euclidean norm and absolute values. It is commonly defined as <span class="math display">\[\mathcal{K}_{\mathrm{soc}} = \{(v, u) \in \mathbb{R}^{n+1} \ | \ u \in \mathbb{R}^n, \ v \in \mathbb{R}, \ ||u||_2 \leq v \}.\]</span></p>
+<p>From <a href="#eq:1">Equation 1</a> we see that if <span class="math inline">\(s \in \mathcal{K}_{\mathrm{soc}}\)</span> it follows that also <span class="math inline">\(s = (b - A x) \in \mathcal{K}_{\mathrm{soc}}\)</span>. The variables <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> are defined via the constraint matrix <span class="math inline">\(\mathbf{L}\)</span> and right hand side <span class="math inline">\(\mathbf{rhs}\)</span>. The constraint <span class="math inline">\(||u||_2 \leq v\)</span> or in matrix terms <span class="math inline">\(||A x + b||_2 \leq c^\top x + d ~\)</span> yields the following matrices <span class="math display">\[
+    \underbrace{-\begin{bmatrix} c^\top \\ A \end{bmatrix}}_\mathbf{L} + 
+    \underbrace{\begin{bmatrix} s_1 \\ s_2 \end{bmatrix}}_\mathbf{s} =
+    \underbrace{\begin{bmatrix} d \\ b \end{bmatrix}}_\mathbf{rhs}, 
+    \text{ where } \ b \in \mathbb{R}^n, \ d \in \mathbb{R}, \ \mathbf{s} \in K_{soc}.
+\]</span></p>
+<!--
+Let be $u = F x + d$ and 
+
+The variables $u$ and $v$ are defined via the constraint matrix $A$ and right
+hand side $b$. Therefore to define the constraint $||u||_2 \leq v$ with 
+$u \in \mathbb{R}^n$ we need a matrix with $(n+1)$ rows, where
+$$||b_{i} - A_{i*} ~ x||_2\leq b_1 - A_{1*} ~ x ~~~~~~~ i \in 2, ..., n + 1.$$
+-->
+<div id="x_2" class="section level2">
+<h2><span class="math inline">\(||x||_2\)</span></h2>
+<div id="example-1" class="section level3">
+<h3>Example 1</h3>
+<p><span class="math display">\[
+\begin{array}{rl}
+\text{maximize}     &amp; 2 ~ x + 3 ~ y \\
+\text{subject to}   &amp; \sqrt{(3 ~ x)^2 + (5 ~ y)^2} \leq 7
+\end{array}
+\]</span> Therefore we end up with the following set of vectors an matrices</p>
+<p><span class="math display">\[
+\begin{array}{l|rr|r}
+    &amp; x &amp; y &amp; b \\
+\hline
+a_0 &amp; 2 &amp; 3 \\
+\hline
+A_{1*} &amp; 0 &amp; 0 &amp; 7 \\
+A_{2*} &amp; 3 &amp; 0 &amp; 0 \\
+A_{3*} &amp; 0 &amp; 5 &amp; 0 
+\end{array}
+\]</span></p>
+<pre class="r"><code>A &lt;- rbind(c(0, 0), 
+           c(3, 0), 
+           c(0, 5))
+op &lt;- OP(L_objective(c(2, 3), c(&quot;x&quot;, &quot;y&quot;)), 
+    C_constraint(-A, K_soc(3), c(7, 0, 0)),
+    bounds = V_bound(lb = c(-Inf, -Inf)), maximum = TRUE)
+(sol &lt;- ROI_solve(op))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 6.278358e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##         x         y 
+## 1.7343530 0.9365506</code></pre>
+</div>
+<div id="example-2" class="section level3">
+<h3>Example 2</h3>
+<p><span class="math display">\[
+\begin{array}{rl}
+\text{minimize}     &amp; \sqrt{(3 ~ x)^2 + (5 ~ y)^2} \\
+\text{subject to}   &amp; x + y = 1
+\end{array}
+\]</span></p>
+<p>To solve this problem with <strong>ROI</strong> we first transform it into the epigraph form <span class="math display">\[
+\begin{array}{rl}
+\underset{(x, t)}{\text{minimize}} &amp; t \\
+\text{subject to}   &amp; \sqrt{(3 ~ x)^2 + (5 ~ y)^2} \leq t \\
+                    &amp; x + y = 1.
+\end{array}
+\]</span></p>
+<p>Therefore for the conic part we end up with the following set of vectors an matrices</p>
+<p><span class="math display">\[
+\begin{array}{l|rrr|r}
+    &amp; x &amp; y &amp; t &amp; b \\
+\hline
+a_0 &amp; 0 &amp; 0 &amp; 1 \\
+\hline
+A_{1*} &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
+A_{2*} &amp; 3 &amp; 0 &amp; 0 &amp; 0 \\
+A_{3*} &amp; 0 &amp; 5 &amp; 0 &amp; 0
+\end{array}
+\]</span></p>
+<pre class="r"><code>A &lt;- rbind(c(0, 0, 1), 
+           c(3, 0, 0), 
+           c(0, 5, 0))
+op &lt;- OP(L_objective(c(0, 0, 1), c(&quot;x&quot;, &quot;y&quot;, &quot;t&quot;)), 
+    rbind(L_constraint(c(1, 1, 0), &quot;==&quot;, 1),
+          C_constraint(-A, K_soc(3), c(0, 0, 0))),
+    bounds = V_bound(lb = c(-Inf, -Inf, -Inf)))
+(sol &lt;- ROI_solve(op))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.572479e+00</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##         x         y         t 
+## 0.7352941 0.2647059 2.5724788</code></pre>
+</div>
+</div>
+</div>
+<div id="primal-exponential-cone" class="section level1">
+<h1>Primal exponential cone</h1>
+<p>The primal exponential cone is primarily used to model exponential functions and logarithms (<a href="#Chares:PowerCone:2009">Chares 2009</a>; <a href="#Serrano:ExponentialCone:2015">Serrano 2015</a>). It is often defined as <a name="eq:2"></a> <span class="math display">\[
+\mathcal{K}_{\mathrm{expp}} = 
+    \{(u, v, w) \in \mathbb{R}^3 \ | \  v  &gt; 0, \ v e^{\frac{u}{v}} \leq w \} \ \cup
+    \{(u, 0, w) \in \mathbb{R}^3 \ | \ u \leq 0, \ w \geq 0\}. ~~~~~~~~ (2)
+\]</span></p>
+<p>In <strong>ROI</strong> each constraint to the primal exponential cone is represented by a matrix with 3 rows. The rows correspond to the variables from <a href="#eq:2">Equation 2</a>, the first row represents <span class="math inline">\(u\)</span>, the second row represents <span class="math inline">\(v\)</span> and the third row represents <span class="math inline">\(w\)</span>. From <a href="#eq:1">Equation 1</a> we see that, if <span class="math inline">\(s \in \mathcal{K}_{\mathrm{expp}}\)</span> it follows that also <span class="math inline">\(s = (b - A x) \in \mathcal{K}_{\mathrm{expp}}\)</span>.</p>
+<p>Therefore given a matrix <span class="math inline">\(A \in \mathbb{R}^{3 \times n}\)</span>, a vector <span class="math inline">\(b \in \mathbb{R}^{3}\)</span> and <span class="math inline">\(s \in \mathcal{K}_{\mathrm{expp}}\)</span> the variables <span class="math inline">\((u, v, w)\)</span> in <a href="#eq:2">Equation 2</a> are given by <span class="math display">\[
+\begin{array}{rl}
+u = &amp; b_1 - A_{1*} ~ x \\
+v = &amp; b_2 - A_{2*} ~ x \\
+w = &amp; b_3 - A_{3*} ~ x,
+\end{array}
+\]</span> where <span class="math inline">\(A_{i*}\)</span> refers to the <span class="math inline">\(i-th\)</span> row of matrix <span class="math inline">\(A\)</span>.</p>
+<p>In the following we give simple examples on how the corresponding matrices would look like and how to solve the problems with <strong>ROI</strong>.</p>
+<div id="ex" class="section level2">
+<h2><span class="math inline">\(e^x\)</span></h2>
+<div id="problem-1" class="section level3">
+<h3>Problem 1</h3>
+<p>To start simple we assume that <span class="math inline">\(x\)</span> is a vector of length one (i.e., <span class="math inline">\(x \in \mathbb{R}\)</span>).</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{x}{\text{minimize}} &amp; e^{9 + 7 x} \\
+\text{subject to}             &amp; x \geq 0
+\end{array}
+\]</span> By looking at the problem we immediately see that the minimum will be attended at <span class="math inline">\(x = 0\)</span> with an objective value of <span class="math inline">\(e^9\)</span>. To solve this problem with <strong>ROI</strong> we first transform it into the epigraph form <span class="math display">\[
+\begin{array}{rl}
+\underset{(x, t)}{\text{minimize}} &amp; t \\
+\text{subject to}   &amp; e^{9 + 7 x} \leq t \\
+                    &amp; x \geq 0.
+\end{array}
+\]</span></p>
+<p>To express this in terms of  <span class="math inline">\(v e^{\frac{u}{v}} \leq w\)</span>  (see <a href="#eq:2">Equation 2</a>), we have to set <span class="math inline">\(u = 9 + 7x\)</span>,  <span class="math inline">\(v = 1\)</span> and <span class="math inline">\(w = t\)</span>. Therefore we end up with the following set of vectors an matrices</p>
+<p><span class="math display">\[
+\begin{array}{l|rr|r}
+    &amp; x &amp; t &amp; b \\
+\hline
+a_0 &amp; 0 &amp; 1 \\
+\hline
+A_{1*} &amp; 7 &amp; 0 &amp; 9 \\
+A_{2*} &amp; 0 &amp; 0 &amp; 1 \\
+A_{3*} &amp; 0 &amp; 1 &amp; 0 
+\end{array}
+\]</span></p>
+<p>It seems important to note the constraint <span class="math inline">\(x \geq 0\)</span> is not included in the matrices above since in the <strong>ROI</strong> formulation we will set this constraint as bound.</p>
+<div id="roi-formulation-of-problem-1" class="section level4">
+<h4><strong>ROI</strong> formulation of Problem 1</h4>
+<pre class="r"><code>A &lt;- rbind(c(7, 0), 
+           c(0, 0), 
+           c(0, 1))
+b &lt;- c(9, 1, 0)
+p1 &lt;- OP(L_objective(c(0, 1), c(&quot;x&quot;, &quot;t&quot;)), 
+         C_constraint(-A, K_expp(1), b),
+         bounds = V_bound(lb = c(0, -Inf)))
+(s1 &lt;- ROI_solve(p1))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 8.103084e+03</code></pre>
+<pre class="r"><code>solution(s1)</code></pre>
+<pre><code>##             x             t 
+## -2.119908e-10  8.103084e+03</code></pre>
+<pre class="r"><code>abs(solution(s1, &quot;objval&quot;) - exp(9))</code></pre>
+<pre><code>## [1] 0.0001142238</code></pre>
+</div>
+</div>
+<div id="problem-2" class="section level3">
+<h3>Problem 2</h3>
+<p>Now me make a simple change and consider the case where <span class="math inline">\(x \in \mathbb{R}^3\)</span> instead of <span class="math inline">\(x \in \mathbb{R}\)</span> <span class="math display">\[
+\begin{array}{rl}
+\underset{x}{\text{minimize}} &amp; e^{11 + 3 x_1 + 7 x_2 + 9 x_3} \\
+\text{subject to}             &amp; x \geq 0,
+\end{array}
+\]</span></p>
+<p>which gives the following epigraph form.</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{(x, t)}{\text{minimize}} &amp; t \\
+\text{subject to}   &amp; e^{11 + 3 x_1 + 7 x_2 + 9 x_3} \leq t \\
+                    &amp; x \geq 0.
+\end{array}
+\]</span></p>
+<p>Therefore we end up with the following set of vectors an matrices.</p>
+<p><span class="math display">\[
+\begin{array}{l|rrrr|r}
+    &amp; x_1 &amp; x_2 &amp; x_3 &amp; t &amp; b \\
+\hline
+a_0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+\hline
+A_{1*} &amp; 3 &amp; 7 &amp; 9 &amp; 0 &amp; 11 \\
+A_{2*} &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+A_{3*} &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 
+\end{array}
+\]</span></p>
+<div id="roi-formulation-of-problem-2" class="section level4">
+<h4><strong>ROI</strong> formulation of Problem 2</h4>
+<pre class="r"><code>A &lt;- rbind(c(3, 7, 9, 0), 
+           c(0, 0, 0, 0), 
+           c(0, 0, 0, 1))
+b &lt;- c(11, 1, 0)
+p2 &lt;- OP(L_objective(c(0, 0, 0, 1), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot;x_3&quot;, &quot;t&quot;)), 
+         C_constraint(-A, K_expp(1), b),
+         bounds = V_bound(lb = c(0, 0, 0, -Inf)))
+(s2 &lt;- ROI_solve(p2))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 5.987414e+04</code></pre>
+<pre class="r"><code>solution(s2)</code></pre>
+<pre><code>##          x_1          x_2          x_3            t 
+## 9.548161e-11 3.302121e-11 4.383034e-11 5.987414e+04</code></pre>
+</div>
+</div>
+</div>
+<div id="logx" class="section level2">
+<h2><span class="math inline">\(\log(x)\)</span></h2>
+<p>Since taking exponential of <span class="math display">\[log(w) \geq u\]</span> gives <span class="math display">\[w \geq e^u.\]</span> Also logarithms can be expressed by the exponential cone.</p>
+<div id="problem-3" class="section level3">
+<h3>Problem 3</h3>
+<p>To start again simple we assume that <span class="math inline">\(x\)</span> is a vector of length one (i.e., <span class="math inline">\(x \in \mathbb{R}\)</span>). <span class="math display">\[
+\begin{array}{rl}
+\underset{x}{\text{maximize}} &amp; log(9 + 7 x) \\
+\text{subject to}             &amp; x \leq 1
+\end{array}
+\]</span> By looking at the problem we immediately see that the maximum will be attended at <span class="math inline">\(x = 1\)</span> with an objective value of <span class="math inline">\(log(9 + 7)\)</span>. To solve this problem with <strong>ROI</strong> we first transform it into the epigraph form <span class="math display">\[
+\begin{array}{rl}
+\underset{(x, t)}{\text{maximize}} &amp; t \\
+\text{subject to}   &amp; log(9 + 7 x) \geq t \\
+                    &amp; x \leq 1.
+\end{array}
+\]</span></p>
+<p>Therefore we end up with the following set of vectors an matrices</p>
+<p><span class="math display">\[
+\begin{array}{l|rr|r}
+    &amp; x &amp; t &amp; b \\
+\hline
+a_0 &amp; 0 &amp; 1 \\
+\hline
+A_{1*} &amp; 0 &amp; 1 &amp; 0 \\ 
+A_{2*} &amp; 0 &amp; 0 &amp; 1 \\
+A_{3*} &amp; 7 &amp; 0 &amp; 9
+\end{array}
+\]</span></p>
+<div id="roi-formulation-of-problem-3" class="section level4">
+<h4><strong>ROI</strong> formulation of Problem 3</h4>
+<pre class="r"><code>A &lt;- rbind(c(0, 1), 
+           c(0, 0), 
+           c(7, 0))
+b &lt;- c(0, 1, 9)
+p3 &lt;- OP(L_objective(c(0, 1), c(&quot;x&quot;, &quot;t&quot;)), 
+         C_constraint(-A, K_expp(1), b),
+         bounds = V_bound(ld = -Inf, ub = c(1, Inf)),
+         maximum = TRUE)
+(s3 &lt;- ROI_solve(p3))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 2.772589e+00</code></pre>
+<pre class="r"><code>solution(s3)</code></pre>
+<pre><code>##        x        t 
+## 1.000000 2.772589</code></pre>
+<pre class="r"><code>abs(solution(s3, &quot;objval&quot;) - log(9 + 7))</code></pre>
+<pre><code>## [1] 1.667324e-08</code></pre>
+</div>
+</div>
+<div id="problem-4" class="section level3">
+<h3>Problem 4</h3>
+<p>Now me make a simple change and consider the case where <span class="math inline">\(x \in \mathbb{R}^3\)</span> instead of <span class="math inline">\(x \in \mathbb{R}\)</span></p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{x}{\text{maximize}} &amp; log(11 + 3 x_1 + 7 x_2 + 9 x_3) \\
+\text{subject to}             &amp; x \leq 1
+\end{array}
+\]</span></p>
+<p>which gives the following epigraph form.</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{(x, t)}{\text{maximize}} &amp; t \\
+\text{subject to}   &amp; log(11 + 3 x_1 + 7 x_2 + 9 x_3) \geq t \\
+                    &amp; x \leq 1.
+\end{array}
+\]</span></p>
+<p>Therefore we end up with the following set of vectors an matrices.</p>
+<p><span class="math display">\[
+\begin{array}{l|rrrr|r}
+    &amp; x_1 &amp; x_2 &amp; x_3 &amp; t &amp; b \\
+\hline
+a_0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+\hline
+A_{1*} &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\ 
+A_{2*} &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+A_{3*} &amp; 3 &amp; 7 &amp; 9 &amp; 0 &amp; 11
+\end{array}
+\]</span></p>
+<div id="roi-formulation-of-problem-4" class="section level4">
+<h4><strong>ROI</strong> formulation of Problem 4</h4>
+<pre class="r"><code>A &lt;- rbind(c(0, 0, 0, 1), 
+           c(0, 0, 0, 0), 
+           c(3, 7, 9, 0))
+b &lt;- c(0, 1, 11)
+p4 &lt;- OP(L_objective(c(0, 0, 0, 1), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot;x_3&quot;, &quot;t&quot;)), 
+         C_constraint(-A, K_expp(1), b),
+         bounds = V_bound(ld = -Inf, ub = c(1, 1, 1, Inf)),
+         maximum = TRUE)
+(s4 &lt;- ROI_solve(p4))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 3.401197e+00</code></pre>
+<pre class="r"><code>solution(s4)</code></pre>
+<pre><code>##       x_1       x_2       x_3         t 
+## 0.9999998 0.9999999 0.9999999 3.4011974</code></pre>
+<pre class="r"><code>abs(solution(s4, &quot;objval&quot;) - log(11 + 3 + 7 + 9))</code></pre>
+<pre><code>## [1] 2.580172e-08</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="dual-exponential-cone" class="section level1">
+<h1>Dual exponential cone</h1>
+<p>The dual exponential cone is currently only available through the <code>&quot;scs&quot;</code> solver.</p>
+<p><span class="math display">\[
+\mathcal{K}_{\mathrm{expd}} = \{(u, v, w) \in \mathbb{R}^3 \ | \ u &lt; 0, 
+    ~ -u e^\frac{v}{u} \leq e w \} \ \cup
+    \{(0, v, w) \in \mathbb{R}^3 \ | \ v, \ w \geq 0\}
+\]</span></p>
+<div id="problem-1-1" class="section level3">
+<h3>Problem 1</h3>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{x}{\text{maximize}} &amp; x \\
+\text{subject to}   &amp; e^{x} \leq e \\
+                    &amp; x \geq 0.
+\end{array}
+\]</span></p>
+<p>By looking at the problem we see that the problem we assume that the result will be <span class="math inline">\(x = 1\)</span>. Therefore we end up with the following set of vectors an matrices.</p>
+<p><span class="math display">\[
+\begin{array}{l|rr|r}
+    &amp; x &amp; b \\
+\hline
+a_0 &amp; 1 \\
+\hline
+A_{1*} &amp;  0 &amp; -1 \\
+A_{2*} &amp; -1 &amp;  0 \\
+A_{3*} &amp;  0 &amp;  1 
+\end{array}
+\]</span></p>
+<div id="roi-formulation-of-problem-1-1" class="section level4">
+<h4><strong>ROI</strong> formulation of Problem 1</h4>
+<pre class="r"><code>A &lt;- matrix(c(0, -1, 0))
+b &lt;- c(-1, 0, 1)
+p1 &lt;- OP(L_objective(c(1)), 
+         C_constraint(-A, K_expd(1), b),
+         bounds = V_bound(lb = -Inf), maximum = TRUE)
+(s1 &lt;- ROI_solve(p1, &quot;scs&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 9.999994e-01</code></pre>
+<pre class="r"><code>solution(s1)</code></pre>
+<pre><code>## [1] 0.9999994</code></pre>
+</div>
+</div>
+</div>
+<div id="power-cone" class="section level1">
+<h1>Power cone</h1>
+<p>The power cone can be used to model powers and <span class="math inline">\(p\)</span>-norms (<a href="#Chares:PowerCone:2009">Chares 2009</a>). It is currently only available through the <code>&quot;scs&quot;</code> solver.</p>
+<div id="primal-power-cone" class="section level2">
+<h2>Primal power cone</h2>
+<p><span class="math display">\[
+\mathcal{K}_{\mathrm{powp}}^\alpha = \{(x, y, z) \in \mathbb{R}^3 \ |
+    \ x, \ y \geq 0, \ x^\alpha y^{1-\alpha} \geq |z| \} , \text{ where } \alpha \in [0, 1]
+\]</span></p>
+<p>Therefore for <span class="math inline">\(\alpha = \frac{1}{2}\)</span>  <span class="math inline">\(\mathcal{K}_{\mathrm{powp}}^\alpha\)</span> is exactly the rotated second order cone in dimension <span class="math inline">\(3\)</span>.</p>
+<div id="problem-1-2" class="section level3">
+<h3>Problem 1</h3>
+<p><span class="math display">\[
+\begin{array}{rl}
+\text{minimize}    &amp; 2 x + 5 y \\
+\text{subject to}  &amp; \sqrt{x} \cdot \sqrt{y} \geq 7 \\
+                   &amp; x, ~ y \geq 0
+\end{array}
+\]</span></p>
+<p>Therefore we end up with the following set of vectors an matrices</p>
+<p><span class="math display">\[
+\begin{array}{l|rr|r}
+    &amp; x &amp; y &amp; b \\
+\hline
+a_0 &amp; 2 &amp; 5 \\
+\hline
+A_{1*} &amp; 1 &amp; 0 &amp; 0 \\
+A_{2*} &amp; 0 &amp; 1 &amp; 0 \\
+A_{3*} &amp; 0 &amp; 0 &amp; 7 
+\end{array}
+\]</span></p>
+<pre class="r"><code>A &lt;- rbind(diag(2), c(0, 0))
+op &lt;- OP(c(2, 5),
+    C_constraint(-A, K_powp(0.5), c(0, 0, 7)))
+(sol &lt;- ROI_solve(op))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 4.427191e+01</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>## [1] 11.067973  4.427194</code></pre>
+</div>
+</div>
+<div id="dual-power-cone" class="section level2">
+<h2>Dual power cone</h2>
+<p><span class="math display">\[
+\mathcal{K}_{\mathrm{powd}}^\alpha = \left\{ (u, v, w) \in \mathbb{R}^3 \ |
+    \ u, \ v \geq 0, \
+    \left( \frac{u}{\alpha} \right)^\alpha
+    \left( \frac{v}{1-a}\right)^{1-\alpha} \geq |w|
+    \right\} , \text{ where } \alpha \in [0, 1]
+\]</span></p>
+<div id="problem-1-3" class="section level3">
+<h3>Problem 1</h3>
+<p><span class="math display">\[
+\begin{array}{rl}
+\text{minimize}    &amp; 2 x + 5 y \\
+\text{subject to}  &amp; \sqrt{x} \cdot \sqrt{y} \geq 7 \\
+                   &amp; x, ~ y \geq 0
+\end{array}
+\]</span></p>
+<p>Therefore we end up with the following set of vectors an matrices</p>
+<p><span class="math display">\[
+\begin{array}{l|rr|r}
+    &amp; x &amp; y &amp; b \\
+\hline
+a_0 &amp; 2 &amp; 5 \\
+\hline
+A_{1*} &amp; 0.5 &amp; 0   &amp; 0 \\
+A_{2*} &amp; 0   &amp; 0.5 &amp; 0 \\
+A_{3*} &amp; 0   &amp; 0   &amp; 7 
+\end{array}
+\]</span></p>
+<pre class="r"><code>A &lt;- rbind(diag(0.5, 2), c(0, 0))
+op &lt;- OP(c(2, 5),
+    C_constraint(-A, K_powd(0.5), c(0, 0, 7)))
+(sol &lt;- ROI_solve(op))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 4.427190e+01</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>## [1] 11.067973  4.427191</code></pre>
+</div>
+</div>
+</div>
+<div id="positive-semidefinite-cone" class="section level1">
+<h1>Positive semidefinite cone</h1>
+<p><span class="math display">\[
+\mathcal{K}_{\mathrm{psd}}^n = \{ X \ | \ X \in \mathcal{S}^n, \ z^\top X z \geq 0 \text{ for all } z \in \mathbb{R}^n\}
+\]</span></p>
+<div id="problem-1-4" class="section level3">
+<h3>Problem 1</h3>
+<p><span class="math display">\[
+\begin{array}{rl}
+\text{minimize}   &amp; x_1 + x_2 - x_3 \\
+\text{subject to} &amp;
+x_1
+\begin{pmatrix}
+10 &amp; 3 \\
+3  &amp; 10
+\end{pmatrix}
++
+x_2
+\begin{pmatrix}
+6  &amp; -4 \\
+-4 &amp; 10
+\end{pmatrix}
++
+x_3
+\begin{pmatrix}
+8  &amp;  1 \\
+1  &amp;  6
+\end{pmatrix}
+\preceq
+\begin{pmatrix}
+ 16  &amp; -13 \\
+-13  &amp;  60
+\end{pmatrix}
+\\
+&amp; x_1, ~ x_2, ~ x_3 \geq 0
+\nonumber
+\end{array}
+\]</span></p>
+<pre class="r"><code>F1 &lt;- rbind(c(10, 3), c(3, 10))
+F2 &lt;- rbind(c(6, -4), c(-4, 10))
+F3 &lt;- rbind(c(8, 1), c(1, 6))
+F0 &lt;- rbind(c(16, -13), c(-13, 60))
+psd &lt;- OP(objective = L_objective(c(1, 1, -1)),
+  constraints = C_constraint( L = vech(F1, F2, F3), cone = K_psd(3),
+    rhs = vech(F0)))
+psd</code></pre>
+<pre><code>## ROI Optimization Problem:
+## 
+## Minimize a linear objective function of length 3 with
+## - 3 continuous objective variables,
+## 
+## subject to
+## - 3 constraints of type conic.
+##   |- 3 conic constraints of type &#39;psd&#39;
+## - 0 lower and 0 upper non-standard variable bounds.</code></pre>
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li><p>Boyd S, Vandenberghe L (2004). Convex Optimization. Cambridge University Press, New York, NY, USA. ISBN 0521833787. URL: <a href="http://web.stanford.edu/~boyd/cvxbook/"><code>http://web.stanford.edu/~boyd/cvxbook/</code></a> <a name = "BoydVandenbergheBook2004"></a></p></li>
+<li><p>Chares PR (2009). Cones and Interior-Point Algorithms for Structured Convex Optimization Involving Powers and Exponentials. Ph.D. thesis, Université Catholique de Louvain. URL: <a href="http://dial.uclouvain.be/pr/boreal/en/object/boreal%3A28538/datastream/PDF_01/view"><code>http://dial.uclouvain.be/pr/boreal/en/object/boreal%3A28538/datastream/PDF_01/view</code></a> <a name = "Chares:PowerCone:2009"></a></p></li>
+<li><p>Domahidi A, Chu E, Boyd S (2013). ECOS: An SOCP Solver for Embedded Systems. In European Control Conference (ECC), pp. 3071–3076. URL: <a href="https://web.stanford.edu/~boyd/papers/pdf/ecos_ecc.pdf"><code>https://web.stanford.edu/~boyd/papers/pdf/ecos_ecc.pdf</code></a> <a name = "ecos:Domahidi:2013"></a></p></li>
+<li><p>O’Donoghue B, Chu E, Parikh N, Boyd S (2016). Conic Optimization via Operator Splitting and Homogeneous Self-Dual Embedding. Journal of Optimization Theory and Applications, pp. 1–27. ISSN 1573-2878. <a href="doi:10.1007/s10957-016-0892-3" class="uri">doi:10.1007/s10957-016-0892-3</a>. URL: <a href="http://dx.doi.org/10.1007/s10957-016-0892-3"><code>http://dx.doi.org/10.1007/s10957-016-0892-3</code></a> <a name = "scs:ODonoghue:2016"></a></p></li>
+<li><p>Serrano SA (2015). Algorithms for Unsymmetric Cone Optimization and an Implementation for Problems with the Exponential Cone. Ph.D. thesis, Stanford University. URL: <a href="https://web.stanford.edu/group/SOL/dissertations/ThesisAkleAdobe-augmented.pdf"><code>https://web.stanford.edu/group/SOL/dissertations/ThesisAkleAdobe-augmented.pdf</code></a> <a name = "Serrano:ExponentialCone:2015"></a></p></li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
