@@ -364,9 +364,10 @@ op &lt;- OP(c(10, 6, 4), L_constraint(L, eq(2), rhs), maximum = TRUE)
 \text{subject to}
 &amp; 3 x_1 &amp; + &amp; 4 x_2 &amp;  =   9 \\
 &amp; 2 x_1 &amp; + &amp; 1 x_2 &amp; \geq 3 \\
-&amp; 0 x_1 &amp; + &amp; 1 x_2 &amp; \leq 1
+&amp; 0 x_1 &amp; + &amp; 1 x_2 &amp; \leq 1 \\
 \end{array}
-\]</span> <span class="math display">\[ x \geq 0 \]</span></p>
+\]</span></p>
+<p><span class="math display">\[ x \geq 0 \]</span></p>
 <p>can again be modeled as an <code>OP</code> with linear objective and linear constraints</p>
 <pre class="r"><code>L &lt;- rbind(c(3, 4), c(2, 1), c(0, 1))
 rhs &lt;- c(9, 3, 1)
@@ -501,8 +502,8 @@ w = &amp; b_3 - A_{3*} ~ x,
 <p>In the following we give simple examples on how the corresponding matrices would look like and how to solve the problems with <strong>ROI</strong>.</p>
 <div id="ex" class="section level2">
 <h2><span class="math inline">\(e^x\)</span></h2>
-<div id="problem-1" class="section level3">
-<h3>Problem 1</h3>
+<div id="example-1-1" class="section level3">
+<h3>Example 1</h3>
 <p>To start simple we assume that <span class="math inline">\(x\)</span> is a vector of length one (i.e., <span class="math inline">\(x \in \mathbb{R}\)</span>).</p>
 <p><span class="math display">\[
 \begin{array}{rl}
@@ -529,8 +530,6 @@ A_{3*} &amp; 0 &amp; 1 &amp; 0
 \end{array}
 \]</span></p>
 <p>It seems important to note the constraint <span class="math inline">\(x \geq 0\)</span> is not included in the matrices above since in the <strong>ROI</strong> formulation we will set this constraint as bound.</p>
-<div id="roi-formulation-of-problem-1" class="section level4">
-<h4><strong>ROI</strong> formulation of Problem 1</h4>
 <pre class="r"><code>A &lt;- rbind(c(7, 0), 
            c(0, 0), 
            c(0, 1))
@@ -547,9 +546,8 @@ p1 &lt;- OP(L_objective(c(0, 1), c(&quot;x&quot;, &quot;t&quot;)),
 <pre class="r"><code>abs(solution(s1, &quot;objval&quot;) - exp(9))</code></pre>
 <pre><code>## [1] 0.0001142238</code></pre>
 </div>
-</div>
-<div id="problem-2" class="section level3">
-<h3>Problem 2</h3>
+<div id="example-2-1" class="section level3">
+<h3>Example 2</h3>
 <p>Now me make a simple change and consider the case where <span class="math inline">\(x \in \mathbb{R}^3\)</span> instead of <span class="math inline">\(x \in \mathbb{R}\)</span> <span class="math display">\[
 \begin{array}{rl}
 \underset{x}{\text{minimize}} &amp; e^{11 + 3 x_1 + 7 x_2 + 9 x_3} \\
@@ -576,8 +574,6 @@ A_{2*} &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
 A_{3*} &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 
 \end{array}
 \]</span></p>
-<div id="roi-formulation-of-problem-2" class="section level4">
-<h4><strong>ROI</strong> formulation of Problem 2</h4>
 <pre class="r"><code>A &lt;- rbind(c(3, 7, 9, 0), 
            c(0, 0, 0, 0), 
            c(0, 0, 0, 1))
@@ -593,12 +589,11 @@ p2 &lt;- OP(L_objective(c(0, 0, 0, 1), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot
 ## 9.548161e-11 3.302121e-11 4.383034e-11 5.987414e+04</code></pre>
 </div>
 </div>
-</div>
 <div id="logx" class="section level2">
 <h2><span class="math inline">\(\log(x)\)</span></h2>
 <p>Since taking exponential of <span class="math display">\[log(w) \geq u\]</span> gives <span class="math display">\[w \geq e^u.\]</span> Also logarithms can be expressed by the exponential cone.</p>
-<div id="problem-3" class="section level3">
-<h3>Problem 3</h3>
+<div id="example-3" class="section level3">
+<h3>Example 3</h3>
 <p>To start again simple we assume that <span class="math inline">\(x\)</span> is a vector of length one (i.e., <span class="math inline">\(x \in \mathbb{R}\)</span>). <span class="math display">\[
 \begin{array}{rl}
 \underset{x}{\text{maximize}} &amp; log(9 + 7 x) \\
@@ -623,8 +618,6 @@ A_{2*} &amp; 0 &amp; 0 &amp; 1 \\
 A_{3*} &amp; 7 &amp; 0 &amp; 9
 \end{array}
 \]</span></p>
-<div id="roi-formulation-of-problem-3" class="section level4">
-<h4><strong>ROI</strong> formulation of Problem 3</h4>
 <pre class="r"><code>A &lt;- rbind(c(0, 1), 
            c(0, 0), 
            c(7, 0))
@@ -642,9 +635,8 @@ p3 &lt;- OP(L_objective(c(0, 1), c(&quot;x&quot;, &quot;t&quot;)),
 <pre class="r"><code>abs(solution(s3, &quot;objval&quot;) - log(9 + 7))</code></pre>
 <pre><code>## [1] 1.667324e-08</code></pre>
 </div>
-</div>
-<div id="problem-4" class="section level3">
-<h3>Problem 4</h3>
+<div id="example-4" class="section level3">
+<h3>Example 4</h3>
 <p>Now me make a simple change and consider the case where <span class="math inline">\(x \in \mathbb{R}^3\)</span> instead of <span class="math inline">\(x \in \mathbb{R}\)</span></p>
 <p><span class="math display">\[
 \begin{array}{rl}
@@ -672,8 +664,6 @@ A_{2*} &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
 A_{3*} &amp; 3 &amp; 7 &amp; 9 &amp; 0 &amp; 11
 \end{array}
 \]</span></p>
-<div id="roi-formulation-of-problem-4" class="section level4">
-<h4><strong>ROI</strong> formulation of Problem 4</h4>
 <pre class="r"><code>A &lt;- rbind(c(0, 0, 0, 1), 
            c(0, 0, 0, 0), 
            c(3, 7, 9, 0))
@@ -692,6 +682,174 @@ p4 &lt;- OP(L_objective(c(0, 0, 0, 1), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot
 <pre><code>## [1] 2.580172e-08</code></pre>
 </div>
 </div>
+<div id="log1-ex" class="section level2">
+<h2><span class="math inline">\(\log(1 + e^x)\)</span></h2>
+<p>The function <span class="math inline">\(\log(1 + e^u) \leq w\)</span> can be expressed by the primal exponential cone since <span class="math inline">\(\log(1 + e^u) \leq w\)</span> is equivalent to <span class="math inline">\(1 + e^u \leq e^w\)</span> is equivalent to <span class="math inline">\(e^{-w} + e^{u-w} \leq 1\)</span>.</p>
+<div id="example-5" class="section level3">
+<h3>Example 5</h3>
+<p>The problem <span class="math display">\[
+\begin{array}{rl}
+\underset{x}{\text{minimize}} &amp; \log(1 + e^x) \\
+\text{subject to}             &amp; x \geq 0
+\end{array}
+\]</span></p>
+<p>with the following epigraph form</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{(x, y, z, t)}{\text{minimize}} &amp; t \\
+\text{subject to}   &amp; e^{-t} \leq y \\
+                    &amp; e^{x-t} \leq z \\
+                    &amp; y + z \leq 1 \\
+                    &amp; x \geq 0
+\end{array}
+\]</span></p>
+<p>can be expressed by the following vectors and matrices (we only show the two conic constraints (i.e., <span class="math inline">\(e^{-t} \leq y\)</span>, <span class="math inline">\(e^{x-t} \leq z\)</span>) which are both primal exponential cone constraints).</p>
+<p><span class="math display">\[
+\begin{array}{l|rrrr|r}
+    &amp; x &amp; y &amp; z &amp; t &amp; b  \\
+\hline
+a_0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+\hline
+A_{1*} &amp; 0 &amp; 0 &amp; 0 &amp; -1 &amp; 0 \\ 
+A_{2*} &amp; 0 &amp; 0 &amp; 0 &amp;  0 &amp; 1 \\
+A_{3*} &amp; 0 &amp; 1 &amp; 0 &amp;  0 &amp; 0 \\
+\hline
+A_{4*} &amp; 1 &amp;  0 &amp; 0 &amp; -1 &amp; 0 \\ 
+A_{5*} &amp; 0 &amp;  0 &amp; 0 &amp;  0 &amp; 1 \\
+A_{6*} &amp; 0 &amp;  0 &amp; 1 &amp;  0 &amp; 0
+\end{array}
+\]</span></p>
+<pre class="r"><code>A &lt;- rbind(c(0, 0, 0, -1), 
+           c(0, 0, 0,  0), 
+           c(0, 1, 0,  0),
+           c(1, 0, 0, -1),
+           c(0, 0, 0,  0),
+           c(0, 0, 1,  0))
+b &lt;- rep(c(0, 1, 0), 2)
+p &lt;- OP(L_objective(c(0, 0, 0, 1), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, &quot;t&quot;)))
+constraints(p) &lt;- rbind(L_constraint(c(0, 1, 1, 0), &quot;&lt;=&quot;, 1),
+    C_constraint(-A, K_expp(2), b))
+bounds(p) &lt;- V_bound(lb = c(0, -Inf, -Inf, -Inf))
+(s &lt;- ROI_solve(p))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 6.931472e-01</code></pre>
+<pre class="r"><code>solution(s)</code></pre>
+<pre><code>##            x            y            z            t 
+## 8.268330e-11 5.000000e-01 5.000000e-01 6.931472e-01</code></pre>
+<pre class="r"><code>solution(s, &quot;objval&quot;)</code></pre>
+<pre><code>## [1] 0.6931472</code></pre>
+</div>
+<div id="example-6" class="section level3">
+<h3>Example 6</h3>
+<p>The problem <span class="math display">\[
+\begin{array}{rl}
+\underset{x}{\text{minimize}} &amp; \log(1 + e^{11 + 3 x_1 + 7 x_2 + 9 x_3}) \\
+\text{subject to}             &amp; x \geq 0
+\end{array}
+\]</span></p>
+<p>with the following epigraph form</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{(x, y, z, t)}{\text{maximize}} &amp; t \\
+\text{subject to}   &amp; e^{-t} \leq y \\
+                    &amp; e^{11 + 3 x_1 + 7 x_2 + 9 x_3 - t} \leq z \\
+                    &amp; y + z \leq 1 \\
+                    &amp; x \geq 0
+\end{array}
+\]</span></p>
+<p>can be expressed by the following vectors and matrices (we only show the two conic constraints (i.e., <span class="math inline">\(e^{-t} \leq y\)</span>, <span class="math inline">\(e^{11 + 3 x_1 + 7 x_2 + 9 x_3 - t} \leq z\)</span>) which are both primal exponential cone constraints).</p>
+<p><span class="math display">\[
+\begin{array}{l|rrrrrr|r}
+    &amp; x_1 &amp; x_2 &amp; x_3 &amp; y &amp; z &amp; t &amp; b  \\
+\hline
+a_0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+\hline
+A_{1*} &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; -1 &amp; 0 \\ 
+A_{2*} &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp;  0 &amp; 1 \\
+A_{3*} &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp;  0 &amp; 0 \\
+\hline
+A_{4*} &amp; 3 &amp; 7 &amp; 9 &amp;  0 &amp; 0 &amp; -1 &amp; 11 \\ 
+A_{5*} &amp; 0 &amp; 0 &amp; 0 &amp;  0 &amp; 0 &amp;  0 &amp; 1 \\
+A_{6*} &amp; 0 &amp; 0 &amp; 0 &amp;  0 &amp; 1 &amp;  0 &amp; 0
+\end{array}
+\]</span></p>
+<pre class="r"><code>A &lt;- rbind(c(0, 0, 0, 0, 0, -1), 
+           c(0, 0, 0, 0, 0,  0), 
+           c(0, 0, 0, 1, 0,  0),
+           c(3, 7, 9, 0, 0, -1),
+           c(0, 0, 0, 0, 0,  0),
+           c(0, 0, 0, 0, 1,  0))
+b &lt;- c(0, 1, 0, 11, 1, 0)
+p &lt;- OP(L_objective(c(0, 0, 0, 0, 0, 1), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot;x_3&quot;, &quot;y&quot;, &quot;z&quot;, &quot;t&quot;)))
+constraints(p) &lt;- rbind(L_constraint(c(0, 0, 0, 1, 1, 0), &quot;&lt;=&quot;, 1),
+    C_constraint(-A, K_expp(2), b))
+bounds(p) &lt;- V_bound(lb = c(0, 0, 0, -Inf, -Inf, -Inf))
+(s &lt;- ROI_solve(p))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.100002e+01</code></pre>
+<pre class="r"><code>solution(s)</code></pre>
+<pre><code>##           x_1           x_2           x_3             y             z 
+##  1.918319e-09 -9.611111e-10 -8.853253e-10  1.668028e-05  9.999833e-01 
+##             t 
+##  1.100002e+01</code></pre>
+<pre class="r"><code>solution(s, &quot;objval&quot;)</code></pre>
+<pre><code>## [1] 11.00002</code></pre>
+</div>
+</div>
+<div id="log1---ex" class="section level2">
+<h2><span class="math inline">\(\log(1 - e^x)\)</span></h2>
+<div id="example-7" class="section level3">
+<h3>Example 7</h3>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{x}{\text{maximize}} &amp; \log(1 - e^{3 x}) \\
+\text{subject to}             &amp; -1 \leq x \leq 0
+\end{array}
+\]</span></p>
+<p>with the following epigraph form can be expressed</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\underset{(x, t)}{\text{maximize}} &amp; t \\
+\text{subject to}   &amp; e^{3 x} \leq z \\
+                    &amp; \log(1 - z) \geq t \\
+                    &amp; -1 \leq x \leq 0
+\end{array}
+\]</span></p>
+<p>by the following vectors and matrices (we only show the two conic constraints (i.e., <span class="math inline">\(e^{3 x} \leq z\)</span>, <span class="math inline">\(\log(1 - z) \geq t\)</span>) which are both primal exponential cone constraints).</p>
+<p><span class="math display">\[
+\begin{array}{l|rrr|r}
+    &amp; x &amp; z &amp; t &amp; b  \\
+\hline
+a_0 &amp; 0 &amp; 0 &amp; -1 \\
+\hline
+A_{1*} &amp; 3 &amp; 0 &amp;  0 &amp; 0 \\ 
+A_{2*} &amp; 0 &amp; 0 &amp;  0 &amp; 1 \\
+A_{3*} &amp; 0 &amp; 1 &amp;  0 &amp; 0 \\
+\hline
+A_{4*} &amp; 0 &amp;  0 &amp;  1 &amp; 0 \\ 
+A_{5*} &amp; 0 &amp;  0 &amp;  0 &amp; 1 \\
+A_{6*} &amp; 0 &amp; -1 &amp;  0 &amp; 1
+\end{array}
+\]</span></p>
+<pre class="r"><code>A &lt;- rbind(c(3, 0, 0), 
+           c(0, 0, 0), 
+           c(0, 1, 0),
+           c(0,  0,  1),
+           c(0,  0,  0),
+           c(0, -1,  0))
+b &lt;- c(0, 1, 0, 0, 1, 1)
+p &lt;- OP(L_objective(c(0, 0, -1), c(&quot;x&quot;, &quot;z&quot;, &quot;t&quot;)))
+constraints(p) &lt;- C_constraint(-A, K_expp(2), b)
+bounds(p) &lt;- V_bound(lb = c(-1, -Inf, -Inf), ui = 1, ub = 0)
+(s &lt;- ROI_solve(p))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 5.106918e-02</code></pre>
+<pre class="r"><code>solution(s)</code></pre>
+<pre><code>##           x           z           t 
+## -0.99999998  0.04978707 -0.05106918</code></pre>
+<pre class="r"><code>solution(s, &quot;objval&quot;)</code></pre>
+<pre><code>## [1] 0.05106918</code></pre>
+</div>
 </div>
 </div>
 <div id="dual-exponential-cone" class="section level1">
@@ -702,7 +860,7 @@ p4 &lt;- OP(L_objective(c(0, 0, 0, 1), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot
     ~ -u e^\frac{v}{u} \leq e w \} \ \cup
     \{(0, v, w) \in \mathbb{R}^3 \ | \ v, \ w \geq 0\}
 \]</span></p>
-<div id="problem-1-1" class="section level3">
+<div id="problem-1" class="section level3">
 <h3>Problem 1</h3>
 <p><span class="math display">\[
 \begin{array}{rl}
@@ -723,7 +881,7 @@ A_{2*} &amp; -1 &amp;  0 \\
 A_{3*} &amp;  0 &amp;  1 
 \end{array}
 \]</span></p>
-<div id="roi-formulation-of-problem-1-1" class="section level4">
+<div id="roi-formulation-of-problem-1" class="section level4">
 <h4><strong>ROI</strong> formulation of Problem 1</h4>
 <pre class="r"><code>A &lt;- matrix(c(0, -1, 0))
 b &lt;- c(-1, 0, 1)
@@ -748,7 +906,7 @@ p1 &lt;- OP(L_objective(c(1)),
     \ x, \ y \geq 0, \ x^\alpha y^{1-\alpha} \geq |z| \} , \text{ where } \alpha \in [0, 1]
 \]</span></p>
 <p>Therefore for <span class="math inline">\(\alpha = \frac{1}{2}\)</span>  <span class="math inline">\(\mathcal{K}_{\mathrm{powp}}^\alpha\)</span> is exactly the rotated second order cone in dimension <span class="math inline">\(3\)</span>.</p>
-<div id="problem-1-2" class="section level3">
+<div id="problem-1-1" class="section level3">
 <h3>Problem 1</h3>
 <p><span class="math display">\[
 \begin{array}{rl}
@@ -788,7 +946,7 @@ op &lt;- OP(c(2, 5),
     \left( \frac{v}{1-a}\right)^{1-\alpha} \geq |w|
     \right\} , \text{ where } \alpha \in [0, 1]
 \]</span></p>
-<div id="problem-1-3" class="section level3">
+<div id="problem-1-2" class="section level3">
 <h3>Problem 1</h3>
 <p><span class="math display">\[
 \begin{array}{rl}
@@ -825,7 +983,7 @@ op &lt;- OP(c(2, 5),
 <p><span class="math display">\[
 \mathcal{K}_{\mathrm{psd}}^n = \{ X \ | \ X \in \mathcal{S}^n, \ z^\top X z \geq 0 \text{ for all } z \in \mathbb{R}^n\}
 \]</span></p>
-<div id="problem-1-4" class="section level3">
+<div id="problem-1-3" class="section level3">
 <h3>Problem 1</h3>
 <p><span class="math display">\[
 \begin{array}{rl}
