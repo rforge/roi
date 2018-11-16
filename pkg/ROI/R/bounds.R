@@ -174,29 +174,41 @@ V_bound <- function( li, ui, lb, ub, nobj, ld = 0, ud = Inf, names = NULL) {
     ui <- as.integer(ui)
     lb <- as.double(lb)
     ub <- as.double(ub)
-    if ( length(lb) ) {
-        zero <- lb == 0
-        lb <- lb[!zero]
-        li <- li[!zero]
-    }
-    if ( length(ub) ) {
-        inf <- ub == Inf
-        ub <- ub[!inf]
-        ui <- ui[!inf]
-    }
+    
     if ( ld != 0 ) {
         i <- li
         tmp <- lb
         li <- seq_len(nobj)
         lb <- rep.int(ld, nobj)
         lb[i] <- tmp
+        if ( any(b <- lb == 0) ) {
+            li <- li[!b]
+            lb <- lb[!b]
+        }
+    } else {
+        if ( length(lb) ) {
+            zero <- lb == 0
+            lb <- lb[!zero]
+            li <- li[!zero]
+        }
     }
+
     if ( ud != Inf ) {
         i <- ui
         tmp <- ub
         ui <- seq_len(nobj)
         ub <- rep.int(ud, nobj)
         ub[i] <- tmp
+        if ( any(b <- ub == Inf) ) {
+            ui <- ui[!b]
+            ub <- ub[!b]
+        }
+    } else {
+        if ( length(ub) ) {
+            inf <- ub == Inf
+            ub <- ub[!inf]
+            ui <- ui[!inf]
+        }
     }
 
     ## Sanity checking
