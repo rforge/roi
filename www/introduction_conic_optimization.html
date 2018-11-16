@@ -591,18 +591,18 @@ p2 &lt;- OP(L_objective(c(0, 0, 0, 1), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot
 </div>
 <div id="logx" class="section level2">
 <h2><span class="math inline">\(\log(x)\)</span></h2>
-<p>Since taking exponential of <span class="math display">\[log(w) \geq u\]</span> gives <span class="math display">\[w \geq e^u.\]</span> Also logarithms can be expressed by the exponential cone.</p>
+<p>Since taking exponential of <span class="math display">\[\log(w) \geq u\]</span> gives <span class="math display">\[w \geq e^u.\]</span> Also logarithms can be expressed by the exponential cone.</p>
 <div id="example-3" class="section level3">
 <h3>Example 3</h3>
 <p>To start again simple we assume that <span class="math inline">\(x\)</span> is a vector of length one (i.e., <span class="math inline">\(x \in \mathbb{R}\)</span>). <span class="math display">\[
 \begin{array}{rl}
-\underset{x}{\text{maximize}} &amp; log(9 + 7 x) \\
+\underset{x}{\text{maximize}} &amp; \log(9 + 7 x) \\
 \text{subject to}             &amp; x \leq 1
 \end{array}
-\]</span> By looking at the problem we immediately see that the maximum will be attended at <span class="math inline">\(x = 1\)</span> with an objective value of <span class="math inline">\(log(9 + 7)\)</span>. To solve this problem with <strong>ROI</strong> we first transform it into the epigraph form <span class="math display">\[
+\]</span> By looking at the problem we immediately see that the maximum will be attended at <span class="math inline">\(x = 1\)</span> with an objective value of <span class="math inline">\(\log(9 + 7)\)</span>. To solve this problem with <strong>ROI</strong> we first transform it into the epigraph form <span class="math display">\[
 \begin{array}{rl}
 \underset{(x, t)}{\text{maximize}} &amp; t \\
-\text{subject to}   &amp; log(9 + 7 x) \geq t \\
+\text{subject to}   &amp; \log(9 + 7 x) \geq t \\
                     &amp; x \leq 1.
 \end{array}
 \]</span></p>
@@ -640,7 +640,7 @@ p3 &lt;- OP(L_objective(c(0, 1), c(&quot;x&quot;, &quot;t&quot;)),
 <p>Now me make a simple change and consider the case where <span class="math inline">\(x \in \mathbb{R}^3\)</span> instead of <span class="math inline">\(x \in \mathbb{R}\)</span></p>
 <p><span class="math display">\[
 \begin{array}{rl}
-\underset{x}{\text{maximize}} &amp; log(11 + 3 x_1 + 7 x_2 + 9 x_3) \\
+\underset{x}{\text{maximize}} &amp; \log(11 + 3 x_1 + 7 x_2 + 9 x_3) \\
 \text{subject to}             &amp; x \leq 1
 \end{array}
 \]</span></p>
@@ -648,7 +648,7 @@ p3 &lt;- OP(L_objective(c(0, 1), c(&quot;x&quot;, &quot;t&quot;)),
 <p><span class="math display">\[
 \begin{array}{rl}
 \underset{(x, t)}{\text{maximize}} &amp; t \\
-\text{subject to}   &amp; log(11 + 3 x_1 + 7 x_2 + 9 x_3) \geq t \\
+\text{subject to}   &amp; \log(11 + 3 x_1 + 7 x_2 + 9 x_3) \geq t \\
                     &amp; x \leq 1.
 \end{array}
 \]</span></p>
