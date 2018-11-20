@@ -392,12 +392,15 @@ constraints(op) &lt;- C_constraint(L = L, cones = c(K_zero(1), K_lin(2)), rhs = 
 </div>
 <div id="second-order-cone" class="section level1">
 <h1>Second-order cone</h1>
-<p>Second-order cone programming (SOCP) is mainly used to model the euclidean norm and absolute values. It is commonly defined as <span class="math display">\[\mathcal{K}_{\mathrm{soc}} = \{(v, u) \in \mathbb{R}^{n+1} \ | \ u \in \mathbb{R}^n, \ v \in \mathbb{R}, \ ||u||_2 \leq v \}.\]</span></p>
+<p>Second-order cone programming (SOCP) is mainly used to model the euclidean norm and absolute values. It is commonly defined as <span class="math display">\[
+\mathcal{K}_{\mathrm{soc}} = \{(v, u) \in \mathbb{R}^{n+1} \ | 
+    \ u \in \mathbb{R}^n, \ v \in \mathbb{R}, \ ||u||_2 \leq v \}.
+\]</span></p>
 <p>From <a href="#eq:1">Equation 1</a> we see that if <span class="math inline">\(s \in \mathcal{K}_{\mathrm{soc}}\)</span> it follows that also <span class="math inline">\(s = (b - A x) \in \mathcal{K}_{\mathrm{soc}}\)</span>. The variables <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> are defined via the constraint matrix <span class="math inline">\(\mathbf{L}\)</span> and right hand side <span class="math inline">\(\mathbf{rhs}\)</span>. The constraint <span class="math inline">\(||u||_2 \leq v\)</span> or in matrix terms <span class="math inline">\(||A x + b||_2 \leq c^\top x + d ~\)</span> yields the following matrices <span class="math display">\[
-    \underbrace{-\begin{bmatrix} c^\top \\ A \end{bmatrix}}_\mathbf{L} + 
     \underbrace{\begin{bmatrix} s_1 \\ s_2 \end{bmatrix}}_\mathbf{s} =
-    \underbrace{\begin{bmatrix} d \\ b \end{bmatrix}}_\mathbf{rhs}, 
-    \text{ where } \ b \in \mathbb{R}^n, \ d \in \mathbb{R}, \ \mathbf{s} \in K_{soc}.
+    \underbrace{\begin{bmatrix} d \\ b \end{bmatrix}}_\mathbf{rhs}
+    \underbrace{-\begin{bmatrix} c^\top \\ A \end{bmatrix}}_\mathbf{L}  
+    \text{ ,where } \ b \in \mathbb{R}^n, \ d \in \mathbb{R}, \ \mathbf{s} \in K_{soc}.
 \]</span></p>
 <!--
 Let be $u = F x + d$ and 
@@ -680,11 +683,8 @@ p4 &lt;- OP(L_objective(c(0, 0, 0, 1), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot
 ## 0.9999998 0.9999999 0.9999999 3.4011974</code></pre>
 <pre class="r"><code>abs(solution(s4, &quot;objval&quot;) - log(11 + 3 + 7 + 9))</code></pre>
 <pre><code>## [1] 2.580172e-08</code></pre>
+<p><a name = "Subsection:log(1+exp(x))"></a> ## <span class="math inline">\(\log(1 + e^x)\)</span> The function <span class="math inline">\(\log(1 + e^u) \leq w\)</span> can be expressed by the primal exponential cone since <span class="math inline">\(\log(1 + e^u) \leq w\)</span> is equivalent to <span class="math inline">\(1 + e^u \leq e^w\)</span> is equivalent to <span class="math inline">\(e^{-w} + e^{u-w} \leq 1\)</span>.</p>
 </div>
-</div>
-<div id="log1-ex" class="section level2">
-<h2><span class="math inline">\(\log(1 + e^x)\)</span></h2>
-<p>The function <span class="math inline">\(\log(1 + e^u) \leq w\)</span> can be expressed by the primal exponential cone since <span class="math inline">\(\log(1 + e^u) \leq w\)</span> is equivalent to <span class="math inline">\(1 + e^u \leq e^w\)</span> is equivalent to <span class="math inline">\(e^{-w} + e^{u-w} \leq 1\)</span>.</p>
 <div id="example-5" class="section level3">
 <h3>Example 5</h3>
 <p>The problem <span class="math display">\[
