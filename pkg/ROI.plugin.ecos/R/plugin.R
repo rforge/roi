@@ -9,7 +9,8 @@
 ##
 ## -----------------------------------------------------------------------------
 as_dgCMatrix <- function( x, ... ) {
-    sparseMatrix(i=x$i, j=x$j, x=x$v, dims=c(x$nrow, x$ncol))
+  if (is.null(x)) return(NULL)
+  Matrix::sparseMatrix(i=x$i, j=x$j, x=x$v, dims=c(x$nrow, x$ncol))
 }
 
 ecos_cones <- c("zero" = 1L, "nonneg" = 2L, "soc" = 3L, "expp" = 5L)
@@ -77,7 +78,7 @@ calc_dims <- function(cones, dims) {
 
 ## BASIC SOLVER METHOD
 ## attach(getNamespace("ROI.plugin.ecos")); control <- list(); library(slam) ## for debugging
-solve_OP <- function(x, control = list()){
+solve_OP <- function(x, control = list()) {
     solver <- "ecos"
 
     constr <- as.C_constraint(constraints(x))
