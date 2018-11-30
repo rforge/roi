@@ -94,16 +94,16 @@ cplex.check: cplex.build
 cplex.install: cplex.build
 	$(RR) CMD INSTALL ROI.plugin.cplex*.tar.gz
 
-## deoptimr
+## deoptim
 ## =======
-deoptimr.build:
-	$(RR) CMD build ROI.plugin.deoptimr
+deoptim.build:
+	$(RR) CMD build ROI.plugin.deoptim
 
-deoptimr.check: deoptimr.build 
-	$(RR) CMD check ROI.plugin.deoptimr*.tar.gz
+deoptim.check: deoptim.build 
+	$(RR) CMD check ROI.plugin.deoptim*.tar.gz
 
-deoptimr.install: deoptimr.build
-	$(RR) CMD INSTALL ROI.plugin.deoptimr*.tar.gz
+deoptim.install: deoptim.build
+	$(RR) CMD INSTALL ROI.plugin.deoptim*.tar.gz
 
 ## ecos
 ## ====
