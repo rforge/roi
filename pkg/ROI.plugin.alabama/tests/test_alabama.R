@@ -56,7 +56,7 @@ test_nlp_02_b <- function() {
                    200 * (x[2] - x[1] * x[1])) )
     }
 
-    x <- OP( objective = F_objective(f, n=2L, G=f.gradient), 
+    x <- OP( objective = F_objective(f, n = 2L, G = f.gradient), 
              constraints = c(F_constraint(F=function(x) x[1] + x[2]^2, ">=", 0,
                                           J=function(x) c(1, 2*x[2])),
                              F_constraint(F=function(x) x[1]^2 + x[2], ">=", 0,

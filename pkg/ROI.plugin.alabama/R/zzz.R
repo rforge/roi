@@ -18,17 +18,17 @@ make_signature <- function()
     ##
     ## outer loop
     ##
-    ROI_plugin_register_solver_control( solver, "control.outer", "X" )         ## initial value for lagrangian parameter
-    ROI_plugin_register_solver_control( solver, "lam0", "X" )         ## initial value for lagrangian parameter
-    ROI_plugin_register_solver_control( solver, "sig0", "X" )         ## 
-    ROI_plugin_register_solver_control( solver, "eps", "tol" )        ##
-    ROI_plugin_register_solver_control( solver, "itmax", "max_iter" ) ##
-    ROI_plugin_register_solver_control( solver, "method", "method" )  ##
-    ROI_plugin_register_solver_control( solver, "NMinit", "X" )       ##
-    ROI_plugin_register_solver_control( solver, "ilack.max", "X" )    ##
-    ROI_plugin_register_solver_control( solver, "i.scale", "X" )      ##
-    ROI_plugin_register_solver_control( solver, "e.scale", "X" )      ##
-    ROI_plugin_register_solver_control( solver, "kkt2.check", "X" )   ##
+    ROI_plugin_register_solver_control( solver, "control.outer", "X" )  ## initial value for lagrangian parameter
+    ROI_plugin_register_solver_control( solver, "lam0", "X" )           ## initial value for lagrangian parameter
+    ROI_plugin_register_solver_control( solver, "sig0", "X" )           ## 
+    ROI_plugin_register_solver_control( solver, "eps", "tol" )          ##
+    ROI_plugin_register_solver_control( solver, "itmax", "max_iter" )   ##
+    ROI_plugin_register_solver_control( solver, "method", "method" )    ##
+    ROI_plugin_register_solver_control( solver, "NMinit", "X" )         ##
+    ROI_plugin_register_solver_control( solver, "ilack.max", "X" )      ##
+    ROI_plugin_register_solver_control( solver, "i.scale", "X" )        ##
+    ROI_plugin_register_solver_control( solver, "e.scale", "X" )        ##
+    ROI_plugin_register_solver_control( solver, "kkt2.check", "X" )     ##
 
     ##
     ## inner loop
