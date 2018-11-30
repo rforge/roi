@@ -127,7 +127,7 @@ solve_OP <- function(x, control = list()) {
     ## str(tmp)
 
     m_call <- list(Rmosek::mosek, problem=m, 
-                   opts=control[intersect(names(control), .control_args)])
+                   opts = control[intersect(names(control), .control_args)])
     mode(m_call) <- "call"
     if ( isTRUE(control$dry_run) )
         return(m_call)
