@@ -49,9 +49,6 @@ get_ub <- function(x) {
     return(ub)
 }
 
-as_dgCMatrix <- function(x, ...) 
-    Matrix::sparseMatrix(i=x$i, j=x$j, x=x$v, dims=c(x$nrow, x$ncol))
-
 ## NOTE: Gurobi requires sense to be element of 
 ##       c("<", "<=", ">", ">=", "=")
 map_dir <- function(x) {
@@ -118,7 +115,7 @@ canonicalize_control <- function(x) {
     FALSE
 }
 
-.solve_QP <- function(x, control) {
+.solve_QP <- function(x, control = list()) {
     solver <- ROI_plugin_get_solver_name( getPackageName() )
 
     model <- list()
@@ -159,13 +156,13 @@ canonicalize_control <- function(x) {
         for (i in seq_along(qc)) {
             ## NOTE: for "==" we have to add 2 constraints therefore no if else
             if ( con.dir[i] %in% c("<=", "==") ) {
-                qc[[counter]] <- list(Qc=as_dgCMatrix(con.Q[[i]])/2, 
-                                      q=as.vector(con.L[i,]), rhs=con.rhs[i])
+                qc[[counter]] <- list(Qc = as.simple_triplet_matrix(con.Q[[i]])/2, 
+                                      q = as.vector(con.L[i,]), rhs=con.rhs[i])
                 counter <- counter + 1L
             }
             if ( con.dir[i] %in% c(">=", "==") ) {
-                qc[[counter]] <- list(Qc=as_dgCMatrix(-con.Q[[i]])/2, 
-                                      q=-as.vector(con.L[i,]), rhs=-con.rhs[i])
+                qc[[counter]] <- list(Qc = as.simple_triplet_matrix(-con.Q[[i]])/2, 
+                                      q = -as.vector(con.L[i,]), rhs=-con.rhs[i])
                 counter <- counter + 1L
             }
         }
