@@ -5,7 +5,15 @@
 ## Changed: 2013-11-25
 ################################################################################
 
-
+new_OP <- function() {
+    x <- vector("list", 7)
+    names(x) <- c("objective", "constraints", "bounds", "types", "maximum",
+                  "n_of_variables", "n_of_constraints")
+    x[["n_of_variables"]] <- NA_integer_
+    x[["n_of_constraints"]] <- NA_integer_
+    class(x) <- "OP"
+    x
+}
 
 ##' Optimization problem constructor
 ##'
@@ -56,24 +64,18 @@
 ##' QP
 ##' @author Stefan Theussl
 ##' @export
-OP <- function( objective, constraints = NULL, types = NULL, bounds = NULL,
-                maximum = FALSE ) {
-    x <- vector("list", 7)
-    names(x) <- c("objective", "constraints", "bounds", "types", "maximum",
-                  "n_of_variables", "n_of_constraints")
-    class(x) <- "OP"
+OP <- function( objective, constraints, types, bounds, maximum = FALSE ) {
+    x <- new_OP()
 
-    x[["n_of_variables"]] <- NA_integer_
-    x[["n_of_constraints"]] <- NA_integer_
-    maximum(x) <- maximum
-    
     if ( !missing(objective) )
         objective(x) <- objective
 
-    constraints(x) <- constraints
-    bounds(x)      <- bounds
-    types(x)       <- types
-    
+    constraints(x) <- if ( missing(constraints) ) NULL else constraints
+    types(x)       <- if ( missing(types) ) NULL else types
+    bounds(x)      <- if ( missing(bounds) ) deferred_bound() else bounds
+
+    maximum(x) <- maximum
+        
     x
 }
 

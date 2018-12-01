@@ -79,11 +79,13 @@
 ##' @author Stefan Theussl
 ##' @export
 ##  -----------------------------------------------------------
-ROI_solve <- function( x, solver, control = list(), ... ){
-
+ROI_solve <- function( x, solver, control = list(), ... ) {
     ## if no second argument is supplied we use the default solver
     if( missing(solver) )
         solver <- ROI_options("default_solver")
+
+    if ( is.null(objective(x)) )
+        stop("objective is missing, with no default")
 
     dots <- list(...)
     control[names(dots)] <- dots

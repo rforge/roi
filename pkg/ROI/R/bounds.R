@@ -298,18 +298,17 @@ as.list.V_bound <- function( x, ... )
 
 ##' @noRd
 ##' @export
-as.data.frame.V_bound <- function(x) {
+as.data.frame.V_bound <- function(x, ...) {
     n_of_variables <- length(x)
-    to_dense <- function(sparse, n) {
-        dense <- double(n)
+    to_dense <- function(sparse, n, default_value = 0) {
+        dense <- rep(default_value, n)
         if ( !is.null(sparse$ind) ) 
             dense[sparse$ind]  <- sparse$val
         dense
     }
     d <- data.frame(lower = to_dense(x$lower, n_of_variables), 
-                    upper = to_dense(x$upper, n_of_variables), stringsAsFactors = FALSE)
-    if (!is.null(x$names))
-        d$names <- x$names
+                    upper = to_dense(x$upper, n_of_variables, Inf), 
+                    stringsAsFactors = FALSE)
     d
 }
 
@@ -399,12 +398,19 @@ bounds.OP <- function( x ) x$bounds
 ##' @noRd
 ##' @export
 'bounds<-.OP' <- function( x, value ) {
-    if ( is.null(value) ) {
+    stopifnot( is.null(value) | inherits(value, "bound") )
+    if ( is.null(value) ) { ## (-Inf, Inf)
         if ( is.na(x[["n_of_variables"]]) ) {
             ## do nothing
-            ## x["bounds"] <- list(NULL)
+            x["bounds"] <- list(NULL)
         } else {
+            x$bounds <- V_bound(ld = -Inf, nobj = x[["n_of_variables"]])
+        }
+    } else if ( is.deferred_bound(value) ) { ## [0, Inf)
+        if ( !is.na(x[["n_of_variables"]]) ) {
             x$bounds <- V_bound(nobj = x[["n_of_variables"]])
+        } else {
+            x$bounds <- value
         }
     } else {
         bounds <- as.V_bound(value)
@@ -421,19 +427,11 @@ bounds.OP <- function( x ) x$bounds
 .make_standard_bounds <- function( x )
     NULL
 
+deferred_bound <- function() {
+    structure(list(), class = c("deferred_bound", "bound"))
+}
 
-##
-## TODO: Create explicit NO_bound class
-##
-## noRd
-## export
-## NO_bound <- function() {
-##     structure(list(), class = c("NO_bound", "bound"))
-## }
-
-## noRd
-## export
-## print.NO_bound <- function(x, ...){
-##     writeLines( "ROI NO Bound (-Inf, Inf)\n" )
-## }
+is.deferred_bound <- function(x) {
+    inherits(x, "deferred_bound")
+}
 

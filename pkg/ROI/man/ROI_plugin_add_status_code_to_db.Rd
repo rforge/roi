@@ -4,7 +4,8 @@
 \alias{ROI_plugin_add_status_code_to_db}
 \title{Add Status Code to the Status Database}
 \usage{
-ROI_plugin_add_status_code_to_db(solver, code, symbol, message, roi_code = 1L)
+ROI_plugin_add_status_code_to_db(solver, code, symbol, message,
+  roi_code = 1L)
 }
 \arguments{
 \item{solver}{a character string giving the name of the solver.}
@@ -41,3 +42,4 @@ Other plugin functions: \code{\link{ROI_plugin_build_equality_constraints}},
   \code{\link{ROI_plugin_solution_prim}},
   \code{\link{ROI_registered_solver_control}}
 }
+\concept{plugin functions}

@@ -20,3 +20,4 @@ ROI_registered_reformulations()
 Other reformulate functions: \code{\link{ROI_plugin_register_reformulation}},
   \code{\link{ROI_reformulate}}
 }
+\concept{reformulate functions}

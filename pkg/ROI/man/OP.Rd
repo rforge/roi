@@ -5,8 +5,7 @@
 \alias{as.OP}
 \title{Optimization Problem Constructor}
 \usage{
-OP(objective, constraints = NULL, types = NULL, bounds = NULL,
-  maximum = FALSE)
+OP(objective, constraints, types, bounds, maximum = FALSE)
 
 as.OP(x)
 }

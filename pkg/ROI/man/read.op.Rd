@@ -32,3 +32,4 @@ Other input output: \code{\link{ROI_plugin_register_reader_writer}},
   \code{\link{ROI_registered_writer}},
   \code{\link{write.op}}
 }
+\concept{input output}

@@ -3,7 +3,6 @@
 \name{ROI_plugin_register_reader_writer}
 \alias{ROI_plugin_register_reader_writer}
 \alias{ROI_plugin_register_reader}
-\alias{ROI_plugin_register_reader_writer}
 \alias{ROI_plugin_register_writer}
 \title{Register Reader / Writer Method}
 \usage{
@@ -41,3 +40,4 @@ Other input output: \code{\link{ROI_registered_reader}},
   \code{\link{ROI_registered_writer}},
   \code{\link{read.op}}, \code{\link{write.op}}
 }
+\concept{input output}

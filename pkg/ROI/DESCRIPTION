@@ -1,5 +1,5 @@
 Package: ROI
-Version: 0.3-1
+Version: 0.3-2
 Title: R Optimization Infrastructure
 Authors@R: c( person("Kurt", "Hornik", role = "aut"),
               person("David", "Meyer", role = "aut"),
@@ -8,6 +8,7 @@ Authors@R: c( person("Kurt", "Hornik", role = "aut"),
               person("Diethelm", "Wuertz", role = "ctb") )
 Description: The R Optimization Infrastructure ('ROI') is a
     sophisticated framework for handling optimization problems in R.
+	More information can be found on the 'ROI' homepage <http://roi.r-forge.r-project.org/>.
 Depends: R (>= 2.10)
 Imports: methods, registry (>= 0.5), slam, utils
 Suggests: ROI.plugin.alabama, ROI.plugin.ecos, ROI.plugin.glpk,
@@ -16,5 +17,5 @@ Suggests: ROI.plugin.alabama, ROI.plugin.ecos, ROI.plugin.glpk,
         ROI.plugin.quadprog, numDeriv
 Enhances: ROI.plugin.cplex
 License: GPL-3
-URL: http://R-Forge.R-project.org/projects/roi
-RoxygenNote: 6.0.1.9000
+URL: http://roi.r-forge.r-project.org/
+RoxygenNote: 6.1.1

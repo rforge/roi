@@ -35,3 +35,4 @@ Register a new reformulation method to be used with
 Other reformulate functions: \code{\link{ROI_reformulate}},
   \code{\link{ROI_registered_reformulations}}
 }
+\concept{reformulate functions}
