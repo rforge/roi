@@ -271,8 +271,8 @@ solve_crs2lm <- function(x, control = list()) {
 
     m <- nlopt_problem(x, start = control$x0, derivate_free = TRUE)
     m$opts <- nlopt_options(control, crs2lm_defaults)
-    if ( !is.null(ranseed) ) 
-        opts$ranseed <- as.integer(ranseed)
+    if ( !is.null(control$ranseed) ) 
+        opts$ranseed <- as.integer(control$ranseed)
 
     if ( !is.null(control$args) )
         m <- c(m, control$args)
@@ -365,52 +365,52 @@ solve_directL <- function(x, control = list()) {
                                      message   = out)
 }
 
-solve_direct_parallel <- function(x, control = list()) {
-    solver <- "nloptr.direct_parallel"
-
-    if ( !is.null(control$x0) )
-        warning("argument 'start' provided but not needed, 'start' will be ignored")
-
-    x0 <- partition_space(get_lb(x), get_ub(x))    
-  
-    direct_defaults <- list(algorithm = "NLOPT_GN_DIRECT_L_RAND", 
-        maxeval = 10000L, ftol_rel = 1e-14)
-
-    m <- nlopt_problem(x, start = x0, derivate_free = TRUE)
-    m$opts <- nlopt_options(control, direct_defaults)
-
-    if ( !is.null(control$args) )
-        m <- c(m, control$args)
-
-    if (isTRUE(control$dry_run)) {
-        mode(m) <- "call"
-        return(m)
-    }
-
-    parallel_solve <- function(i, optimization_problem) {
-        optimization_problem$opts$ranseed <- i + max(-1, optimization_problem$opts$ranseed) 
-        mode(optimization_problem) <- "call"
-        eval(optimization_problem)
-    }
-
-    ncores <- detectCores()
-    out <- mclapply(seq_len(ncores), parallel_solve, optimization_problem = m, 
-                    mc.cores = ncores)
-
-    if ( maximum(x) ) {
-        k <- max(1, which.max(sapply(out, "[[", "objective")))
-    } else {
-        k <- max(1, which.min(sapply(out, "[[", "objective")))
-    }
-    out <- out[[k]]
-    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
-    
-    ROI_plugin_canonicalize_solution(solution  = out$solution,
-                                     optimum   = objval,
-                                     status    = out$status,
-                                     solver    = solver,
-                                     message   = out)
-}
+## solve_direct_parallel <- function(x, control = list()) {
+##     solver <- "nloptr.direct_parallel"
+## 
+##     if ( !is.null(control$x0) )
+##         warning("argument 'start' provided but not needed, 'start' will be ignored")
+## 
+##     x0 <- partition_space(get_lb(x), get_ub(x))    
+## 
+##     direct_defaults <- list(algorithm = "NLOPT_GN_DIRECT_L_RAND", 
+##         maxeval = 10000L, ftol_rel = 1e-14)
+## 
+##     m <- nlopt_problem(x, start = x0, derivate_free = TRUE)
+##     m$opts <- nlopt_options(control, direct_defaults)
+## 
+##     if ( !is.null(control$args) )
+##         m <- c(m, control$args)
+## 
+##     if (isTRUE(control$dry_run)) {
+##         mode(m) <- "call"
+##         return(m)
+##     }
+## 
+##     parallel_solve <- function(i, optimization_problem) {
+##         optimization_problem$opts$ranseed <- i + max(-1, optimization_problem$opts$ranseed) 
+##         mode(optimization_problem) <- "call"
+##         eval(optimization_problem)
+##     }
+## 
+##     ncores <- detectCores()
+##     out <- mclapply(seq_len(ncores), parallel_solve, optimization_problem = m, 
+##                     mc.cores = ncores)
+## 
+##     if ( maximum(x) ) {
+##         k <- max(1, which.max(sapply(out, "[[", "objective")))
+##     } else {
+##         k <- max(1, which.min(sapply(out, "[[", "objective")))
+##     }
+##     out <- out[[k]]
+##     objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+## 
+##     ROI_plugin_canonicalize_solution(solution  = out$solution,
+##                                      optimum   = objval,
+##                                      status    = out$status,
+##                                      solver    = solver,
+##                                      message   = out)
+## }
 
 
 solve_isres <- function(x, control = list()) {
