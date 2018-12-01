@@ -13,12 +13,8 @@ is_na <- function(x) {
 ##
 ## get lower bound constraints
 get_lb <- function(x) {
-    ##if( !length(bounds(x)$lower$val) ) {
-    ##    lb <- NULL
-    ##} else {
-        lb <- numeric( length(x$objective) )
-        lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
-    ##}
+    lb <- numeric( length(x$objective) )
+    lb[ bounds(x)$lower$ind ] <- bounds(x)$lower$val
     return(lb)
 }
 
@@ -27,12 +23,8 @@ get_lb <- function(x) {
 ##
 ## get upper bound constraints
 get_ub <- function(x) {
-    ##if( !length(bounds(x)$upper$val) ) {
-    ##    ub <- NULL
-    ##} else {
-        ub <- rep.int(Inf, length(x$objective))
-        ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
-    ##}
+    ub <- rep.int(Inf, length(x$objective))
+    ub[ bounds(x)$upper$ind ] <- bounds(x)$upper$val
     return(ub)
 }
 
@@ -63,146 +55,683 @@ nloptr_defaults <- function(x=NULL) {
     return( defaults[x] )
 }
 
-nloptr_get_default <- function(x) {
-    nloptr.get.default.options()[nloptr.get.default.options()[,'name'] == x, 'default']
+
+
+OF <- function(x) {
+    environment(objective(x))$F
 }
 
-## get_algorithms() returns an overview
-## get_algorithms(T) returns vector with global algorithms
-## get_algorithms(T) returns vector with local algorithms
-## get_algorithms(NULL, T) returns vector with derivative algorithms
-## get_algorithms(NULL, F) returns vector with no derivative algorithms
-get_algorithms <- function(global=NULL, derivatives=NULL) {
-    d <- nloptr.get.default.options()
-    rownames(d) <- d[,"name"]
-    a <- unlist(strsplit(d["algorithm", "possible_values"], ",\\s*"))
-    algo <- data.frame(algorithm=a, stringsAsFactors = FALSE)
-    ## first is Global "G" vs Local "L"
-    algo$global <- substr(a, 7, 7) == "G"
-    ## secound Derivate "D" vs No Derivate "N"
-    algo$derivatives <- substr(a, 8, 8) == "D"
-    if ( is.null(global) & is.null(derivatives) )
-        return( algo )
-    if ( is.null(global) )
-        return( algo[algo$derivatives == derivatives, 1] )
-    if ( is.null(derivatives) )
-        return( algo[algo$global == global, 1] )
-    algo[( (algo$derivatives == derivatives) & (algo$global == global) ), 1]
+change_sign <- function(F) {
+    if ( is.null(F) )
+        return(NULL)
+    function(x) {
+        -F(x)
+    }
 }
 
-get_algo_properties <- function() {
-    get_algorithms()
+nl.opts_names <- function() {
+    c("stopval", "xtol_rel", "maxeval", "ftol_rel", "ftol_abs", 
+      "check_derivatives")
 }
 
-is_derivate_free_algorithm <- function(x) {
-    any(grepl("(_GN_|_LN_)", x))
+build_nl.opts <- function(control) {
+    nl_opts <- control[names(control) %in% nl.opts_names()]
+    nl_opts <- if (length(nl_opts)) nloptr::nl.opts(nl_opts) else nloptr::nl.opts()
+    ## Set algorithm to NULL else bobyqa complaints!
+    nl_opts$algorithm <- NULL
 }
 
-## nloptr
-## ======
-##
-## R interface to NLopt
-##
-## nloptr(x0, eval_f, eval_grad_f = NULL, lb = NULL, ub = NULL,
-##        eval_g_ineq = NULL, eval_jac_g_ineq = NULL, eval_g_eq = NULL,
-##        eval_jac_g_eq = NULL, opts = list(), ...)
-## if(FALSE) {
-##     library(nloptr)
-##     attach(getNamespace("ROI.plugin.nloptr"))    
-## }
+nlopt_problem_constrained <- function(x, start, derivate_free = FALSE) {
+    m <- list(call_fun = nloptr::nloptr, x0 = start)
 
-build_options <- function(control) {
-    opts <- control[!names(control) %in% c("gradient", "nl.info", "x0", "args")]
+    if (!inherits(constraints(x), "F_constraint")) {
+        constraints(x) <- as.F_constraint(constraints(x))
+    }
     
-    if ( is.null(opts$xtol_rel) ) 
-        opts[['xtol_rel']] <- nloptr_defaults('xtol_rel')
+    inq_con <- ROI_plugin_build_inequality_constraints(x, type = "leq_zero") 
+    eq_con <- ROI_plugin_build_equality_constraints(x, type = "eq_zero")
 
-    ##if ( is.null(opts$tol_constraints_ineq) ) 
-    ##    opts[['tol_constraints_ineq']] <- nloptr_defaults("tol_constraints_ineq")
+    m$eval_f <- if ( maximum(x) ) change_sign(objective(x)) else objective(x)
+    m$eval_g_ineq = inq_con[["F"]]
+    m$eval_g_eq = eq_con[["F"]]
 
-    ##if ( is.null(opts$tol_constraints_eq) ) 
-    ##    opts[['tol_constraints_eq']] <- nloptr_defaults("tol_constraints_eq")
+    if ( !derivate_free ) {
+        m$eval_grad_f <- if ( maximum(x) ) change_sign(G(objective(x))) else G(objective(x))
+        m$eval_jac_g_ineq = inq_con[["J"]]
+        m$eval_jac_g_eq = eq_con[["J"]]
+    }
+
+    m$lb <- get_lb(x)
+    m$ub <- get_ub(x)
+    m
+}
+
+nlopt_problem_ieq_constrained <- function(x, start, derivate_free = FALSE) {
+    m <- list(call_fun = nloptr::nloptr, x0 = start)
+
+    if (!inherits(constraints(x), "F_constraint")) {
+        constraints(x) <- as.F_constraint(constraints(x))
+    }
+
+    inq_con <- ROI_plugin_build_inequality_constraints(x, type = "leq_zero") 
+
+    m$eval_f <- if ( maximum(x) ) change_sign(objective(x)) else objective(x)
+    m$eval_g_ineq = inq_con[["F"]]
+
+    if ( !derivate_free ) {
+        m$eval_grad_f <- if ( maximum(x) ) change_sign(G(objective(x))) else G(objective(x))
+        m$eval_jac_g_ineq = inq_con[["J"]]
+    }
+
+    m$lb <- get_lb(x)
+    m$ub <- get_ub(x)
+    m
+}
+
+nlopt_problem <- function(x, start, derivate_free = FALSE) {
+    m <- list(call_fun = nloptr::nloptr, x0 = start)
+
+    m$eval_f <- if ( maximum(x) ) change_sign(objective(x)) else objective(x)
+    if ( !derivate_free ) {
+        m$eval_grad_f <- if ( maximum(x) ) change_sign(G(objective(x))) else G(objective(x))
+    }
+
+    m$lb <- get_lb(x)
+    m$ub <- get_ub(x)
+    m
+}
+
+nlopt_options <- function(control, defaults = list()) {
+    opts_names <- c("algorithm", "stopval", "ftol_rel", "ftol_abs", "xtol_rel", 
+        "xtol_abs", "maxeval", "maxtime", "tol_constraints_ineq", "tol_constraints_eq",
+        "print_level", "check_derivatives", "check_derivatives_tol",
+        "check_derivatives_print", "print_options_doc", "population", "ranseed",
+        "local_opts")
+
+    opts <- control[names(control) %in% opts_names]
+
+    i <- which(!names(defaults) %in% names(opts))
+    if ( length(i) ) {
+        opts <- c(opts, defaults[i])
+    }
+
+    if ( is.null(opts$xtol_rel) )
+        opts$xtol_rel <- 1e-4
 
     opts
 }
 
-solve_nloptr <- function( x, control = list()) {
+solve_auglag <- function(x, control = list()) {
+    solver <- "nloptr.auglag"
 
-    args <- list()
-    args$call_fun <- nloptr::nloptr
-    ## args$x0 <- control$start
-    args$x0 <- control$x0 ## FIXME
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+    
+    algorithm <- if ( any(constraints(x)$dir == "eq") ) "NLOPT_LD_AUGLAG_EQ" else "NLOPT_LD_AUGLAG"
 
-    ## objective function
-    if ( isTRUE(x$maximum) ) {
-        objective_function <- objective(x)
-        args$eval_f <- function(x) -objective_function(x)
-    } else {
-        args$eval_f <- objective(x)
-    }
+    auglag_defaults <- list(algorithm = algorithm)
+    opts <- nlopt_options(control, auglag_defaults)
+    if ( is.null(opts$local_opts) )
+        opts$local_opts <- list(algorithm = "NLOPT_LD_LBFGS", xtol_rel = opts$xtol_rel)
 
-    ## gradient of the objective function
-    if ( !is_derivate_free_algorithm(control$algorithm) ) {
-        if ( isTRUE(x$maximum) ) {
-            gradient_function <- G(objective(x))
-            args$eval_grad_f <- function(x) -gradient_function(x)
-        } else {
-            args$eval_grad_f <- G(objective(x))
-        }
-    }
+    m <- nlopt_problem_constrained(x, start = control$x0, derivate_free = FALSE)
+    m$opts <- opts
 
-    ## lower and upper bounds
-    args$lb <- get_lb(x)
-    args$ub <- get_ub(x)
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
 
-    ## inequality constraints
-    inequality_constraint <- ROI_plugin_build_inequality_constraints(x, type="leq_zero")
-    args$eval_g_ineq <- inequality_constraint[["F"]]
+    mode(m) <- "call"
 
-    ## jacobian inequality constraints
-    args$eval_jac_g_ineq <- inequality_constraint[["J"]]
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
+}
+
+
+solve_bobyqa <- function(x, control = list()) {
+    solver <- "nloptr.bobyqa"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    bobyqa_defaults <- list(algorithm = "NLOPT_LN_BOBYQA")
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = TRUE)
+    m$opts <- nlopt_options(control, bobyqa_defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
+}
+
+solve_cobyla <- function(x, control = list()) {
+    solver <- "nloptr.cobyla"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    if ( any(constraints(x)$dir == "==") )
+        stop("cobyla does not support equality constraints")
+    
+    defaults <- list(algorithm = "NLOPT_LN_COBYLA")
+    opts <- nlopt_options(control, defaults)
+
+    m <- nlopt_problem_ieq_constrained(x, start = control$x0, derivate_free = TRUE)
+    m$opts <- opts
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
+}
+
+
+solve_crs2lm <- function(x, control = list()) {
+    solver <- "nloptr.crs2lm"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    crs2lm_defaults <- list(algorithm = "NLOPT_GN_CRS2_LM", maxeval = 10000, 
+        pop.size = 10 * (length(control$x0) + 1), xtol_rel = 1e-06)
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = TRUE)
+    m$opts <- nlopt_options(control, crs2lm_defaults)
+    if ( !is.null(ranseed) ) 
+        opts$ranseed <- as.integer(ranseed)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
+}
+
+partition_space <- function(lower, upper) {
+    lower <- replace(lower, lower == -Inf, -1e30)
+    upper <- replace(upper, upper ==  Inf,  1e30)
+    size <- upper - lower
+    partition_rule_1 <- function(x) x / 2
+    partition_rule_2 <- function(x) exp(log(x) / 2)   
+    lower + ifelse(size <= 1000, partition_rule_1(size), partition_rule_2(size))
+}
+
+solve_direct <- function(x, control = list()) {
+    solver <- "nloptr.direct"
+
+    if ( !is.null(control$x0) )
+        warning("argument 'start' provided but not needed, 'start' will be ignored")
+
+    x0 <- partition_space(get_lb(x), get_ub(x))
   
-    ## equality constraints
-    equality_constraint <- ROI_plugin_build_equality_constraints(x, type = "eq_zero")
-    args$eval_g_eq <- equality_constraint[["F"]]
+    direct_defaults <- list(algorithm = "NLOPT_GN_DIRECT", maxeval = 10000L)
 
-    ## jacobian equality constraints
-    args$eval_jac_g_eq <- equality_constraint[["J"]]
+    m <- nlopt_problem(x, start = x0, derivate_free = TRUE)
+    m$opts <- nlopt_options(control, direct_defaults)
 
-    ## nloptr control (opts)
-    opts <- build_options(control)
-    args$opts <- opts
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
 
-    ## ... args
-    args <- c(args, control$args)
+    mode(m) <- "call"
 
-    mode(args) <- "call"
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
 
-    if ( isTRUE(control$dry_run) )
-        return(args)
-
-    res <- eval(args)
-
-    ROI_plugin_canonicalize_solution( solution  = res$solution,
-                                      optimum   = objective(x)(res$solution),
-                                      status    = res$status,
-                                      solver    = "nloptr",
-                                      message   = res,
-                                      algorithm = control$algorithm )
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
 }
 
-check_eval_g_ineq <- function(eval_g_ineq, sol, tol) {
-    if ( is.null(eval_g_ineq) )
-        return(TRUE)
-    return( all(eval_g_ineq(sol) <= tol) )
+solve_directL <- function(x, control = list()) {
+    solver <- "nloptr.directL"
+
+    if ( !is.null(control$x0) )
+        warning("argument 'start' provided but not needed, 'start' will be ignored")
+
+    x0 <- partition_space(get_lb(x), get_ub(x))
+    
+    use_direct_rand <- (isTRUE(control$randomized) | is.null(control$randomized))
+    algo <- if ( use_direct_rand ) "NLOPT_GN_DIRECT_L_RAND" else "NLOPT_GN_DIRECT_L"
+    direct_defaults <- list(algorithm = algo, maxeval = 10000L, ftol_rel = 1e-14)
+
+    m <- nlopt_problem(x, start = x0, derivate_free = TRUE)
+    m$opts <- nlopt_options(control, direct_defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
 }
 
-check_eval_g_eq <- function(eval_g_eq, sol, tol) {
-    if ( is.null(eval_g_eq) )
-        return(TRUE)
-    ## difference to check_eval_g_ineq is only the abs
-    return( all(abs(eval_g_eq(sol)) <= tol) )
+solve_direct_parallel <- function(x, control = list()) {
+    solver <- "nloptr.direct_parallel"
+
+    if ( !is.null(control$x0) )
+        warning("argument 'start' provided but not needed, 'start' will be ignored")
+
+    x0 <- partition_space(get_lb(x), get_ub(x))    
+  
+    direct_defaults <- list(algorithm = "NLOPT_GN_DIRECT_L_RAND", 
+        maxeval = 10000L, ftol_rel = 1e-14)
+
+    m <- nlopt_problem(x, start = x0, derivate_free = TRUE)
+    m$opts <- nlopt_options(control, direct_defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    if (isTRUE(control$dry_run)) {
+        mode(m) <- "call"
+        return(m)
+    }
+
+    parallel_solve <- function(i, optimization_problem) {
+        optimization_problem$opts$ranseed <- i + max(-1, optimization_problem$opts$ranseed) 
+        mode(optimization_problem) <- "call"
+        eval(optimization_problem)
+    }
+
+    ncores <- detectCores()
+    out <- mclapply(seq_len(ncores), parallel_solve, optimization_problem = m, 
+                    mc.cores = ncores)
+
+    if ( maximum(x) ) {
+        k <- max(1, which.max(sapply(out, "[[", "objective")))
+    } else {
+        k <- max(1, which.min(sapply(out, "[[", "objective")))
+    }
+    out <- out[[k]]
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+    
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
 }
+
+
+solve_isres <- function(x, control = list()) {
+    solver <- "nloptr.isres"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+    
+    isres_defaults <- list(maxeval = 10000, xtol_rel = 1e-06, 
+        population = 20 * (length(control$x0) + 1), algorithm = "NLOPT_GN_ISRES")
+    opts <- nlopt_options(control, isres_defaults)
+
+    m <- nlopt_problem_constrained(x, start = control$x0, derivate_free = TRUE)
+    m$opts <- opts
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
+}
+
+
+solve_lbfgs <- function(x, control = list()) {
+    solver <- "nloptr.lbfgs"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    lbfgs_defaults <- list(algorithm = "NLOPT_LD_LBFGS")
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = FALSE)
+    m$opts <- nlopt_options(control, lbfgs_defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution = out$solution,
+                                     optimum  = objval,
+                                     status   = out$status,
+                                     solver   = solver,
+                                     message  = out)
+}
+
+
+solve_mma <- function(x, control = list()) {
+    solver <- "nloptr.mma"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    if ( any(constraints(x)$dir == "==") )
+        stop("mma does not support equality constraints")
+    
+    defaults <- list(algorithm = "NLOPT_LD_MMA")
+    opts <- nlopt_options(control, defaults)
+
+    m <- nlopt_problem_ieq_constrained(x, start = control$x0, derivate_free = FALSE)
+    m$opts <- opts
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution  = out$solution,
+                                     optimum   = objval,
+                                     status    = out$status,
+                                     solver    = solver,
+                                     message   = out)
+}
+
+
+solve_neldermead <- function(x, control = list()) {
+    solver <- "nloptr.neldermead"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    neldermead_defaults <- list(algorithm = "NLOPT_LN_NELDERMEAD")
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = TRUE)
+    m$opts <- nlopt_options(control, neldermead_defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution = out$solution,
+                                     optimum  = objval,
+                                     status   = out$status,
+                                     solver   = solver,
+                                     message  = out)
+}
+
+
+solve_newuoa <- function(x, control = list()) {
+    solver <- "nloptr.newuoa"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    defaults <- list(algorithm = "NLOPT_LN_NEWUOA")
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = TRUE)
+    m$opts <- nlopt_options(control, defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution = out$solution,
+                                     optimum  = objval,
+                                     status   = out$status,
+                                     solver   = solver,
+                                     message  = out)
+}
+
+
+solve_sbplx <- function(x, control = list()) {
+    solver <- "nloptr.sbplx"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    defaults <- list(algorithm = "NLOPT_LN_SBPLX")
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = TRUE)
+    m$opts <- nlopt_options(control, defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution = out$solution,
+                                     optimum  = objval,
+                                     status   = out$status,
+                                     solver   = solver,
+                                     message  = out)
+}
+
+
+solve_slsqp <- function(x, control = list()) {
+    solver <- "nloptr.slsqp"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+    
+    defaults <- list(algorithm = "NLOPT_LD_SLSQP")
+    opts <- nlopt_options(control, defaults)
+
+    m <- nlopt_problem_constrained(x, start = control$x0, derivate_free = FALSE)
+    m$opts <- opts
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution = out$solution,
+                                     optimum  = objval,
+                                     status   = out$status,
+                                     solver   = solver,
+                                     message  = out)
+}
+
+
+solve_stogo <- function(x, control = list()) {
+    solver <- "nloptr.stogo"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    use_stogo_rand <- (isTRUE(control$randomized) | is.null(control$randomized))
+    algo <- if ( use_stogo_rand ) "NLOPT_GD_STOGO_RAND" else "NLOPT_GD_STOGO"
+    defaults <- list(algorithm = algo, maxeval = 10000L, ftol_rel = 1e-14)
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = FALSE)
+    m$opts <- nlopt_options(control, defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution = out$solution,
+                                     optimum  = objval,
+                                     status   = out$status,
+                                     solver   = solver,
+                                     message  = out)
+}
+
+
+solve_tnewton <- function(x, control = list()) {
+    solver <- "nloptr.tnewton"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    use_preconditioning <- (isTRUE(control$precond) | is.null(control$precond))
+
+    if (use_preconditioning) {
+        algo <- if (isTRUE(control$restart)) "NLOPT_LD_TNEWTON_PRECOND_RESTART" else "NLOPT_LD_TNEWTON_PRECOND"
+    } else {
+        algo <- if (isTRUE(control$restart)) "NLOPT_LD_TNEWTON_RESTART" else "NLOPT_LD_TNEWTON"
+    }
+    
+    defaults <- list(algorithm = algo)
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = FALSE)
+    m$opts <- nlopt_options(control, defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution = out$solution,
+                                     optimum  = objval,
+                                     status   = out$status,
+                                     solver   = solver,
+                                     message  = out)
+}
+
+
+solve_varmetric <- function(x, control = list()) {
+    solver <- "nloptr.varmetric"
+
+    if ( is.null(control$x0) )
+        stop("argument 'start' is missing with no default")
+
+    use_rank2 <- isTRUE(control$rank2) | is.null(control$rank2) 
+    algo <- if (use_rank2) "NLOPT_LD_VAR2" else "NLOPT_LD_VAR1"
+    defaults <- list(algorithm = algo)
+
+    m <- nlopt_problem(x, start = control$x0, derivate_free = FALSE)
+    m$opts <- nlopt_options(control, defaults)
+
+    if ( !is.null(control$args) )
+        m <- c(m, control$args)
+
+    mode(m) <- "call"
+
+    if (isTRUE(control$dry_run)) 
+        return(m)
+    
+    out <- eval(m)
+    objval <- tryCatch(objective(x)(out$solution), error = function(e) NA_real_)
+
+    ROI_plugin_canonicalize_solution(solution = out$solution,
+                                     optimum  = objval,
+                                     status   = out$status,
+                                     solver   = solver,
+                                     message  = out)
+}
+
 
 ## NLOPT Algorithmen
 ## =================

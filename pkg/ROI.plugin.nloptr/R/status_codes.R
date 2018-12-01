@@ -1,8 +1,7 @@
 ## STATUS CODES
-.add_status_codes <- function(){
+.add_status_codes <- function(solver) {
     ## nloptr
     ## success
-    solver <- ROI_plugin_get_solver_name( getPackageName() )
     ROI_plugin_add_status_code_to_db(solver, 1L, "NLOPT_SUCCESS",
                           "Generic success return value.", 0L)
     ROI_plugin_add_status_code_to_db(solver, 2L, "NLOPT_STOPVAL_REACHED",
