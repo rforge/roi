@@ -38,8 +38,8 @@ test_qp_01 <- function(solver) {
     opt <- ROI_solve(x, solver = solver,
                      control = solver_control(solver, sol))
 
-    check("QP-01@01", equal(opt$solution, sol) )
-    check("QP-01@02", equal(opt$objval, -2.38095238095238) )
+    check("QP-01@01", equal(opt$solution, sol, tol = 1e-4) )
+    check("QP-01@02", equal(opt$objval, -2.38095238095238, tol = 1e-4) )
 
 }
 
@@ -61,8 +61,8 @@ test_qp_02 <- function(solver) {
     opt <- ROI_solve(x, solver = solver,
                      control = solver_control(solver, sol))
     
-    check("QP-02@01", equal(opt$solution, sol) )
-    check("QP-02@02", equal(opt$objval, -2) )
+    check("QP-02@01", equal(opt$solution, sol, tol = 1e-4) )
+    check("QP-02@02", equal(opt$objval, -2, tol = 1e-4) )
 
 }
 

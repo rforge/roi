@@ -26,7 +26,11 @@
     ## QO-QC
     register_test(mksig("Q", "Q", "C", "V", "X", FALSE), "QCQP-01", test_qcqp_01)
 
-
-    register_test(mksig("F", "X", "C", "V", "X", FALSE), "NLP-01", test_nloptr01)    
-
+    ##                  OBJ  CON  TYP  BOU  CONE
+    register_test(mksig("F", "X", "C", "V", "X", FALSE), "NLP-01", test_nlp_01)
+    register_test(mksig("F", "F", "C", "V", "X", TRUE), "NLP-02", test_nlp_02)
+    register_test(mksig("F", "F", "C", "V", "X", FALSE), "NLP-03", test_nlp_03)
+    register_test(mksig("F", "F", "C", "V", "X", FALSE), "NLP-04", test_nlp_04)
+    register_test(mksig("F", "X", "C", "V", "X", FALSE), "NLP-05", test_nlp_05)
+    register_test(mksig("F", "X", "C", "V", "X", FALSE), "NLP-06", test_nlp_06)
 }

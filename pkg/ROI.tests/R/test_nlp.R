@@ -28,11 +28,11 @@ test_nlp_01 <- function(solver) {
 ## Example from NLopt tutorial.
 ##
 test_nlp_02 <- function(solver) {
-    objval <- 0.5443311
+    objval <- -0.5443311
     sol <- c(1/3, 8/27)
 
-    obj <- function(x) sqrt(x[2])
-    grad <- function(x) c(0, 0.5 / sqrt(x[2]))
+    obj <- function(x) -sqrt(x[2])
+    grad <- function(x) -c(0, 0.5 / sqrt(x[2]))
 
     con <- function(x) (c(2, -1) * x[1] + c(0,  1))^3 - x[2]
     jac <- function(x) {
@@ -42,11 +42,14 @@ test_nlp_02 <- function(solver) {
               c(3 * a[2] * (a[2] * x[1] + b[2])^2, -1.0))
     }
 
-    x <- OP(F_objective(F = obj, n = 2L, G = grad),
-        F_constraint(con, c("<=", "<="), c(0, 0), J = jac))
+    x <- OP(objective = F_objective(F = obj, n = 2L, G = grad),
+        constraints = F_constraint(con, c("<=", "<="), c(0, 0), J = jac),
+        maximum = TRUE)
     
-    opt <- ROI_solve(x, solver, control = solver_control(solver, sol))
+    control <- list(start = abs(jitter(sol, amount = 1L)))
+    opt <- ROI_solve(x, solver, control = control)
 
+    warnings()
     check("NLP-02@01", equal(solution(opt), sol, tol = 1e-4))
     check("NLP-02@02", equal(solution(opt, "objval"), objval, tol = 1e-4))
 }
@@ -112,3 +115,66 @@ test_nlp_04 <- function(solver) {
     check("NLP-04@01", equal(solution(opt), sol, tol = 1e-4))
     check("NLP-04@02", equal(solution(opt, "objval"), objval, tol = 1e-4))
 }
+
+
+##
+## Problem from 
+## @article{betts1977accelerated,
+##     title     = {An accelerated multiplier method for nonlinear programming},
+##     author    = {Betts, JT},
+##     journal   = {Journal of Optimization Theory and Applications},
+##     volume    = {21},
+##     number    = {2},
+##     pages     = {137--174},
+##     year      = {1977},
+##     publisher = {Springer}
+## }
+##
+test_nlp_05 <- function(solver) {
+    objval <- 0
+    sol <- c(1, 1)
+
+    obj <- function(x) 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
+    
+    x <- OP(objective = F_objective(F = obj, n = 2L))
+    bounds(x) <- V_bound(lb = c(-Inf, -1.5))
+
+    opt <- ROI_solve(x, solver, control = solver_control(solver, sol))
+
+    control <- list(x0 = c(2, 3))
+    opt <- ROI_solve(x, solver, )
+
+    check("NLP-05@01", equal(solution(opt), sol, tol = 1e-4))
+    check("NLP-05@02", equal(solution(opt, "objval"), objval, tol = 1e-4))
+}
+
+
+##
+## Problem from 
+## @article{betts1977accelerated,
+##     title     = {An accelerated multiplier method for nonlinear programming},
+##     author    = {Betts, JT},
+##     journal   = {Journal of Optimization Theory and Applications},
+##     volume    = {21},
+##     number    = {2},
+##     pages     = {137--174},
+##     year      = {1977},
+##     publisher = {Springer}
+## }
+##
+test_nlp_06 <- function(solver) {
+    objval <- 0.0504261879
+    sol <- c(2*sqrt(598/1200) * cos(1/3*acos(1/(400*(sqrt(598/1200)^3)))), 1.5)
+
+    obj <- function(x) 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
+    
+    x <- OP(objective = F_objective(F = obj, n = 2L))
+    bounds(x) <- V_bound(lb = c(-Inf, 1.5))
+
+    cntrl <- solver_control(solver, c(sol[1], 2.6))
+    opt <- ROI_solve(x, solver, control = cntrl)
+
+    check("NLP-06@01", equal(solution(opt), sol, tol = 1e-4))
+    check("NLP-06@06", equal(solution(opt, "objval"), objval, tol = 1e-4))
+}
+
