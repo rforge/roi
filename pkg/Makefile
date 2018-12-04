@@ -1,7 +1,7 @@
 PACKAGE=ROI
 #R=$(shell which R-devel)
 R=R
-RR=/home/florian/bin/R_dev/bin/R
+RR=R
 ## RR=/home/florian/bin/R-3.4.2/bin/R
 ##RR=/home/florian/bin/R_3.5.0/bin/R
 

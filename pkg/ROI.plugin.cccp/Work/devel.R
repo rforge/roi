@@ -110,4 +110,32 @@ if (FALSE) {
     s <- solveFobjLcon(x, control)
     s
     ## 13.33333  3.00000  4.00000
+
+
+    start <- c(3, 0)
+    start <- c(0.6, 1.8)
+    F0 <- function(x) {
+        print(class(x))
+        crossprod(c(7, 8), x)
+    }
+    G0 <- function(x) c(7, 8)
+    H0 <- function(x) diag(0, 2L)
+    A <- rbind(c(3, 4))
+    b <- c(9)
+
+    model <- cccp::dcp(x0 = start, f0 = F0, g0 = G0, h0 = H0, 
+        cList = list(), nlfList = list(), 
+        nlgList = list(), nlhList = list(), A = A, b = b)
+    s <- cccp::cps(model, cccp::ctrl())
+    c(7, 8) %*% cccp::getx(s)
+
+    library(ROI)
+
+    lp  <- OP(objective = L_objective(c(7, 8), names=c("x", "y")),
+              constraints = L_constraint(L = rbind(c(3, 4)), 
+                                     dir = c("==", "=="), rhs = c(9)),
+          bounds = V_bound(lb = c(-Inf, -Inf)))
+    s <- ROI_solve(lp)
+    c(7, 8) %*% solution(s)
+
 }
