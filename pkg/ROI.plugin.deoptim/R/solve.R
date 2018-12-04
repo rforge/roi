@@ -29,6 +29,9 @@ solve_op_deoptim <- function( x, control ) {
     lb <- get_lb(x)
     ub <- get_ub(x)
 
+    lb <- replace(lb, lb == -Inf, -1e30)
+    ub <- replace(ub, ub ==  Inf,  1e30)
+
     if ( !is.null(control$start) & is.null(control$initialpop) ) {
         if ( is.vector(control$start) ) {
             if ( is.null(control$NP) ) {
@@ -97,9 +100,9 @@ solve_op_deoptimr <- function(x, control = list()) {
     m <- .deoptimr_default(length(objective(x)))
   
     lower <- get_lb(x)
-    m$lower <- replace(lower, lower == -Inf, -1e64)
+    m$lower <- replace(lower, lower == -Inf, -1e30)
     upper <- get_ub(x)
-    m$upper <- replace(upper, upper == Inf, 1e64)
+    m$upper <- replace(upper, upper ==  Inf,  1e30)
 
     if ( isTRUE(x$maximum) ) {
         objective_function <- terms(objective(x))$F
