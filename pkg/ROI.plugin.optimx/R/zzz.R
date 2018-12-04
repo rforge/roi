@@ -1,7 +1,7 @@
 ## ROI plugin: optimx
 
 ROI_make_NLP_FXCV_signatures <- function()
-    ROI_plugin_make_signature( objective = c("L", "Q", "F"),
+    ROI_plugin_make_signature( objective = c("F"),
                                 constraints = c("X"),
                                 types = c("C"),
                                 bounds = c("X", "V"),
