@@ -1279,17 +1279,17 @@ solus &lt;- lapply(mstart, function(s) ROI_solve(p, solver = &quot;alabama&quot;
 best_solution &lt;- which.max(sapply(solus, solution, type = &quot;objval&quot;))  
 round(solution(solus[[best_solution]]), 3)</code></pre>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
-##             0             0             0             0             0 
+##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
-##             0             0             0             0             0 
+##         0.000         0.000         0.000         0.000         0.000 
 ##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
-##             1             0             0             0             0 
+##         0.999         0.000         0.000         0.000         0.000 
 ##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
-##             0             0             0             0             0 
+##         0.000         0.000         0.000         0.000         0.000 
 ##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
-##             0             0             0             0             0 
+##         0.000         0.000         0.000         0.000         0.000 
 ##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
-##             0             0             0             0             0</code></pre>
+##         0.000         0.000         0.000         0.000         0.000</code></pre>
 </div>
 <div id="cvarex2" class="section level2">
 <h2>Example 14: Minimize 99% CVaR wrt cardinality constraints</h2>
