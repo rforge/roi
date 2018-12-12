@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Laura Vana - Email" />
+
+
+<title>Portfolio Optimization in ROI</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="introduction_conic_optimization.html">Conic Optimization</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+<li>
+  <a href="news.html">What's new?</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Portfolio Optimization in ROI</h1>
+<h4 class="author"><em>Laura Vana - <a href="mailto:laura.vana@wu.ac.at">Email</a></em></h4>
+<h4 class="date"><em>December 4, 2018</em></h4>
+
+</div>
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The purpose of this vignette is to demonstrate a sample of portfolio optimization problems that can be solved by using the ROI package. This vignette is based on joint work with Florian Schwendinger and Ronald Hochreiter which was presented at RFinance 2016, Chicago, USA, May 2016.</p>
+<p>If previously no ROI version was installed, one should at least install the two plugins <code>ROI.plugin.glpk</code>, <code>ROI.plugin.alabama</code> and <code>ROI.plugin.quadprog</code> to run the examples below.</p>
+<pre class="r"><code>## NOTE: (Rglpk needs libglpk-dev on Debian/Ubuntu (&quot;sudo apt-get install libglpk-dev&quot;))
+
+if (!require(&quot;ROI&quot;)) install.packages(&quot;ROI&quot;); library(&quot;ROI&quot;)
+
+if (!require(&quot;ROI.plugin.glpk&quot;)) install.packages(&quot;ROI.plugin.glpk&quot;); library(&quot;ROI.plugin.glpk&quot;)
+
+if (!require(&quot;ROI.plugin.quadprog&quot;)) install.packages(&quot;ROI.plugin.quadprog&quot;); library(&quot;ROI.plugin.quadprog&quot;)
+
+if (!require(&quot;ROI.plugin.alabama&quot;)) install.packages(&quot;ROI.plugin.alabama&quot;); library(&quot;ROI.plugin.alabama&quot;)</code></pre>
+<p>Several R functions are created to implement the typical objectives and constraints used for portfolio optimization. All functions require a <code>data.frame</code> <code>r_mat</code> of returns. The mathematical formulation of the objectives and constraints is presented below. The default optimization in ROI is minimization. Hence for all maximization problems the argument <code>maximum = TRUE</code> in the <code>OP()</code> function must be specified.</p>
+<p><br></p>
+<div id="objectives-implemented-as-r-functions" class="section level3">
+<h3><a href="#objectives">Objectives</a> implemented as R functions</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Arguments</th>
+<th>Objectives</th>
+<th>Max/Min</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#rewardo"><code>reward_objective</code></a></td>
+<td><code>(r_mat)</code></td>
+<td>Portfolio return/reward</td>
+<td>max</td>
+<td>LP</td>
+</tr>
+<tr class="even">
+<td><a href="#markowitzo"><code>markowitz_objective</code></a></td>
+<td><code>(r_mat)</code></td>
+<td>Variance of portfolio</td>
+<td>min</td>
+<td>QP</td>
+</tr>
+<tr class="odd">
+<td><a href="#mado"><code>mad_objective</code></a></td>
+<td><code>(r_mat)</code></td>
+<td>Mean Absolute Deviation</td>
+<td>min</td>
+<td>LP</td>
+</tr>
+<tr class="even">
+<td><a href="#downvaro"><code>downside_var_objective</code></a></td>
+<td><code>(r_mat)</code></td>
+<td>Lower semi-variance of portfolio</td>
+<td>min</td>
+<td>QP</td>
+</tr>
+<tr class="odd">
+<td><a href="#downmado"><code>downside_mad_objective</code></a></td>
+<td><code>(r_mat)</code></td>
+<td>Lower semi-mean absolute deviation</td>
+<td>min</td>
+<td>LP</td>
+</tr>
+<tr class="even">
+<td><a href="#cvaro"><code>cvar_objective</code></a></td>
+<td><code>(r_mat, alpha, probs = NULL)</code></td>
+<td>Conditional Value-at-Risk</td>
+<td>min</td>
+<td>LP</td>
+</tr>
+<tr class="odd">
+<td><a href="#minimaxo"><code>minimax_young_objective</code></a></td>
+<td><code>(r_mat)</code></td>
+<td>Minimax portfolio</td>
+<td>max</td>
+<td>LP</td>
+</tr>
+<tr class="even">
+<td><a href="#quaduo"><code>quadratic_utility_objective</code></a></td>
+<td><code>(r_mat, lambda = 2)</code></td>
+<td>Quadratic Utility</td>
+<td>max</td>
+<td>LP</td>
+</tr>
+<tr class="odd">
+<td><a href="#sharpeo"><code>sharpe_objective</code></a></td>
+<td><code>(r_mat, rf = 0)</code></td>
+<td>Sharpe ratio</td>
+<td>max</td>
+<td>QP</td>
+</tr>
+<tr class="even">
+<td><a href="#omegao"><code>omega_objective</code></a></td>
+<td><code>(r_mat, tau = 0)</code></td>
+<td>Omega</td>
+<td>max</td>
+<td>LP</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+</div>
+<div id="constraints-implemented-as-r-functions" class="section level3">
+<h3><a href="#constraints">Constraints</a> implemented as R functions</h3>
+<table style="width:100%;">
+<colgroup>
+<col width="12%" />
+<col width="30%" />
+<col width="53%" />
+<col width="3%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Arguments</th>
+<th>Constraints</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#budgetc"><code>budget_constraint</code></a></td>
+<td><code>(r_mat, dir = &quot;==&quot;, rhs = 1)</code></td>
+<td>Budget constraint,i.e., sum of the portfolio equals budget B (default B=<code>rhs</code>=1)</td>
+<td>LP</td>
+</tr>
+<tr class="even">
+<td><a href="#groupc"><code>group_constraint</code></a></td>
+<td><code>(r_mat, index, coef.index = 1, dir = &quot;==&quot;, rhs)</code></td>
+<td>Group constraint applied only the the <code>index</code> elements of <span class="math inline">\(x\)</span></td>
+<td>LP</td>
+</tr>
+<tr class="odd">
+<td><a href="#turnoverc"><code>turnover_constraint</code></a></td>
+<td><code>(r_mat, x0 = NULL, dir = &quot;&lt;=&quot;, rhs = 100)</code></td>
+<td>Constraint on the turnover from some initial weights <span class="math inline">\(x_0\)</span></td>
+<td>LP</td>
+</tr>
+<tr class="even">
+<td><a href="#cardc"><code>cardinality_constraint</code></a></td>
+<td><code>(r_mat, dir = &quot;&lt;=&quot;, rhs = 100)</code></td>
+<td>Cardinality</td>
+<td>MILP</td>
+</tr>
+<tr class="odd">
+<td><a href="#rewardc"><code>reward_constraint</code></a></td>
+<td><code>(r_mat, dir = &quot;&gt;=&quot;, rhs = 0)</code></td>
+<td>Target return constraint</td>
+<td>LP</td>
+</tr>
+<tr class="even">
+<td><a href="#markc"><code>markowitz_constraint</code></a></td>
+<td><code>(r_mat, dir = &quot;&lt;=&quot;, rhs = 1000)</code></td>
+<td>Constraint on variance of portfolio <span class="math inline">\(x^{\top}Qx \leq q^2\)</span></td>
+<td>QP</td>
+</tr>
+<tr class="odd">
+<td><a href="#cvarc"><code>cvar_constraint</code></a></td>
+<td><code>(r_mat, alpha, probs = NULL, dir = &quot;&lt;=&quot;, rhs = 100)</code></td>
+<td>Constraints on the conditional Value-at-Risk</td>
+<td>LP</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="objectives" class="section level1">
+<h1>Objective functions</h1>
+<p>We consider a portfolio of assets with random returns. We denote the portfolio choice vector by <span class="math inline">\(x\)</span> and by <span class="math inline">\(r\)</span> the vector of random returns. <span class="math inline">\(N\)</span> denotes the number of assets in the portfolio while <span class="math inline">\(S\)</span> is the number of scenarios in the scenarios set.</p>
+<div id="rewardo" class="section level2">
+<h2>Maximize expected return</h2>
+<p><span class="math display">\[ \max_{x \in \mathbb{R}^N} \hat \mu^\top x \]</span> where <span class="math inline">\(\hat \mu\)</span> is the vector of estimated mean asset returns.</p>
+<p>In ROI we define a function which returns a linear objective is <code>L_objective</code> (note that the minus turns the maximization into a minimization problem):</p>
+<pre class="r"><code>reward_objective &lt;- function(r_mat) {
+    objective &lt;- L_objective(colMeans(r_mat))
+    list(objective = objective)
+}</code></pre>
+<p>(see <a href="#rewardex1">Example 1</a>, <a href="#rewardex2">Example 12</a>, <a href="#rewardex3">Example 13</a>).</p>
+</div>
+<div id="markowitzo" class="section level2">
+<h2>Minimize variance</h2>
+<p>The objective of the minimum of the variance portfolio is given by: <span class="math display">\[\min_{x \in \mathbb{R}^N} x^\top Q x\]</span> <span class="math display">\[Q = \mathbb{C}ov(r)\]</span></p>
+<pre class="r"><code>markowitz_objective &lt;- function(r_mat) {
+    objective &lt;- Q_objective(Q = 2 * cov(r_mat), 
+                             L = rep(0, NCOL(r_mat)))
+    list(objective = objective)
+}</code></pre>
+<p>(see <a href="#markex1">Example 2</a>, <a href="#markex2">Example 3</a>).</p>
+</div>
+<div id="mado" class="section level2">
+<h2>Minimize mean absolute deviation</h2>
+<p>The minimization of the mean absolute deviation can be written as a linear problem. <span class="math display">\[
+\begin{eqnarray*}
+\min_{x\in \mathbb{R}^N, y\in \mathbb{R}^S, z\in \mathbb{R}^S}&amp;&amp; \frac{1}{S} \sum_{s = 1}^S (y_s + z_s)\\
+s.t.&amp;&amp;y_s - z_s = (r_{s} - \hat \mu)^\top x,\\
+&amp;&amp; y_s \geq 0, z_s \geq 0.
+\end{eqnarray*}
+\]</span> Note that the bounds <span class="math inline">\(y_s\geq 0\)</span> and <span class="math inline">\(z_s\geq 0\)</span> must not be additionally specified as these are the default in ROI.</p>
+<pre class="r"><code>mad_objective &lt;- function(r_mat){
+    x.names &lt;- colnames(r_mat)
+    N &lt;- NCOL(r_mat)
+    S &lt;- nrow(r_mat)
+    mu &lt;- colMeans(r_mat)
+    Amat &lt;-  cbind(sweep(as.matrix(r_mat), 2,  mu), - diag(S), diag(S))
+    var.names &lt;- c(x.names, 
+                   paste0(&quot;y_mad_aux&quot;, seq_len(S)),
+                   paste0(&quot;z_mad_aux&quot;, seq_len(S)))
+    
+    constraint &lt;-  L_constraint(L = Amat, dir = rep(&quot;==&quot;, S), 
+                                rhs = rep(0, S), 
+                                names = var.names)
+
+    objective &lt;- L_objective(L = c(rep(0, N), rep(1/S, 2 * S)))
+    
+    list(objective = objective, constraint = constraint)
+}</code></pre>
+<p>(See <a href="#madex1">Example 4</a>)</p>
+</div>
+<div id="downvaro" class="section level2">
+<h2>Minimize lower semi-variance</h2>
+<p>A downside risk measure is the lower semi-variance, which is the expected squared deviation from the mean, calculated over those points that are no greater than the mean. Only returns that are below the mean contribute to the portfolio risk. Let <span class="math inline">\(r_s\)</span> denote the vector of random returns of the <span class="math inline">\(N\)</span> assets in scenario <span class="math inline">\(s\)</span>. The problem can be formulated as (using the auxiliary variable <span class="math inline">\(z\in \mathbb{R}^S\)</span>): <span class="math display">\[\min_{x\in \mathbb{R}^N} \frac{1}{S} \sum_{s = 1}^S \mathrm{max}(\hat\mu^\top x - r_s^\top x, 0)^2.\]</span> The problem can be reformulated as a QP: <span class="math display">\[
+\begin{eqnarray*}
+\min_{x\in \mathbb{R}^N, z\in \mathbb{R}^S}&amp;&amp; \frac{1}{S} \sum_{s = 1}^S z_s^2\\
+s.t.&amp;&amp;z_s \geq (\hat\mu - r_s)^\top x)\\
+&amp;&amp; z_s \geq 0.
+\end{eqnarray*}
+\]</span></p>
+<pre class="r"><code>downside_var_objective &lt;- function(r_mat, x.names = NULL) {
+    x.names &lt;- colnames(r_mat)
+    N &lt;- NCOL(r_mat)
+    S &lt;- NROW(r_mat)
+    mu &lt;- colMeans(r_mat)
+    Amat &lt;- cbind(sweep(as.matrix(r_mat), 2, mu), diag(S))
+    var.names &lt;- c(x.names, paste0(&quot;z_dvar_aux&quot;, seq_len(S)))
+    
+    constraint &lt;- L_constraint(L = Amat, dir = rep(&quot;&gt;=&quot;, S), 
+                               rhs = rep(0, S), 
+                               names = var.names)
+    objective &lt;- Q_objective(
+             Q = 2 * diag(c(rep(1e-05, N), rep(1/S, S))),
+             L = rep(0, N + S))
+    
+    list(objective = objective, constraint = constraint)
+}</code></pre>
+<p>(see <a href="#downvarex1">Example 5</a>).</p>
+</div>
+<div id="downmado" class="section level2">
+<h2>Minimize lower semi-absolute deviation</h2>
+<p>Let <span class="math inline">\(r_s\)</span> denote the vector of random returns of the <span class="math inline">\(N\)</span> assets in scenario <span class="math inline">\(s\)</span>. The downside risk measure given by the expected absolute deviation from the mean, calculated over those points that are no greater than the mean is given by: <span class="math display">\[\frac{1}{S} \sum_{s = 1}^S \vert \mathrm{max}(\hat\mu^\top x - r_s^\top x, 0) \vert\]</span> The minimization of this risk measure can be reformulated as a linear problem: <span class="math display">\[
+\begin{eqnarray*}
+\min_{x\in \mathbb{R}^N, z\in \mathbb{R}^S}&amp;&amp; \frac{1}{S} \sum_{s = 1}^S z_s,\\
+s.t.&amp;&amp; z_s \geq (\hat\mu - r_s)^\top x\\
+&amp;&amp; z_s \geq 0.
+\end{eqnarray*}
+\]</span></p>
+<pre class="r"><code>downside_mad_objective &lt;- function(r_mat){
+    x.names &lt;- colnames(r_mat)
+    N &lt;- NCOL(r_mat)
+    S &lt;- NROW(r_mat)
+    mu &lt;- colMeans(r_mat)
+    Amat &lt;- cbind(sweep(as.matrix(r_mat), 2, mu), diag(S))
+    var.names &lt;- c(x.names, paste0(&quot;z_dmad_aux&quot;, seq_len(S)))
+    
+    constraint &lt;- L_constraint(L = Amat, dir = rep(&quot;&gt;=&quot;, S),
+                               rhs = rep(0, S), 
+                               names = var.names)
+    
+    objective  &lt;- L_objective(L = c(rep(0, N), rep(1/S,  S)))
+    
+    list(objective = objective, constraint = constraint)    
+}</code></pre>
+<p>(see <a href="#downmadex1">Example 6</a>).</p>
+</div>
+<div id="cvaro" class="section level2">
+<h2>Minimize conditional value at risk</h2>
+<p>The conditional value at risk/expected shortfall is the average of the losses that exceed the <span class="math inline">\(\alpha\)</span>-quantile of the loss distribution, also called <span class="math inline">\(\alpha\)</span> Value-at-Risk (VaR). Defining the loss distribution as minus of the return of the portfolio, the problem can be formulated as follows: <span class="math display">\[
+\begin{eqnarray*}
+\min_{x\in \mathbb{R}^N, z\in \mathbb{R}^S, \gamma\in \mathbb{R}}&amp; \gamma + \frac{1}{(1-\alpha)} \sum_{s = 1}^S p_s z_s\\
+s.t.\ &amp;z_s \geq - r_s^\top x - \gamma,\\
+&amp;z_s \geq 0,
+\end{eqnarray*}
+\]</span> where VaR is a minimizer of the function over <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(p=(p_1, \dots, p_S)\)</span> is a vector of probabilities associated with the scenarios.</p>
+<pre class="r"><code>cvar_objective &lt;- function(r_mat, alpha, probs = NULL) {
+  x.names &lt;- colnames(r_mat)
+  N &lt;- NCOL(r_mat)
+  S &lt;- NROW(r_mat)
+  mu &lt;- colMeans(r_mat)
+  if (is.null(probs)) probs &lt;- rep(1/S, S)
+  if (alpha &lt; 0.5) alpha &lt;- 1 - alpha
+  
+  Amat &lt;- cbind(as.matrix(r_mat),  diag(S), 1)
+  var.names &lt;- c(x.names, paste0(&quot;z_cvar_aux&quot;, seq_len(S)), &quot;gamma&quot;)
+  
+  ## set bounds for gamma (-Inf, Inf) 
+  bnds &lt;- ROI::V_bound(li = c(N + S + 1), lb = c( -Inf),
+                       ui = c(N + S + 1), ub = c(  Inf))
+  
+  constraint &lt;- L_constraint(L = Amat, dir = rep(&quot;&gt;=&quot;, S), 
+                            rhs = rep(0, S), 
+                            names = var.names)
+
+  objective &lt;- L_objective(c(rep(0, N), probs/(1 - alpha), 1))
+
+  list(objective = objective, constraint = constraint, bounds = bnds)
+}</code></pre>
+<p>Note that if no value is specified for <span class="math inline">\(p_1, \cdots, p_S\)</span> the default is equal weights.</p>
+<p>(see <a href="#cvarex1">Example 7</a>, <a href="#cvarex3">Example 14</a>).</p>
+</div>
+<div id="minimaxo" class="section level2">
+<h2>Minimax Portfolio</h2>
+<p>The optimal portfolio is defined as that one that minimizes the maximum loss over all past historical periods, subject to a restriction on the minimum acceptable average return across all observed periods of time. The minimax portfolio maximizes the minimum gain and can be seen as a limiting case of CVaR for <span class="math inline">\(\alpha \rightarrow 1\)</span>. Let <span class="math inline">\(M_p=\min_s r_s^\top x\)</span> denote the minimum gain of the portfolio. <span class="math display">\[
+\begin{eqnarray*}
+\max_{x \in \mathbb{R}^N, M_p\in \mathbb{R}}&amp;&amp;  M_p\\
+s.t.&amp;% r_s^\top x - M_p \geq 0.
+\end{eqnarray*}
+\]</span> Young, M.R., 1998. A minimax portfolio selection rule with linear programming solution. <em>Management science</em>, 44(5), pp.673-683.</p>
+<pre class="r"><code>minimax_young_objective &lt;- function(r_mat){
+    x.names &lt;- colnames(r_mat)
+    N &lt;- NCOL(r_mat)
+    S &lt;- NROW(r_mat)
+    Amat &lt;- cbind(as.matrix(r_mat), -1)
+    
+    bnds &lt;- ROI::V_bound(li = c(N + 1), lb = c( -Inf),
+                          ui = c(N + 1), ub = c(  Inf))
+    constraint &lt;- L_constraint(L = Amat, dir=rep(&quot;&gt;=&quot;, S), rhs=rep(0, S), 
+                                      names=c(x.names,  &quot;mp_aux&quot;))
+  
+    objective &lt;- L_objective(c(rep(0, N), 1))
+  
+    list(objective = objective, constraint = constraint, bounds = bnds)     
+}</code></pre>
+<p>(see <a href="#minimaxex1">Example 8</a>).</p>
+</div>
+<div id="quaduo" class="section level2">
+<h2>Maximize quadratic utility</h2>
+Let <span class="math inline">\(\lambda\)</span> denote the risk aversion parameter. Typical risk aversion parameters lie between 2 and 4. Then the quadratic utility is given by:
+<span class="math display">\[\begin{eqnarray*}
+\max_{x\in\mathbb{R}^N}&amp;&amp;  \hat \mu^\top x - \frac{\lambda}{2} x^\top Q x
+\end{eqnarray*}\]</span>
+<pre class="r"><code>quadratic_utility_objective &lt;- function(r_mat, lambda = 2){
+    objective &lt;- Q_objective(Q = - lambda * cov(r_mat), 
+                             L = colMeans(r_mat))
+    list(objective = objective)
+}</code></pre>
+<p>(see <a href="#quaduex1">Example 9</a>).</p>
+</div>
+<div id="sharpeo" class="section level2">
+<h2>Maximize Sharpe ratio</h2>
+<p>Let <span class="math inline">\(r_f\)</span> denote the risk free rate (when not specified is set by default to zero). The Sharpe ratio of a random return of an asset <span class="math inline">\(\tilde r\)</span> is defined as: <span class="math display">\[ \frac{\mathbb{E}(\tilde r)- r_f}{\sqrt{\mathbb{V}ar(\tilde r)}} \]</span> The budget normalization constraint is applied and the problem can be formulated as a QP: <span class="math display">\[
+\begin{eqnarray*}
+\max_{y\in \mathbb{R}^N, \kappa\in \mathbb{R}}&amp; -  y^\top Q y\\
+s.t.&amp;(\hat\mu - r_f \mathit{1})^\top y = \text{1},\\
+&amp; \mathit{1}^\top y = \kappa,\\
+&amp; \kappa &gt; 0.
+\end{eqnarray*}
+\]</span> The optimal solution is given by <span class="math inline">\(x^* = y^* / \kappa^*\)</span>.</p>
+<pre class="r"><code>sharpe_objective &lt;- function(r_mat, rf = 0){
+    N &lt;- NCOL(r_mat)
+    S &lt;- NROW(r_mat)
+    mu &lt;- colMeans(r_mat)
+    Amat &lt;- rbind(c(mu - rf, 0),
+                  c(rep(0, N), 1),
+                  c(rep(1, N), -1))
+    var.names &lt;- c(paste0(&quot;y_sharpe_aux&quot;, seq_len(N)), &quot;kappa_sharpe&quot;)
+    
+    constraint &lt;- L_constraint(L = Amat, dir = c(&quot;==&quot;, &quot;&gt;&quot;, &quot;==&quot;),
+                               rhs = c(1, 0, 0), names = var.names)
+    
+    mat &lt;- matrix(0, ncol = N + 1, nrow = N + 1)
+    mat[1:N, 1:N] &lt;- 2 * cov(r_mat)
+    mat[N + 1, N + 1] &lt;-  1e-04
+
+    objective &lt;- Q_objective(Q = - mat, L = c(rep(0, N), 0))
+  
+    list(objective = objective, constraint = constraint)     
+}</code></pre>
+<p>(see <a href="#sharpeex1">Example 10</a>).</p>
+</div>
+<div id="omegao" class="section level2">
+<h2>Maximize Omega</h2>
+The Omega Ratio is a risk-return performance measure of an investment asset, portfolio, or strategy. The Omega Ratio, introduced in 2002 by Keating and Shadwick, is defined as the probability weighted ratio of gains versus losses for some threshold return target <span class="math inline">\(\tau\)</span>. <span class="math display">\[\Omega(\tilde r) = \frac{\int_\tau^{+\infty}\left(1 - F(r)\right)\mathrm{d}r}{\int_{-\infty}^\tau F(r)\mathrm{d}r} \]</span> where <span class="math inline">\(F(r)\)</span> denotes the cumulative distribution function of <span class="math inline">\(\tilde r\)</span>. The maximization of <span class="math inline">\(\Omega(\tilde r)\)</span> can be formulated as an linear problem (note that the budget normalization constraint and the target return constraint are already part of the model formulation).
+<span class="math display">\[\begin{eqnarray*}
+\max_{y\in \mathbb{R}^N, u\in \mathbb{R}^S, z\in \mathbb{R}}&amp;  \hat \mu^\top y - \tau z\\
+s.t.\ &amp; u_s \geq \tau - r_s^\top y , \\
+             &amp; u_i\geq 0,\\ 
+             &amp; \mathit{1}^\top u = 1,\\ 
+             &amp; \mathit{1}^\top y = z,\\ 
+             &amp; \hat \mu^\top y \geq \tau z,\\
+             &amp; z \geq 0  .
+\end{eqnarray*}\]</span>
+<p>The Omega optimal portfolio is given by <span class="math inline">\(x^* = y^* /z^*\)</span>, where <span class="math inline">\(z\)</span> is the homogenizing variable. If not explicitly specified, the default for the threshold is <span class="math inline">\(\tau = 0\)</span>.</p>
+<pre class="r"><code>omega_objective &lt;- function(r_mat, tau = 0){
+  ## variables y_1, ... y_N, u_1, .., u_S, z
+  N &lt;- NCOL(r_mat)
+  S &lt;- NROW(r_mat)
+  mu &lt;- colMeans(r_mat)
+  
+  Amat &lt;- rbind(cbind(as.matrix(r_mat), diag(S), 0),# u_s &gt;= tau - r_s&#39;y
+                c(rep(0, N), rep(1, S),  0), # sum(u) = 1
+                c(rep(1, N), rep(0, S), -1), # sum(y) = z
+                c(mu,        rep(0, S), - tau),
+                c(rep(0, N), rep(0, S),  1)) # mu&#39;y  &gt;= tau * z
+  var.names &lt;- c(paste0(&quot;y_omega_aux&quot;, seq_len(N)),
+                 paste0(&quot;u_omega_aux&quot;, seq_len(S)), 
+                 &quot;z_omega&quot;)
+  constraint &lt;-  L_constraint(L = Amat,  
+                              dir = c(rep(&quot;&gt;=&quot;, S), &quot;==&quot;, &quot;==&quot;, &quot;&gt;=&quot;, &quot;&gt;&quot;),
+                              rhs = c(rep(tau, S), 1, 0, 0, 1e-05), 
+                              names=var.names)
+  objective  &lt;- L_objective(L = c(mu, rep(0, S), -tau))
+  
+  list(objective = objective, constraint = constraint)    
+  ## x* &lt;- y*/z*
+}</code></pre>
+<p>(see <a href="#omegaex1">Example 11</a>).</p>
+</div>
+</div>
+<div id="constraints" class="section level1">
+<h1>Constraints</h1>
+<div id="box-constraints" class="section level2">
+<h2>Box constraints</h2>
+<p>Can be set by the argument <code>bounds</code> in <code>OP()</code>. Note that the default in ROI is <span class="math inline">\(0 \leq x_i \leq \infty\)</span>.</p>
+</div>
+<div id="budgetc" class="section level2">
+<h2>Budget constraint</h2>
+<p><span class="math display">\[\sum_{i=1}^N x_i = B \qquad \sum_{i=1}^N x_i \leq B_u \qquad \sum_{i=1}^N x_i \geq B_l.\]</span> Budget normalization constraint is obtained for B = 1 (default).</p>
+<pre class="r"><code>budget_constraint &lt;- function(r_mat, dir = &quot;==&quot;, rhs = 1) {
+    x.names &lt;- colnames(r_mat)
+    L_constraint(L = rep(1, NCOL(r_mat)), 
+                 dir = dir,  rhs = rhs, names = x.names)
+}</code></pre>
+</div>
+<div id="groupc" class="section level2">
+<h2>Group constraints</h2>
+<p>Group constraints are linear constraints which apply to only some elements of the portfolio choice vector <span class="math inline">\(x\)</span>: <span class="math display">\[ ax_i + bx_j = c \]</span> where the <span class="math inline">\(=\)</span> can be replaced by inequalities.</p>
+<pre class="r"><code>group_constraint &lt;- function(r_mat, index, coef.index = 1, dir = &quot;==&quot;, rhs) {
+  ## index = (i, j)
+  ## coef.index = c(a,b)
+  ## rhs = c
+  x.names &lt;- colnames(r_mat)
+  N &lt;- NCOL(r_mat)
+  L &lt;- rep(0, N)
+  L[index] &lt;- coef.index
+  L_constraint(L = L, dir = dir, rhs = rhs, names = x.names)
+}</code></pre>
+<p>(see <a href="#rewardex1">Example 1</a>, <a href="#rewardex2">Example 12</a>).</p>
+</div>
+<div id="turnoverc" class="section level2">
+<h2>Turnover constraint</h2>
+For a target turnover <span class="math inline">\(L\)</span> and some initial weights <span class="math inline">\(x_0\)</span>, the turnover contraint is <span class="math display">\[\sum_{i=1}^N \vert x_i - x_{i0}\vert \leq L.\]</span> This can be reformulated in terms of auxiliary variables <span class="math inline">\(y^+, y^- \in \mathbb{R}^{+N}\)</span> such that
+<span class="math display">\[\begin{eqnarray*}
+&amp;&amp;y^+_i- y_i^- = x_i - x_{0i}\\
+&amp;&amp;\sum_{i=1}^N (y_i^+ + y_i^-)\leq L\\
+&amp;&amp;y^+ \geq 0, \, y^-\geq 0
+\end{eqnarray*}\]</span>
+<p>If no initial weights are specified, the default is equal weights. Note: does not work out of the box with Omega and Sharpe objectives.</p>
+<pre class="r"><code>turnover_constraint &lt;- function(r_mat, x0 = NULL, dir = &quot;&lt;=&quot;, rhs = 100) {
+    x.names &lt;- colnames(r_mat)
+    N &lt;- NCOL(r_mat)
+    S &lt;- NROW(r_mat)
+    if (is.null(x0)) x0 &lt;- rep(1/N, N)
+    Amat &lt;- cbind(diag(N), - diag(N), diag(N))
+    var.names &lt;- c(x.names,  
+                   paste0(&quot;y_plus_aux&quot;, seq_len(N)), 
+                   paste0(&quot;y_minus_aux&quot;, seq_len(N)))
+    
+    rbind(L_constraint(L = Amat, dir = rep(&quot;==&quot;, N), rhs = x0, 
+                       names = var.names),
+          L_constraint(c(rep(0, N), rep(1, N), rep(1, N) ), 
+                       dir = dir, rhs = rhs, names = var.names))
+}</code></pre>
+<p>(see <a href="#rewardex2">Example 12</a>).</p>
+</div>
+<div id="cardc" class="section level2">
+<h2>Cardinality constraint</h2>
+<p>The cardinality constraint assigns bounds <span class="math inline">\(P_{min}\)</span> and <span class="math inline">\(P_{max}\)</span> on the number of assets in a portfolio. Binary auxiliary variables <span class="math inline">\(z\in \mathbb{R}^N\)</span> are introduced such that <span class="math inline">\(P_{min} \leq \sum_{i=1}^N z_i\leq P_{max}\)</span> and <span class="math inline">\(x_i - z_i \leq 0\)</span>.</p>
+<pre class="r"><code>cardinality_constraint &lt;- function(r_mat, dir = &quot;&lt;=&quot;, rhs = 100) {
+  x.names &lt;- colnames(r_mat)
+  N &lt;- NCOL(r_mat)
+  Amat &lt;- cbind(diag(N), -diag(N))
+  var.names &lt;- c(x.names, paste0(&quot;z_card_aux&quot;, seq_len(N)))
+  cat(&quot;Variable types for z_card_aux must be set to binary.\n&quot;)
+  rbind(L_constraint(L = Amat, dir = rep(&quot;&lt;=&quot;, N), 
+                     rhs = rep(0, N), names = var.names), 
+        L_constraint(L = c(rep(0, N), rep(1, N)), dir = dir,  
+                     rhs = rhs, names = var.names))
+}</code></pre>
+<p>(see <a href="#cvarex2">Example 14</a>).</p>
+</div>
+<div id="rewardc" class="section level2">
+<h2>Target return constraint</h2>
+<p>Also typical objective functions can be used as constraints. For example, the expected return must not fall below a value <span class="math inline">\(\tau\)</span>: <span class="math display">\[\hat\mu^\top x \geq \tau\]</span> Note: does not work with Sharpe or Omega (it is included in both Sharpe and Omega maximization problems).</p>
+<pre class="r"><code>reward_constraint &lt;- function(r_mat, dir = &quot;&gt;=&quot;, rhs = 0) {
+  x.names &lt;- colnames(r_mat)
+  L_constraint(L = colMeans(r_mat), dir = dir,  
+               rhs = rhs, names = x.names)
+}</code></pre>
+<p>(see <a href="#markex1">Example 3</a>, <a href="#downmadex1">Example 6</a>).</p>
+</div>
+<div id="markc" class="section level2">
+<h2>Risk constraints – Variance</h2>
+<p>Typically constraints of the form <span class="math inline">\(x^\top Q x \leq q^2\)</span>. Note however that this is a quadratic constraint and needs appropriate solvers (e.g., in ROI.plugin.alabama). Note: does not work with Omega.</p>
+<pre class="r"><code>markowitz_constraint &lt;- function(r_mat, dir = &quot;&lt;&quot;, rhs = 1000) {
+    x.names &lt;- colnames(r_mat)
+    N &lt;- NCOL(r_mat)
+    Q_constraint(Q = 2 * cov(r_mat), L = rep(0, N), 
+                 dir = dir, rhs = rhs, names=x.names)
+}</code></pre>
+<p>(see <a href="#rewardex3">Example 13</a>).</p>
+</div>
+<div id="cvarc" class="section level2">
+<h2>Risk constraints – CVaR</h2>
+<p>Typically CVaR<span class="math inline">\((x, \alpha) \leq q\)</span>. Note: does not work with Omega and Sharpe.</p>
+<pre class="r"><code>cvar_constraint &lt;- function(r_mat, alpha, probs = NULL, dir = &quot;&lt;=&quot;, rhs = 100) {
+  x.names &lt;- colnames(r_mat)
+  N &lt;- NCOL(r_mat)
+  S &lt;- NROW(r_mat)
+  if (alpha &lt; 0.5) alpha &lt;- 1 - alpha
+  if (is.null(probs)) probs &lt;- rep(1/S, S)
+  
+  Amat &lt;- cbind(as.matrix(r_mat), diag(S), 1)
+  var.names &lt;- c(x.names, paste0(&quot;z_cvar_aux&quot;, seq_len(S)), &quot;gamma&quot;)
+  # set bounds for gama
+  bnds &lt;- ROI::V_bound(li = c(N + S + 1), lb = c( -Inf),
+                       ui = c(N + S + 1), ub = c(  Inf))
+  rbind(L_constraint(L = Amat, dir = rep(&quot;&gt;=&quot;, S), 
+                     rhs=rep(0, S), names = var.names), 
+        L_constraint(c(rep(0, N), rep(1 / ((1 - alpha) * S), S), 1), 
+                     dir = dir, rhs = rhs, names = var.names))
+}    </code></pre>
+<p>(see <a href="#rewardex2">Example 12</a>).</p>
+</div>
+</div>
+<div id="data" class="section level1">
+<h1>Data</h1>
+<p>For illustration purposes daily log returns for the past 180 days of the 30 companies included in the 2018 Dow Jones Industrial Average will be used.</p>
+<pre class="r"><code>if (!require(&quot;quantmod&quot;)) install.packages(&quot;quantmod&quot;); library(&quot;quantmod&quot;)
+Tickers     &lt;- c(&quot;MMM&quot;, &quot;AXP&quot;,&quot;AAPL&quot;, &quot;BA&quot;,&quot;CAT&quot;,&quot;CVX&quot;,&quot;CSCO&quot;, &quot;KO&quot;, &quot;DWDP&quot;, &quot;XOM&quot;,
+                 &quot;GS&quot;,&quot;HD&quot;, &quot;IBM&quot;, &quot;INTC&quot;, &quot;JNJ&quot;, &quot;JPM&quot;,&quot;MCD&quot;,&quot;MRK&quot;,&quot;MSFT&quot;,
+                 &quot;NKE&quot;, &quot;PFE&quot;,&quot;PG&quot;,
+                 &quot;TRV&quot;, &quot;UNH&quot;,&quot;UTX&quot;, &quot;VZ&quot;, &quot;V&quot;, &quot;WMT&quot;, &quot;WBA&quot;, &quot;DIS&quot;)
+
+cached_file &lt;- &quot;cache/cached_portfolio_data.rda&quot;
+if ( file.exists(cached_file) ) {
+  load(cached_file)
+} else {
+  download_tickers &lt;- function(x) {
+    download_ticker_error_handler &lt;- function(e) {
+      warning(paste(x, &#39;not found&#39;))
+      return(NA)
+    }
+    tryCatch(getSymbols(x, from = Sys.Date() - 180, auto.assign = FALSE),
+             error = download_ticker_error_handler)
+  }
+  Historicals &lt;- lapply(Tickers, download_tickers)
+
+  prices &lt;- do.call(&quot;cbind&quot;,lapply(Historicals, function(x) x[, 6]))
+
+  djia2018 &lt;- as.data.frame((log(lag(prices)) - log(prices))[-1, ])
+  save(Historicals, prices, djia2018, file = cached_file)
+}</code></pre>
+<p>We consider a portfolio of assets with random returns. We denote the portfolio choice vector by <span class="math inline">\(x\)</span> and by <span class="math inline">\(r\)</span> the vector random returns. <span class="math inline">\(N\)</span> denotes the number of assets in the portfolio while <span class="math inline">\(S\)</span> is the number of scenarios in the scenarios set.</p>
+<!-- ############################################# -->
+</div>
+<div id="examples" class="section level1">
+<h1>Examples</h1>
+<div id="rewardex1" class="section level2">
+<h2>Example 1: Maximize expected return subject to budget normalization and group constraints</h2>
+<p>The following optimization problem: <span class="math display">\[
+\begin{eqnarray*}
+\max_{x \in \mathbb{r}^N}&amp;&amp; \hat \mu^\top x\\
+\sum_{x=1}^N x_i &amp;=&amp; 1\\
+x_i &amp;\geq&amp; 0\\
+x_3 + x_{17} &amp;\leq&amp; 0.5 
+\end{eqnarray*} 
+\]</span> can be set up easily in ROI:</p>
+<pre class="r"><code>lp  &lt;- OP(objective  =  reward_objective(djia2018)$objective,
+          constraints = rbind(budget_constraint(djia2018),
+                              group_constraint(djia2018, index = c(3, 17), dir = &quot;==&quot;, rhs = 0.5)),
+          maximum = T)</code></pre>
+<p>(Note that the bounds can be omitted as this is the default in ROI). To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.516122e-03</code></pre>
+<pre class="r"><code>solution(sol)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##           0.0           0.0           0.5           0.0           0.0 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##           0.0           0.0           0.0           0.0           0.0 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##           0.5           0.0           0.0           0.0           0.0 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##           0.0           0.0           0.0           0.0           0.0 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##           0.0           0.0           0.0           0.0           0.0 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##           0.0           0.0           0.0           0.0           0.0</code></pre>
+</div>
+<div id="markex1" class="section level2">
+<h2>Example 2: Minimum variance portfolio</h2>
+<pre class="r"><code>lp  &lt;- OP(objective  =  markowitz_objective(djia2018)$objective,
+          constraints = rbind(budget_constraint(djia2018)))</code></pre>
+<p>(Note that the bounds can be omitted as this is the default in ROI). To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 4.345243e-05</code></pre>
+<pre class="r"><code>round(solution(sol), 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.051         0.000         0.212         0.000         0.069 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.000         0.068         0.000         0.000         0.076 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.040         0.067         0.000         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.000         0.079         0.000         0.000         0.048 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.142         0.013         0.012         0.018         0.107</code></pre>
+</div>
+<div id="markex2" class="section level2">
+<h2>Example 3: Minimum variance portfolio with budget normalization and target return constraint</h2>
+<pre class="r"><code>lp  &lt;- OP(objective  =  markowitz_objective(djia2018)$objective,
+          constraints = rbind(budget_constraint(djia2018),
+                              reward_constraint(djia2018, rhs = 0.001)))</code></pre>
+<p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 8.484419e-05</code></pre>
+<pre class="r"><code>round(solution(sol), 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.102         0.000         0.135         0.071         0.000 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.225         0.219         0.157         0.000         0.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.000         0.020         0.000         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.000         0.000         0.071         0.000         0.000 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000</code></pre>
+</div>
+<div id="madex1" class="section level2">
+<h2>Example 4: Minimize mean absolute deviation portfolio</h2>
+<p>The minimum MAD portfolio is given by:</p>
+<pre class="r"><code>lp  &lt;- OP(objective  =  mad_objective(djia2018)$objective,
+          constraints = rbind(mad_objective(djia2018)$constraint,
+                              budget_constraint(djia2018),
+                              use.names = TRUE))</code></pre>
+<p>(Note that the bounds can be omitted as this is the default in ROI). To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 4.587062e-03</code></pre>
+<p>The optimal weights are:</p>
+<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.026         0.027         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.053         0.000         0.185         0.000         0.033 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.000         0.132         0.000         0.000         0.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.039         0.054         0.033         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.018         0.113         0.000         0.000         0.000 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.088         0.000         0.032         0.041         0.126</code></pre>
+</div>
+<div id="downvarex1" class="section level2">
+<h2>Example 5: The minimum lower semi-variance portfolio</h2>
+<p>The minimum lower semi-variance portfolio is given by:</p>
+<pre class="r"><code>tmp &lt;- downside_var_objective(djia2018)
+lp  &lt;- OP(objective  = tmp$objective,
+          constraints = rbind(tmp$constraint,
+                              budget_constraint(djia2018), 
+                              use.names = TRUE))</code></pre>
+<p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.804649e-05</code></pre>
+<p>The optimal weights are:</p>
+<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.044         0.000         0.100         0.000         0.078 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.000         0.046         0.019         0.000         0.013 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.086         0.064         0.006         0.000         0.014 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.079         0.048         0.000         0.000         0.074 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.144         0.000         0.000         0.031         0.153</code></pre>
+</div>
+<div id="downmadex1" class="section level2">
+<h2>Example 6: Minimum lower semi-absolute deviation portfolio with target return constraint</h2>
+<p>The portfolio with minimum lower semi-absolute deviation and minimum 0.001 target return is given by:</p>
+<pre class="r"><code>tmp &lt;- downside_mad_objective(djia2018)
+lp  &lt;- OP(objective  = tmp$objective,
+          constraints = rbind(tmp$constraint,
+                              budget_constraint(djia2018),
+                              reward_constraint(djia2018, rhs = 0.001),
+                              use.names = TRUE))</code></pre>
+<p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 3.290369e-03</code></pre>
+<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.068         0.000         0.093         0.006         0.029 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.283         0.283         0.130         0.000         0.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.000         0.040         0.000         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.000         0.000         0.047         0.000         0.000 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.021         0.000         0.000         0.000         0.000</code></pre>
+</div>
+<div id="example-7-minimum-95-99-conditional-value-at-risk" class="section level2">
+<h2>Example 7: Minimum 95% &amp; 99% conditional value at risk:</h2>
+<p>The portfolio with minimum 95% conditional value at risk can be obtained as follows:</p>
+<pre class="r"><code>tmp &lt;- cvar_objective(djia2018, alpha = 0.95)
+lp  &lt;- OP(objective  =  tmp$objective,
+          constraints = rbind(tmp$constraint,
+                              budget_constraint(djia2018),
+                              use.names = TRUE),
+          bounds = tmp$bounds)</code></pre>
+<p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.119712e-02</code></pre>
+<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.000         0.000         0.054         0.000         0.163 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.000         0.030         0.155         0.000         0.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.006         0.000         0.000         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.046         0.070         0.000         0.000         0.074 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.211         0.000         0.000         0.018         0.172</code></pre>
+<p>The solution for 99% CVaR is given by:</p>
+<pre class="r"><code>tmp99 &lt;- cvar_objective(djia2018, alpha = 0.99)
+lp99  &lt;- OP(objective  =  tmp99$objective,
+          constraints = rbind(tmp99$constraint,
+                              budget_constraint(djia2018),
+                              use.names = TRUE),
+          bounds = tmp$bounds)
+sol99 &lt;- ROI_solve(lp99, solver = &quot;glpk&quot;)</code></pre>
+<pre class="r"><code>round(solution(sol99)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.035         0.000         0.005         0.000         0.217 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.000         0.069         0.133         0.000         0.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.016         0.000         0.000         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.071         0.100         0.000         0.000         0.000 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.242         0.000         0.000         0.007         0.105</code></pre>
+<p>The 95% or the 99% VaR are a by-product of the optimization problem and can be extracted from the solution</p>
+<pre class="r"><code>VaR &lt;- c(&quot;0.95&quot; = sol$solution[&quot;gamma&quot;], 
+         &quot;0.99&quot; = sol99$solution[&quot;gamma&quot;]) 
+VaR</code></pre>
+<pre><code>## 0.95.gamma 0.99.gamma 
+## 0.01064806 0.01169682</code></pre>
+</div>
+<div id="minimaxex1" class="section level2">
+<h2>Example 8: The minimax portfolio</h2>
+<pre class="r"><code>tmp &lt;- minimax_young_objective(djia2018)
+lp  &lt;- OP(objective  =  tmp$objective,
+          constraints = rbind(tmp$constraint,
+                              budget_constraint(djia2018),
+                              use.names = TRUE),
+          bounds =  tmp$bounds,
+          maximum =  T)</code></pre>
+<p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: -1.169682e-02</code></pre>
+<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.035         0.000         0.005         0.000         0.217 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.000         0.069         0.133         0.000         0.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.016         0.000         0.000         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.071         0.100         0.000         0.000         0.000 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.242         0.000         0.000         0.007         0.105</code></pre>
+</div>
+<div id="quaduex1" class="section level2">
+<h2>Example 9: Maximize quadratic utility where short selling is allowed but the weights should not be less than -1.</h2>
+<pre class="r"><code>tmp &lt;- quadratic_utility_objective(djia2018)
+lp  &lt;- OP(objective  =  tmp$objective,
+          constraints = budget_constraint(djia2018),
+          bounds = V_bound(li = seq_len(NCOL(djia2018)), 
+                           lb = rep(-1, NCOL(djia2018))),
+          maximum = T)</code></pre>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 3.018209e-02</code></pre>
+<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##        -1.000        -1.000        -0.173        -0.221        -1.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         1.700        -1.000        -1.000         3.359        -1.000 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         6.592         3.561         3.906         1.708        -1.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##        -1.000        -1.000        -1.000        -1.000        -1.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##        -1.000        -1.000         1.567        -1.000        -1.000 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##        -1.000        -1.000        -1.000        -1.000        -1.000</code></pre>
+</div>
+<div id="sharpeex1" class="section level2">
+<h2>Example 10: Maximize Sharpe ratio with shortselling</h2>
+<pre class="r"><code>N &lt;- NCOL(djia2018)
+tmp &lt;-sharpe_objective(djia2018)
+
+lp &lt;- OP(maximum = T)
+objective(lp) &lt;- tmp$objective</code></pre>
+<p>When imposing constraints on the portfolio choice vector <span class="math inline">\(x\)</span> using the Sharpe objective, one must keep in mind that <span class="math inline">\(x^* = y^* / \kappa^*\)</span>, where <span class="math inline">\(y\)</span> and <span class="math inline">\(\kappa\)</span> are the values optimized. Hence, the constraint <span class="math inline">\(x_i \geq -1\)</span> must be transformed to: <span class="math display">\[ y_i/\kappa \geq -1 \Rightarrow y_i \geq -\kappa \Rightarrow y_i + \kappa \geq 0 \]</span>:</p>
+<pre class="r"><code>mat &lt;- cbind(diag(N),  1)
+shortsell_constraint &lt;- L_constraint(mat, dir = rep(&quot;&gt;=&quot;, N),
+                                     rhs = rep(0, N))
+
+constraints(lp) &lt;- rbind(tmp$constraint,
+                         shortsell_constraint)</code></pre>
+<p>Moreover, the lower bounds for the auxiliary variables must be set to <code>-Inf</code>.</p>
+<pre class="r"><code>bounds(lp) &lt;- V_bound(li = seq_len(N +1), 
+                      lb = c(rep(-Inf, N), 0))</code></pre>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: -6.311826e+00</code></pre>
+<p>The optimal solution is given by <span class="math inline">\(x^* = y^* / \kappa^*\)</span>:</p>
+<pre class="r"><code>sol_sharpe &lt;- solution(sol)
+x_opt &lt;- round(sol_sharpe[1:30]/sol_sharpe[&quot;kappa_sharpe&quot;], 3)
+names(x_opt) &lt;-colnames(djia2018)
+x_opt</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##        -0.970        -1.000         0.831        -0.037        -0.519 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         1.352        -1.000         2.387         1.414        -0.399 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         2.925         1.828         1.861         0.993        -1.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##        -1.000        -0.243        -1.000        -0.560        -0.364 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##        -1.000        -0.916         1.861        -1.000        -0.303 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##        -1.000        -0.622        -0.185        -0.617        -0.715</code></pre>
+</div>
+<div id="omegaex1" class="section level2">
+<h2>Example 11: Maximize Omega</h2>
+<pre class="r"><code>tmp &lt;- omega_objective(djia2018)
+lp  &lt;- OP(objective  =  tmp$objective,
+          constraints = tmp$constraint,
+          maximum = T)</code></pre>
+<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 4.407022e-03</code></pre>
+<p>The optimal solution is given by <span class="math inline">\(x^* = y^* / z^*\)</span>.</p>
+<pre class="r"><code>sol_omega &lt;- solution(sol)
+x_opt &lt;- round(sol_omega[1:30]/sol_omega[&quot;z_omega&quot;], 3)
+names(x_opt) &lt;-colnames(djia2018)
+x_opt</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.000         0.000         0.000         0.175         0.000 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.511         0.166         0.149         0.000         0.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000</code></pre>
+</div>
+<div id="rewardex2" class="section level2">
+<h2>Example 12: Maximize expected returns wrt to cvar, turnover, short selling and group constraints</h2>
+<span class="math display">\[\begin{eqnarray*}
+\max_{x\in\mathbb{R}^N}&amp;  \hat\mu^\top x \\
+s.t.&amp; \mathrm{CVaR}(x, 0.95) \leq 0.02 \\
+             &amp; x_i \geq  -1\\
+             &amp; x_2 + x_{10} + x_{20}\leq 0.5 \\
+             &amp; \sum_{i=1}^N \vert x_i - x_{0i} \vert \leq 0.5
+\end{eqnarray*}\]</span>
+<p>Given that the constraints have more (auxiliary) variables than the objective, first the constraints are defined:</p>
+<pre class="r"><code>lp &lt;- OP(maximum = T)
+
+constraints(lp) &lt;- rbind(
+  budget_constraint(djia2018),
+  group_constraint(djia2018, index = c(2, 10, 20), dir = &quot;&lt;=&quot;, rhs = 0.5),
+  turnover_constraint(djia2018, dir = &quot;&lt;=&quot;, rhs = 0.5),
+  cvar_constraint(djia2018, alpha = 0.95, rhs = 0.02),
+  use.names = TRUE)</code></pre>
+<p>Next, the vector of the linear objective is filled with zeros to match the dimension of the constraints:</p>
+<pre class="r"><code>obj &lt;- c(terms(reward_objective(djia2018)$objective)$L)
+objective(lp) &lt;- c(obj, double(ncol(constraints(lp)) - length(obj)))
+(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 8.153523e-04</code></pre>
+<pre class="r"><code>solution(sol)[1:30]</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##    0.03333333    0.03333333    0.03333333    0.03333333    0.03333333 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##    0.03333333    0.03333333    0.03333333    0.07703204    0.03333333 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##    0.23963463    0.03333333    0.03333333    0.03333333    0.00000000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##    0.03333333    0.03333333    0.00000000    0.03333333    0.03333333 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##    0.00000000    0.00000000    0.03333333    0.01666667    0.03333333 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##    0.00000000    0.03333333    0.00000000    0.00000000    0.03333333</code></pre>
+</div>
+<div id="rewardex3" class="section level2">
+<h2>Example 13: Maximize expected return wrt variance constraint</h2>
+<span class="math display">\[\begin{eqnarray*}
+\max_{x\in\mathbb{R}^N}&amp;&amp;  \hat\mu^\top x \\
+s.t.&amp;&amp; x^{\top}Qx \leq 0.1 \\
+             &amp;&amp;\sum_{i=1}^N x_i =1\\
+             &amp;&amp; x_i \geq 0
+\end{eqnarray*}\]</span>
+<pre class="r"><code>p &lt;- OP(maximum = T)
+
+constraints(p) &lt;- rbind(
+  markowitz_constraint(djia2018, dir = &quot;&lt;=&quot;, rhs = 0.5^2),
+  budget_constraint(djia2018),
+  use.names = TRUE)
+
+objective(p) &lt;- reward_objective(djia2018)$objective </code></pre>
+<p>When using the alabama solver starting values need to be chosen. A good strategy is to use several starting values and compare the results.</p>
+<pre class="r"><code>mstart &lt;- lapply(1:10, function(x) runif(length(objective(p))))
+solus &lt;- lapply(mstart, function(s) ROI_solve(p, solver = &quot;alabama&quot;, start = s))
+best_solution &lt;- which.max(sapply(solus, solution, type = &quot;objval&quot;))  
+round(solution(solus[[best_solution]]), 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##             0             0             0             0             0 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##             0             0             0             0             0 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##             1             0             0             0             0 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##             0             0             0             0             0 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##             0             0             0             0             0 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##             0             0             0             0             0</code></pre>
+</div>
+<div id="cvarex2" class="section level2">
+<h2>Example 14: Minimize 99% CVaR wrt cardinality constraints</h2>
+<span class="math display">\[\begin{eqnarray*}
+\min_{x\in \mathbb{R}^N, z\in \mathbb{R}^S, \gamma\in \mathbb{R}}&amp; &amp;\gamma + \frac{1}{(1-0.99)} \sum_{s = 1}^S p_s z_s\\
+s.t.&amp;&amp;z_s \geq - r_s^\top x - \gamma,\\
+&amp;&amp;z_s \geq 0,\\
+&amp;&amp; \sum_{i=1}^N u_i\leq 6,\\ 
+&amp;&amp; x_i - u_i \leq 0.
+\end{eqnarray*}\]</span>
+<p>where <span class="math inline">\(u\in \mathbb{R}^N\)</span>are binary auxiliary variables.</p>
+<pre class="r"><code>tmp &lt;- cvar_objective(djia2018, 0.99)
+lp &lt;- OP()
+
+constraints(lp) &lt;- rbind(
+  tmp$constraint,
+  budget_constraint(djia2018),
+  cardinality_constraint(djia2018, dir = &quot;&lt;=&quot;, rhs = 6),
+  use.names = TRUE)</code></pre>
+<pre><code>## Variable types for z_card_aux must be set to binary.</code></pre>
+<pre class="r"><code>obj &lt;-c((tmp$objective)$L)
+objective(lp) &lt;- c(obj, double(NCOL(constraints(lp)) - length(obj)))
+
+types(lp) &lt;- rep(&quot;C&quot;,  NCOL(constraints(lp) ))
+types(lp)[grep(&quot;z_card_aux&quot;, constraints(lp)$names)] &lt;- &quot;B&quot;
+
+(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.225243e-02</code></pre>
+<pre class="r"><code>round(solution(sol)[1:30], 3)</code></pre>
+<pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
+##         0.000         0.000         0.000         0.000         0.284 
+##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
+##         0.000         0.106         0.154         0.000         0.000 
+##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
+##         0.000         0.000         0.000         0.000         0.000 
+##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
+##         0.000         0.123         0.000         0.000         0.000 
+##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
+##         0.227         0.000         0.000         0.000         0.107</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
