@@ -103,11 +103,17 @@ ROI_solve <- function( x, solver, control = list(), ... ) {
         SOLVE <- methods[[ solver ]]
         if ( !is.function(SOLVE) ) {
             ## CASE: applicable solvers found but the solver provided is wrong
-            ##       => issue warning and fallback to the other solver
-            SOLVE <- methods[[1]]
-            warning( "solver '", solver, "' not found or applicable, ROI uses '",
-                     names(methods)[1], "' instead" )
-            solver <- names( methods )[1]
+            ##       => issue warning and fallback to the other solver            
+            if ( isTRUE(solver %in% names(ROI_registered_solvers())) ) {
+                stop("solver '", solver, "' is not applicable to this OP! ",
+                     "Consider using one of the following solver instead:\n",
+                     paste(shQuote(names(methods)), collapse = ", "))
+                
+            } else {
+                stop("solver '", solver, "' is not among the registered solvers! ",
+                     "Consider using one of the following solver instead:\n",
+                      paste(shQuote(names(methods)), collapse = ", "))
+            }
         }
     } else {
         ## select the solver given on an ordering in ROI_options
