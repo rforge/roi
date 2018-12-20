@@ -11,5 +11,6 @@ solver_db <- rbind(solver_db_cran, solver_db_rforge, solver_db_github)
 rownames(solver_db) <- NULL
 colnames(solver_db)
 solver_db[, c("Package", "Repository")]
+length(unique(solver_db[, c("Package")]))
 
 saveRDS(solver_db, "SOLVERS.rds")

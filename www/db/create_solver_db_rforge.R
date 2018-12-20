@@ -29,6 +29,10 @@ if (FALSE) {
     solvers <- readRDS("SOLVERS.rds")
     solvers[3, "Signature"]
     class(solvers[3, "Signature"])
+
+    colnames(solver_db_rforge)
+    solver_db_rforge$Package
+
 }
 
 

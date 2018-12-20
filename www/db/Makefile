@@ -1,4 +1,4 @@
-RR=/home/florian/bin/R_dev/bin/R
+RR=R
 
 all: solver_db_cran solver_db_rforge solver_db_github solver_db_merge
 
