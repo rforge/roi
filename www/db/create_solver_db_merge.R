@@ -13,4 +13,6 @@ colnames(solver_db)
 solver_db[, c("Package", "Repository")]
 length(unique(solver_db[, c("Package")]))
 
+stopifnot( all(sapply(solver_db$Signature, NROW) > 1L) )
+
 saveRDS(solver_db, "SOLVERS.rds")

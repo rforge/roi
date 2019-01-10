@@ -12,6 +12,10 @@ CRAN <- "https://cran.r-project.org/"
 
 ## r_version, lib.loc, repos 
 solver_db_github <- create_solver_db_github(r_version, lib.loc, repos, CRAN)
+
+b <- sapply(solver_db_github$Signature, nrow) == 0L
+solver_db_github$Package[b]
+
 saveRDS(solver_db_github, file = "SOLVERS_GITHUB.rds")
 
 if (FALSE) {
