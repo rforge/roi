@@ -3,11 +3,14 @@ setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
 
 source("create_solver_db_functions.R")
 
-R <- "/home/florian/bin/R_dev/bin/R"
-RFORGE <- "https://r-forge.r-project.org"
 
-## r_version, lib.loc, repos 
-solver_db_rforge <- create_solver_db_rforge(R, head(.libPaths()), RFORGE)
+r_version <- "R"
+lib.loc <- head(.libPaths(), 1)
+repos <- "https://r-forge.r-project.org"
+
+solver_db_rforge <- create_solver_db_rforge(r_version, lib.loc, repos)
+b <- sapply(solver_db_rforge$Signature, nrow) == 0L
+solver_db_rforge$Package[b]
 
 saveRDS(solver_db_rforge, file = "SOLVERS_R-Forge.rds")
 

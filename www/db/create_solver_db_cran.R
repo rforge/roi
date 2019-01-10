@@ -3,13 +3,17 @@ setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
 
 source("create_solver_db_functions.R")
 
-R <- "/home/florian/bin/R_dev/bin/R"
-CRAN <- "https://CRAN.R-project.org"
+r_version <- "R"
+lib.loc <- head(.libPaths(), 1)
+repos <- "https://r-forge.r-project.org"
 
 ## r_version, lib.loc, repos 
-solver_db_cran <- create_solver_db_cran(R, head(.libPaths()), CRAN)
+solver_db_cran <- create_solver_db_cran(r_version, lib.loc, repos)
 solver_db_cran$Repository <- "https://CRAN.R-project.org"
 solver_db_cran$Repository
+
+b <- sapply(solver_db_cran$Signature, nrow) == 0L
+solver_db_cran$Package[b]
 
 saveRDS(solver_db_cran, file = "SOLVERS_CRAN.rds")
 

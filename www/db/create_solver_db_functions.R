@@ -73,13 +73,13 @@ parse_description <- function(pkg, lib.loc, cnames) {
     a
 }
 
-extract_signature <- function(solver) {
+extract_signature <- function(plugin) {
     signature_entries <- get_signature_entries()
     entries <- ROI:::solver_db$get_entries()
-    .extract_signature <- function(x) as.df(x[c("solver", signature_entries)])
+    .extract_signature <- function(x) as.df(x[c("plugin", "solver", signature_entries)])
     solver_signatures <- do.call(rbind, lapply(entries, .extract_signature))    
-    i <- which(solver_signatures$solver == solver)
-    solver_signatures <- solver_signatures[i, -1L]
+    i <- which(solver_signatures$plugin == plugin)
+    solver_signatures <- solver_signatures[i, -1L]    
     rownames(solver_signatures) <- NULL
     solver_signatures
 }
@@ -121,8 +121,8 @@ create_solver_db_cran <- function(r_version, lib.loc, repos = "https://cran.r-pr
         status <- install_package(pkg, repos, lib.loc, r_version)
         if (!status) {
             suppressMessages( do.call(require, list(pkg)) )
-            solver <- gsub("^ROI\\.plugin\\.", "", pkg)
-            roi_solver_cran[[i, 'Signature']] <- extract_signature(solver)
+            plugin <- gsub("^ROI\\.plugin\\.", "", pkg)
+            roi_solver_cran[[i, 'Signature']] <- extract_signature(plugin)
             ## try(remove.packages(pkg, lib.loc), silent = TRUE)
         } else {
             cat("NOTE: package '", pkg, "' could not be installed from '", repos, "'!\n", sep = "")
@@ -151,8 +151,8 @@ create_solver_db_rforge <- function(r_version, lib.loc, repos = "http://R-Forge.
         if (!status) {
             roi_solver_rforge[[i]] <- parse_description(pkg, lib.loc, cnames)
             suppressMessages( do.call(require, list(pkg)) )
-            solver <- gsub("^ROI\\.plugin\\.", "", pkg)
-            roi_solver_rforge[[i]]$Signature <- list(extract_signature(solver))
+            plugin <- gsub("^ROI\\.plugin\\.", "", pkg)
+            roi_solver_rforge[[i]]$Signature <- list(extract_signature(plugin))
         } else {
             cat("NOTE: package '", pkg, "' could not be installed from '", repos, "'!\n", sep = "")
         }
@@ -180,8 +180,8 @@ create_solver_db_github <- function(r_version, lib.loc, repos, cran) {
         if (!status) {
             roi_solver_github[[i]] <- parse_description(pkg, lib.loc, cnames)
             suppressMessages( do.call(require, list(pkg)) )
-            solver <- gsub("^ROI\\.plugin\\.", "", pkg)
-            roi_solver_github[[i]]$Signature <- list(extract_signature(solver))
+            plugin <- gsub("^ROI\\.plugin\\.", "", pkg)
+            roi_solver_github[[i]]$Signature <- list(extract_signature(plugin))
             git_repo <- file.path("https://github.com", repo)
             roi_solver_github[[i]]$Repository <- sub("/ROI.plugin.*", "", git_repo)
         } else {
