@@ -76,7 +76,7 @@ parse_description <- function(pkg, lib.loc, cnames) {
 extract_signature <- function(plugin) {
     signature_entries <- get_signature_entries()
     entries <- ROI:::solver_db$get_entries()
-    .extract_signature <- function(x) as.df(x[c("plugin", "solver", signature_entries)])
+    .extract_signature <- function(x) as.df(x[c("plugin", signature_entries)])
     solver_signatures <- do.call(rbind, lapply(entries, .extract_signature))    
     i <- which(solver_signatures$plugin == plugin)
     solver_signatures <- solver_signatures[i, -1L]    
