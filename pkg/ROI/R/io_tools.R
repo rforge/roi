@@ -159,8 +159,8 @@ ROI_plugin_register_writer <- function(type, solver, signature, method) {
 }
 
 ##  -----------------------------------------------------------
-##  read.op
-##  =======
+##  ROI_read
+##  ========
 ##' @title Read Optimization Problems
 ##'
 ##' @description Reads an optimization problem from various file formats and
@@ -176,7 +176,7 @@ ROI_plugin_register_writer <- function(type, solver, signature, method) {
 ##' @return x an optimization problem of class \code{"OP"}.
 ##' @family input output
 ##' @export
-read.op <- function(file, type, solver=NULL, ...) {
+ROI_read <- function(file, type, solver=NULL, ...) {
     stopifnot(is_string(file), is_string(type), file.exists(file))
     read_file <- io_db$get_reader(type, solver)
     if ( !is.function(read_file) ) {
@@ -190,8 +190,8 @@ read.op <- function(file, type, solver=NULL, ...) {
 }
 
 ##  -----------------------------------------------------------
-##  write.op
-##  ========
+##  ROI_write
+##  =========
 ##' @title Write Optimization Problems
 ##'
 ##' @description Write an optimization problem to file.
@@ -206,7 +206,7 @@ read.op <- function(file, type, solver=NULL, ...) {
 ##' @param ... further arguments passed on to the write method.
 ##' @family input output
 ##' @export
-write.op <- function(x, file, type, solver=NULL, ...) {
+ROI_write <- function(x, file, type, solver=NULL, ...) {
     stopifnot(inherits(x, "OP"), is_string(file), is_string(type))
     signature <- OP_signature(x)
     write_file <- io_db$get_writer(signature, type, solver)

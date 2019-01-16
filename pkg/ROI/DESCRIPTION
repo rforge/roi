@@ -17,5 +17,5 @@ Suggests: ROI.plugin.alabama, ROI.plugin.ecos, ROI.plugin.glpk,
         ROI.plugin.quadprog, numDeriv
 Enhances: ROI.plugin.cplex
 License: GPL-3
-URL: http://roi.r-forge.r-project.org/
+URL: http://roi.r-forge.r-project.org/, https://r-forge.r-project.org/projects/roi/
 RoxygenNote: 6.1.1

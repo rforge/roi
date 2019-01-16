@@ -237,8 +237,14 @@ ROI_installed_solvers <- function( ... ) {
 }
 
 signature_in_df <- function(x, signature) {
-    if ( !is.data.frame(x) )
+    if ( !is.data.frame(x) | (nrow(x) == 0L) ) {
+        if ( nrow(x) == 0L ) {
+            ## This should never happen but signals that there has happend
+            ## an error during the creation of the signature database.
+            warning("signature with zero rows detected")
+        }
         return(FALSE)
+    }
     any(apply(mapply(function(a, b) a == b, signature, x), 1, all))
 }
 

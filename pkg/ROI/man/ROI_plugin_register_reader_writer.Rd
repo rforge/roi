@@ -36,8 +36,9 @@ Register a new reader / writer method to be used with
 }
 }
 \seealso{
-Other input output: \code{\link{ROI_registered_reader}},
+Other input output: \code{\link{ROI_read}},
+  \code{\link{ROI_registered_reader}},
   \code{\link{ROI_registered_writer}},
-  \code{\link{read.op}}, \code{\link{write.op}}
+  \code{\link{ROI_write}}
 }
 \concept{input output}
