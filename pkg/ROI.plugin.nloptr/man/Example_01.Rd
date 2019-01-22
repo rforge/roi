@@ -19,18 +19,13 @@ f.gradient <- function(x) {
                200 * (x[2] - x[1] * x[1])) )
 }
 
-control <- list(algorithm  = "NLOPT_GD_MLSL",
-              	maxeval    = 10000,
-              	population = 4,
-              	local_opts = list(algorithm = "NLOPT_LD_LBFGS", xtol_rel  = 1e-4))
-
 x <- OP( objective = F_objective(f, n = 2L, G = f.gradient), 
          bounds = V_bound(ld = -3, ud= 3, nobj = 2L) )
 
-nlp <- ROI_solve(x, solver = "nloptr", control, start = c(-1.2, 1))
+nlp <- ROI_solve(x, solver = "nloptr.lbfgs", start = c(-1.2, 1))
 nlp
 ## Optimal solution found.
-## The objective value is: 3.049556e-23
+## The objective value is: 1.189412e-15
 solution(nlp)
 ## [1] 1 1
 

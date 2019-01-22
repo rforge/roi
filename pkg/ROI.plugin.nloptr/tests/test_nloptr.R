@@ -242,8 +242,4 @@ if ( !any(grepl("nloptr", names(ROI_registered_solvers()))) ) {
     cat("OK\n"); cat("Test 07: ")
     local({test_nlp_07("nloptr.mma")})
     cat("OK\n")
-    if ( isTRUE("ROI.plugin.glpk" %in% ROI_registered_solvers()) ) {
-        cat("Test 08: \n")
-        local({test_nlp_08()})
-    }
 }
