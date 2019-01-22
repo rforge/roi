@@ -36,6 +36,20 @@ is_slam_identity_matrix <- function(x) {
 ## control <- list("hessian_type" = 1L)
 ## control <- list("hessian_type" = 2L)
 
+qpoases_solve <- function(nvariables, nconstraints, hessian_type, 
+    H, g, A, lb, ub, lbA, ubA, max_num_working_set_recalculations, cputime, 
+    control) {
+    m <- qproblem(nvariables, nconstraints, hessian_type)
+    set_options(m, control)
+    status <- init_qproblem(m, H, g, A, lb, ub, lbA, ubA, 
+                            max_num_working_set_recalculations, cputime)
+    msg <- list()
+    msg$primal_solution <- get_primal_solution(m)
+    msg$dual_solution <- get_dual_solution(m)
+    msg$status <- status
+    msg
+}
+
 solve_OP <- function(x, control = list()){
     solver <- "qpoases"
 
@@ -43,6 +57,11 @@ solve_OP <- function(x, control = list()){
     nconstraints <- nrow(constraints(x))
 
     Q <- terms(objective(x))[["Q"]]
+    L <- terms(objective(x))[["L"]]
+    if ( maximum(x) ) {
+        Q <- -Q
+        L <- -L
+    }
     if ( is.null(control$hessian_type) ) {
         if ( is_slam_zero_matrix(Q) ) { 
            hessian_type <- 0L
@@ -63,22 +82,16 @@ solve_OP <- function(x, control = list()){
 
     cputime <- if ( is.null(control$cputime) ) 100 else control$cputime
     
-    m <- qproblem(nvariables, nconstraints, hessian_type)
+    ## m <- qproblem(nvariables, nconstraints, hessian_type)
 
     cntrl <- default_control()
     nam <- intersect(names(cntrl), names(control))
     cntrl[nam] <- control[nam]
-    set_options(m, cntrl)
+    ## set_options(m, cntrl)
 
     ## print_options(m)
-
-    if ( maximum(x) ) {
-        H <- -as.vector(t(Q))
-        g <- -as.vector(terms(objective(x))[["L"]])
-    } else {
-        H <- as.vector(t(Q))
-        g <- as.vector(terms(objective(x))[["L"]])    
-    }
+    H <- as.vector(t(Q))
+    g <- as.vector(L)
     A <- as.vector(t(constraints(x)$L))
     lb <- to_dense_vector(bounds(x)$lower, nvariables)
     ub <- to_dense_vector(bounds(x)$upper, nvariables, Inf)
@@ -98,19 +111,22 @@ solve_OP <- function(x, control = list()){
  
     max_num_working_set_recalculations <- 2000
 
-    ## NOTE: There as been a issue that I needed to solve the
-    ##       problem twice till the correct solution was returned.
-    status <- init_qproblem(m, H, g, A, lb, ub, lbA, ubA, 
-                            max_num_working_set_recalculations, cputime)
+    m <- list(qpoases_solve, nvariables = nvariables, nconstraints = nconstraints, 
+              hessian_type = hessian_type, H = H, g = g, A = A,
+              lb = lb, ub = ub, lbA = lbA, ubA = ubA, 
+              max_num_working_set_recalculations = max_num_working_set_recalculations, 
+              cputime = cputime, control = cntrl)
+    mode(m) <- "call"
 
     if ( isTRUE(control$dry_run) ) {
         return(m)
     }
-   
-    msg <- list()
-    msg$primal_solution <- get_primal_solution(m)
-    msg$dual_solution <- get_dual_solution(m)
-    msg$status <- status
+
+    msg <- eval(m)
+    ## NOTE: There as been a issue that I needed to solve the
+    ##       problem twice till the correct solution was returned.
+    ## status <- init_qproblem(m, H, g, A, lb, ub, lbA, ubA, 
+    ##                         max_num_working_set_recalculations, cputime)
     msg$objval <- objective(x)(msg$primal_solution)
 
     ROI_plugin_canonicalize_solution( solution = msg$primal_solution, optimum  = msg$objval,
