@@ -327,6 +327,24 @@ xmlrpc2.install: xmlrpc2.build
 	$(RR) CMD INSTALL xmlrpc2_*.tar.gz
 
 
+## ROI-GLPK
+## ========
+roiglpk.compile_attributes:
+	$(RR) -e "Rcpp:::compileAttributes('ROIglpk')"
+
+roiglpk.docs:
+	$(RR) -e "roxygen2:::roxygenise(package.dir = 'ROIglpk', roclets=c('namespace', 'rd'))"
+
+roiglpk.build: roiglpk.compile_attributes
+	$(RR) CMD build ROIglpk
+
+roiglpk.check: roiglpk.build
+	$(RR) CMD check ROIglpk_*.tar.gz
+
+roiglpk.install: roiglpk.build
+	$(RR) CMD INSTALL ROIglpk_*.tar.gz
+
+
 ## Testing
 ## =======
 test.cplex:
