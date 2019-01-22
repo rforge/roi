@@ -77,39 +77,40 @@ is.all_integer <- function(types) {
     all(types %in% c("B", "I"))
 }
 
-solve_OP <- function(x, control=list()) {
-    solver <- ROI_plugin_get_solver_name( getPackageName() )
+solve_OP <- function(x, control = list()) {
+    solver <- "lpsolve"
 
     nr <- length(constraints(x))
     nc <- length(objective(x))
 
     control$verbose <- map_verbose(control$verbose)
-    lp <- make.lp(nr, nc, verbose = control$verbose)
+    om <- make.lp(nr, nc, verbose = control$verbose)
 
     ## objective
-    set.objfn(lp, terms(objective(x))[['L']]$v, terms(objective(x))[['L']]$j)
+    set.objfn(om, terms(objective(x))[['L']]$v, terms(objective(x))[['L']]$j)
     
     ## constraints
     for (i in seq_len(nr)) {
         irow <- constraints(x)[['L']][i,]
-        set.row(lp, i, irow$v, irow$j)
+        set.row(om, i, irow$v, irow$j)
     }
-    set.rhs(lp, constraints(x)[['rhs']], seq_len(nr))
-    set.constr.type(lp, map_dir(constraints(x)[['dir']]), seq_len(nr))
-    
-    ## types
-    xtypes <- map_types(x)
-    for ( typ in c("integer", "binary", "real") ) {
-        if ( !is.null(xtypes[[typ]]) )
-            set.type(lp, xtypes[[typ]], typ)
-    }
-    all_integer <- if (is.all_integer(types(x))) TRUE else FALSE
+    set.rhs(om, constraints(x)[['rhs']], seq_len(nr))
+    set.constr.type(om, map_dir(constraints(x)[['dir']]), seq_len(nr))
 
     ## bounds (lp_solve has the lower bound default by zero)
     if ( !is.null(bounds(x)) ) {
         bo <- build_bounds(bounds(x))
-        set.bounds(lp, bo$lower, bo$upper, bo$ind)
+        set.bounds(om, bo$lower, bo$upper, bo$ind)
     }
+    
+    ## types
+    xtypes <- map_types(x)
+    for ( typ in c("integer", "binary", "real") ) {
+        if ( !is.null(xtypes[[typ]]) ) {
+            set.type(om, xtypes[[typ]], typ)
+        }
+    }
+    all_integer <- if (is.all_integer(types(x))) TRUE else FALSE
 
     ## maximum
     control$sense <- if (x$maximum) "max" else "min"
@@ -121,7 +122,7 @@ solve_OP <- function(x, control=list()) {
         stopifnot(length(control$basis$basis), is.numeric(control$basis$basis))
         if ( is.null(control$basis$nonbasic) ) control$basis$nonbasic <- FALSE
         if ( is.null(control$basis$default) ) control$basis$default <- TRUE
-        set.basis(lp, control$basis$basis, control$basis$nonbasic, control$basis$default)
+        set.basis(om, control$basis$basis, control$basis$nonbasic, control$basis$default)
     }
     ## - branch.mode
     ##    list(columns =, modes = c("ceiling"))
@@ -130,7 +131,7 @@ solve_OP <- function(x, control=list()) {
         stopifnot(length(control$branch.mode$columns), is.numeric(control$branch.mode$columns))
         stopifnot(all(control$branch.mode$modes %in% .branch_modes))
         stopifnot( length(control$branch.mode$columns) == length(control$branch.mode$modes) )
-        set.branch.mode(lp, control$branch.mode$columns, control$branch.mode$modes)
+        set.branch.mode(om, control$branch.mode$columns, control$branch.mode$modes)
     }
     ## - branch.weights
     if ( !is.null(control$branch.weights) ) {
@@ -141,42 +142,42 @@ solve_OP <- function(x, control=list()) {
     ## TODO: add.SOS
     ## NOTE: The sense option
     control.rm <- c("dry_run", "basis", "branch.mode", "branch.weights")
-    lp_control <- do.call(lp.control, c(lp, control[!is.element(names(control), control.rm)]))
+    lp_control <- do.call(lp.control, c(om, control[!is.element(names(control), control.rm)]))
 
     if ( isTRUE(control$dry_run) ) {
-        solver_call <- list(solve, lp)
-        mode(solver_call) <- "call"
-        return(solver_call)
+        return(list(lpSolveAPI::solve.lpExtPtr, om))
     }
 
     if ( isTRUE(control$nsol_max > 1) ) {
         ## return multiple solutions
-        solutions <- .find_up_to_n_binary_MILP_solutions(lp, x, control$nsol_max)
+        solutions <- .find_up_to_n_binary_MILP_solutions(om, x, control$nsol_max)
         i <- which(!sapply(solutions, is.null))
         solutions <- solutions[i]
         class(solutions) <- c("lpsolve_solution_set", "OP_solution_set")
         return(solutions)
     } else {
         ## return 1 solution
-        status <- solve(lp)
+        status <- solve(om)
 
         sol <- list()
-        sol$solution_count <- get.solutioncount(lp)
+        sol$solution_count <- get.solutioncount(om)
         if ( sol$solution_count > 0 ) {
             sol$solutions <- vector("list", sol$solution_count)
             sol$dual_solutions <- vector("list", sol$solution_count)
             for ( i in seq_len(sol$solution_count) ) {
-                select.solution(lp, i)
-                sol$solutions[[i]] <- get.variables(lp)
-                sol$dual_solutions[[i]] <- get.dual.solution(lp)
+                select.solution(om, i)
+                sol$solutions[[i]] <- get.variables(om)
+                sol$dual_solutions[[i]] <- get.dual.solution(om)
             }
         
             if ( all( x$types == "C" ) ) { ## these two functions are only for lp available
-                sol$sensitivity_objfun <- get.sensitivity.objex(lp)
-                sol$sensitivity_rhs <- get.sensitivity.rhs(lp)
+                sol$sensitivity_objfun <- get.sensitivity.obj(om) 
+                ## NOTE: Get Sensitivity - Objective Extended
+                ## get.sensitivity.objex(om)
+                sol$sensitivity_rhs <- get.sensitivity.rhs(om)
             }
-            sol$total_iter <- get.total.iter(lp)
-            sol$total_nodes <- get.total.nodes(lp)
+            sol$total_iter <- get.total.iter(om)
+            sol$total_nodes <- get.total.nodes(om)
 
             optimum <- objective_value(objective(x), sol$solutions[[1L]])
         } else {
@@ -193,16 +194,16 @@ solve_OP <- function(x, control=list()) {
     }
 }
 
-lp_solve <- function(lp) {
-    status <- solve(lp)
+lp_solve <- function(om) {
+    status <- solve(om)
     x <- vector("list", 5)
     names(x) <- c("solution", "optimum", "status", "solver", "message")
-    x[["solution"]] <- get.variables(lp)
-    x[["optimum"]] <- get.objective(lp)
+    x[["solution"]] <- get.variables(om)
+    x[["optimum"]] <- get.objective(om)
     x[["status"]] <- status
     x[["solver"]] <- "lpsolve"
-    dual <- tryCatch(get.dual.solution(lp),
-                     error = function(e) rep.int(NA, NROW(lp)))
+    dual <- tryCatch(get.dual.solution(om),
+                     error = function(e) rep.int(NA, NROW(om)))
     x[["message"]] <- list(solution = x[["solution"]], 
                            dual_solution = dual)
     do.call(ROI_plugin_canonicalize_solution, x)
@@ -213,14 +214,14 @@ objective_value <- function(obj_fun, solution) {
 }
 
 ## nsol <- control$nsol
-.find_up_to_n_binary_MILP_solutions <- function(lp, x, nsol, tolerance = 1e-4) {
+.find_up_to_n_binary_MILP_solutions <- function(om, x, nsol, tolerance = 1e-4) {
     k <- which(types(x) == "B")
     if ( length(k) == 0 ) {
         stop("no 'binary' variables found")
     }
 
     solutions <- vector("list", nsol)
-    solutions[[1L]] <- lp_solve(lp)
+    solutions[[1L]] <- lp_solve(om)
     if ( solutions[[1L]]$status$code != 0 ) {
         return(solutions[[1L]])
     }
@@ -234,9 +235,9 @@ objective_value <- function(obj_fun, solution) {
         rhs <- sum(sol) - 1L
         ak[sol == 1] <-  1
         ak[sol == 0] <- -1
-        add.constraint(lp, xt = ak, type = "<=", rhs = rhs, indices = k)
+        add.constraint(om, xt = ak, type = "<=", rhs = rhs, indices = k)
 
-        sobj <- lp_solve(lp)
+        sobj <- lp_solve(om)
         if ( sobj$status$code != 0 ) {
             return(solutions)
         }
@@ -261,8 +262,8 @@ ROI_plugin_solution_dual.lpsolve_solution <- function(x) {
 
 write.lp <- function(x, file, type=c("lp", "mps", "freemps")) {
     type <- match.arg(type)
-    lp <- as.list(solve_OP(x, list(dry_run=TRUE, verbose="neutral")))[[2]]
-    lpSolveAPI::write.lp(lp, file, type)
+    om <- as.list(solve_OP(x, list(dry_run=TRUE, verbose="neutral")))[[2]]
+    lpSolveAPI::write.lp(om, file, type)
     invisible(NULL)
 }
 
@@ -272,8 +273,8 @@ col_to_slam <- function(col, j) {
     as.data.frame(col[c("i", "j", "v")])
 }
 
-lp_to_slam <- function(lp, ncol) {
-    fun <- function(j) col_to_slam(get.column(lp, j), j)
+lp_to_slam <- function(om, ncol) {
+    fun <- function(j) col_to_slam(get.column(om, j), j)
     stm <- as.list(do.call(rbind, lapply(seq_len(ncol), fun)))
     stm[['i']] <- stm[['i']] + 1L
     stm <- c(stm, nrow=max(stm$i), ncol=ncol, dimnames=list(NULL))
@@ -286,30 +287,30 @@ lp_to_slam <- function(lp, ncol) {
 read.lp <- function(file, type=c("lp", "mps", "freemps")) {
     type <- match.arg(type)
     
-    lp <- do.call(lpSolveAPI::read.lp, as.list(c(filename=file, type=type, 
+    om <- do.call(lpSolveAPI::read.lp, as.list(c(filename=file, type=type, 
                   verbose="neutral")))
 
-    nr <- nrow(lp)
-    nc <- ncol(lp)
-    coeff <- lp_to_slam(lp, nc)
+    nr <- nrow(om)
+    nc <- ncol(om)
+    coeff <- lp_to_slam(om, nc)
 
     ## objective
     obj <- coeff[1,]
 
     ## constraints
     con.L <- coeff[-1,]
-    con.dir <- c("<=", ">=", "==")[get.constr.type(lp, as.char=FALSE)]
-    con.rhs <- get.rhs(lp)
+    con.dir <- c("<=", ">=", "==")[get.constr.type(om, as.char=FALSE)]
+    con.rhs <- get.rhs(om)
     
     ## types
-    ty <- unname(.type_map[get.type(lp)])
+    ty <- unname(.type_map[get.type(om)])
 
     ## bounds
-    bo <- get.bounds(lp)
+    bo <- get.bounds(om)
     bo <- V_bound(li=seq_len(nc), ui=seq_len(nc), lb=bo$lower, ub=bo$upper, nobj=nc)
     
     ## maximium
-    is_maxi <- lp.control(lp)$sense == "maximize"
+    is_maxi <- lp.control(om)$sense == "maximize"
 
     x <- OP(objective = L_objective(obj), 
             constraints = L_constraint(con.L, con.dir, con.rhs),
