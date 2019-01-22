@@ -1,3 +1,5 @@
+Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+
 library(slam)
 library(ROI)
 
@@ -150,6 +152,6 @@ cat("## Combine\n", file=file)
 cat("## Combine L_constraints\n", file=file)
 rt( test.combine_L_constraints() )
 
-if ( ROI_API_ERRORS ) {
-    stop(ERRORS, " errors occured")
+if ( ROI_TEST_ERRORS ) {
+    stop(ROI_TEST_ERRORS, " errors occured")
 }
