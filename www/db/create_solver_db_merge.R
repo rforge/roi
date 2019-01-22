@@ -12,6 +12,7 @@ rownames(solver_db) <- NULL
 colnames(solver_db)
 solver_db[, c("Package", "Repository")]
 length(unique(solver_db[, c("Package")]))
+## solver_db <- solver_db[!solver_db[, "Package"] == "ROI.plugin.cccp",]
 
 stopifnot( all(sapply(solver_db$Signature, NROW) > 1L) )
 
