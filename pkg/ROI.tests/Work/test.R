@@ -92,6 +92,10 @@ test_solver("nloptr.slsqp")
 
 
 
+test_solver("cplex")
+test_solver("gurobi")
+test_solver("mosek")
+
 
 solver <- "deoptim"
 
