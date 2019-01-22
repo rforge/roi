@@ -27,8 +27,8 @@ x <- OP( objective = F_objective(hs036_obj, n = 3L),
          constraints = F_constraint(hs036_con, "<=", 72),
          bounds = V_bound(ub = c(20, 11, 42)) )
 
-nlp <- ROI_solve(x, solver = "deoptim", start = c(10, 10, 10), 
-	             itermax = 100)
+nlp <- ROI_solve(x, solver = "deoptimr", start = c(10, 10, 10), 
+                 max_iter = 2000)
 nlp
 ## Optimal solution found.
 ## The objective value is: -3.300000e+03

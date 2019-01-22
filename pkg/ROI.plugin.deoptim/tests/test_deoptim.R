@@ -1,7 +1,7 @@
 
 if ( FALSE ) {
     q("no")
-    Rdevel
+    R
 }
 
 ## stopifnot(require(DEoptim))

@@ -31,7 +31,7 @@ x <- OP( objective = F_objective(f, n=2L, G=f.gradient),
                                       J=function(x) c(2*x[1], x[2]))),
          bounds = V_bound(li=1:2, ui=1:2, lb=c(-2, -Inf), ub=c(0.5,  1)) )
 
-nlp <- ROI_solve(x, solver="deoptim", start=c(-2, 1))
+nlp <- ROI_solve(x, solver="deoptimr", start=c(0.4, 0.3))
 nlp
 ## Optimal solution found.
 ## The objective value is: 2.499999e-01
