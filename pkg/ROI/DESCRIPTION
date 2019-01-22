@@ -11,11 +11,11 @@ Description: The R Optimization Infrastructure ('ROI') is a
 	More information can be found on the 'ROI' homepage <http://roi.r-forge.r-project.org/>.
 Depends: R (>= 2.10)
 Imports: methods, registry (>= 0.5), slam, utils
-Suggests: ROI.plugin.alabama, ROI.plugin.ecos, ROI.plugin.glpk,
-        ROI.plugin.ipop, ROI.plugin.lpsolve, ROI.plugin.nloptr,
-        ROI.plugin.optimx, ROI.plugin.scs, ROI.plugin.symphony,
-        ROI.plugin.quadprog, numDeriv
-Enhances: ROI.plugin.cplex
+Suggests: ROI.plugin.alabama, ROI.plugin.clp, ROI.plugin.deoptim, ROI.plugin.ecos, 
+	    ROI.plugin.glpk, ROI.plugin.ipop, ROI.plugin.lpsolve, ROI.plugin.msbinlp, 
+	    ROI.plugin.neos, ROI.plugin.nloptr, ROI.plugin.optimx, ROI.plugin.qpoases, 
+	    ROI.plugin.quadprog, ROI.plugin.scs, ROI.plugin.symphony, numDeriv
+Enhances: ROI.plugin.cplex, ROI.plugin.gurobi, ROI.plugin.mosek
 License: GPL-3
 URL: http://roi.r-forge.r-project.org/, https://r-forge.r-project.org/projects/roi/
 RoxygenNote: 6.1.1
