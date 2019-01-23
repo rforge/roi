@@ -404,7 +404,8 @@ bounds.OP <- function( x ) x$bounds
             ## do nothing
             x["bounds"] <- list(NULL)
         } else {
-            x$bounds <- V_bound(ld = -Inf, nobj = x[["n_of_variables"]])
+            #PLANED-API-CHANGE# x$bounds <- V_bound(ld = -Inf, nobj = x[["n_of_variables"]])
+            x$bounds <- V_bound(nobj = x[["n_of_variables"]])
         }
     } else if ( is.deferred_bound(value) ) { ## [0, Inf)
         if ( !is.na(x[["n_of_variables"]]) ) {

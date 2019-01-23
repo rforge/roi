@@ -76,7 +76,8 @@ objective.default <- function( x )
     }
 
     if ( is.null(x$bounds) ) {
-        x$bounds <- V_bound(ld = -Inf, nobj = nobj)
+        #PLANED-API-CHANGE# x$bounds <- V_bound(ld = -Inf, nobj = nobj)
+        x$bounds <- V_bound(nobj = nobj)
     } else if ( is.deferred_bound(x$bounds) ) {
         x$bounds <- V_bound(nobj = nobj)
     }
