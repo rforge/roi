@@ -4,23 +4,21 @@
 \alias{miplib_download}
 \alias{miplib_download_all}
 \alias{miplib_download_benchmark}
-\alias{miplib_download}
 \alias{miplib_download_metainfo}
 \title{Download the 'MIPLIB 2010' Test Problem Set}
 \usage{
 
-  miplib_download_all(url = "http://miplib.zib.de/download/miplib2010-complete.tgz",
+  miplib_download_all(url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz",
   folder = system.file("roi_op", package = "ROI.models.miplib"),
   method = NULL, quiet = TRUE)
 
 
-  miplib_download_benchmark(
-  url = "http://miplib.zib.de/download/miplib2010-benchmark.tgz",
+  miplib_download_benchmark(url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-benchmark.tgz",
   folder = system.file("roi_op", package = "ROI.models.miplib"),
   method = NULL, quiet = TRUE)
 
 
-  miplib_download_metainfo(url = "http://miplib.zib.de/download/miplib2010_all.solu",
+  miplib_download_metainfo(url = "http://miplib2010.zib.de/download/miplib2010_all.solu",
   folder = system.file("roi_op", package = "ROI.models.miplib"))
 }
 \arguments{

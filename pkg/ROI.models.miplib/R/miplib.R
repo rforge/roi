@@ -24,7 +24,7 @@ as.OP.MILP <- function(x){
 
 as.OP.NULL <- function(x) NULL
 
-download_library <- function(url, path, method=NULL, quiet=TRUE) {
+download_library <- function(url, path, method = NULL, quiet = TRUE) {
     if ( !quiet )
         cat("\n download MIPLIB\n\n")
     if ( is.null(method) ) {
@@ -35,10 +35,11 @@ download_library <- function(url, path, method=NULL, quiet=TRUE) {
     }
     destfile <- file.path(path, tail(unlist(strsplit(url, "/", fixed=TRUE), TRUE, FALSE), 1))
     ## exdir <- gsub(".tgz", "", destfile)
-    download.file(url, destfile, method=method, quiet=quiet)
+    download.file(url, destfile, method = method, quiet = quiet)
     if ( file.exists(destfile) ) {
-        exdir <- head(untar(tarfile = destfile, list = TRUE, exdir=path), 1)
-        untar(tarfile = destfile, exdir=path)
+        exdir <- untar(tarfile = destfile, list = TRUE, exdir = path)
+        exdir <- tail(names(sort(table(dirname(grep("instances", exdir, value = TRUE))))), 1)
+        untar(tarfile = destfile, exdir = path)
         file.remove(destfile)
     } else {
         stop("download error")
@@ -61,8 +62,8 @@ untar_all <- function(path, quiet=TRUE) {
     NULL
 }
 
-build_miplib <- function(in_path, out_path, quiet=TRUE) {
-    files <- dir(in_path, pattern=".mps$")
+build_miplib <- function(in_path, out_path, quiet = TRUE) {
+    files <- dir(in_path, pattern = ".mps$")
     stopifnot( length(files) >  0 )
     fps <- file.path(in_path, files)
     n <- length(fps)
@@ -71,22 +72,22 @@ build_miplib <- function(in_path, out_path, quiet=TRUE) {
         pb <- txtProgressBar(min = 0, max = n, style=3)
     }
     for (i in seq_len(n)) {
-        op <- tryCatch(as.OP(Rglpk_read_file(fps[i], type="MPS_free")), error=function(e) NULL)
+        op <- tryCatch(as.OP(Rglpk::Rglpk_read_file(fps[i], type="MPS_free")), error=function(e) NULL)
         if ( is.null(op) ) next()
         op_name <- sprintf("%s/%s.rds", out_path, make.names(gsub(".mps$", "", files[i])))
-        saveRDS(op, file=op_name)
+        saveRDS(op, file = op_name)
         if ( !quiet ) setTxtProgressBar(pb, i)
     }
     if ( !quiet ) close(pb)
     NULL
 }
 
-miplib_download <- function(url, folder, method = NULL, quiet=TRUE) {
+miplib_download <- function(url, folder, method = NULL, quiet = TRUE) {
     stopifnot( dir.exists(folder) )
     folder <- normalizePath(folder)
     miplib_folder <- download_library(url, folder, method, quiet)
     untar_all(miplib_folder, quiet = quiet)
-    build_miplib(miplib_folder, folder, quiet)
+    build_miplib(in_path = miplib_folder, out_path = folder, quiet)
     unlink(miplib_folder, recursive=TRUE)    
 }
 
@@ -134,8 +135,10 @@ miplib_download <- function(url, folder, method = NULL, quiet=TRUE) {
 ##' @rdname miplib_download
 ##' @export
 ##  -----------------------------------------------------------
+##  old: http://miplib.zib.de/download/miplib2010-complete.tgz
+##  http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz
 miplib_download_all <- 
-    function(url = "http://miplib.zib.de/download/miplib2010-complete.tgz",
+    function(url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz",
              folder = system.file("roi_op", package = "ROI.models.miplib"),
              method = NULL, quiet=TRUE) {
     miplib_download(url, folder, method, quiet)
@@ -147,8 +150,10 @@ miplib_download_all <-
 ##' @rdname miplib_download
 ##' @export
 ##  -----------------------------------------------------------
+##  old: http://miplib.zib.de/download/miplib2010-benchmark.tgz
+##  http://miplib2010.zib.de/download/miplib2010-1.1.3-benchmark.tgz
 miplib_download_benchmark <- 
-    function(url = "http://miplib.zib.de/download/miplib2010-benchmark.tgz",
+    function(url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-benchmark.tgz",
              folder = system.file("roi_op", package = "ROI.models.miplib"),
              method = NULL, quiet=TRUE) {
     miplib_download(url, folder, method, quiet)
@@ -175,7 +180,9 @@ miplib_download_benchmark <-
 ##' @rdname miplib_download
 ##' @export
 ##  -----------------------------------------------------------
-miplib_download_metainfo <- function(url = "http://miplib.zib.de/download/miplib2010_all.solu",
+##  old: http://miplib.zib.de/download/miplib2010_all.solu
+##  http://miplib2010.zib.de/download/miplib2010_all.solu
+miplib_download_metainfo <- function(url = "http://miplib2010.zib.de/download/miplib2010_all.solu",
                                      folder = system.file("roi_op", package = "ROI.models.miplib")) {
 
     x <- strsplit(readLines(url), "\\s+")

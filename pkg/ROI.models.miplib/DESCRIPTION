@@ -17,4 +17,4 @@ Depends:
 Imports: R.utils, Rglpk, ROI (>= 0.2-0)
 License: GPL-3
 URL: http://R-Forge.R-project.org/projects/roi
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

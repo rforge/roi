@@ -72,7 +72,7 @@ returns the `rmine6` optimization problem as an ROI optimization problem.
 
 
 ```r
-ROI_solve( miplib(x = "rmine6") )
+ROI_solve( miplib(x = "iis.100.0.cov") )
 ```
 
 
