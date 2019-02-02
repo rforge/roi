@@ -1,6 +1,6 @@
 
-R version 3.4.0 (2017-04-21) -- "You Stupid Darkness"
-Copyright (C) 2017 The R Foundation for Statistical Computing
+R version 3.5.0 (2018-04-23) -- "Joy in Playing"
+Copyright (C) 2018 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -79,6 +79,9 @@ $auxiliary$dual
 [1] 0.8333333 0.6666667 0.0000000
 
 
+$sensitivity_report
+[1] NA
+
 > 
 > ## Example 2:
 > ## Simple mixed integer linear program.
@@ -130,6 +133,9 @@ $auxiliary$primal
 $auxiliary$dual
 [1] NA
 
+
+$sensitivity_report
+[1] NA
 
 > 
 > ## Example 3:
@@ -183,6 +189,9 @@ $auxiliary$dual
 [1] NA
 
 
+$sensitivity_report
+[1] NA
+
 > 
 > ## force negative values in solution
 > ex3b_milp <- ex3a_milp
@@ -224,6 +233,9 @@ $auxiliary$dual
 [1] NA
 
 
+$sensitivity_report
+[1] NA
+
 > 
 > ## no boxes
 > ex3c_milp <-ROI:::as.no_V_bounds_OP(ex3b_milp)
@@ -262,7 +274,10 @@ $auxiliary$dual
 [1] NA
 
 
+$sensitivity_report
+[1] NA
+
 > 
 > proc.time()
    user  system elapsed 
- 15.988   0.288  15.971 
+ 31.628   0.328  31.739 
