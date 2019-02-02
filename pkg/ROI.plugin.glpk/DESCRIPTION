@@ -1,5 +1,5 @@
 Package: ROI.plugin.glpk
-Version: 0.3-0
+Version: 0.3-1
 Title: 'ROI' Plug-in 'GLPK'
 Authors@R: c(person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"))
 Description: Enhances the 'R' Optimization Infrastructure ('ROI') package by registering
