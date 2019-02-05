@@ -11,7 +11,7 @@
 
 
 
-<title>Use Cases</title>
+<title>Logistic regression</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -312,44 +312,89 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Use Cases</h1>
+<h1 class="title toc-ignore">Logistic regression</h1>
 
 </div>
 
 
-<p>The following contains some use cases.</p>
-<div id="combinatorial-problems" class="section level1">
-<h1>Combinatorial Problems</h1>
-<ul>
-<li>Sudoku (TODO)</li>
-</ul>
+<p>The <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic model</a> (or logit model) belongs to the <a href="https://en.wikipedia.org/wiki/Generalized_linear_model">generalized linear models</a> family (GLM). It is widely used in regression analysis to model a binary dependent variable.</p>
+<p>Since GLMs are commonly used <strong>R</strong> has already built-in functionality to estimate GLMs. Specifically the <code>glm</code> function from the <strong>stats</strong> package, with a binomial family and logit link can be used to estimate a logistic model.</p>
+<p>The following logistic regression example is from <a href="#HSAUR">Brian S. Everitt and Torsten Hothorn (2017)</a>.</p>
+<pre class="r"><code>library(HSAUR)</code></pre>
+<pre><code>## Loading required package: tools</code></pre>
+<pre class="r"><code>m &lt;- glm(ESR ~ fibrinogen, data = plasma, family = binomial(link = &quot;logit&quot;))
+coef(m)</code></pre>
+<pre><code>## (Intercept)  fibrinogen 
+##   -6.845075    1.827081</code></pre>
+<p>Making use of maximum likelihood estimation the logistic regression model can also be estimated in <strong>ROI</strong>. Here either a conic solver or a general purpose solver can be used. The conic solvers have the advantages that they are designed to find the global optimum and are (typically) faster.</p>
+<div id="log-likelihood" class="section level1">
+<h1>Log-likelihood</h1>
+<p>The log-likelihood <span class="math display">\[
+\underset{\beta}{\text{maximize}} 
+      \sum_{i = 1}^n ~ y_i ~ \log \left(\frac{\exp(X_{i*} \beta)}{1 + \exp(X_{i*} \beta)} \right) 
+    + \sum_{i = 1}^n ~ (1 - y_i) ~ \log \left(1 - \frac{\exp(X_{i*} \beta)}{1 + \exp(X_{i*} \beta)} \right)
+\]</span> can be simplified to <span class="math display">\[
+    \underset{\beta}{\text{maximize}} ~
+      \sum_{i = 1}^n y_i ~ X_{i*} \beta - \sum_{i = 1}^n \log(1 + \exp(X_{i*} \beta)).
+\]</span></p>
 </div>
-<div id="linear-regression" class="section level1">
-<h1>Linear regression</h1>
-<ul>
-<li>LAD (TODO)</li>
-<li><a href="use_case_linear_regression.html">Ordinary least squares</a></li>
-</ul>
+<div id="estimation" class="section level1">
+<h1>Estimation</h1>
+<pre class="r"><code>Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
+library(ROI)
+library(ROI.plugin.optimx)</code></pre>
+<pre><code>## Loading required package: minqa</code></pre>
+<pre class="r"><code>library(ROI.plugin.ecos)
+X &lt;- cbind(Intercept = 1, fibrinogen = plasma$fibrinogen)
+y &lt;- as.integer(plasma$ESR) - 1L</code></pre>
 </div>
-<div id="generalized-linear-models" class="section level1">
-<h1>Generalized linear models</h1>
-<ul>
-<li><a href="use_case_logistic_regression.html">Logistic regression</a></li>
-<li>Poisson regression (TODO) <!-- [Poisson regression](use_case_poisson_regression.html) --></li>
-</ul>
+<div id="general-purpose-solver" class="section level1">
+<h1>General purpose solver</h1>
+<pre class="r"><code>mle &lt;- function(beta) {
+    drop(y %*% X %*% beta - sum(log(1 + exp(X %*% beta))))
+}
+
+op_gps &lt;- OP(F_objective(mle, n =  ncol(X)), maximum = TRUE,
+    bounds = V_bound(ld = -Inf, nobj = ncol(X)))
+s1 &lt;- ROI_solve(op_gps, &quot;optimx&quot;, start = double(ncol(X)))</code></pre>
+<pre><code>## Maximizing -- use negfn and neggr</code></pre>
+<pre><code>## Warning in max(logpar): no non-missing arguments to max; returning -Inf</code></pre>
+<pre><code>## Warning in min(logpar): no non-missing arguments to min; returning Inf</code></pre>
+<pre class="r"><code>solution(s1)</code></pre>
+<pre><code>## [1] -6.845075  1.827081</code></pre>
 </div>
-<div id="model-selection-regularization" class="section level1">
-<h1>Model selection (regularization)</h1>
-<ul>
-<li>Best subset selection (TODO)</li>
-<li>Ridge regression (TODO)</li>
-<li>Lasso (TODO)</li>
-</ul>
+<div id="conic-solver" class="section level1">
+<h1>Conic solver</h1>
+<p>For conic optimization we he to build the matrices necessary to express the objective function.</p>
+<pre class="r"><code>library(slam)
+logistic_regression &lt;- function(y, X, solver = &quot;auto&quot;, ...) {
+  stm &lt;- simple_triplet_matrix
+  stzm &lt;- simple_triplet_zero_matrix
+  stopifnot(is.vector(y), length(y) == nrow(X))
+  m &lt;- nrow(X); n &lt;- ncol(X)
+  i &lt;- 3 * seq_len(m) - 2
+  op &lt;- OP(c(-(y %*% X), rep.int(1, m), double(m)), maximum = FALSE)
+  C11 &lt;- stm(rep(i, n), rep(seq_len(n), each = m), -drop(X), 3 * m, n)
+  C12 &lt;- stm(i, seq_len(m), rep.int(1, m), 3 * m, m)
+  C13 &lt;- stm(i + 2, seq_len(m), rep.int(-1, m), 3 * m, m)
+  C1 &lt;- cbind(C11, C12, C13)
+  C2 &lt;- cbind(stzm(3 * m, n), C12, -C13)
+  C &lt;- rbind(C1, C2)
+  cones &lt;- K_expp(2 * m)
+  rhs &lt;- c(rep(c(0, 1, 1), m), rep(c(0, 1, 0), m))
+  constraints(op) &lt;- C_constraint(C, cones, rhs)
+  bounds(op) &lt;- V_bound(ld = -Inf, nobj = ncol(C))
+  ROI_solve(op, solver = solver, ...)
+}
+
+s2 &lt;- logistic_regression(y, X)
+head(solution(s2), ncol(X))</code></pre>
+<pre><code>## [1] -6.845075  1.827081</code></pre>
 </div>
-<div id="portfolio-optimization" class="section level1">
-<h1>Portfolio Optimization</h1>
+<div id="references" class="section level1">
+<h1>References</h1>
 <ul>
-<li><a href="use_case_portfolio_optimization.html">Portfolio Optimization</a></li>
+<li>Brian S. Everitt and Torsten Hothorn (2017). HSAUR: A Handbook of Statistical Analyses Using R (1st Edition). R package version 1.3-9. URL: <a href="https://CRAN.R-project.org/package=HSAUR"><code>https://CRAN.R-project.org/package=HSAUR</code></a> <a name = "HSAUR"></a></li>
 </ul>
 </div>
 

@@ -491,7 +491,11 @@ ROI_applicable_solvers(lp)</code></pre>
 ## [1] 9 3
 ## 
 ## $auxiliary$dual
-## [1] 1.8 0.8</code></pre>
+## [1] 1.8 0.8
+## 
+## 
+## $sensitivity_report
+## [1] NA</code></pre>
 <p>the original message returned from the solver.</p>
 </div>
 <div id="example-2" class="section level3">
@@ -942,7 +946,7 @@ nlp &lt;- OP(F_objective(f, n=3),
 con &lt;- gzcon(url(&quot;http://www.zib.de/koch/perplex/data/netlib/mps/capri.mps.gz&quot;))
 writeLines(readLines(con), tmpfile)
 close(con)
-(capri &lt;- read.op(tmpfile, type=&quot;mps_fixed&quot;, &quot;lpsolve&quot;))</code></pre>
+(capri &lt;- ROI_read(tmpfile, type=&quot;mps_fixed&quot;, &quot;lpsolve&quot;))</code></pre>
 <pre><code>## ROI Optimization Problem:
 ## 
 ## Minimize a linear objective function of length 353 with
@@ -966,7 +970,7 @@ close(con)
 ## 5  mps_fixed lpsolve
 ## 6   mps_free lpsolve</code></pre>
 <pre class="r"><code>tmpfile &lt;- tempfile()
-write.op(milp, tmpfile, type = &quot;lp_lpsolve&quot;)
+ROI_write(milp, tmpfile, type = &quot;lp_lpsolve&quot;)
 cat(readLines(tmpfile), sep=&quot;\n&quot;)</code></pre>
 <pre><code>## /* Objective function */
 ## max: +7 C1 +C2 +3 C3;
@@ -1005,8 +1009,8 @@ netlib()</code></pre>
 ## [91] &quot;wood1p&quot;   &quot;woodw&quot;    &quot;x25fv47&quot;  &quot;x80bau3b&quot;</code></pre>
 <pre class="r"><code>problem_name &lt;- &quot;boeing1&quot;
 netlib(&quot;metainfo&quot;)[problem_name, -(2:5)]</code></pre>
-<pre><code>##            name br     optimal_value       opt
-## boeing1 BOEING1 BR -3.3521356751E+02 -335.2136</code></pre>
+<pre><code>##            name br optimal_value
+## boeing1 BOEING1 BR     -335.2136</code></pre>
 <pre class="r"><code>(model &lt;- netlib(problem_name))</code></pre>
 <pre><code>## ROI Optimization Problem:
 ## 
