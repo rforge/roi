@@ -381,7 +381,6 @@ dbind &lt;-<span class="st"> </span>function(...) {
     Q0 &lt;-<span class="st"> </span><span class="kw">dbind</span>(<span class="kw">stdm</span>(<span class="dv">2</span> *<span class="st"> </span>lambda, n), <span class="kw">stdm</span>(<span class="dv">1</span>, m))
     a0 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">b =</span> <span class="kw">double</span>(n), <span class="dt">g =</span> <span class="kw">double</span>(m))
     op &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">Q_objective</span>(<span class="dt">Q =</span> Q0, <span class="dt">L =</span> a0))
-    ## y - X %*% beta = gamma  &lt;=&gt;  X %*% beta + gamma = y
     A1 &lt;-<span class="st"> </span><span class="kw">cbind</span>(x, <span class="kw">stdm</span>(<span class="dv">1</span>, m))
     <span class="kw">constraints</span>(op) &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(A1, <span class="kw">eq</span>(m), y)
     <span class="kw">bounds</span>(op) &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">ld =</span> -<span class="ot">Inf</span>, <span class="dt">nobj =</span> <span class="kw">ncol</span>(Q0))
