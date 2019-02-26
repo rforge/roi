@@ -23,25 +23,51 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
 
 <style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
   }
 </style>
-<script type="text/javascript">
-if (window.hljs) {
-  hljs.configure({languages: []});
-  hljs.initHighlightingOnLoad();
-  if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
-  }
-}
-</script>
-
 
 
 <style type="text/css">
@@ -326,7 +352,7 @@ div.tocify {
 <h1><strong>ROI plug-ins</strong></h1>
 <div id="roi.plugin.alabama" class="section level2">
 <h2><strong>ROI.plugin.alabama</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.alabama&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.alabama&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.cbc" class="section level2">
 <h2><strong>ROI.plugin.cbc</strong></h2>
@@ -335,42 +361,42 @@ div.tocify {
 <p><a href="https://github.com/dirkschumacher/ROI.plugin.cbc"><strong>ROI.plugin.cbc</strong></a> it self doesn’t contain compiled code but it imports <strong>rcbc</strong>. The <a href="https://github.com/dirkschumacher/rcbc"><strong>rcbc</strong></a> package requires the <a href="https://projects.coin-or.org/Cbc">cbc</a> and the <a href="https://projects.coin-or.org/Clp">clp</a> library to be installed before the installation of <strong>rcbc</strong>. Depending on the distribution, these libraries may be installed via one of the following commands.</p>
 <div id="debian-ubuntu-mint-and-other-debian-based-distributions" class="section level4">
 <h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
-<pre class="bash"><code>sudo apt-get install coinor-libcbc-dev coinor-libclp-dev</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install coinor-libcbc-dev coinor-libclp-dev</code></pre></div>
 </div>
 <div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions" class="section level4">
 <h4>Red Hat Enterprise Linux, Fedora, CentOS and similar distributions</h4>
-<pre class="bash"><code>sudo yum install coin-or-Cbc-devel coin-or-Clp-devel</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> yum install coin-or-Cbc-devel coin-or-Clp-devel</code></pre></div>
 </div>
 <div id="macos" class="section level4">
 <h4>macOS</h4>
-<pre class="bash"><code>brew tap coin-or-tools/coinor
-brew install cbc</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">brew</span> tap coin-or-tools/coinor
+<span class="ex">brew</span> install cbc</code></pre></div>
 <p>After the installation of the required libraries <strong>rcbc</strong> and <strong>ROI.plugin.cbc</strong> may be installed as usual.</p>
-<pre class="r"><code>remotes::install_github(&quot;dirkschumacher/rcbc&quot;)
-remotes::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">remotes::<span class="kw">install_github</span>(<span class="st">&quot;dirkschumacher/rcbc&quot;</span>)
+remotes::<span class="kw">install_github</span>(<span class="st">&quot;dirkschumacher/ROI.plugin.cbc&quot;</span>)</code></pre></div>
 </div>
 </div>
 <div id="windows" class="section level3">
 <h3>Windows</h3>
-<pre class="r"><code>devtools::install_github(&quot;dirkschumacher/rcbc&quot;)
-devtools::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">&quot;dirkschumacher/rcbc&quot;</span>)
+devtools::<span class="kw">install_github</span>(<span class="st">&quot;dirkschumacher/ROI.plugin.cbc&quot;</span>)</code></pre></div>
 </div>
 </div>
 <div id="roi.plugin.clp" class="section level2">
 <h2><strong>ROI.plugin.clp</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.clp&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.clp&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.cplex" class="section level2">
 <h2><strong>ROI.plugin.cplex</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.cplex&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.cplex&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.deoptim" class="section level2">
 <h2><strong>ROI.plugin.deoptim</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.deoptim&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.deoptim&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.ecos" class="section level2">
 <h2><strong>ROI.plugin.ecos</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.ecos&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.ecos&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.glpk" class="section level2">
 <h2><strong>ROI.plugin.glpk</strong></h2>
@@ -379,45 +405,45 @@ devtools::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
 <h3>Unix</h3>
 <div id="debian-ubuntu-mint-and-other-debian-based-distributions-1" class="section level4">
 <h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
-<pre class="bash"><code>sudo apt-get install libglpk-dev</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install libglpk-dev</code></pre></div>
 </div>
 <div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions-1" class="section level4">
 <h4>Red Hat Enterprise Linux, Fedora, CentOS and similar distributions</h4>
-<pre class="bash"><code>yum install glpk-devel</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">yum</span> install glpk-devel</code></pre></div>
 </div>
 <div id="macos-1" class="section level4">
 <h4>macOS</h4>
-<pre class="bash"><code>brew install glpk</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">brew</span> install glpk</code></pre></div>
 <p>After the installation of the linear programming kit - development files <strong>Rglpk</strong> and <strong>ROI.plugin.glpk</strong> may be installed as usual.</p>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.glpk&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.glpk&quot;</span>)</code></pre></div>
 </div>
 </div>
 <div id="windows-1" class="section level3">
 <h3>Windows</h3>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.glpk&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.glpk&quot;</span>)</code></pre></div>
 </div>
 </div>
 <div id="roi.plugin.gurobi" class="section level2">
 <h2><strong>ROI.plugin.gurobi</strong></h2>
 <p><strong>ROI.plugin.gurobi</strong> imports the <strong>gurobi</strong> package which is available at <a href="http://www.gurobi.com/">http://www.gurobi.com</a>. Since the <strong>gurobi</strong> package is not on <code>CRAN</code> <strong>ROI.plugin.gurobi</strong> is also not available on <code>CRAN</code>.</p>
-<pre class="r"><code>remotes:::install_github(&quot;fl0sch/ROI.plugin.gurobi&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">remotes:::<span class="kw">install_github</span>(<span class="st">&quot;fl0sch/ROI.plugin.gurobi&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.ipop" class="section level2">
 <h2><strong>ROI.plugin.ipop</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.ipop&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.ipop&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.lpsolve" class="section level2">
 <h2><strong>ROI.plugin.lpsolve</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.lpsolve&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.lpsolve&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.mosek" class="section level2">
 <h2><strong>ROI.plugin.mosek</strong></h2>
 <p><strong>ROI.plugin.mosek</strong> imports the <strong>Rmosek</strong> package which is available at <a href="http://www.mosek.com/">http://www.mosek.com</a>. There is also an <strong>Rmosek</strong> version on <code>CRAN</code> but since the <strong>Rmosek</strong> version on <code>CRAN</code> is very old we recommend to install the version available from <a href="http://www.mosek.com/">http://www.mosek.com</a>.</p>
-<pre class="r"><code>remotes:::install_github(&quot;fl0sch/ROI.plugin.mosek&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">remotes:::<span class="kw">install_github</span>(<span class="st">&quot;fl0sch/ROI.plugin.mosek&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.msbinlp" class="section level2">
 <h2><strong>ROI.plugin.msbinlp</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.msbinlp&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.msbinlp&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.neos" class="section level2">
 <h2><strong>ROI.plugin.neos</strong></h2>
@@ -429,16 +455,16 @@ devtools::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
 <h3>Unix</h3>
 <div id="debian-ubuntu-mint-and-other-debian-based-distributions-2" class="section level4">
 <h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
-<pre class="bash"><code>sudo apt-get install libxml2-dev </code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install libxml2-dev </code></pre></div>
 </div>
 <div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions-2" class="section level4">
 <h4>Red Hat Enterprise Linux, Fedora, CentOS and similar distributions</h4>
-<pre class="r"><code>sudo yum install libxml2-devel</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sudo yum install libxml2-devel</code></pre></div>
 </div>
 <div id="macos-2" class="section level4">
 <h4>macOS</h4>
 <p>After the installation of the the <code>libxml2</code> development libraries <strong>xml2</strong> may be installed as usual.</p>
-<pre class="r"><code>install.packages(&quot;xml2&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;xml2&quot;</span>)</code></pre></div>
 <p>The <a href="https://cran.r-project.org/package=curl"><strong>curl</strong></a> package requires that the <code>curl</code> development library is installed. Depending on the distribution, this library may is installed via one of the following commands.</p>
 </div>
 </div>
@@ -446,44 +472,44 @@ devtools::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
 <h3>Unix</h3>
 <div id="debian-ubuntu-mint-and-other-debian-based-distributions-3" class="section level4">
 <h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
-<pre class="bash"><code>sudo apt-get install libcurl4-openssl-dev</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt-get install libcurl4-openssl-dev</code></pre></div>
 </div>
 <div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions-3" class="section level4">
 <h4>Red Hat Enterprise Linux, Fedora, CentOS and similar distributions</h4>
-<pre class="r"><code>sudo yum install libcurl-devel</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sudo yum install libcurl-devel</code></pre></div>
 </div>
 <div id="macos-3" class="section level4">
 <h4>macOS</h4>
 <p>After the installation of the the <code>libxml2</code> development libraries <strong>xmle</strong> can be installed.</p>
-<pre class="r"><code>install.packages(&quot;curl&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;curl&quot;</span>)</code></pre></div>
 <p>After the <strong>curl</strong> and <strong>xml2</strong> packages are installed <strong>ROI.plugin.neos</strong> can be installed.</p>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.neos&quot;</span>)</code></pre></div>
 </div>
 </div>
 <div id="windows-2" class="section level3">
 <h3>Windows</h3>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.neos&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.neos&quot;</span>)</code></pre></div>
 </div>
 </div>
 <div id="roi.plugin.nloptr" class="section level2">
 <h2><strong>ROI.plugin.nloptr</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.nloptr&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.nloptr&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.optimx" class="section level2">
 <h2><strong>ROI.plugin.optimx</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.optimx&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.optimx&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.qpoases" class="section level2">
 <h2><strong>ROI.plugin.qpoases</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.qpoases&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.qpoases&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.quadprog" class="section level2">
 <h2><strong>ROI.plugin.quadprog</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.quadprog&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.quadprog&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.scs" class="section level2">
 <h2><strong>ROI.plugin.scs</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.scs&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.scs&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.plugin.symphony" class="section level2">
 <h2><strong>ROI.plugin.symphony</strong></h2>
@@ -492,23 +518,23 @@ devtools::install_github(&quot;dirkschumacher/ROI.plugin.cbc&quot;)</code></pre>
 <p><a href="https://cran.r-project.org/package=ROI.plugin.symphony"><strong>ROI.plugin.symphony</strong></a> it self doesn’t contain compiled code but it imports <strong>Rsymphony</strong>. The <a href="https://cran.r-project.org/package=Rsymphony"><strong>Rsymphony</strong></a> package requires the SYMPHONY libraries and headers to be installed before the installation of <strong>Rsymphony</strong>. Depending on the distribution, the SYMPHONY libraries and headers may be installed via one of the following commands.</p>
 <div id="debian-ubuntu-mint-and-other-debian-based-distributions-4" class="section level4">
 <h4>Debian, Ubuntu, Mint and other Debian based distributions</h4>
-<pre class="bash"><code>sudo apt install coinor-libsymphony-dev</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> apt install coinor-libsymphony-dev</code></pre></div>
 </div>
 <div id="red-hat-enterprise-linux-fedora-centos-and-similar-distributions-4" class="section level4">
 <h4>Red Hat Enterprise Linux, Fedora, CentOS and similar distributions</h4>
-<pre class="bash"><code>sudo yum install coin-or-SYMPHONY-devel</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">sudo</span> yum install coin-or-SYMPHONY-devel</code></pre></div>
 </div>
 <div id="macos-4" class="section level4">
 <h4>macOS</h4>
-<pre class="bash"><code>brew tap coin-or-tools/coinor
-brew install symphony</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">brew</span> tap coin-or-tools/coinor
+<span class="ex">brew</span> install symphony</code></pre></div>
 <p>After the installation of the SYMPHONY libraries and headers <strong>ROI.plugin.symphony</strong> may be installed as usual.</p>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.symphony&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.symphony&quot;</span>)</code></pre></div>
 </div>
 </div>
 <div id="windows-3" class="section level3">
 <h3>Windows</h3>
-<pre class="r"><code>install.packages(&quot;ROI.plugin.symphony&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.symphony&quot;</span>)</code></pre></div>
 </div>
 </div>
 </div>
@@ -516,15 +542,15 @@ brew install symphony</code></pre>
 <h1><strong>ROI models</strong></h1>
 <div id="roi.models.netlib" class="section level2">
 <h2><strong>ROI.models.netlib</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.models.netlib&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.models.netlib&quot;</span>)</code></pre></div>
 </div>
 <div id="roi.models.miplib" class="section level2">
 <h2><strong>ROI.models.miplib</strong></h2>
-<pre class="r"><code>install.packages(&quot;ROI.models.miplib&quot;)
-library(ROI.models.miplib)
-miplib_download_metainfo(&quot;http://miplib2010.zib.de/download/miplib2010_all.solu&quot;)
-miplib_download_benchmark(&quot;http://miplib2010.zib.de/download/miplib2010-benchmark.tgz&quot;,
-    quiet = FALSE)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ROI.models.miplib&quot;</span>)
+<span class="kw">library</span>(ROI.models.miplib)
+<span class="kw">miplib_download_metainfo</span>(<span class="st">&quot;http://miplib2010.zib.de/download/miplib2010_all.solu&quot;</span>)
+<span class="kw">miplib_download_benchmark</span>(<span class="st">&quot;http://miplib2010.zib.de/download/miplib2010-benchmark.tgz&quot;</span>,
+    <span class="dt">quiet =</span> <span class="ot">FALSE</span>)</code></pre></div>
 </div>
 </div>
 

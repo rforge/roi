@@ -23,25 +23,51 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
 
 <style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
   }
 </style>
-<script type="text/javascript">
-if (window.hljs) {
-  hljs.configure({languages: []});
-  hljs.initHighlightingOnLoad();
-  if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
-  }
-}
-</script>
-
 
 
 <style type="text/css">
@@ -317,52 +343,52 @@ div.tocify {
 </div>
 
 
-<pre class="r"><code>Sys.setenv(ROI_LOAD_PLUGINS = &quot;FALSE&quot;)
-library(ROI)
-library(ROI.plugin.glpk)
-library(ROI.plugin.qpoases)
-library(ROI.plugin.ecos)
-library(ROI.plugin.scs)
-library(ROI.plugin.alabama)
-library(ROI.plugin.lpsolve)</code></pre>
-<pre class="r"><code>library(ROI.plugin.gurobi)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setenv</span>(<span class="dt">ROI_LOAD_PLUGINS =</span> <span class="st">&quot;FALSE&quot;</span>)
+<span class="kw">library</span>(ROI)
+<span class="kw">library</span>(ROI.plugin.glpk)
+<span class="kw">library</span>(ROI.plugin.qpoases)
+<span class="kw">library</span>(ROI.plugin.ecos)
+<span class="kw">library</span>(ROI.plugin.scs)
+<span class="kw">library</span>(ROI.plugin.alabama)
+<span class="kw">library</span>(ROI.plugin.lpsolve)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ROI.plugin.gurobi)</code></pre></div>
 <div id="constructors" class="section level1">
 <h1>Constructors</h1>
 <div id="optimization-problem" class="section level2">
 <h2>Optimization Problem</h2>
-<pre class="r"><code>str(OP)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(OP)</code></pre></div>
 <pre><code>## function (objective, constraints, types, bounds, maximum = FALSE)</code></pre>
 </div>
 <div id="objective" class="section level2">
 <h2>Objective</h2>
 <div id="linear-objective" class="section level3">
 <h3>Linear objective</h3>
-<pre class="r"><code>str(L_objective)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(L_objective)</code></pre></div>
 <pre><code>## function (L, names = NULL)</code></pre>
 <p><span class="math display">\[1 x + 2 y + 3 z\]</span></p>
-<pre class="r"><code>lo &lt;- L_objective(c(1, 2, 3), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lo &lt;-<span class="st"> </span><span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>))</code></pre></div>
 </div>
 <div id="quadratic-objective" class="section level3">
 <h3>Quadratic objective</h3>
-<pre class="r"><code>str(Q_objective)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(Q_objective)</code></pre></div>
 <pre><code>## function (Q, L = NULL, names = NULL)</code></pre>
 <p><span class="math display">\[\frac{1}{2} (x_1^2 + x_2^2 + x_3^2) + 1 x_1 + 2x_2 + 3x_3\]</span></p>
-<pre class="r"><code>qo &lt;- Q_objective(diag(3), c(1, 2, 3), c(&quot;x_1&quot;, &quot;x_2&quot;, &quot;x_3&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qo &lt;-<span class="st"> </span><span class="kw">Q_objective</span>(<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x_1&quot;</span>, <span class="st">&quot;x_2&quot;</span>, <span class="st">&quot;x_3&quot;</span>))</code></pre></div>
 </div>
 <div id="functional-objective" class="section level3">
 <h3>Functional objective}</h3>
-<pre class="r"><code>str(F_objective)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(F_objective)</code></pre></div>
 <pre><code>## function (F, n, G = NULL, H = NULL, names = NULL)</code></pre>
 <p><span class="math display">\[x_1^2 + x_2^2\]</span></p>
-<pre class="r"><code>fo &lt;- F_objective(F = function(x) sum(x^2), n = 2, 
-                  G = function(x) 2*x, names = c(&quot;x_1&quot;, &quot;x_2&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fo &lt;-<span class="st"> </span><span class="kw">F_objective</span>(<span class="dt">F =</span> function(x) <span class="kw">sum</span>(x^<span class="dv">2</span>), <span class="dt">n =</span> <span class="dv">2</span>, 
+                  <span class="dt">G =</span> function(x) <span class="dv">2</span>*x, <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x_1&quot;</span>, <span class="st">&quot;x_2&quot;</span>))</code></pre></div>
 </div>
 </div>
 <div id="constraints" class="section level2">
 <h2>Constraints</h2>
 <div id="linear-constraints" class="section level3">
 <h3>Linear constraints</h3>
-<pre class="r"><code>str(L_constraint)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(L_constraint)</code></pre></div>
 <pre><code>## function (L, dir, rhs, names = NULL)</code></pre>
 <p><span class="math display">\[
 \nonumber
@@ -372,17 +398,17 @@ library(ROI.plugin.lpsolve)</code></pre>
 1 x &amp; + &amp; 1 y &amp; + &amp; 0 z &amp;   =  &amp; 2
 \end{array}
 \]</span></p>
-<pre class="r"><code>lc &lt;- L_constraint(L = rbind(c(3, 4, 1), c(1, 0, 2), c(1, 1, 0)),
-                   dir = c(&quot;&lt;=&quot;, &quot;&gt;=&quot;, &quot;==&quot;), rhs = c(90, 5, 2),
-                   names = c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lc &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)),
+                   <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>, <span class="st">&quot;==&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">90</span>, <span class="dv">5</span>, <span class="dv">2</span>),
+                   <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>))</code></pre></div>
 </div>
 <div id="quadratic-constraints" class="section level3">
 <h3>Quadratic constraints</h3>
-<pre class="r"><code>str(Q_constraint)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(Q_constraint)</code></pre></div>
 <pre><code>## function (Q, L, dir, rhs, names = NULL)</code></pre>
 <p><span class="math display">\[\frac{1}{2} (x^2 + y^2) + 1x + 2y \leq 3\]</span></p>
-<pre class="r"><code>qc1 &lt;- Q_constraint(Q = diag(2), L = 1:2, dir = &quot;&lt;=&quot;, 
-                    rhs = 3, names = c(&quot;x&quot;, &quot;y&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qc1 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">diag</span>(<span class="dv">2</span>), <span class="dt">L =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, 
+                    <span class="dt">rhs =</span> <span class="dv">3</span>, <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</code></pre></div>
 <p><span class="math display">\[
 \begin{array}
 x^2 + y^2 + 3x + 1y &amp; \leq &amp; 3 \nonumber \\
@@ -390,14 +416,14 @@ x + y &amp; \leq &amp; 4 \nonumber \\
 \frac{1}{2} (3x^2 + 3y^2 + 2xy) + 2x + 5y &amp; \leq &amp; 9 \nonumber
 \end{array}
 \]</span></p>
-<pre class="r"><code>qc2 &lt;- Q_constraint(Q = list(diag(2, 2), NULL, matrix(c(3, 1, 1, 3), 2)), 
-                    L = rbind(c(3, 1), c(1, 1), c(2, 5)),
-                    dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;, &quot;&lt;=&quot;),
-                    rhs = c(3, 4, 9), names = c(&quot;x&quot;, &quot;y&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qc2 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">list</span>(<span class="kw">diag</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="ot">NULL</span>, <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>), <span class="dv">2</span>)), 
+                    <span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">5</span>)),
+                    <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>),
+                    <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">9</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</code></pre></div>
 </div>
 <div id="functional-constraints" class="section level3">
 <h3>Functional constraints</h3>
-<pre class="r"><code>str(F_constraint)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(F_constraint)</code></pre></div>
 <pre><code>## function (F, dir, rhs, J = NULL, names = NULL)</code></pre>
 <p><span class="math display">\[
 \begin{array}
@@ -405,20 +431,20 @@ x^2 &amp; \leq &amp; 2 \nonumber \\
 y^2 &amp; \leq &amp; 4 \nonumber
 \end{array}
 \]</span></p>
-<pre class="r"><code>fc1 &lt;- F_constraint(F = function(x) x^2, dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;), rhs = c(2, 4),
-                    J = function(x) diag(x = 2, nrow = 2) * x,
-                    names = c(&quot;x&quot;, &quot;y&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fc1 &lt;-<span class="st"> </span><span class="kw">F_constraint</span>(<span class="dt">F =</span> function(x) x^<span class="dv">2</span>, <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>),
+                    <span class="dt">J =</span> function(x) <span class="kw">diag</span>(<span class="dt">x =</span> <span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">2</span>) *<span class="st"> </span>x,
+                    <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</code></pre></div>
 <p>or equivalently</p>
-<pre class="r"><code>fc2 &lt;- F_constraint(F = list(function(x) x[1]^2, function(x) x[2]^2), 
-                    dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;), rhs = c(2, 4),
-                    J = list(function(x) rbind(c(2, 0) * x), 
-                             function(x) rbind(c(0, 2) * x)),
-                    names = c(&quot;x&quot;, &quot;y&quot;))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fc2 &lt;-<span class="st"> </span><span class="kw">F_constraint</span>(<span class="dt">F =</span> <span class="kw">list</span>(function(x) x[<span class="dv">1</span>]^<span class="dv">2</span>, function(x) x[<span class="dv">2</span>]^<span class="dv">2</span>), 
+                    <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>),
+                    <span class="dt">J =</span> <span class="kw">list</span>(function(x) <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>) *<span class="st"> </span>x), 
+                             function(x) <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>) *<span class="st"> </span>x)),
+                    <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))
 
-## TODO: create an example
+## <span class="al">TODO</span>: create an example
 ## x &lt;- OP(L_objective(c(1, 1)), fc1, maximum=TRUE)
 ## x &lt;- OP(L_objective(c(1, 1)), fc2, maximum=TRUE)
-## solution(ROI_solve(x, start=c(0, 1), solver=&quot;alabama&quot;))</code></pre>
+## solution(ROI_solve(x, start=c(0, 1), solver=&quot;alabama&quot;))</code></pre></div>
 </div>
 </div>
 <div id="bounds" class="section level2">
@@ -426,10 +452,10 @@ y^2 &amp; \leq &amp; 4 \nonumber
 <div id="variable-bounds" class="section level3">
 <h3>Variable bounds</h3>
 <p>By default the variable bounds are set to <span class="math inline">\(0 \leq x_i \leq \infty \text{ for all } i = 1, ..., n.\)</span></p>
-<pre class="r"><code>str(V_bound)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(V_bound)</code></pre></div>
 <pre><code>## function (li, ui, lb, ub, nobj, ld = 0, ud = Inf, names = NULL)</code></pre>
 <p><span class="math display">\[ -3 \leq x_1 \leq 3, \ -\infty \leq x_2 \leq 7, \ -9 \leq x_3 \leq \infty \]</span></p>
-<pre class="r"><code>vb &lt;- V_bound(li = 1:3, ui = 1:3, lb = c(-3, -Inf, -9), ub = c(3, 7, Inf))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vb &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">1</span>:<span class="dv">3</span>, <span class="dt">ui =</span> <span class="dv">1</span>:<span class="dv">3</span>, <span class="dt">lb =</span> <span class="kw">c</span>(-<span class="dv">3</span>, -<span class="ot">Inf</span>, -<span class="dv">9</span>), <span class="dt">ub =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">7</span>, <span class="ot">Inf</span>))</code></pre></div>
 </div>
 </div>
 </div>
@@ -449,31 +475,31 @@ y^2 &amp; \leq &amp; 4 \nonumber
 \end{array}
 \]</span></p>
 <p><span class="math display">\[ -100 \leq x_1, x_2, \leq 100\]</span></p>
-<pre class="r"><code>lp  &lt;- OP(objective = L_objective(c(7, 8), names=c(&quot;x&quot;, &quot;y&quot;)),
-          constraints = L_constraint(L = rbind(c(3, 4), c(2, 1)), 
-                                     dir = c(&quot;==&quot;, &quot;&gt;=&quot;), rhs = c(9, 3)),
-          bounds = V_bound(li = 1:2, ui = 1:2, 
-                           lb = c(-100, -100), ub = c(100, 100)))
-ROI_applicable_solvers(lp)</code></pre>
-<pre><code>## [1] &quot;ecos&quot;    &quot;glpk&quot;    &quot;scs&quot;     &quot;qpoases&quot; &quot;alabama&quot; &quot;lpsolve&quot; &quot;gurobi&quot;</code></pre>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">7</span>, <span class="dv">8</span>), <span class="dt">names=</span><span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)),
+          <span class="dt">constraints =</span> <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">4</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)), 
+                                     <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;==&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">9</span>, <span class="dv">3</span>)),
+          <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">ui =</span> <span class="dv">1</span>:<span class="dv">2</span>, 
+                           <span class="dt">lb =</span> <span class="kw">c</span>(-<span class="dv">100</span>, -<span class="dv">100</span>), <span class="dt">ub =</span> <span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">100</span>)))
+<span class="kw">ROI_applicable_solvers</span>(lp)</code></pre></div>
+<pre><code>## [1] &quot;glpk&quot;    &quot;qpoases&quot; &quot;ecos&quot;    &quot;scs&quot;     &quot;alabama&quot; &quot;lpsolve&quot; &quot;gurobi&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 1.860000e+01</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##   x   y 
 ## 0.6 1.8</code></pre>
 <p>The solution can be accessed via the function , where</p>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##   x   y 
 ## 0.6 1.8</code></pre>
-<pre class="r"><code>solution(sol, type = &quot;primal&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol, <span class="dt">type =</span> <span class="st">&quot;primal&quot;</span>)</code></pre></div>
 <pre><code>##   x   y 
 ## 0.6 1.8</code></pre>
 <p>gives the primal solution,</p>
-<pre class="r"><code>solution(sol, type = &quot;dual&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol, <span class="dt">type =</span> <span class="st">&quot;dual&quot;</span>)</code></pre></div>
 <pre><code>## [1] 0 0</code></pre>
 <p>the dual solution,</p>
-<pre class="r"><code>solution(sol, type = &quot;msg&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol, <span class="dt">type =</span> <span class="st">&quot;msg&quot;</span>)</code></pre></div>
 <pre><code>## $optimum
 ## [1] 18.6
 ## 
@@ -509,15 +535,15 @@ ROI_applicable_solvers(lp)</code></pre>
 &amp; 9 x_1 &amp; + &amp; 1 x_2 &amp; + &amp; 7 x_3 &amp; \leq 70 
 \end{array}
 \]</span> <span class="math display">\[x_1, x_2, x_3 \geq 0\]</span></p>
-<pre class="r"><code>lp &lt;- OP(objective = L_objective(c(7, 1, 3), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
-         constraints = L_constraint(L = rbind(c(6, 4, 5), c(8, 0, 2), c(9, 1, 7)),
-                                    dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;, &quot;&lt;=&quot;),
-                                    rhs = c(60, 80, 70)),
-         maximum = TRUE)
-(sol &lt;- ROI_solve(lp))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">7</span>, <span class="dv">1</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
+         <span class="dt">constraints =</span> <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">5</span>), <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">9</span>, <span class="dv">1</span>, <span class="dv">7</span>)),
+                                    <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>),
+                                    <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">60</span>, <span class="dv">80</span>, <span class="dv">70</span>)),
+         <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 5.533333e+01</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##        x        y        z 
 ## 7.333333 4.000000 0.000000</code></pre>
 </div>
@@ -533,17 +559,17 @@ ROI_applicable_solvers(lp)</code></pre>
 &amp; 9 x_1 &amp; + &amp; 1 x_2 &amp; + &amp; 7 x_3 &amp; \leq 70 
 \end{array}
 \]</span> <span class="math display">\[x_1, x_3 \in \mathbb{Z}_{\geq 0}\]</span> <span class="math display">\[x_2 \geq 0\]</span></p>
-<pre class="r"><code>A &lt;- rbind(c(6, 4, 5), c(8, 0, 2), c(9, 1, 7))
-milp &lt;- OP(objective = L_objective(c(7, 1, 3), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
-           constraints = L_constraint(L = rbind(c(6, 4, 5), c(8, 0, 2), c(9, 1, 7)),
-                                      dir = c(&quot;&lt;=&quot;, &quot;&lt;=&quot;, &quot;&lt;=&quot;),
-                                      rhs = c(60, 80, 70)),
-           types = c(&quot;I&quot;, &quot;C&quot;, &quot;I&quot;), 
-           maximum = TRUE)
-(sol &lt;- ROI_solve(milp))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">5</span>), <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">9</span>, <span class="dv">1</span>, <span class="dv">7</span>))
+milp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">7</span>, <span class="dv">1</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
+           <span class="dt">constraints =</span> <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">5</span>), <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">9</span>, <span class="dv">1</span>, <span class="dv">7</span>)),
+                                      <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>),
+                                      <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">60</span>, <span class="dv">80</span>, <span class="dv">70</span>)),
+           <span class="dt">types =</span> <span class="kw">c</span>(<span class="st">&quot;I&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;I&quot;</span>), 
+           <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(milp))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 5.350000e+01</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##   x   y   z 
 ## 7.0 4.5 0.0</code></pre>
 </div>
@@ -559,13 +585,13 @@ milp &lt;- OP(objective = L_objective(c(7, 1, 3), c(&quot;x&quot;, &quot;y&quot;
                   &amp; &amp; x_1 &amp;   &amp;      &amp; + &amp;  x_3 &amp; \geq &amp; 3 \nonumber \\
 \end{array}
 \]</span></p>
-<pre class="r"><code>qp &lt;- OP(Q_objective(diag(3), c(1, 2, 3), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
-         L_constraint(L = rbind(c(1, 1, 0), c(0, 1, 1), c(1, 0, 1)), 
-                      dir = c(&quot;&gt;=&quot;, &quot;&gt;=&quot;, &quot;&gt;=&quot;), rhs = c(1, 2, 3)))
-(sol &lt;- ROI_solve(qp, solver = &quot;qpoases&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">Q_objective</span>(<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
+         <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)), 
+                      <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&gt;=&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)))
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(qp, <span class="dt">solver =</span> <span class="st">&quot;qpoases&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 9.333333e+00</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##         x         y         z 
 ## 1.3333333 0.3333333 1.6666667</code></pre>
 </div>
@@ -581,37 +607,37 @@ milp &lt;- OP(objective = L_objective(c(7, 1, 3), c(&quot;x&quot;, &quot;y&quot;
                   &amp; x_1, x_2, x_3 \geq 0      &amp;      &amp;   &amp;
 \end{array}
 \]</span></p>
-<pre class="r"><code>qcqp &lt;- OP(Q_objective(-diag(3), c(90, 110, 160), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
-           Q_constraint(Q = list(rbind(c(2, 0, 0), c(0, 2, 0), c(0, 0, 0)),
-                                 rbind(c(0, 0, 0), c(0, 2, 0), c(0, 0, 2)),
-                                 rbind(c(2, 0, 2), c(0, 0, 0), c(2, 0, 2))),
-                        L = rbind(c(0, 0, 4), c(1, 0, 1), c(0, 0, 0)),
-                        dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
-           maximum = TRUE)</code></pre>
-<pre class="r"><code>(sol &lt;- ROI_solve(qcqp, solver = &quot;gurobi&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qcqp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">Q_objective</span>(-<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">90</span>, <span class="dv">110</span>, <span class="dv">160</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
+           <span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">list</span>(<span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
+                                 <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>)),
+                                 <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>))),
+                        <span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">4</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
+                        <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="dv">3</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)),
+           <span class="dt">maximum =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(qcqp, <span class="dt">solver =</span> <span class="st">&quot;gurobi&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 2.836219e+02</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##         x         y         z 
 ## 1.0606575 1.2086302 0.3535547</code></pre>
 <p>or equivalently</p>
-<pre class="r"><code>qc1 &lt;- Q_constraint(Q = rbind(c(2, 0, 0), c(0, 2, 0), c(0, 0, 0)),
-                    L = c(0, 0, 4), dir = &quot;&lt;=&quot;, rhs = 4)
-qc2 &lt;- Q_constraint(Q = rbind(c(0, 0, 0), c(0, 2, 0), c(0, 0, 2)),
-                    L = c(1, 0, 1), dir = &quot;&lt;=&quot;, rhs = 3)
-qc3 &lt;- Q_constraint(Q = rbind(c(2, 0, 2), c(0, 0, 0), c(2, 0, 2)),
-                    L = NULL, dir = &quot;&lt;=&quot;, rhs = 2)
-qcqp &lt;- OP(Q_objective(-diag(3), c(90, 110, 160), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)),
-           c(qc1, qc2, qc3), maximum = TRUE)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qc1 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
+                    <span class="dt">L =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">4</span>), <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">4</span>)
+qc2 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>)),
+                    <span class="dt">L =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">3</span>)
+qc3 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>)),
+                    <span class="dt">L =</span> <span class="ot">NULL</span>, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">2</span>)
+qcqp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">Q_objective</span>(-<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">90</span>, <span class="dv">110</span>, <span class="dv">160</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
+           <span class="kw">c</span>(qc1, qc2, qc3), <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
 
-(sol &lt;- ROI_solve(qcqp, solver = &quot;gurobi&quot;))</code></pre>
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(qcqp, <span class="dt">solver =</span> <span class="st">&quot;gurobi&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 2.836219e+02</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##         x         y         z 
 ## 1.0606575 1.2086302 0.3535547</code></pre>
 <p>Check how tight the bounds are.</p>
-<pre class="r"><code>sapply(as.function(constraints(qcqp)), function(F) F(solution(sol)))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sapply</span>(<span class="kw">as.function</span>(<span class="kw">constraints</span>(qcqp)), function(F) <span class="kw">F</span>(<span class="kw">solution</span>(sol)))</code></pre></div>
 <pre><code>## [1] 4.000000 3.000000 1.999996</code></pre>
 </div>
 </div>
@@ -620,15 +646,15 @@ qcqp &lt;- OP(Q_objective(-diag(3), c(90, 110, 160), c(&quot;x&quot;, &quot;y&qu
 <div id="second-order-cone-programming-socp" class="section level3">
 <h3>Second-order cone programming (SOCP)</h3>
 <p><span class="math display">\[\text{maximize } \ \ x + y\]</span> <span class="math display">\[\text{subject to } \ \ \sqrt{x^2 + y^2} \leq \sqrt{2}\]</span> <span class="math display">\[x, y \geq 0\]</span></p>
-<pre class="r"><code>socp1 &lt;- OP(objective = L_objective(c(1, 1), names = c(&quot;x&quot;, &quot;y&quot;)),
-            constraints = C_constraint(rbind(c(0, 0), c(-1, 0), c(0, -1)),
-                                       cones = K_soc(3), 
-                                       rhs = c(sqrt(2), 0, 0)),
-            maximum = TRUE)
-(sol &lt;- ROI_solve(socp1))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">socp1 &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)),
+            <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(-<span class="dv">1</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, -<span class="dv">1</span>)),
+                                       <span class="dt">cones =</span> <span class="kw">K_soc</span>(<span class="dv">3</span>), 
+                                       <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="kw">sqrt</span>(<span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">0</span>)),
+            <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(socp1))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 2.000000e+00</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>## x y 
 ## 1 1</code></pre>
 </div>
@@ -665,20 +691,20 @@ x_3
 \nonumber
 \end{array}
 \]</span></p>
-<pre class="r"><code>A1 &lt;- rbind(c(10, 3), c(3, 10))
-A2 &lt;- rbind(c(6, -4), c(-4, 10))
-A3 &lt;- rbind(c(8, 1), c(1, 6))
-A4 &lt;- rbind(c(16, -13), c(-13, 60))
-psd &lt;- OP(objective = L_objective(c(1, 1, -1)),
-          constraints = C_constraint(L = vech(A1, A2, A3), 
-                                     cones = K_psd(3),
-                                     rhs = vech(A4)))
-(sol &lt;- ROI_solve(psd))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A1 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">10</span>))
+A2 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">6</span>, -<span class="dv">4</span>), <span class="kw">c</span>(-<span class="dv">4</span>, <span class="dv">10</span>))
+A3 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">6</span>))
+A4 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">16</span>, -<span class="dv">13</span>), <span class="kw">c</span>(-<span class="dv">13</span>, <span class="dv">60</span>))
+psd &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, -<span class="dv">1</span>)),
+          <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="dt">L =</span> <span class="kw">vech</span>(A1, A2, A3), 
+                                     <span class="dt">cones =</span> <span class="kw">K_psd</span>(<span class="dv">3</span>),
+                                     <span class="dt">rhs =</span> <span class="kw">vech</span>(A4)))
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(psd))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: -1.486461e+00</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>## [1] -1.937019e-08 -5.371359e-08  1.486461e+00</code></pre>
-<pre class="r"><code>as.matrix(solution(sol, &quot;psd&quot;)[[1]])</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">as.matrix</span>(<span class="kw">solution</span>(sol, <span class="st">&quot;psd&quot;</span>)[[<span class="dv">1</span>]])</code></pre></div>
 <pre><code>##            [,1]        [,2]
 ## [1,] 0.11050022 0.031337481
 ## [2,] 0.03133748 0.008887201</code></pre>
@@ -738,34 +764,34 @@ x_1 \
 \end{array}
 \nonumber
 \]</span></p>
-<pre class="r"><code>obj &lt;- c(1, -1, 1)
-A1 &lt;- matrix(c(-7, -11, -11,  3), 2)
-A2 &lt;- matrix(c( 7, -18, -18,  8), 2)
-A3 &lt;- matrix(c(-2,  -8,  -8,  1), 2)
-A4 &lt;- matrix(c(33,  -9,  -9, 26), 2)
-B1 &lt;- matrix(c(-21, -11,  0, -11,  10,   8,  0,    8, 5), 3)
-B2 &lt;- matrix(c(  0,  10,  16, 10, -10, -10,  16, -10, 3), 3)
-B3 &lt;- matrix(c( -5,   2, -17,  2,  -6,   8, -17,   8, 6), 3)
-B4 &lt;- matrix(c( 14,   9,  40,  9,  91,  10,  40,  10,15), 3)
-rhs &lt;- c(vech(A4), vech(B4))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obj &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, -<span class="dv">1</span>, <span class="dv">1</span>)
+A1 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(-<span class="dv">7</span>, -<span class="dv">11</span>, -<span class="dv">11</span>,  <span class="dv">3</span>), <span class="dv">2</span>)
+A2 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>( <span class="dv">7</span>, -<span class="dv">18</span>, -<span class="dv">18</span>,  <span class="dv">8</span>), <span class="dv">2</span>)
+A3 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(-<span class="dv">2</span>,  -<span class="dv">8</span>,  -<span class="dv">8</span>,  <span class="dv">1</span>), <span class="dv">2</span>)
+A4 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">33</span>,  -<span class="dv">9</span>,  -<span class="dv">9</span>, <span class="dv">26</span>), <span class="dv">2</span>)
+B1 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(-<span class="dv">21</span>, -<span class="dv">11</span>,  <span class="dv">0</span>, -<span class="dv">11</span>,  <span class="dv">10</span>,   <span class="dv">8</span>,  <span class="dv">0</span>,    <span class="dv">8</span>, <span class="dv">5</span>), <span class="dv">3</span>)
+B2 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(  <span class="dv">0</span>,  <span class="dv">10</span>,  <span class="dv">16</span>, <span class="dv">10</span>, -<span class="dv">10</span>, -<span class="dv">10</span>,  <span class="dv">16</span>, -<span class="dv">10</span>, <span class="dv">3</span>), <span class="dv">3</span>)
+B3 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>( -<span class="dv">5</span>,   <span class="dv">2</span>, -<span class="dv">17</span>,  <span class="dv">2</span>,  -<span class="dv">6</span>,   <span class="dv">8</span>, -<span class="dv">17</span>,   <span class="dv">8</span>, <span class="dv">6</span>), <span class="dv">3</span>)
+B4 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>( <span class="dv">14</span>,   <span class="dv">9</span>,  <span class="dv">40</span>,  <span class="dv">9</span>,  <span class="dv">91</span>,  <span class="dv">10</span>,  <span class="dv">40</span>,  <span class="dv">10</span>,<span class="dv">15</span>), <span class="dv">3</span>)
+rhs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">vech</span>(A4), <span class="kw">vech</span>(B4))
 
-psd &lt;- OP(objective = obj,
-          constraints = C_constraint(L = rbind(vech(A1, A2, A3), vech(B1, B2, B3)), 
-                                     cones = K_psd(c(3, 6)), rhs = rhs),
-          bounds = V_bound(li=1:3, lb=rep(-Inf, 3)))
+psd &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> obj,
+          <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">vech</span>(A1, A2, A3), <span class="kw">vech</span>(B1, B2, B3)), 
+                                     <span class="dt">cones =</span> <span class="kw">K_psd</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">6</span>)), <span class="dt">rhs =</span> rhs),
+          <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li=</span><span class="dv">1</span>:<span class="dv">3</span>, <span class="dt">lb=</span><span class="kw">rep</span>(-<span class="ot">Inf</span>, <span class="dv">3</span>)))
 
-(sol &lt;- ROI_solve(psd, solver = &quot;scs&quot;))</code></pre>
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(psd, <span class="dt">solver =</span> <span class="st">&quot;scs&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: -3.153545e+00</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>## [1] -0.3677513  1.8983332 -0.8874604</code></pre>
-<pre class="r"><code>lapply(solution(sol, type=&quot;psd&quot;), as.matrix)</code></pre>
-<pre><code>## $`38`
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">lapply</span>(<span class="kw">solution</span>(sol, <span class="dt">type=</span><span class="st">&quot;psd&quot;</span>), as.matrix)</code></pre></div>
+<pre><code>## $`5`
 ##              [,1]         [,2]
 ## [1,]  0.003961386 -0.004339146
 ## [2,] -0.004339146  0.004752929
 ## 
-## $`39`
+## $`6`
 ##              [,1]          [,2]         [,3]
 ## [1,]  0.055803080 -0.0024106686  0.024214084
 ## [2,] -0.002410669  0.0001041398 -0.001046038
@@ -792,15 +818,15 @@ psd &lt;- OP(objective = obj,
 &amp; x \geq 0, y &gt; 0, z \in [0, e]
 \end{array}
 \]</span></p>
-<pre class="r"><code>expp &lt;- OP(objective = L_objective(c(1, 1, 1)),
-           constraints = C_constraint(diag(-1, 3), cones = K_expp(1), 
-                                      rhs = rep(0, 3)),
-           bounds = V_bound(li = 2, lb = 1e-12, ui = 3, ub = exp(1)),
-           maximum = TRUE)
-(sol &lt;- ROI_solve(expp, tol=1e-8, solver=&quot;scs&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">expp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)),
+           <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">diag</span>(-<span class="dv">1</span>, <span class="dv">3</span>), <span class="dt">cones =</span> <span class="kw">K_expp</span>(<span class="dv">1</span>), 
+                                      <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)),
+           <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">2</span>, <span class="dt">lb =</span> <span class="fl">1e-12</span>, <span class="dt">ui =</span> <span class="dv">3</span>, <span class="dt">ub =</span> <span class="kw">exp</span>(<span class="dv">1</span>)),
+           <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(expp, <span class="dt">tol=</span><span class="fl">1e-8</span>, <span class="dt">solver=</span><span class="st">&quot;scs&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 5.436564e+00</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>## [1] 2.614608e-08 2.718282e+00 2.718282e+00</code></pre>
 </div>
 <div id="dual-exponential-cone" class="section level4">
@@ -812,14 +838,14 @@ psd &lt;- OP(objective = obj,
 &amp; u \in [-1, 0], y, z \geq 0
 \end{array}
 \]</span></p>
-<pre class="r"><code>expd &lt;- OP(objective = L_objective(c(1, 1, 1), names = c(&quot;u&quot;, &quot;v&quot;, &quot;w&quot;)),
-           constraints = C_constraint(diag(x=-1, 3), cones = K_expd(1), 
-                                      rhs = rep(0, 3)), 
-           bounds = V_bound(li = 1, lb = -1, ui = 1, ub = 0, nobj = 3L))
-(sol &lt;- ROI_solve(expd))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">expd &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;u&quot;</span>, <span class="st">&quot;v&quot;</span>, <span class="st">&quot;w&quot;</span>)),
+           <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">diag</span>(<span class="dt">x=</span>-<span class="dv">1</span>, <span class="dv">3</span>), <span class="dt">cones =</span> <span class="kw">K_expd</span>(<span class="dv">1</span>), 
+                                      <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)), 
+           <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">1</span>, <span class="dt">lb =</span> -<span class="dv">1</span>, <span class="dt">ui =</span> <span class="dv">1</span>, <span class="dt">ub =</span> <span class="dv">0</span>, <span class="dt">nobj =</span> 3L))
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(expd))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: -6.321204e-01</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##             u             v             w 
 ## -9.999999e-01  3.483107e-07  3.678791e-01</code></pre>
 </div>
@@ -845,13 +871,13 @@ psd &lt;- OP(objective = obj,
 &amp; x, y \geq 0, z = 4
 \end{array}
 \]</span></p>
-<pre class="r"><code>powp &lt;- OP(objective = L_objective(c(1, 1, 0), names = c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)), 
-           constraints = C_constraint(diag(-1, 3), cones = K_powp(0.5), rhs = rep(0, 3)),
-           bounds = V_bound(li = 3, ui = 3, lb = 4, ub = 4))
-(sol &lt;- ROI_solve(powp))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">powp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)), 
+           <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">diag</span>(-<span class="dv">1</span>, <span class="dv">3</span>), <span class="dt">cones =</span> <span class="kw">K_powp</span>(<span class="fl">0.5</span>), <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)),
+           <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">3</span>, <span class="dt">ui =</span> <span class="dv">3</span>, <span class="dt">lb =</span> <span class="dv">4</span>, <span class="dt">ub =</span> <span class="dv">4</span>))
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(powp))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 7.999993e+00</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##        x        y        z 
 ## 3.999996 3.999996 4.000000</code></pre>
 </div>
@@ -864,13 +890,13 @@ psd &lt;- OP(objective = obj,
 &amp; u, v \geq 0, z = 4
 \end{array}
 \]</span></p>
-<pre class="r"><code>powd &lt;- OP(objective = L_objective(c(1, 1, 0), names = c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)), 
-           constraints = C_constraint(diag(-1, 3), cones = K_powd(0.5), rhs = rep(0, 3)),
-           bounds = V_bound(li = 3, ui = 3, lb = 4, ub = 4))
-(sol &lt;- ROI_solve(powd))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">powd &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)), 
+           <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">diag</span>(-<span class="dv">1</span>, <span class="dv">3</span>), <span class="dt">cones =</span> <span class="kw">K_powd</span>(<span class="fl">0.5</span>), <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)),
+           <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">3</span>, <span class="dt">ui =</span> <span class="dv">3</span>, <span class="dt">lb =</span> <span class="dv">4</span>, <span class="dt">ub =</span> <span class="dv">4</span>))
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(powd))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 4.000001e+00</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##        x        y        z 
 ## 2.000001 2.000001 4.000000</code></pre>
 </div>
@@ -879,51 +905,51 @@ psd &lt;- OP(objective = obj,
 <div id="nonlinear-programming" class="section level2">
 <h2>Nonlinear Programming</h2>
 <p>The quadratic problem from above can also be solved by a general purpose solver.</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(qcqp, solver = &quot;alabama&quot;, start = double(3)))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(qcqp, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="dv">3</span>)))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 2.836219e+02</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##         x         y         z 
 ## 1.0606602 1.2086300 0.3535534</code></pre>
 <p>or equivalently</p>
-<pre class="r"><code>f &lt;- function(x) {
-    90 * x[1] + 110 * x[2] + 160 * x[3] - 1 / 2 * (x[1]^2 + x[2]^2 + x[3]^2)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f &lt;-<span class="st"> </span>function(x) {
+    <span class="dv">90</span> *<span class="st"> </span>x[<span class="dv">1</span>] +<span class="st"> </span><span class="dv">110</span> *<span class="st"> </span>x[<span class="dv">2</span>] +<span class="st"> </span><span class="dv">160</span> *<span class="st"> </span>x[<span class="dv">3</span>] -<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>(x[<span class="dv">1</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">2</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">3</span>]^<span class="dv">2</span>)
 }
-g &lt;- function(x) {
-    c((x[1]^2 + x[2]^2 + 4 * x[3]),
-      (x[2]^2 + x[3]^2 + x[1] + x[3]),
-      (x[1]^2 + x[3]^2 + 2 * x[1] * x[3]))
+g &lt;-<span class="st"> </span>function(x) {
+    <span class="kw">c</span>((x[<span class="dv">1</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">2</span>]^<span class="dv">2</span> +<span class="st"> </span><span class="dv">4</span> *<span class="st"> </span>x[<span class="dv">3</span>]),
+      (x[<span class="dv">2</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">3</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">1</span>] +<span class="st"> </span>x[<span class="dv">3</span>]),
+      (x[<span class="dv">1</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">3</span>]^<span class="dv">2</span> +<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>x[<span class="dv">1</span>] *<span class="st"> </span>x[<span class="dv">3</span>]))
 }
-nlp &lt;- OP(F_objective(f, n=3), 
-          F_constraint(g, dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
-          maximum = TRUE)
-(sol &lt;- ROI_solve(nlp, solver = &quot;alabama&quot;, start = double(3)))</code></pre>
+nlp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">F_objective</span>(f, <span class="dt">n=</span><span class="dv">3</span>), 
+          <span class="kw">F_constraint</span>(g, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="dv">3</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)),
+          <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(nlp, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="dv">3</span>)))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 2.836219e+02</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>## [1] 1.0606602 1.2086300 0.3535534</code></pre>
 <p>or equivalently</p>
-<pre class="r"><code>nlp &lt;- OP(Q_objective(-diag(3), c(90, 110, 160), c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)), 
-          F_constraint(g, dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
-          maximum = TRUE)
-(sol &lt;- ROI_solve(nlp, solver = &quot;alabama&quot;, start = double(3)))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nlp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">Q_objective</span>(-<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">90</span>, <span class="dv">110</span>, <span class="dv">160</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)), 
+          <span class="kw">F_constraint</span>(g, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="dv">3</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)),
+          <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(nlp, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="dv">3</span>)))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 2.836219e+02</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##         x         y         z 
 ## 1.0606602 1.2086300 0.3535534</code></pre>
 <p>or equivalently</p>
-<pre class="r"><code>nlp &lt;- OP(F_objective(f, n=3), 
-          Q_constraint(Q = list(rbind(c(2, 0, 0), c(0, 2, 0), c(0, 0, 0)),
-                                rbind(c(0, 0, 0), c(0, 2, 0), c(0, 0, 2)),
-                                rbind(c(2, 0, 2), c(0, 0, 0), c(2, 0, 2))),
-                       L = rbind(c(0, 0, 4), c(1, 0, 1), c(0, 0, 0)),
-                       dir = rep(&quot;&lt;=&quot;, 3), rhs = c(4, 3, 2)),
-          maximum = TRUE)
-(sol &lt;- ROI_solve(nlp, solver = &quot;alabama&quot;, start = double(3)))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nlp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">F_objective</span>(f, <span class="dt">n=</span><span class="dv">3</span>), 
+          <span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">list</span>(<span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
+                                <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>)),
+                                <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>))),
+                       <span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">4</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
+                       <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="dv">3</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)),
+          <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(nlp, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="dv">3</span>)))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 2.836219e+02</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>## [1] 1.0606602 1.2086300 0.3535534</code></pre>
 </div>
 </div>
@@ -932,7 +958,7 @@ nlp &lt;- OP(F_objective(f, n=3),
 <p>Optimization problems are commonly stored and shared in specialized plain text files. For LP and MIP the file formats <code>'mps'</code>, <code>'lp'</code>, <code>'sif'</code> and <code>'freemps'</code> are commonly used.</p>
 <div id="read-lp-milp" class="section level2">
 <h2>Read LP / MILP</h2>
-<pre class="r"><code>ROI_registered_reader()</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ROI_registered_reader</span>()</code></pre></div>
 <pre><code>##         type  solver
 ## 1  mps_fixed    glpk
 ## 2   mps_free    glpk
@@ -942,11 +968,11 @@ nlp &lt;- OP(F_objective(f, n=3),
 ## 6  mps_fixed lpsolve
 ## 7   mps_free lpsolve</code></pre>
 <p>To read the capri example from the netlib connection the following code can be used.</p>
-<pre class="r"><code>tmpfile &lt;- tempfile()
-con &lt;- gzcon(url(&quot;http://www.zib.de/koch/perplex/data/netlib/mps/capri.mps.gz&quot;))
-writeLines(readLines(con), tmpfile)
-close(con)
-(capri &lt;- ROI_read(tmpfile, type=&quot;mps_fixed&quot;, &quot;lpsolve&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmpfile &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
+con &lt;-<span class="st"> </span><span class="kw">gzcon</span>(<span class="kw">url</span>(<span class="st">&quot;http://www.zib.de/koch/perplex/data/netlib/mps/capri.mps.gz&quot;</span>))
+<span class="kw">writeLines</span>(<span class="kw">readLines</span>(con), tmpfile)
+<span class="kw">close</span>(con)
+(capri &lt;-<span class="st"> </span><span class="kw">ROI_read</span>(tmpfile, <span class="dt">type=</span><span class="st">&quot;mps_fixed&quot;</span>, <span class="st">&quot;lpsolve&quot;</span>))</code></pre></div>
 <pre><code>## ROI Optimization Problem:
 ## 
 ## Minimize a linear objective function of length 353 with
@@ -955,13 +981,13 @@ close(con)
 ## subject to
 ## - 271 constraints of type linear.
 ## - 30 lower and 147 upper non-standard variable bounds.</code></pre>
-<pre class="r"><code>(sol &lt;- ROI_solve(capri))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(capri))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 2.690013e+03</code></pre>
 </div>
 <div id="write-lp-milp" class="section level2">
 <h2>Write LP / MILP</h2>
-<pre class="r"><code>ROI_registered_writer()</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ROI_registered_writer</span>()</code></pre></div>
 <pre><code>##         type  solver
 ## 1  mps_fixed    glpk
 ## 2   mps_free    glpk
@@ -969,9 +995,9 @@ close(con)
 ## 4 lp_lpsolve lpsolve
 ## 5  mps_fixed lpsolve
 ## 6   mps_free lpsolve</code></pre>
-<pre class="r"><code>tmpfile &lt;- tempfile()
-ROI_write(milp, tmpfile, type = &quot;lp_lpsolve&quot;)
-cat(readLines(tmpfile), sep=&quot;\n&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmpfile &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
+<span class="kw">ROI_write</span>(milp, tmpfile, <span class="dt">type =</span> <span class="st">&quot;lp_lpsolve&quot;</span>)
+<span class="kw">cat</span>(<span class="kw">readLines</span>(tmpfile), <span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</code></pre></div>
 <pre><code>## /* Objective function */
 ## max: +7 C1 +C2 +3 C3;
 ## 
@@ -989,8 +1015,8 @@ cat(readLines(tmpfile), sep=&quot;\n&quot;)</code></pre>
 <div id="netlib-lp" class="section level2">
 <h2>NETLIB-LP</h2>
 <p>The software repository <code>NETLIB</code> contains among many other software also a linear programming test collection.</p>
-<pre class="r"><code>library(&quot;ROI.models.netlib&quot;)
-netlib()</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;ROI.models.netlib&quot;</span>)
+<span class="kw">netlib</span>()</code></pre></div>
 <pre><code>##  [1] &quot;adlittle&quot; &quot;afiro&quot;    &quot;agg&quot;      &quot;agg2&quot;     &quot;agg3&quot;     &quot;bandm&quot;   
 ##  [7] &quot;beaconfd&quot; &quot;blend&quot;    &quot;bnl1&quot;     &quot;bnl2&quot;     &quot;boeing1&quot;  &quot;boeing2&quot; 
 ## [13] &quot;bore3d&quot;   &quot;brandy&quot;   &quot;capri&quot;    &quot;cycle&quot;    &quot;czprob&quot;   &quot;d2q06c&quot;  
@@ -1007,11 +1033,11 @@ netlib()</code></pre>
 ## [79] &quot;ship12l&quot;  &quot;ship12s&quot;  &quot;sierra&quot;   &quot;stair&quot;    &quot;standata&quot; &quot;standmps&quot;
 ## [85] &quot;stocfor1&quot; &quot;stocfor2&quot; &quot;stocfor3&quot; &quot;truss&quot;    &quot;tuff&quot;     &quot;vtp.base&quot;
 ## [91] &quot;wood1p&quot;   &quot;woodw&quot;    &quot;x25fv47&quot;  &quot;x80bau3b&quot;</code></pre>
-<pre class="r"><code>problem_name &lt;- &quot;boeing1&quot;
-netlib(&quot;metainfo&quot;)[problem_name, -(2:5)]</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">problem_name &lt;-<span class="st"> &quot;boeing1&quot;</span>
+<span class="kw">netlib</span>(<span class="st">&quot;metainfo&quot;</span>)[problem_name, -(<span class="dv">2</span>:<span class="dv">5</span>)]</code></pre></div>
 <pre><code>##            name br optimal_value
 ## boeing1 BOEING1 BR     -335.2136</code></pre>
-<pre class="r"><code>(model &lt;- netlib(problem_name))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(model &lt;-<span class="st"> </span><span class="kw">netlib</span>(problem_name))</code></pre></div>
 <pre><code>## ROI Optimization Problem:
 ## 
 ## Minimize a linear objective function of length 384 with
@@ -1020,14 +1046,14 @@ netlib(&quot;metainfo&quot;)[problem_name, -(2:5)]</code></pre>
 ## subject to
 ## - 440 constraints of type linear.
 ## - 6 lower and 156 upper non-standard variable bounds.</code></pre>
-<pre class="r"><code>(x &lt;- ROI_solve(model))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(x &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(model))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: -3.352136e+02</code></pre>
 </div>
 <div id="milp" class="section level2">
 <h2>MILP</h2>
-<pre class="r"><code>library(&quot;ROI.models.miplib&quot;)
-miplib(&quot;air04&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;ROI.models.miplib&quot;</span>)
+<span class="kw">miplib</span>(<span class="st">&quot;air04&quot;</span>)</code></pre></div>
 <pre><code>## ROI Optimization Problem:
 ## 
 ## Minimize a linear objective function of length 8904 with

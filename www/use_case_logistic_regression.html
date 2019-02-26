@@ -23,25 +23,51 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
 
 <style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
   }
 </style>
-<script type="text/javascript">
-if (window.hljs) {
-  hljs.configure({languages: []});
-  hljs.initHighlightingOnLoad();
-  if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
-  }
-}
-</script>
-
 
 
 <style type="text/css">
@@ -320,10 +346,11 @@ div.tocify {
 <p>The <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic model</a> (or logit model) belongs to the <a href="https://en.wikipedia.org/wiki/Generalized_linear_model">generalized linear models</a> family (GLM). It is widely used in regression analysis to model a binary dependent variable.</p>
 <p>Since GLMs are commonly used <strong>R</strong> has already built-in functionality to estimate GLMs. Specifically the <code>glm</code> function from the <strong>stats</strong> package, with a binomial family and logit link can be used to estimate a logistic model.</p>
 <p>The following logistic regression example is from <a href="#HSAUR">Brian S. Everitt and Torsten Hothorn (2017)</a>.</p>
-<pre class="r"><code>library(HSAUR)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">width =</span> <span class="dv">10000</span>)
+<span class="kw">library</span>(HSAUR)</code></pre></div>
 <pre><code>## Loading required package: tools</code></pre>
-<pre class="r"><code>m &lt;- glm(ESR ~ fibrinogen, data = plasma, family = binomial(link = &quot;logit&quot;))
-coef(m)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">m &lt;-<span class="st"> </span><span class="kw">glm</span>(ESR ~<span class="st"> </span>fibrinogen, <span class="dt">data =</span> plasma, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))
+<span class="kw">coef</span>(m)</code></pre></div>
 <pre><code>## (Intercept)  fibrinogen 
 ##   -6.845075    1.827081</code></pre>
 <p>Making use of maximum likelihood estimation the logistic regression model can also be estimated in <strong>ROI</strong>. Here either a conic solver or a general purpose solver can be used. The conic solvers have the advantages that they are designed to find the global optimum and are (typically) faster.</p>
@@ -340,55 +367,55 @@ coef(m)</code></pre>
 </div>
 <div id="estimation" class="section level1">
 <h1>Estimation</h1>
-<pre class="r"><code>Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
-library(ROI)
-library(ROI.plugin.optimx)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setenv</span>(<span class="dt">ROI_LOAD_PLUGINS =</span> <span class="ot">FALSE</span>)
+<span class="kw">library</span>(ROI)
+<span class="kw">library</span>(ROI.plugin.optimx)</code></pre></div>
 <pre><code>## Loading required package: minqa</code></pre>
-<pre class="r"><code>library(ROI.plugin.ecos)
-X &lt;- cbind(Intercept = 1, fibrinogen = plasma$fibrinogen)
-y &lt;- as.integer(plasma$ESR) - 1L</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ROI.plugin.ecos)
+X &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">Intercept =</span> <span class="dv">1</span>, <span class="dt">fibrinogen =</span> plasma$fibrinogen)
+y &lt;-<span class="st"> </span><span class="kw">as.integer</span>(plasma$ESR) -<span class="st"> </span>1L</code></pre></div>
 </div>
 <div id="general-purpose-solver" class="section level1">
 <h1>General purpose solver</h1>
-<pre class="r"><code>mle &lt;- function(beta) {
-    drop(y %*% X %*% beta - sum(log(1 + exp(X %*% beta))))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mle &lt;-<span class="st"> </span>function(beta) {
+    <span class="kw">drop</span>(y %*%<span class="st"> </span>X %*%<span class="st"> </span>beta -<span class="st"> </span><span class="kw">sum</span>(<span class="kw">log</span>(<span class="dv">1</span> +<span class="st"> </span><span class="kw">exp</span>(X %*%<span class="st"> </span>beta))))
 }
 
-op_gps &lt;- OP(F_objective(mle, n =  ncol(X)), maximum = TRUE,
-    bounds = V_bound(ld = -Inf, nobj = ncol(X)))
-s1 &lt;- ROI_solve(op_gps, &quot;optimx&quot;, start = double(ncol(X)))</code></pre>
+op_gps &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">F_objective</span>(mle, <span class="dt">n =</span>  <span class="kw">ncol</span>(X)), <span class="dt">maximum =</span> <span class="ot">TRUE</span>,
+    <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">ld =</span> -<span class="ot">Inf</span>, <span class="dt">nobj =</span> <span class="kw">ncol</span>(X)))
+s1 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op_gps, <span class="st">&quot;optimx&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="kw">ncol</span>(X)))</code></pre></div>
 <pre><code>## Maximizing -- use negfn and neggr</code></pre>
 <pre><code>## Warning in max(logpar): no non-missing arguments to max; returning -Inf</code></pre>
 <pre><code>## Warning in min(logpar): no non-missing arguments to min; returning Inf</code></pre>
-<pre class="r"><code>solution(s1)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(s1)</code></pre></div>
 <pre><code>## [1] -6.845075  1.827081</code></pre>
 </div>
 <div id="conic-solver" class="section level1">
 <h1>Conic solver</h1>
-<p>For conic optimization we he to build the matrices necessary to express the objective function.</p>
-<pre class="r"><code>library(slam)
-logistic_regression &lt;- function(y, X, solver = &quot;auto&quot;, ...) {
-  stm &lt;- simple_triplet_matrix
-  stzm &lt;- simple_triplet_zero_matrix
-  stopifnot(is.vector(y), length(y) == nrow(X))
-  m &lt;- nrow(X); n &lt;- ncol(X)
-  i &lt;- 3 * seq_len(m) - 2
-  op &lt;- OP(c(-(y %*% X), rep.int(1, m), double(m)), maximum = FALSE)
-  C11 &lt;- stm(rep(i, n), rep(seq_len(n), each = m), -drop(X), 3 * m, n)
-  C12 &lt;- stm(i, seq_len(m), rep.int(1, m), 3 * m, m)
-  C13 &lt;- stm(i + 2, seq_len(m), rep.int(-1, m), 3 * m, m)
-  C1 &lt;- cbind(C11, C12, C13)
-  C2 &lt;- cbind(stzm(3 * m, n), C12, -C13)
-  C &lt;- rbind(C1, C2)
-  cones &lt;- K_expp(2 * m)
-  rhs &lt;- c(rep(c(0, 1, 1), m), rep(c(0, 1, 0), m))
-  constraints(op) &lt;- C_constraint(C, cones, rhs)
-  bounds(op) &lt;- V_bound(ld = -Inf, nobj = ncol(C))
-  ROI_solve(op, solver = solver, ...)
+<p>For conic optimization we need to build the matrices necessary to express the objective function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(slam)
+logistic_regression &lt;-<span class="st"> </span>function(y, X, <span class="dt">solver =</span> <span class="st">&quot;ecos&quot;</span>, ...) {
+  stm &lt;-<span class="st"> </span>simple_triplet_matrix
+  stzm &lt;-<span class="st"> </span>simple_triplet_zero_matrix
+  <span class="kw">stopifnot</span>(<span class="kw">is.vector</span>(y), <span class="kw">length</span>(y) ==<span class="st"> </span><span class="kw">nrow</span>(X))
+  m &lt;-<span class="st"> </span><span class="kw">nrow</span>(X); n &lt;-<span class="st"> </span><span class="kw">ncol</span>(X)
+  i &lt;-<span class="st"> </span><span class="dv">3</span> *<span class="st"> </span><span class="kw">seq_len</span>(m) -<span class="st"> </span><span class="dv">2</span>
+  op &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">c</span>(-(y %*%<span class="st"> </span>X), <span class="kw">rep.int</span>(<span class="dv">1</span>, m), <span class="kw">double</span>(m)), <span class="dt">maximum =</span> <span class="ot">FALSE</span>)
+  C11 &lt;-<span class="st"> </span><span class="kw">stm</span>(<span class="kw">rep</span>(i, n), <span class="kw">rep</span>(<span class="kw">seq_len</span>(n), <span class="dt">each =</span> m), -<span class="kw">drop</span>(X), <span class="dv">3</span> *<span class="st"> </span>m, n)
+  C12 &lt;-<span class="st"> </span><span class="kw">stm</span>(i, <span class="kw">seq_len</span>(m), <span class="kw">rep.int</span>(<span class="dv">1</span>, m), <span class="dv">3</span> *<span class="st"> </span>m, m)
+  C13 &lt;-<span class="st"> </span><span class="kw">stm</span>(i +<span class="st"> </span><span class="dv">2</span>, <span class="kw">seq_len</span>(m), <span class="kw">rep.int</span>(-<span class="dv">1</span>, m), <span class="dv">3</span> *<span class="st"> </span>m, m)
+  C1 &lt;-<span class="st"> </span><span class="kw">cbind</span>(C11, C12, C13)
+  C2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">stzm</span>(<span class="dv">3</span> *<span class="st"> </span>m, n), C12, -C13)
+  C &lt;-<span class="st"> </span><span class="kw">rbind</span>(C1, C2)
+  cones &lt;-<span class="st"> </span><span class="kw">K_expp</span>(<span class="dv">2</span> *<span class="st"> </span>m)
+  rhs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>), m), <span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>), m))
+  <span class="kw">constraints</span>(op) &lt;-<span class="st"> </span><span class="kw">C_constraint</span>(C, cones, rhs)
+  <span class="kw">bounds</span>(op) &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">ld =</span> -<span class="ot">Inf</span>, <span class="dt">nobj =</span> <span class="kw">ncol</span>(C))
+  <span class="kw">ROI_solve</span>(op, <span class="dt">solver =</span> solver, ...)
 }
 
-s2 &lt;- logistic_regression(y, X)
-head(solution(s2), ncol(X))</code></pre>
+s2 &lt;-<span class="st"> </span><span class="kw">logistic_regression</span>(y, X)
+<span class="kw">head</span>(<span class="kw">solution</span>(s2), <span class="kw">ncol</span>(X))</code></pre></div>
 <pre><code>## [1] -6.845075  1.827081</code></pre>
 </div>
 <div id="references" class="section level1">

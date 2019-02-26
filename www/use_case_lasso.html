@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Lasso</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+<li>
+  <a href="news.html">What's new?</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Lasso</h1>
+
+</div>
+
+
+<p>The <a href="https://en.wikipedia.org/wiki/Lasso_(statistics)">least absolute shrinkage and selection operator (LASSO)</a> shrinks the regression coefficients by adding a <span class="math inline">\(l_1-norm\)</span> penalty term to the optimization problem. More information about LASSO can be found in e.g., <a href="#TIBSHIRANI">Tibshirani (1996)</a>. For the ordinary least squares problem with <span class="math inline">\(l_1\)</span> regularization this leads to the following optimization problem <span class="math display">\[
+\underset{\beta}{\text{minimize}} ~~ \frac{1}{2} || y - X \beta ||_2^2 +  \lambda ||\beta||_1
+\]</span> with <span class="math inline">\(X \in \mathbb{R}^{m \times n}\)</span>, <span class="math inline">\(y \in \mathbb{R}^{m}\)</span>, <span class="math inline">\(\beta \in \mathbb{R}^n\)</span> and <span class="math inline">\(0 &lt; \lambda \in \mathbb{R}\)</span>. The problem can be rewritten into a quadratic optimization problem <span class="math display">\[
+\begin{array}{rl}
+\underset{(\beta, \gamma, t)}{\text{minimize}} &amp;
+    \frac{1}{2} \gamma^\top \gamma + \lambda \boldsymbol{1}^\top t \\
+\text{subject to} &amp; 
+    y - X \beta = \gamma \\
+  &amp; -t \leq \beta \leq t
+\end{array}
+\]</span> with <span class="math inline">\(\gamma \in \mathbb{R}^n\)</span>, <span class="math inline">\(t \in \mathbb{R}^n\)</span></p>
+<p>Alternatively the problem can be written as a second order cone problem <span class="math display">\[
+\begin{array}{rl}
+\underset{(\beta, t, u)}{\text{minimize}} &amp;
+    \frac{1}{2} u + \lambda \boldsymbol{1}^\top t \\
+\text{subject to} &amp; 
+    ||(1 -  u, ~ 2 y - 2 X \beta)||_2 \leq 1 + u \\
+  &amp; -t \leq \beta \leq t
+\end{array}
+\]</span> with <span class="math inline">\(u \in \mathbb{R}\)</span>.</p>
+<p></br> In <strong>R</strong> package <a href="https://cran.r-project.org/package=glmnet"><strong>glmnet</strong></a> is typically the method of choice to obtain the LASSO estimate.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(glmnet)
+<span class="kw">data</span>(QuickStartExample)
+lambda &lt;-<span class="st"> </span><span class="dv">1</span>
+mo &lt;-<span class="st"> </span><span class="kw">glmnet</span>(x, y, <span class="dt">family =</span> <span class="st">&quot;gaussian&quot;</span>, <span class="dt">alpha =</span> <span class="dv">1</span>, <span class="dt">lambda =</span> lambda, 
+    <span class="dt">intercept =</span> <span class="ot">FALSE</span>, <span class="dt">standardize =</span> <span class="ot">FALSE</span>)
+glmnet_beta &lt;-<span class="st"> </span><span class="kw">setNames</span>(<span class="kw">as.vector</span>(<span class="kw">coef</span>(mo)), <span class="kw">rownames</span>(<span class="kw">coef</span>(mo)))
+<span class="kw">round</span>(glmnet_beta, <span class="dv">4</span>)</code></pre></div>
+<pre><code>## (Intercept)          V1          V2          V3          V4          V5 
+##      0.0000      0.7434      0.0000      0.0000      0.0000      0.0000 
+##          V6          V7          V8          V9         V10         V11 
+##      0.0000      0.0000      0.0000      0.0000      0.0000      0.0000 
+##         V12         V13         V14         V15         V16         V17 
+##      0.0000      0.0000     -0.5943      0.0000      0.0000      0.0000 
+##         V18         V19         V20 
+##      0.0000      0.0000      0.0000</code></pre>
+<div id="estimation-qp" class="section level2">
+<h2>Estimation QP</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(slam)
+<span class="kw">Sys.setenv</span>(<span class="dt">ROI_LOAD_PLUGINS =</span> <span class="ot">FALSE</span>)
+<span class="kw">library</span>(ROI)
+<span class="kw">library</span>(ROI.plugin.qpoases)
+<span class="kw">library</span>(ROI.plugin.ecos)
+
+dbind &lt;-<span class="st"> </span>function(...) {
+    .dbind &lt;-<span class="st"> </span>function(x, y) {
+        A &lt;-<span class="st"> </span><span class="kw">simple_triplet_zero_matrix</span>(<span class="kw">NROW</span>(x), <span class="kw">NCOL</span>(y))
+        B &lt;-<span class="st"> </span><span class="kw">simple_triplet_zero_matrix</span>(<span class="kw">NROW</span>(y), <span class="kw">NCOL</span>(x))
+        <span class="kw">rbind</span>(<span class="kw">cbind</span>(x, A), <span class="kw">cbind</span>(B, y))
+    }
+    <span class="kw">Reduce</span>(.dbind, <span class="kw">list</span>(...))
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qp_lasso &lt;-<span class="st"> </span>function(x, y, lambda) {
+    stzm &lt;-<span class="st"> </span>simple_triplet_zero_matrix
+    stdm &lt;-<span class="st"> </span>simple_triplet_diag_matrix
+    m &lt;-<span class="st"> </span><span class="kw">NROW</span>(x); n &lt;-<span class="st"> </span><span class="kw">NCOL</span>(x)
+    Q0 &lt;-<span class="st"> </span><span class="kw">dbind</span>(<span class="kw">stzm</span>(n), <span class="kw">stdm</span>(<span class="dv">1</span>, m), <span class="kw">stzm</span>(n))
+    a0 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">b =</span> <span class="kw">double</span>(n), <span class="dt">g =</span> <span class="kw">double</span>(m), <span class="dt">t =</span> lambda *<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>, n))
+    op &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">Q_objective</span>(<span class="dt">Q =</span> Q0, <span class="dt">L =</span> a0))
+    ## y - X %*% beta = gamma  &lt;=&gt;  X %*% beta + gamma = y
+    A1 &lt;-<span class="st"> </span><span class="kw">cbind</span>(x, <span class="kw">stdm</span>(<span class="dv">1</span>, m), <span class="kw">stzm</span>(m, n))
+    LC1 &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(A1, <span class="kw">eq</span>(m), y)
+    ##  -t &lt;= beta  &lt;=&gt;  0 &lt;= beta + t
+    A2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">stdm</span>(<span class="dv">1</span>, n), <span class="kw">stzm</span>(n, m), <span class="kw">stdm</span>(<span class="dv">1</span>, n))
+    LC2 &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(A2, <span class="kw">geq</span>(n), <span class="kw">double</span>(n))
+    ##   beta &lt;= t  &lt;=&gt;  beta - t &lt;= 0
+    A3 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">stdm</span>(<span class="dv">1</span>, n), <span class="kw">stzm</span>(n, m), <span class="kw">stdm</span>(-<span class="dv">1</span>, n))
+    LC3 &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(A3, <span class="kw">leq</span>(n), <span class="kw">double</span>(n))
+    <span class="kw">constraints</span>(op) &lt;-<span class="st"> </span><span class="kw">rbind</span>(LC1, LC2, LC3)
+    <span class="kw">bounds</span>(op) &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">ld =</span> -<span class="ot">Inf</span>, <span class="dt">nobj =</span> <span class="kw">ncol</span>(Q0))
+    op
+}
+
+op &lt;-<span class="st"> </span><span class="kw">qp_lasso</span>(x, y, <span class="dv">0</span>)
+(qp0 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op, <span class="st">&quot;qpoases&quot;</span>))</code></pre></div>
+<pre><code>## Optimal solution found.
+## The objective value is: 3.740948e+01</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op &lt;-<span class="st"> </span><span class="kw">qp_lasso</span>(x, y, lambda *<span class="st"> </span><span class="kw">NROW</span>(x))
+(qp1 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op, <span class="st">&quot;qpoases&quot;</span>))</code></pre></div>
+<pre><code>## Optimal solution found.
+## The objective value is: 3.955956e+02</code></pre>
+</div>
+<div id="estimation-cp" class="section level2">
+<h2>Estimation CP</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cp_lasso &lt;-<span class="st"> </span>function(x, y, lambda) {
+    stm &lt;-<span class="st"> </span>simple_triplet_matrix
+    stzm &lt;-<span class="st"> </span>simple_triplet_zero_matrix
+    stdm &lt;-<span class="st"> </span>simple_triplet_diag_matrix
+    m &lt;-<span class="st"> </span><span class="kw">NROW</span>(x); n &lt;-<span class="st"> </span><span class="kw">NCOL</span>(x); nobj &lt;-<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>n +<span class="st"> </span><span class="dv">1</span>
+    op &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">c</span>(<span class="dt">beta =</span> <span class="kw">double</span>(n), <span class="dt">t =</span> lambda *<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>, n), <span class="dt">u =</span> <span class="fl">0.5</span>))
+    ## ||(1 - u, 2 y - 2 X %*% beta)||_2 &lt;= 1 + u
+    A1 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">stm</span>(<span class="dv">1</span>, nobj, -<span class="dv">1</span>), <span class="kw">stm</span>(<span class="dv">1</span>, nobj, <span class="dv">1</span>), <span class="kw">cbind</span>(<span class="dv">2</span> *<span class="st"> </span>x, <span class="kw">stzm</span>(m, n +<span class="st"> </span><span class="dv">1</span>)))
+    LC1 &lt;-<span class="st"> </span><span class="kw">C_constraint</span>(A1, <span class="kw">K_soc</span>(m +<span class="st"> </span><span class="dv">2</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span> *<span class="st"> </span>y))
+    ## -t &lt;= z  &lt;=&gt;  0 &lt;= z + t
+    A2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">stdm</span>(<span class="dv">1</span>, n), <span class="kw">stdm</span>(<span class="dv">1</span>, n), <span class="kw">stzm</span>(n, <span class="dv">1</span>))
+    ##  z &lt;= t  &lt;=&gt;  z - t &lt;= 0
+    A3 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">stdm</span>(<span class="dv">1</span>, n), <span class="kw">stdm</span>(-<span class="dv">1</span>, n), <span class="kw">stzm</span>(n, <span class="dv">1</span>))
+    LC2 &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(<span class="kw">rbind</span>(-A2, A3), <span class="kw">leq</span>(<span class="dv">2</span> *<span class="st"> </span>n), <span class="kw">double</span>(<span class="dv">2</span> *<span class="st"> </span>n))
+    <span class="kw">constraints</span>(op) &lt;-<span class="st"> </span><span class="kw">rbind</span>(LC2, LC1)
+    <span class="kw">bounds</span>(op) &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">ld =</span> -<span class="ot">Inf</span>, <span class="dt">nobj =</span> nobj)
+    op
+}
+
+op &lt;-<span class="st"> </span><span class="kw">cp_lasso</span>(x, y, <span class="dv">0</span>)
+(cp0 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op, <span class="st">&quot;ecos&quot;</span>))</code></pre></div>
+<pre><code>## Optimal solution found.
+## The objective value is: 3.740947e+01</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op &lt;-<span class="st"> </span><span class="kw">cp_lasso</span>(x, y, lambda *<span class="st"> </span><span class="kw">NROW</span>(x))
+(cp1 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op, <span class="st">&quot;ecos&quot;</span>))</code></pre></div>
+<pre><code>## Optimal solution found.
+## The objective value is: 3.955956e+02</code></pre>
+</div>
+<div id="comparison" class="section level2">
+<h2>Comparison</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n &lt;-<span class="st"> </span><span class="kw">ncol</span>(x)
+<span class="kw">cbind</span>(<span class="dt">lm =</span> <span class="kw">coef</span>(<span class="kw">lm.fit</span>(x, y)), <span class="dt">qp =</span> <span class="kw">head</span>(<span class="kw">solution</span>(qp0), n), 
+      <span class="dt">cp =</span> <span class="kw">head</span>(<span class="kw">solution</span>(cp0), n))</code></pre></div>
+<pre><code>##               lm           qp           cp
+## x1   1.408632566  1.408632566  1.408654479
+## x2   0.030929816  0.030929816  0.030918400
+## x3   0.771681001  0.771681001  0.771719349
+## x4   0.089075024  0.089075024  0.089089244
+## x5  -0.911285048 -0.911285048 -0.911326234
+## x6   0.606341963  0.606341963  0.606354439
+## x7   0.125746415  0.125746415  0.125746263
+## x8   0.398702698  0.398702698  0.398716974
+## x9  -0.047255704 -0.047255704 -0.047251243
+## x10  0.150093482  0.150093482  0.150111930
+## x11  0.220645029  0.220645029  0.220664537
+## x12 -0.081151968 -0.081151968 -0.081156941
+## x13 -0.054793670 -0.054793670 -0.054799131
+## x14 -1.179567856 -1.179567856 -1.179595088
+## x15 -0.165550295 -0.165550295 -0.165565041
+## x16 -0.042037759 -0.042037759 -0.042050631
+## x17 -0.053693736 -0.053693736 -0.053705524
+## x18  0.026055220  0.026055220  0.026061204
+## x19  0.003846485  0.003846485  0.003842586
+## x20 -1.144855738 -1.144855738 -1.144916814</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cbind</span>(<span class="dt">lm =</span> <span class="kw">round</span>(glmnet_beta, <span class="dv">4</span>), <span class="dt">qp =</span> <span class="kw">round</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">head</span>(<span class="kw">solution</span>(qp1), n)), <span class="dv">4</span>), 
+      <span class="dt">cp =</span> <span class="kw">round</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">head</span>(<span class="kw">solution</span>(cp1), n)), <span class="dv">4</span>))</code></pre></div>
+<pre><code>##                  lm      qp      cp
+## (Intercept)  0.0000  0.0000  0.0000
+## V1           0.7434  0.7434  0.7434
+## V2           0.0000  0.0000  0.0000
+## V3           0.0000  0.0000  0.0000
+## V4           0.0000  0.0000  0.0000
+## V5           0.0000  0.0000  0.0000
+## V6           0.0000  0.0000  0.0000
+## V7           0.0000  0.0000  0.0000
+## V8           0.0000  0.0000  0.0000
+## V9           0.0000  0.0000  0.0000
+## V10          0.0000  0.0000  0.0000
+## V11          0.0000  0.0000  0.0000
+## V12          0.0000  0.0000  0.0000
+## V13          0.0000  0.0000  0.0000
+## V14         -0.5943 -0.5943 -0.5942
+## V15          0.0000  0.0000  0.0000
+## V16          0.0000  0.0000  0.0000
+## V17          0.0000  0.0000  0.0000
+## V18          0.0000  0.0000  0.0000
+## V19          0.0000  0.0000  0.0000
+## V20          0.0000  0.0000  0.0000</code></pre>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li>Tibshirani, Robert (1996), Regression Shrinkage and Selection Via the Lasso. Journal of the Royal Statistical Society: Series B (Methodological), 58: 267-288. URL <a href="https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/j.2517-6161.1996.tb02080.x"><code>doi:10.1111/j.2517-6161.1996.tb02080.x</code></a> <a name = "TIBSHIRANI"></a></li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

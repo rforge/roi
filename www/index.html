@@ -23,25 +23,51 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
 
 <style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
   }
 </style>
-<script type="text/javascript">
-if (window.hljs) {
-  hljs.configure({languages: []});
-  hljs.initHighlightingOnLoad();
-  if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
-  }
-}
-</script>
-
 
 
 <style type="text/css">
@@ -330,15 +356,15 @@ div.tocify {
 <div class="row" style="padding-top: 30px;">
 <h1 id="roi"><strong>ROI</strong></h1>
 <p>The R Optimization Infrastructure (ROI) package provides an extensible infrastructure to model linear, quadratic, conic and general nonlinear optimization problems in a consistent way.</p>
-<pre class="r"><code>library(ROI)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ROI)</code></pre></div>
 <p>Furthermore, the infrastructure administers many different solvers, reformulations, problem collections and functions to read and write optimization problems in various formats.</p>
 <h1 id="extensions">Extensions</h1>
 <p><strong>ROI</strong> provides the modeling capabilities and manages the plugins, the plugins add the solvers to <strong>ROI</strong>.</p>
 <h3 id="plugins">Plugins</h3>
-<pre class="r"><code>plugins &lt;- ROI_available_solvers()[,c(&quot;Package&quot;, &quot;Repository&quot;)]
-plugins &lt;- aggregate(Repository ~ Package,  data = plugins, 
-                     FUN = paste, collapse = &quot;, &quot;)
-knitr::kable(plugins, row.names = TRUE)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plugins &lt;-<span class="st"> </span><span class="kw">ROI_available_solvers</span>()[,<span class="kw">c</span>(<span class="st">&quot;Package&quot;</span>, <span class="st">&quot;Repository&quot;</span>)]
+plugins &lt;-<span class="st"> </span><span class="kw">aggregate</span>(Repository ~<span class="st"> </span>Package,  <span class="dt">data =</span> plugins, 
+                     <span class="dt">FUN =</span> paste, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>)
+knitr::<span class="kw">kable</span>(plugins, <span class="dt">row.names =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <table>
 <thead>
 <tr class="header">

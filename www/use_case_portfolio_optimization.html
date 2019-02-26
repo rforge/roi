@@ -24,27 +24,53 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
+
 <style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
   }
 </style>
-<script type="text/javascript">
-if (window.hljs) {
-  hljs.configure({languages: []});
-  hljs.initHighlightingOnLoad();
-  if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
-  }
-}
-</script>
-
 
 
 <style type="text/css">
@@ -326,15 +352,15 @@ div.tocify {
 <h1>Introduction</h1>
 <p>The purpose of this vignette is to demonstrate a sample of portfolio optimization problems that can be solved by using the ROI package. This vignette is based on joint work with Florian Schwendinger and Ronald Hochreiter which was presented at RFinance 2016, Chicago, USA, May 2016.</p>
 <p>If previously no ROI version was installed, one should at least install the two plugins <code>ROI.plugin.glpk</code>, <code>ROI.plugin.alabama</code> and <code>ROI.plugin.quadprog</code> to run the examples below.</p>
-<pre class="r"><code>## NOTE: (Rglpk needs libglpk-dev on Debian/Ubuntu (&quot;sudo apt-get install libglpk-dev&quot;))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## <span class="al">NOTE</span>: (Rglpk needs libglpk-dev on Debian/Ubuntu (&quot;sudo apt-get install libglpk-dev&quot;))
 
-if (!require(&quot;ROI&quot;)) install.packages(&quot;ROI&quot;); library(&quot;ROI&quot;)
+if (!<span class="kw">require</span>(<span class="st">&quot;ROI&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;ROI&quot;</span>); <span class="kw">library</span>(<span class="st">&quot;ROI&quot;</span>)
 
-if (!require(&quot;ROI.plugin.glpk&quot;)) install.packages(&quot;ROI.plugin.glpk&quot;); library(&quot;ROI.plugin.glpk&quot;)
+if (!<span class="kw">require</span>(<span class="st">&quot;ROI.plugin.glpk&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.glpk&quot;</span>); <span class="kw">library</span>(<span class="st">&quot;ROI.plugin.glpk&quot;</span>)
 
-if (!require(&quot;ROI.plugin.quadprog&quot;)) install.packages(&quot;ROI.plugin.quadprog&quot;); library(&quot;ROI.plugin.quadprog&quot;)
+if (!<span class="kw">require</span>(<span class="st">&quot;ROI.plugin.quadprog&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.quadprog&quot;</span>); <span class="kw">library</span>(<span class="st">&quot;ROI.plugin.quadprog&quot;</span>)
 
-if (!require(&quot;ROI.plugin.alabama&quot;)) install.packages(&quot;ROI.plugin.alabama&quot;); library(&quot;ROI.plugin.alabama&quot;)</code></pre>
+if (!<span class="kw">require</span>(<span class="st">&quot;ROI.plugin.alabama&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;ROI.plugin.alabama&quot;</span>); <span class="kw">library</span>(<span class="st">&quot;ROI.plugin.alabama&quot;</span>)</code></pre></div>
 <p>Several R functions are created to implement the typical objectives and constraints used for portfolio optimization. All functions require a <code>data.frame</code> <code>r_mat</code> of returns. The mathematical formulation of the objectives and constraints is presented below. The default optimization in ROI is minimization. Hence for all maximization problems the argument <code>maximum = TRUE</code> in the <code>OP()</code> function must be specified.</p>
 <p><br></p>
 <div id="objectives-implemented-as-r-functions" class="section level3">
@@ -495,20 +521,20 @@ if (!require(&quot;ROI.plugin.alabama&quot;)) install.packages(&quot;ROI.plugin.
 <h2>Maximize expected return</h2>
 <p><span class="math display">\[ \max_{x \in \mathbb{R}^N} \hat \mu^\top x \]</span> where <span class="math inline">\(\hat \mu\)</span> is the vector of estimated mean asset returns.</p>
 <p>In ROI we define a function which returns a linear objective is <code>L_objective</code> (note that the minus turns the maximization into a minimization problem):</p>
-<pre class="r"><code>reward_objective &lt;- function(r_mat) {
-    objective &lt;- L_objective(colMeans(r_mat))
-    list(objective = objective)
-}</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reward_objective &lt;-<span class="st"> </span>function(r_mat) {
+    objective &lt;-<span class="st"> </span><span class="kw">L_objective</span>(<span class="kw">colMeans</span>(r_mat))
+    <span class="kw">list</span>(<span class="dt">objective =</span> objective)
+}</code></pre></div>
 <p>(see <a href="#rewardex1">Example 1</a>, <a href="#rewardex2">Example 12</a>, <a href="#rewardex3">Example 13</a>).</p>
 </div>
 <div id="markowitzo" class="section level2">
 <h2>Minimize variance</h2>
 <p>The objective of the minimum of the variance portfolio is given by: <span class="math display">\[\min_{x \in \mathbb{R}^N} x^\top Q x\]</span> <span class="math display">\[Q = \mathbb{C}ov(r)\]</span></p>
-<pre class="r"><code>markowitz_objective &lt;- function(r_mat) {
-    objective &lt;- Q_objective(Q = 2 * cov(r_mat), 
-                             L = rep(0, NCOL(r_mat)))
-    list(objective = objective)
-}</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">markowitz_objective &lt;-<span class="st"> </span>function(r_mat) {
+    objective &lt;-<span class="st"> </span><span class="kw">Q_objective</span>(<span class="dt">Q =</span> <span class="dv">2</span> *<span class="st"> </span><span class="kw">cov</span>(r_mat), 
+                             <span class="dt">L =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">NCOL</span>(r_mat)))
+    <span class="kw">list</span>(<span class="dt">objective =</span> objective)
+}</code></pre></div>
 <p>(see <a href="#markex1">Example 2</a>, <a href="#markex2">Example 3</a>).</p>
 </div>
 <div id="mado" class="section level2">
@@ -520,24 +546,24 @@ s.t.&amp;&amp;y_s - z_s = (r_{s} - \hat \mu)^\top x,\\
 &amp;&amp; y_s \geq 0, z_s \geq 0.
 \end{eqnarray*}
 \]</span> Note that the bounds <span class="math inline">\(y_s\geq 0\)</span> and <span class="math inline">\(z_s\geq 0\)</span> must not be additionally specified as these are the default in ROI.</p>
-<pre class="r"><code>mad_objective &lt;- function(r_mat){
-    x.names &lt;- colnames(r_mat)
-    N &lt;- NCOL(r_mat)
-    S &lt;- nrow(r_mat)
-    mu &lt;- colMeans(r_mat)
-    Amat &lt;-  cbind(sweep(as.matrix(r_mat), 2,  mu), - diag(S), diag(S))
-    var.names &lt;- c(x.names, 
-                   paste0(&quot;y_mad_aux&quot;, seq_len(S)),
-                   paste0(&quot;z_mad_aux&quot;, seq_len(S)))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mad_objective &lt;-<span class="st"> </span>function(r_mat){
+    x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+    N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+    S &lt;-<span class="st"> </span><span class="kw">nrow</span>(r_mat)
+    mu &lt;-<span class="st"> </span><span class="kw">colMeans</span>(r_mat)
+    Amat &lt;-<span class="st">  </span><span class="kw">cbind</span>(<span class="kw">sweep</span>(<span class="kw">as.matrix</span>(r_mat), <span class="dv">2</span>,  mu), -<span class="st"> </span><span class="kw">diag</span>(S), <span class="kw">diag</span>(S))
+    var.names &lt;-<span class="st"> </span><span class="kw">c</span>(x.names, 
+                   <span class="kw">paste0</span>(<span class="st">&quot;y_mad_aux&quot;</span>, <span class="kw">seq_len</span>(S)),
+                   <span class="kw">paste0</span>(<span class="st">&quot;z_mad_aux&quot;</span>, <span class="kw">seq_len</span>(S)))
     
-    constraint &lt;-  L_constraint(L = Amat, dir = rep(&quot;==&quot;, S), 
-                                rhs = rep(0, S), 
-                                names = var.names)
+    constraint &lt;-<span class="st">  </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;==&quot;</span>, S), 
+                                <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, S), 
+                                <span class="dt">names =</span> var.names)
 
-    objective &lt;- L_objective(L = c(rep(0, N), rep(1/S, 2 * S)))
+    objective &lt;-<span class="st"> </span><span class="kw">L_objective</span>(<span class="dt">L =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="kw">rep</span>(<span class="dv">1</span>/S, <span class="dv">2</span> *<span class="st"> </span>S)))
     
-    list(objective = objective, constraint = constraint)
-}</code></pre>
+    <span class="kw">list</span>(<span class="dt">objective =</span> objective, <span class="dt">constraint =</span> constraint)
+}</code></pre></div>
 <p>(See <a href="#madex1">Example 4</a>)</p>
 </div>
 <div id="downvaro" class="section level2">
@@ -549,23 +575,23 @@ s.t.&amp;&amp;z_s \geq (\hat\mu - r_s)^\top x)\\
 &amp;&amp; z_s \geq 0.
 \end{eqnarray*}
 \]</span></p>
-<pre class="r"><code>downside_var_objective &lt;- function(r_mat, x.names = NULL) {
-    x.names &lt;- colnames(r_mat)
-    N &lt;- NCOL(r_mat)
-    S &lt;- NROW(r_mat)
-    mu &lt;- colMeans(r_mat)
-    Amat &lt;- cbind(sweep(as.matrix(r_mat), 2, mu), diag(S))
-    var.names &lt;- c(x.names, paste0(&quot;z_dvar_aux&quot;, seq_len(S)))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">downside_var_objective &lt;-<span class="st"> </span>function(r_mat, <span class="dt">x.names =</span> <span class="ot">NULL</span>) {
+    x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+    N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+    S &lt;-<span class="st"> </span><span class="kw">NROW</span>(r_mat)
+    mu &lt;-<span class="st"> </span><span class="kw">colMeans</span>(r_mat)
+    Amat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">sweep</span>(<span class="kw">as.matrix</span>(r_mat), <span class="dv">2</span>, mu), <span class="kw">diag</span>(S))
+    var.names &lt;-<span class="st"> </span><span class="kw">c</span>(x.names, <span class="kw">paste0</span>(<span class="st">&quot;z_dvar_aux&quot;</span>, <span class="kw">seq_len</span>(S)))
     
-    constraint &lt;- L_constraint(L = Amat, dir = rep(&quot;&gt;=&quot;, S), 
-                               rhs = rep(0, S), 
-                               names = var.names)
-    objective &lt;- Q_objective(
-             Q = 2 * diag(c(rep(1e-05, N), rep(1/S, S))),
-             L = rep(0, N + S))
+    constraint &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&gt;=&quot;</span>, S), 
+                               <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, S), 
+                               <span class="dt">names =</span> var.names)
+    objective &lt;-<span class="st"> </span><span class="kw">Q_objective</span>(
+             <span class="dt">Q =</span> <span class="dv">2</span> *<span class="st"> </span><span class="kw">diag</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="fl">1e-05</span>, N), <span class="kw">rep</span>(<span class="dv">1</span>/S, S))),
+             <span class="dt">L =</span> <span class="kw">rep</span>(<span class="dv">0</span>, N +<span class="st"> </span>S))
     
-    list(objective = objective, constraint = constraint)
-}</code></pre>
+    <span class="kw">list</span>(<span class="dt">objective =</span> objective, <span class="dt">constraint =</span> constraint)
+}</code></pre></div>
 <p>(see <a href="#downvarex1">Example 5</a>).</p>
 </div>
 <div id="downmado" class="section level2">
@@ -577,22 +603,22 @@ s.t.&amp;&amp; z_s \geq (\hat\mu - r_s)^\top x\\
 &amp;&amp; z_s \geq 0.
 \end{eqnarray*}
 \]</span></p>
-<pre class="r"><code>downside_mad_objective &lt;- function(r_mat){
-    x.names &lt;- colnames(r_mat)
-    N &lt;- NCOL(r_mat)
-    S &lt;- NROW(r_mat)
-    mu &lt;- colMeans(r_mat)
-    Amat &lt;- cbind(sweep(as.matrix(r_mat), 2, mu), diag(S))
-    var.names &lt;- c(x.names, paste0(&quot;z_dmad_aux&quot;, seq_len(S)))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">downside_mad_objective &lt;-<span class="st"> </span>function(r_mat){
+    x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+    N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+    S &lt;-<span class="st"> </span><span class="kw">NROW</span>(r_mat)
+    mu &lt;-<span class="st"> </span><span class="kw">colMeans</span>(r_mat)
+    Amat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">sweep</span>(<span class="kw">as.matrix</span>(r_mat), <span class="dv">2</span>, mu), <span class="kw">diag</span>(S))
+    var.names &lt;-<span class="st"> </span><span class="kw">c</span>(x.names, <span class="kw">paste0</span>(<span class="st">&quot;z_dmad_aux&quot;</span>, <span class="kw">seq_len</span>(S)))
     
-    constraint &lt;- L_constraint(L = Amat, dir = rep(&quot;&gt;=&quot;, S),
-                               rhs = rep(0, S), 
-                               names = var.names)
+    constraint &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&gt;=&quot;</span>, S),
+                               <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, S), 
+                               <span class="dt">names =</span> var.names)
     
-    objective  &lt;- L_objective(L = c(rep(0, N), rep(1/S,  S)))
+    objective  &lt;-<span class="st"> </span><span class="kw">L_objective</span>(<span class="dt">L =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="kw">rep</span>(<span class="dv">1</span>/S,  S)))
     
-    list(objective = objective, constraint = constraint)    
-}</code></pre>
+    <span class="kw">list</span>(<span class="dt">objective =</span> objective, <span class="dt">constraint =</span> constraint)    
+}</code></pre></div>
 <p>(see <a href="#downmadex1">Example 6</a>).</p>
 </div>
 <div id="cvaro" class="section level2">
@@ -604,29 +630,29 @@ s.t.\ &amp;z_s \geq - r_s^\top x - \gamma,\\
 &amp;z_s \geq 0,
 \end{eqnarray*}
 \]</span> where VaR is a minimizer of the function over <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(p=(p_1, \dots, p_S)\)</span> is a vector of probabilities associated with the scenarios.</p>
-<pre class="r"><code>cvar_objective &lt;- function(r_mat, alpha, probs = NULL) {
-  x.names &lt;- colnames(r_mat)
-  N &lt;- NCOL(r_mat)
-  S &lt;- NROW(r_mat)
-  mu &lt;- colMeans(r_mat)
-  if (is.null(probs)) probs &lt;- rep(1/S, S)
-  if (alpha &lt; 0.5) alpha &lt;- 1 - alpha
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cvar_objective &lt;-<span class="st"> </span>function(r_mat, alpha, <span class="dt">probs =</span> <span class="ot">NULL</span>) {
+  x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+  N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+  S &lt;-<span class="st"> </span><span class="kw">NROW</span>(r_mat)
+  mu &lt;-<span class="st"> </span><span class="kw">colMeans</span>(r_mat)
+  if (<span class="kw">is.null</span>(probs)) probs &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>/S, S)
+  if (alpha &lt;<span class="st"> </span><span class="fl">0.5</span>) alpha &lt;-<span class="st"> </span><span class="dv">1</span> -<span class="st"> </span>alpha
   
-  Amat &lt;- cbind(as.matrix(r_mat),  diag(S), 1)
-  var.names &lt;- c(x.names, paste0(&quot;z_cvar_aux&quot;, seq_len(S)), &quot;gamma&quot;)
+  Amat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">as.matrix</span>(r_mat),  <span class="kw">diag</span>(S), <span class="dv">1</span>)
+  var.names &lt;-<span class="st"> </span><span class="kw">c</span>(x.names, <span class="kw">paste0</span>(<span class="st">&quot;z_cvar_aux&quot;</span>, <span class="kw">seq_len</span>(S)), <span class="st">&quot;gamma&quot;</span>)
   
   ## set bounds for gamma (-Inf, Inf) 
-  bnds &lt;- ROI::V_bound(li = c(N + S + 1), lb = c( -Inf),
-                       ui = c(N + S + 1), ub = c(  Inf))
+  bnds &lt;-<span class="st"> </span>ROI::<span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="kw">c</span>(N +<span class="st"> </span>S +<span class="st"> </span><span class="dv">1</span>), <span class="dt">lb =</span> <span class="kw">c</span>( -<span class="ot">Inf</span>),
+                       <span class="dt">ui =</span> <span class="kw">c</span>(N +<span class="st"> </span>S +<span class="st"> </span><span class="dv">1</span>), <span class="dt">ub =</span> <span class="kw">c</span>(  <span class="ot">Inf</span>))
   
-  constraint &lt;- L_constraint(L = Amat, dir = rep(&quot;&gt;=&quot;, S), 
-                            rhs = rep(0, S), 
-                            names = var.names)
+  constraint &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&gt;=&quot;</span>, S), 
+                            <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, S), 
+                            <span class="dt">names =</span> var.names)
 
-  objective &lt;- L_objective(c(rep(0, N), probs/(1 - alpha), 1))
+  objective &lt;-<span class="st"> </span><span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), probs/(<span class="dv">1</span> -<span class="st"> </span>alpha), <span class="dv">1</span>))
 
-  list(objective = objective, constraint = constraint, bounds = bnds)
-}</code></pre>
+  <span class="kw">list</span>(<span class="dt">objective =</span> objective, <span class="dt">constraint =</span> constraint, <span class="dt">bounds =</span> bnds)
+}</code></pre></div>
 <p>Note that if no value is specified for <span class="math inline">\(p_1, \cdots, p_S\)</span> the default is equal weights.</p>
 <p>(see <a href="#cvarex1">Example 7</a>, <a href="#cvarex3">Example 14</a>).</p>
 </div>
@@ -638,21 +664,21 @@ s.t.\ &amp;z_s \geq - r_s^\top x - \gamma,\\
 s.t.&amp;% r_s^\top x - M_p \geq 0.
 \end{eqnarray*}
 \]</span> Young, M.R., 1998. A minimax portfolio selection rule with linear programming solution. <em>Management science</em>, 44(5), pp.673-683.</p>
-<pre class="r"><code>minimax_young_objective &lt;- function(r_mat){
-    x.names &lt;- colnames(r_mat)
-    N &lt;- NCOL(r_mat)
-    S &lt;- NROW(r_mat)
-    Amat &lt;- cbind(as.matrix(r_mat), -1)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">minimax_young_objective &lt;-<span class="st"> </span>function(r_mat){
+    x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+    N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+    S &lt;-<span class="st"> </span><span class="kw">NROW</span>(r_mat)
+    Amat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">as.matrix</span>(r_mat), -<span class="dv">1</span>)
     
-    bnds &lt;- ROI::V_bound(li = c(N + 1), lb = c( -Inf),
-                          ui = c(N + 1), ub = c(  Inf))
-    constraint &lt;- L_constraint(L = Amat, dir=rep(&quot;&gt;=&quot;, S), rhs=rep(0, S), 
-                                      names=c(x.names,  &quot;mp_aux&quot;))
+    bnds &lt;-<span class="st"> </span>ROI::<span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="kw">c</span>(N +<span class="st"> </span><span class="dv">1</span>), <span class="dt">lb =</span> <span class="kw">c</span>( -<span class="ot">Inf</span>),
+                          <span class="dt">ui =</span> <span class="kw">c</span>(N +<span class="st"> </span><span class="dv">1</span>), <span class="dt">ub =</span> <span class="kw">c</span>(  <span class="ot">Inf</span>))
+    constraint &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir=</span><span class="kw">rep</span>(<span class="st">&quot;&gt;=&quot;</span>, S), <span class="dt">rhs=</span><span class="kw">rep</span>(<span class="dv">0</span>, S), 
+                                      <span class="dt">names=</span><span class="kw">c</span>(x.names,  <span class="st">&quot;mp_aux&quot;</span>))
   
-    objective &lt;- L_objective(c(rep(0, N), 1))
+    objective &lt;-<span class="st"> </span><span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="dv">1</span>))
   
-    list(objective = objective, constraint = constraint, bounds = bnds)     
-}</code></pre>
+    <span class="kw">list</span>(<span class="dt">objective =</span> objective, <span class="dt">constraint =</span> constraint, <span class="dt">bounds =</span> bnds)     
+}</code></pre></div>
 <p>(see <a href="#minimaxex1">Example 8</a>).</p>
 </div>
 <div id="quaduo" class="section level2">
@@ -661,11 +687,11 @@ Let <span class="math inline">\(\lambda\)</span> denote the risk aversion parame
 <span class="math display">\[\begin{eqnarray*}
 \max_{x\in\mathbb{R}^N}&amp;&amp;  \hat \mu^\top x - \frac{\lambda}{2} x^\top Q x
 \end{eqnarray*}\]</span>
-<pre class="r"><code>quadratic_utility_objective &lt;- function(r_mat, lambda = 2){
-    objective &lt;- Q_objective(Q = - lambda * cov(r_mat), 
-                             L = colMeans(r_mat))
-    list(objective = objective)
-}</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">quadratic_utility_objective &lt;-<span class="st"> </span>function(r_mat, <span class="dt">lambda =</span> <span class="dv">2</span>){
+    objective &lt;-<span class="st"> </span><span class="kw">Q_objective</span>(<span class="dt">Q =</span> -<span class="st"> </span>lambda *<span class="st"> </span><span class="kw">cov</span>(r_mat), 
+                             <span class="dt">L =</span> <span class="kw">colMeans</span>(r_mat))
+    <span class="kw">list</span>(<span class="dt">objective =</span> objective)
+}</code></pre></div>
 <p>(see <a href="#quaduex1">Example 9</a>).</p>
 </div>
 <div id="sharpeo" class="section level2">
@@ -678,26 +704,26 @@ s.t.&amp;(\hat\mu - r_f \mathit{1})^\top y = \text{1},\\
 &amp; \kappa &gt; 0.
 \end{eqnarray*}
 \]</span> The optimal solution is given by <span class="math inline">\(x^* = y^* / \kappa^*\)</span>.</p>
-<pre class="r"><code>sharpe_objective &lt;- function(r_mat, rf = 0){
-    N &lt;- NCOL(r_mat)
-    S &lt;- NROW(r_mat)
-    mu &lt;- colMeans(r_mat)
-    Amat &lt;- rbind(c(mu - rf, 0),
-                  c(rep(0, N), 1),
-                  c(rep(1, N), -1))
-    var.names &lt;- c(paste0(&quot;y_sharpe_aux&quot;, seq_len(N)), &quot;kappa_sharpe&quot;)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sharpe_objective &lt;-<span class="st"> </span>function(r_mat, <span class="dt">rf =</span> <span class="dv">0</span>){
+    N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+    S &lt;-<span class="st"> </span><span class="kw">NROW</span>(r_mat)
+    mu &lt;-<span class="st"> </span><span class="kw">colMeans</span>(r_mat)
+    Amat &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(mu -<span class="st"> </span>rf, <span class="dv">0</span>),
+                  <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="dv">1</span>),
+                  <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span>, N), -<span class="dv">1</span>))
+    var.names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">paste0</span>(<span class="st">&quot;y_sharpe_aux&quot;</span>, <span class="kw">seq_len</span>(N)), <span class="st">&quot;kappa_sharpe&quot;</span>)
     
-    constraint &lt;- L_constraint(L = Amat, dir = c(&quot;==&quot;, &quot;&gt;&quot;, &quot;==&quot;),
-                               rhs = c(1, 0, 0), names = var.names)
+    constraint &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;==&quot;</span>, <span class="st">&quot;&gt;&quot;</span>, <span class="st">&quot;==&quot;</span>),
+                               <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">names =</span> var.names)
     
-    mat &lt;- matrix(0, ncol = N + 1, nrow = N + 1)
-    mat[1:N, 1:N] &lt;- 2 * cov(r_mat)
-    mat[N + 1, N + 1] &lt;-  1e-04
+    mat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">ncol =</span> N +<span class="st"> </span><span class="dv">1</span>, <span class="dt">nrow =</span> N +<span class="st"> </span><span class="dv">1</span>)
+    mat[<span class="dv">1</span>:N, <span class="dv">1</span>:N] &lt;-<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span><span class="kw">cov</span>(r_mat)
+    mat[N +<span class="st"> </span><span class="dv">1</span>, N +<span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st">  </span><span class="fl">1e-04</span>
 
-    objective &lt;- Q_objective(Q = - mat, L = c(rep(0, N), 0))
+    objective &lt;-<span class="st"> </span><span class="kw">Q_objective</span>(<span class="dt">Q =</span> -<span class="st"> </span>mat, <span class="dt">L =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="dv">0</span>))
   
-    list(objective = objective, constraint = constraint)     
-}</code></pre>
+    <span class="kw">list</span>(<span class="dt">objective =</span> objective, <span class="dt">constraint =</span> constraint)     
+}</code></pre></div>
 <p>(see <a href="#sharpeex1">Example 10</a>).</p>
 </div>
 <div id="omegao" class="section level2">
@@ -713,29 +739,29 @@ s.t.\ &amp; u_s \geq \tau - r_s^\top y , \\
              &amp; z \geq 0  .
 \end{eqnarray*}\]</span>
 <p>The Omega optimal portfolio is given by <span class="math inline">\(x^* = y^* /z^*\)</span>, where <span class="math inline">\(z\)</span> is the homogenizing variable. If not explicitly specified, the default for the threshold is <span class="math inline">\(\tau = 0\)</span>.</p>
-<pre class="r"><code>omega_objective &lt;- function(r_mat, tau = 0){
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">omega_objective &lt;-<span class="st"> </span>function(r_mat, <span class="dt">tau =</span> <span class="dv">0</span>){
   ## variables y_1, ... y_N, u_1, .., u_S, z
-  N &lt;- NCOL(r_mat)
-  S &lt;- NROW(r_mat)
-  mu &lt;- colMeans(r_mat)
+  N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+  S &lt;-<span class="st"> </span><span class="kw">NROW</span>(r_mat)
+  mu &lt;-<span class="st"> </span><span class="kw">colMeans</span>(r_mat)
   
-  Amat &lt;- rbind(cbind(as.matrix(r_mat), diag(S), 0),# u_s &gt;= tau - r_s&#39;y
-                c(rep(0, N), rep(1, S),  0), # sum(u) = 1
-                c(rep(1, N), rep(0, S), -1), # sum(y) = z
-                c(mu,        rep(0, S), - tau),
-                c(rep(0, N), rep(0, S),  1)) # mu&#39;y  &gt;= tau * z
-  var.names &lt;- c(paste0(&quot;y_omega_aux&quot;, seq_len(N)),
-                 paste0(&quot;u_omega_aux&quot;, seq_len(S)), 
-                 &quot;z_omega&quot;)
-  constraint &lt;-  L_constraint(L = Amat,  
-                              dir = c(rep(&quot;&gt;=&quot;, S), &quot;==&quot;, &quot;==&quot;, &quot;&gt;=&quot;, &quot;&gt;&quot;),
-                              rhs = c(rep(tau, S), 1, 0, 0, 1e-05), 
-                              names=var.names)
-  objective  &lt;- L_objective(L = c(mu, rep(0, S), -tau))
+  Amat &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">cbind</span>(<span class="kw">as.matrix</span>(r_mat), <span class="kw">diag</span>(S), <span class="dv">0</span>),<span class="co"># u_s &gt;= tau - r_s&#39;y</span>
+                <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="kw">rep</span>(<span class="dv">1</span>, S),  <span class="dv">0</span>), <span class="co"># sum(u) = 1</span>
+                <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span>, N), <span class="kw">rep</span>(<span class="dv">0</span>, S), -<span class="dv">1</span>), <span class="co"># sum(y) = z</span>
+                <span class="kw">c</span>(mu,        <span class="kw">rep</span>(<span class="dv">0</span>, S), -<span class="st"> </span>tau),
+                <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="kw">rep</span>(<span class="dv">0</span>, S),  <span class="dv">1</span>)) <span class="co"># mu&#39;y  &gt;= tau * z</span>
+  var.names &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">paste0</span>(<span class="st">&quot;y_omega_aux&quot;</span>, <span class="kw">seq_len</span>(N)),
+                 <span class="kw">paste0</span>(<span class="st">&quot;u_omega_aux&quot;</span>, <span class="kw">seq_len</span>(S)), 
+                 <span class="st">&quot;z_omega&quot;</span>)
+  constraint &lt;-<span class="st">  </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat,  
+                              <span class="dt">dir =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;&gt;=&quot;</span>, S), <span class="st">&quot;==&quot;</span>, <span class="st">&quot;==&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>, <span class="st">&quot;&gt;&quot;</span>),
+                              <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="kw">rep</span>(tau, S), <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">1e-05</span>), 
+                              <span class="dt">names=</span>var.names)
+  objective  &lt;-<span class="st"> </span><span class="kw">L_objective</span>(<span class="dt">L =</span> <span class="kw">c</span>(mu, <span class="kw">rep</span>(<span class="dv">0</span>, S), -tau))
   
-  list(objective = objective, constraint = constraint)    
+  <span class="kw">list</span>(<span class="dt">objective =</span> objective, <span class="dt">constraint =</span> constraint)    
   ## x* &lt;- y*/z*
-}</code></pre>
+}</code></pre></div>
 <p>(see <a href="#omegaex1">Example 11</a>).</p>
 </div>
 </div>
@@ -748,25 +774,25 @@ s.t.\ &amp; u_s \geq \tau - r_s^\top y , \\
 <div id="budgetc" class="section level2">
 <h2>Budget constraint</h2>
 <p><span class="math display">\[\sum_{i=1}^N x_i = B \qquad \sum_{i=1}^N x_i \leq B_u \qquad \sum_{i=1}^N x_i \geq B_l.\]</span> Budget normalization constraint is obtained for B = 1 (default).</p>
-<pre class="r"><code>budget_constraint &lt;- function(r_mat, dir = &quot;==&quot;, rhs = 1) {
-    x.names &lt;- colnames(r_mat)
-    L_constraint(L = rep(1, NCOL(r_mat)), 
-                 dir = dir,  rhs = rhs, names = x.names)
-}</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">budget_constraint &lt;-<span class="st"> </span>function(r_mat, <span class="dt">dir =</span> <span class="st">&quot;==&quot;</span>, <span class="dt">rhs =</span> <span class="dv">1</span>) {
+    x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+    <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rep</span>(<span class="dv">1</span>, <span class="kw">NCOL</span>(r_mat)), 
+                 <span class="dt">dir =</span> dir,  <span class="dt">rhs =</span> rhs, <span class="dt">names =</span> x.names)
+}</code></pre></div>
 </div>
 <div id="groupc" class="section level2">
 <h2>Group constraints</h2>
 <p>Group constraints are linear constraints which apply to only some elements of the portfolio choice vector <span class="math inline">\(x\)</span>: <span class="math display">\[ ax_i + bx_j = c \]</span> where the <span class="math inline">\(=\)</span> can be replaced by inequalities.</p>
-<pre class="r"><code>group_constraint &lt;- function(r_mat, index, coef.index = 1, dir = &quot;==&quot;, rhs) {
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">group_constraint &lt;-<span class="st"> </span>function(r_mat, index, <span class="dt">coef.index =</span> <span class="dv">1</span>, <span class="dt">dir =</span> <span class="st">&quot;==&quot;</span>, rhs) {
   ## index = (i, j)
   ## coef.index = c(a,b)
   ## rhs = c
-  x.names &lt;- colnames(r_mat)
-  N &lt;- NCOL(r_mat)
-  L &lt;- rep(0, N)
-  L[index] &lt;- coef.index
-  L_constraint(L = L, dir = dir, rhs = rhs, names = x.names)
-}</code></pre>
+  x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+  N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+  L &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, N)
+  L[index] &lt;-<span class="st"> </span>coef.index
+  <span class="kw">L_constraint</span>(<span class="dt">L =</span> L, <span class="dt">dir =</span> dir, <span class="dt">rhs =</span> rhs, <span class="dt">names =</span> x.names)
+}</code></pre></div>
 <p>(see <a href="#rewardex1">Example 1</a>, <a href="#rewardex2">Example 12</a>).</p>
 </div>
 <div id="turnoverc" class="section level2">
@@ -778,111 +804,111 @@ For a target turnover <span class="math inline">\(L\)</span> and some initial we
 &amp;&amp;y^+ \geq 0, \, y^-\geq 0
 \end{eqnarray*}\]</span>
 <p>If no initial weights are specified, the default is equal weights. Note: does not work out of the box with Omega and Sharpe objectives.</p>
-<pre class="r"><code>turnover_constraint &lt;- function(r_mat, x0 = NULL, dir = &quot;&lt;=&quot;, rhs = 100) {
-    x.names &lt;- colnames(r_mat)
-    N &lt;- NCOL(r_mat)
-    S &lt;- NROW(r_mat)
-    if (is.null(x0)) x0 &lt;- rep(1/N, N)
-    Amat &lt;- cbind(diag(N), - diag(N), diag(N))
-    var.names &lt;- c(x.names,  
-                   paste0(&quot;y_plus_aux&quot;, seq_len(N)), 
-                   paste0(&quot;y_minus_aux&quot;, seq_len(N)))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">turnover_constraint &lt;-<span class="st"> </span>function(r_mat, <span class="dt">x0 =</span> <span class="ot">NULL</span>, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">100</span>) {
+    x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+    N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+    S &lt;-<span class="st"> </span><span class="kw">NROW</span>(r_mat)
+    if (<span class="kw">is.null</span>(x0)) x0 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>/N, N)
+    Amat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">diag</span>(N), -<span class="st"> </span><span class="kw">diag</span>(N), <span class="kw">diag</span>(N))
+    var.names &lt;-<span class="st"> </span><span class="kw">c</span>(x.names,  
+                   <span class="kw">paste0</span>(<span class="st">&quot;y_plus_aux&quot;</span>, <span class="kw">seq_len</span>(N)), 
+                   <span class="kw">paste0</span>(<span class="st">&quot;y_minus_aux&quot;</span>, <span class="kw">seq_len</span>(N)))
     
-    rbind(L_constraint(L = Amat, dir = rep(&quot;==&quot;, N), rhs = x0, 
-                       names = var.names),
-          L_constraint(c(rep(0, N), rep(1, N), rep(1, N) ), 
-                       dir = dir, rhs = rhs, names = var.names))
-}</code></pre>
+    <span class="kw">rbind</span>(<span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;==&quot;</span>, N), <span class="dt">rhs =</span> x0, 
+                       <span class="dt">names =</span> var.names),
+          <span class="kw">L_constraint</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="kw">rep</span>(<span class="dv">1</span>, N), <span class="kw">rep</span>(<span class="dv">1</span>, N) ), 
+                       <span class="dt">dir =</span> dir, <span class="dt">rhs =</span> rhs, <span class="dt">names =</span> var.names))
+}</code></pre></div>
 <p>(see <a href="#rewardex2">Example 12</a>).</p>
 </div>
 <div id="cardc" class="section level2">
 <h2>Cardinality constraint</h2>
 <p>The cardinality constraint assigns bounds <span class="math inline">\(P_{min}\)</span> and <span class="math inline">\(P_{max}\)</span> on the number of assets in a portfolio. Binary auxiliary variables <span class="math inline">\(z\in \mathbb{R}^N\)</span> are introduced such that <span class="math inline">\(P_{min} \leq \sum_{i=1}^N z_i\leq P_{max}\)</span> and <span class="math inline">\(x_i - z_i \leq 0\)</span>.</p>
-<pre class="r"><code>cardinality_constraint &lt;- function(r_mat, dir = &quot;&lt;=&quot;, rhs = 100) {
-  x.names &lt;- colnames(r_mat)
-  N &lt;- NCOL(r_mat)
-  Amat &lt;- cbind(diag(N), -diag(N))
-  var.names &lt;- c(x.names, paste0(&quot;z_card_aux&quot;, seq_len(N)))
-  cat(&quot;Variable types for z_card_aux must be set to binary.\n&quot;)
-  rbind(L_constraint(L = Amat, dir = rep(&quot;&lt;=&quot;, N), 
-                     rhs = rep(0, N), names = var.names), 
-        L_constraint(L = c(rep(0, N), rep(1, N)), dir = dir,  
-                     rhs = rhs, names = var.names))
-}</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cardinality_constraint &lt;-<span class="st"> </span>function(r_mat, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">100</span>) {
+  x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+  N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+  Amat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">diag</span>(N), -<span class="kw">diag</span>(N))
+  var.names &lt;-<span class="st"> </span><span class="kw">c</span>(x.names, <span class="kw">paste0</span>(<span class="st">&quot;z_card_aux&quot;</span>, <span class="kw">seq_len</span>(N)))
+  <span class="kw">cat</span>(<span class="st">&quot;Variable types for z_card_aux must be set to binary.</span><span class="ch">\n</span><span class="st">&quot;</span>)
+  <span class="kw">rbind</span>(<span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, N), 
+                     <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="dt">names =</span> var.names), 
+        <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="kw">rep</span>(<span class="dv">1</span>, N)), <span class="dt">dir =</span> dir,  
+                     <span class="dt">rhs =</span> rhs, <span class="dt">names =</span> var.names))
+}</code></pre></div>
 <p>(see <a href="#cvarex2">Example 14</a>).</p>
 </div>
 <div id="rewardc" class="section level2">
 <h2>Target return constraint</h2>
 <p>Also typical objective functions can be used as constraints. For example, the expected return must not fall below a value <span class="math inline">\(\tau\)</span>: <span class="math display">\[\hat\mu^\top x \geq \tau\]</span> Note: does not work with Sharpe or Omega (it is included in both Sharpe and Omega maximization problems).</p>
-<pre class="r"><code>reward_constraint &lt;- function(r_mat, dir = &quot;&gt;=&quot;, rhs = 0) {
-  x.names &lt;- colnames(r_mat)
-  L_constraint(L = colMeans(r_mat), dir = dir,  
-               rhs = rhs, names = x.names)
-}</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">reward_constraint &lt;-<span class="st"> </span>function(r_mat, <span class="dt">dir =</span> <span class="st">&quot;&gt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">0</span>) {
+  x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+  <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">colMeans</span>(r_mat), <span class="dt">dir =</span> dir,  
+               <span class="dt">rhs =</span> rhs, <span class="dt">names =</span> x.names)
+}</code></pre></div>
 <p>(see <a href="#markex1">Example 3</a>, <a href="#downmadex1">Example 6</a>).</p>
 </div>
 <div id="markc" class="section level2">
 <h2>Risk constraints – Variance</h2>
 <p>Typically constraints of the form <span class="math inline">\(x^\top Q x \leq q^2\)</span>. Note however that this is a quadratic constraint and needs appropriate solvers (e.g., in ROI.plugin.alabama). Note: does not work with Omega.</p>
-<pre class="r"><code>markowitz_constraint &lt;- function(r_mat, dir = &quot;&lt;&quot;, rhs = 1000) {
-    x.names &lt;- colnames(r_mat)
-    N &lt;- NCOL(r_mat)
-    Q_constraint(Q = 2 * cov(r_mat), L = rep(0, N), 
-                 dir = dir, rhs = rhs, names=x.names)
-}</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">markowitz_constraint &lt;-<span class="st"> </span>function(r_mat, <span class="dt">dir =</span> <span class="st">&quot;&lt;&quot;</span>, <span class="dt">rhs =</span> <span class="dv">1000</span>) {
+    x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+    N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+    <span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="dv">2</span> *<span class="st"> </span><span class="kw">cov</span>(r_mat), <span class="dt">L =</span> <span class="kw">rep</span>(<span class="dv">0</span>, N), 
+                 <span class="dt">dir =</span> dir, <span class="dt">rhs =</span> rhs, <span class="dt">names=</span>x.names)
+}</code></pre></div>
 <p>(see <a href="#rewardex3">Example 13</a>).</p>
 </div>
 <div id="cvarc" class="section level2">
 <h2>Risk constraints – CVaR</h2>
 <p>Typically CVaR<span class="math inline">\((x, \alpha) \leq q\)</span>. Note: does not work with Omega and Sharpe.</p>
-<pre class="r"><code>cvar_constraint &lt;- function(r_mat, alpha, probs = NULL, dir = &quot;&lt;=&quot;, rhs = 100) {
-  x.names &lt;- colnames(r_mat)
-  N &lt;- NCOL(r_mat)
-  S &lt;- NROW(r_mat)
-  if (alpha &lt; 0.5) alpha &lt;- 1 - alpha
-  if (is.null(probs)) probs &lt;- rep(1/S, S)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cvar_constraint &lt;-<span class="st"> </span>function(r_mat, alpha, <span class="dt">probs =</span> <span class="ot">NULL</span>, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">100</span>) {
+  x.names &lt;-<span class="st"> </span><span class="kw">colnames</span>(r_mat)
+  N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(r_mat)
+  S &lt;-<span class="st"> </span><span class="kw">NROW</span>(r_mat)
+  if (alpha &lt;<span class="st"> </span><span class="fl">0.5</span>) alpha &lt;-<span class="st"> </span><span class="dv">1</span> -<span class="st"> </span>alpha
+  if (<span class="kw">is.null</span>(probs)) probs &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>/S, S)
   
-  Amat &lt;- cbind(as.matrix(r_mat), diag(S), 1)
-  var.names &lt;- c(x.names, paste0(&quot;z_cvar_aux&quot;, seq_len(S)), &quot;gamma&quot;)
-  # set bounds for gama
-  bnds &lt;- ROI::V_bound(li = c(N + S + 1), lb = c( -Inf),
-                       ui = c(N + S + 1), ub = c(  Inf))
-  rbind(L_constraint(L = Amat, dir = rep(&quot;&gt;=&quot;, S), 
-                     rhs=rep(0, S), names = var.names), 
-        L_constraint(c(rep(0, N), rep(1 / ((1 - alpha) * S), S), 1), 
-                     dir = dir, rhs = rhs, names = var.names))
-}    </code></pre>
+  Amat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">as.matrix</span>(r_mat), <span class="kw">diag</span>(S), <span class="dv">1</span>)
+  var.names &lt;-<span class="st"> </span><span class="kw">c</span>(x.names, <span class="kw">paste0</span>(<span class="st">&quot;z_cvar_aux&quot;</span>, <span class="kw">seq_len</span>(S)), <span class="st">&quot;gamma&quot;</span>)
+  <span class="co"># set bounds for gama</span>
+  bnds &lt;-<span class="st"> </span>ROI::<span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="kw">c</span>(N +<span class="st"> </span>S +<span class="st"> </span><span class="dv">1</span>), <span class="dt">lb =</span> <span class="kw">c</span>( -<span class="ot">Inf</span>),
+                       <span class="dt">ui =</span> <span class="kw">c</span>(N +<span class="st"> </span>S +<span class="st"> </span><span class="dv">1</span>), <span class="dt">ub =</span> <span class="kw">c</span>(  <span class="ot">Inf</span>))
+  <span class="kw">rbind</span>(<span class="kw">L_constraint</span>(<span class="dt">L =</span> Amat, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&gt;=&quot;</span>, S), 
+                     <span class="dt">rhs=</span><span class="kw">rep</span>(<span class="dv">0</span>, S), <span class="dt">names =</span> var.names), 
+        <span class="kw">L_constraint</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, N), <span class="kw">rep</span>(<span class="dv">1</span> /<span class="st"> </span>((<span class="dv">1</span> -<span class="st"> </span>alpha) *<span class="st"> </span>S), S), <span class="dv">1</span>), 
+                     <span class="dt">dir =</span> dir, <span class="dt">rhs =</span> rhs, <span class="dt">names =</span> var.names))
+}    </code></pre></div>
 <p>(see <a href="#rewardex2">Example 12</a>).</p>
 </div>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
 <p>For illustration purposes daily log returns for the past 180 days of the 30 companies included in the 2018 Dow Jones Industrial Average will be used.</p>
-<pre class="r"><code>if (!require(&quot;quantmod&quot;)) install.packages(&quot;quantmod&quot;); library(&quot;quantmod&quot;)
-Tickers     &lt;- c(&quot;MMM&quot;, &quot;AXP&quot;,&quot;AAPL&quot;, &quot;BA&quot;,&quot;CAT&quot;,&quot;CVX&quot;,&quot;CSCO&quot;, &quot;KO&quot;, &quot;DWDP&quot;, &quot;XOM&quot;,
-                 &quot;GS&quot;,&quot;HD&quot;, &quot;IBM&quot;, &quot;INTC&quot;, &quot;JNJ&quot;, &quot;JPM&quot;,&quot;MCD&quot;,&quot;MRK&quot;,&quot;MSFT&quot;,
-                 &quot;NKE&quot;, &quot;PFE&quot;,&quot;PG&quot;,
-                 &quot;TRV&quot;, &quot;UNH&quot;,&quot;UTX&quot;, &quot;VZ&quot;, &quot;V&quot;, &quot;WMT&quot;, &quot;WBA&quot;, &quot;DIS&quot;)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw">require</span>(<span class="st">&quot;quantmod&quot;</span>)) <span class="kw">install.packages</span>(<span class="st">&quot;quantmod&quot;</span>); <span class="kw">library</span>(<span class="st">&quot;quantmod&quot;</span>)
+Tickers     &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;MMM&quot;</span>, <span class="st">&quot;AXP&quot;</span>,<span class="st">&quot;AAPL&quot;</span>, <span class="st">&quot;BA&quot;</span>,<span class="st">&quot;CAT&quot;</span>,<span class="st">&quot;CVX&quot;</span>,<span class="st">&quot;CSCO&quot;</span>, <span class="st">&quot;KO&quot;</span>, <span class="st">&quot;DWDP&quot;</span>, <span class="st">&quot;XOM&quot;</span>,
+                 <span class="st">&quot;GS&quot;</span>,<span class="st">&quot;HD&quot;</span>, <span class="st">&quot;IBM&quot;</span>, <span class="st">&quot;INTC&quot;</span>, <span class="st">&quot;JNJ&quot;</span>, <span class="st">&quot;JPM&quot;</span>,<span class="st">&quot;MCD&quot;</span>,<span class="st">&quot;MRK&quot;</span>,<span class="st">&quot;MSFT&quot;</span>,
+                 <span class="st">&quot;NKE&quot;</span>, <span class="st">&quot;PFE&quot;</span>,<span class="st">&quot;PG&quot;</span>,
+                 <span class="st">&quot;TRV&quot;</span>, <span class="st">&quot;UNH&quot;</span>,<span class="st">&quot;UTX&quot;</span>, <span class="st">&quot;VZ&quot;</span>, <span class="st">&quot;V&quot;</span>, <span class="st">&quot;WMT&quot;</span>, <span class="st">&quot;WBA&quot;</span>, <span class="st">&quot;DIS&quot;</span>)
 
-cached_file &lt;- &quot;cache/cached_portfolio_data.rda&quot;
-if ( file.exists(cached_file) ) {
-  load(cached_file)
+cached_file &lt;-<span class="st"> &quot;cache/cached_portfolio_data.rda&quot;</span>
+if ( <span class="kw">file.exists</span>(cached_file) ) {
+  <span class="kw">load</span>(cached_file)
 } else {
-  download_tickers &lt;- function(x) {
-    download_ticker_error_handler &lt;- function(e) {
-      warning(paste(x, &#39;not found&#39;))
-      return(NA)
+  download_tickers &lt;-<span class="st"> </span>function(x) {
+    download_ticker_error_handler &lt;-<span class="st"> </span>function(e) {
+      <span class="kw">warning</span>(<span class="kw">paste</span>(x, <span class="st">&#39;not found&#39;</span>))
+      <span class="kw">return</span>(<span class="ot">NA</span>)
     }
-    tryCatch(getSymbols(x, from = Sys.Date() - 180, auto.assign = FALSE),
-             error = download_ticker_error_handler)
+    <span class="kw">tryCatch</span>(<span class="kw">getSymbols</span>(x, <span class="dt">from =</span> <span class="kw">Sys.Date</span>() -<span class="st"> </span><span class="dv">180</span>, <span class="dt">auto.assign =</span> <span class="ot">FALSE</span>),
+             <span class="dt">error =</span> download_ticker_error_handler)
   }
-  Historicals &lt;- lapply(Tickers, download_tickers)
+  Historicals &lt;-<span class="st"> </span><span class="kw">lapply</span>(Tickers, download_tickers)
 
-  prices &lt;- do.call(&quot;cbind&quot;,lapply(Historicals, function(x) x[, 6]))
+  prices &lt;-<span class="st"> </span><span class="kw">do.call</span>(<span class="st">&quot;cbind&quot;</span>,<span class="kw">lapply</span>(Historicals, function(x) x[, <span class="dv">6</span>]))
 
-  djia2018 &lt;- as.data.frame((log(lag(prices)) - log(prices))[-1, ])
-  save(Historicals, prices, djia2018, file = cached_file)
-}</code></pre>
+  djia2018 &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>((<span class="kw">log</span>(<span class="kw">lag</span>(prices)) -<span class="st"> </span><span class="kw">log</span>(prices))[-<span class="dv">1</span>, ])
+  <span class="kw">save</span>(Historicals, prices, djia2018, <span class="dt">file =</span> cached_file)
+}</code></pre></div>
 <p>We consider a portfolio of assets with random returns. We denote the portfolio choice vector by <span class="math inline">\(x\)</span> and by <span class="math inline">\(r\)</span> the vector random returns. <span class="math inline">\(N\)</span> denotes the number of assets in the portfolio while <span class="math inline">\(S\)</span> is the number of scenarios in the scenarios set.</p>
 <!-- ############################################# -->
 </div>
@@ -898,15 +924,15 @@ x_i &amp;\geq&amp; 0\\
 x_3 + x_{17} &amp;\leq&amp; 0.5 
 \end{eqnarray*} 
 \]</span> can be set up easily in ROI:</p>
-<pre class="r"><code>lp  &lt;- OP(objective  =  reward_objective(djia2018)$objective,
-          constraints = rbind(budget_constraint(djia2018),
-                              group_constraint(djia2018, index = c(3, 17), dir = &quot;==&quot;, rhs = 0.5)),
-          maximum = T)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  <span class="kw">reward_objective</span>(djia2018)$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(<span class="kw">budget_constraint</span>(djia2018),
+                              <span class="kw">group_constraint</span>(djia2018, <span class="dt">index =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">17</span>), <span class="dt">dir =</span> <span class="st">&quot;==&quot;</span>, <span class="dt">rhs =</span> <span class="fl">0.5</span>)),
+          <span class="dt">maximum =</span> T)</code></pre></div>
 <p>(Note that the bounds can be omitted as this is the default in ROI). To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 1.516122e-03</code></pre>
-<pre class="r"><code>solution(sol)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##           0.0           0.0           0.5           0.0           0.0 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -922,13 +948,13 @@ x_3 + x_{17} &amp;\leq&amp; 0.5
 </div>
 <div id="markex1" class="section level2">
 <h2>Example 2: Minimum variance portfolio</h2>
-<pre class="r"><code>lp  &lt;- OP(objective  =  markowitz_objective(djia2018)$objective,
-          constraints = rbind(budget_constraint(djia2018)))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  <span class="kw">markowitz_objective</span>(djia2018)$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(<span class="kw">budget_constraint</span>(djia2018)))</code></pre></div>
 <p>(Note that the bounds can be omitted as this is the default in ROI). To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;quadprog&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 4.345243e-05</code></pre>
-<pre class="r"><code>round(solution(sol), 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol), <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -944,14 +970,14 @@ x_3 + x_{17} &amp;\leq&amp; 0.5
 </div>
 <div id="markex2" class="section level2">
 <h2>Example 3: Minimum variance portfolio with budget normalization and target return constraint</h2>
-<pre class="r"><code>lp  &lt;- OP(objective  =  markowitz_objective(djia2018)$objective,
-          constraints = rbind(budget_constraint(djia2018),
-                              reward_constraint(djia2018, rhs = 0.001)))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  <span class="kw">markowitz_objective</span>(djia2018)$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(<span class="kw">budget_constraint</span>(djia2018),
+                              <span class="kw">reward_constraint</span>(djia2018, <span class="dt">rhs =</span> <span class="fl">0.001</span>)))</code></pre></div>
 <p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;quadprog&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 8.484419e-05</code></pre>
-<pre class="r"><code>round(solution(sol), 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol), <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -968,16 +994,16 @@ x_3 + x_{17} &amp;\leq&amp; 0.5
 <div id="madex1" class="section level2">
 <h2>Example 4: Minimize mean absolute deviation portfolio</h2>
 <p>The minimum MAD portfolio is given by:</p>
-<pre class="r"><code>lp  &lt;- OP(objective  =  mad_objective(djia2018)$objective,
-          constraints = rbind(mad_objective(djia2018)$constraint,
-                              budget_constraint(djia2018),
-                              use.names = TRUE))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  <span class="kw">mad_objective</span>(djia2018)$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(<span class="kw">mad_objective</span>(djia2018)$constraint,
+                              <span class="kw">budget_constraint</span>(djia2018),
+                              <span class="dt">use.names =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <p>(Note that the bounds can be omitted as this is the default in ROI). To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 4.587062e-03</code></pre>
 <p>The optimal weights are:</p>
-<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol)[<span class="kw">seq_len</span>(<span class="kw">NCOL</span>(djia2018))], <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.026         0.027         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -994,17 +1020,17 @@ x_3 + x_{17} &amp;\leq&amp; 0.5
 <div id="downvarex1" class="section level2">
 <h2>Example 5: The minimum lower semi-variance portfolio</h2>
 <p>The minimum lower semi-variance portfolio is given by:</p>
-<pre class="r"><code>tmp &lt;- downside_var_objective(djia2018)
-lp  &lt;- OP(objective  = tmp$objective,
-          constraints = rbind(tmp$constraint,
-                              budget_constraint(djia2018), 
-                              use.names = TRUE))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">downside_var_objective</span>(djia2018)
+lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span> tmp$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(tmp$constraint,
+                              <span class="kw">budget_constraint</span>(djia2018), 
+                              <span class="dt">use.names =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;quadprog&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 1.804649e-05</code></pre>
 <p>The optimal weights are:</p>
-<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol)[<span class="kw">seq_len</span>(<span class="kw">NCOL</span>(djia2018))], <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1021,17 +1047,17 @@ lp  &lt;- OP(objective  = tmp$objective,
 <div id="downmadex1" class="section level2">
 <h2>Example 6: Minimum lower semi-absolute deviation portfolio with target return constraint</h2>
 <p>The portfolio with minimum lower semi-absolute deviation and minimum 0.001 target return is given by:</p>
-<pre class="r"><code>tmp &lt;- downside_mad_objective(djia2018)
-lp  &lt;- OP(objective  = tmp$objective,
-          constraints = rbind(tmp$constraint,
-                              budget_constraint(djia2018),
-                              reward_constraint(djia2018, rhs = 0.001),
-                              use.names = TRUE))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">downside_mad_objective</span>(djia2018)
+lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span> tmp$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(tmp$constraint,
+                              <span class="kw">budget_constraint</span>(djia2018),
+                              <span class="kw">reward_constraint</span>(djia2018, <span class="dt">rhs =</span> <span class="fl">0.001</span>),
+                              <span class="dt">use.names =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 3.290369e-03</code></pre>
-<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol)[<span class="kw">seq_len</span>(<span class="kw">NCOL</span>(djia2018))], <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1048,17 +1074,17 @@ lp  &lt;- OP(objective  = tmp$objective,
 <div id="example-7-minimum-95-99-conditional-value-at-risk" class="section level2">
 <h2>Example 7: Minimum 95% &amp; 99% conditional value at risk:</h2>
 <p>The portfolio with minimum 95% conditional value at risk can be obtained as follows:</p>
-<pre class="r"><code>tmp &lt;- cvar_objective(djia2018, alpha = 0.95)
-lp  &lt;- OP(objective  =  tmp$objective,
-          constraints = rbind(tmp$constraint,
-                              budget_constraint(djia2018),
-                              use.names = TRUE),
-          bounds = tmp$bounds)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">cvar_objective</span>(djia2018, <span class="dt">alpha =</span> <span class="fl">0.95</span>)
+lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  tmp$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(tmp$constraint,
+                              <span class="kw">budget_constraint</span>(djia2018),
+                              <span class="dt">use.names =</span> <span class="ot">TRUE</span>),
+          <span class="dt">bounds =</span> tmp$bounds)</code></pre></div>
 <p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 1.119712e-02</code></pre>
-<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol)[<span class="kw">seq_len</span>(<span class="kw">NCOL</span>(djia2018))], <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1072,14 +1098,14 @@ lp  &lt;- OP(objective  =  tmp$objective,
 ##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
 ##         0.211         0.000         0.000         0.018         0.172</code></pre>
 <p>The solution for 99% CVaR is given by:</p>
-<pre class="r"><code>tmp99 &lt;- cvar_objective(djia2018, alpha = 0.99)
-lp99  &lt;- OP(objective  =  tmp99$objective,
-          constraints = rbind(tmp99$constraint,
-                              budget_constraint(djia2018),
-                              use.names = TRUE),
-          bounds = tmp$bounds)
-sol99 &lt;- ROI_solve(lp99, solver = &quot;glpk&quot;)</code></pre>
-<pre class="r"><code>round(solution(sol99)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp99 &lt;-<span class="st"> </span><span class="kw">cvar_objective</span>(djia2018, <span class="dt">alpha =</span> <span class="fl">0.99</span>)
+lp99  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  tmp99$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(tmp99$constraint,
+                              <span class="kw">budget_constraint</span>(djia2018),
+                              <span class="dt">use.names =</span> <span class="ot">TRUE</span>),
+          <span class="dt">bounds =</span> tmp$bounds)
+sol99 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp99, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol99)[<span class="kw">seq_len</span>(<span class="kw">NCOL</span>(djia2018))], <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1093,26 +1119,26 @@ sol99 &lt;- ROI_solve(lp99, solver = &quot;glpk&quot;)</code></pre>
 ##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
 ##         0.242         0.000         0.000         0.007         0.105</code></pre>
 <p>The 95% or the 99% VaR are a by-product of the optimization problem and can be extracted from the solution</p>
-<pre class="r"><code>VaR &lt;- c(&quot;0.95&quot; = sol$solution[&quot;gamma&quot;], 
-         &quot;0.99&quot; = sol99$solution[&quot;gamma&quot;]) 
-VaR</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">VaR &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;0.95&quot;</span> =<span class="st"> </span>sol$solution[<span class="st">&quot;gamma&quot;</span>], 
+         <span class="st">&quot;0.99&quot;</span> =<span class="st"> </span>sol99$solution[<span class="st">&quot;gamma&quot;</span>]) 
+VaR</code></pre></div>
 <pre><code>## 0.95.gamma 0.99.gamma 
 ## 0.01064806 0.01169682</code></pre>
 </div>
 <div id="minimaxex1" class="section level2">
 <h2>Example 8: The minimax portfolio</h2>
-<pre class="r"><code>tmp &lt;- minimax_young_objective(djia2018)
-lp  &lt;- OP(objective  =  tmp$objective,
-          constraints = rbind(tmp$constraint,
-                              budget_constraint(djia2018),
-                              use.names = TRUE),
-          bounds =  tmp$bounds,
-          maximum =  T)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">minimax_young_objective</span>(djia2018)
+lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  tmp$objective,
+          <span class="dt">constraints =</span> <span class="kw">rbind</span>(tmp$constraint,
+                              <span class="kw">budget_constraint</span>(djia2018),
+                              <span class="dt">use.names =</span> <span class="ot">TRUE</span>),
+          <span class="dt">bounds =</span>  tmp$bounds,
+          <span class="dt">maximum =</span>  T)</code></pre></div>
 <p>To perfom the optimization, the <code>ROI_solve()</code> function is called:</p>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: -1.169682e-02</code></pre>
-<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol)[<span class="kw">seq_len</span>(<span class="kw">NCOL</span>(djia2018))], <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1128,16 +1154,16 @@ lp  &lt;- OP(objective  =  tmp$objective,
 </div>
 <div id="quaduex1" class="section level2">
 <h2>Example 9: Maximize quadratic utility where short selling is allowed but the weights should not be less than -1.</h2>
-<pre class="r"><code>tmp &lt;- quadratic_utility_objective(djia2018)
-lp  &lt;- OP(objective  =  tmp$objective,
-          constraints = budget_constraint(djia2018),
-          bounds = V_bound(li = seq_len(NCOL(djia2018)), 
-                           lb = rep(-1, NCOL(djia2018))),
-          maximum = T)</code></pre>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">quadratic_utility_objective</span>(djia2018)
+lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  tmp$objective,
+          <span class="dt">constraints =</span> <span class="kw">budget_constraint</span>(djia2018),
+          <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="kw">seq_len</span>(<span class="kw">NCOL</span>(djia2018)), 
+                           <span class="dt">lb =</span> <span class="kw">rep</span>(-<span class="dv">1</span>, <span class="kw">NCOL</span>(djia2018))),
+          <span class="dt">maximum =</span> T)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;quadprog&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 3.018209e-02</code></pre>
-<pre class="r"><code>round(solution(sol)[seq_len(NCOL(djia2018))], 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol)[<span class="kw">seq_len</span>(<span class="kw">NCOL</span>(djia2018))], <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##        -1.000        -1.000        -0.173        -0.221        -1.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1153,29 +1179,29 @@ lp  &lt;- OP(objective  =  tmp$objective,
 </div>
 <div id="sharpeex1" class="section level2">
 <h2>Example 10: Maximize Sharpe ratio with shortselling</h2>
-<pre class="r"><code>N &lt;- NCOL(djia2018)
-tmp &lt;-sharpe_objective(djia2018)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">N &lt;-<span class="st"> </span><span class="kw">NCOL</span>(djia2018)
+tmp &lt;-<span class="kw">sharpe_objective</span>(djia2018)
 
-lp &lt;- OP(maximum = T)
-objective(lp) &lt;- tmp$objective</code></pre>
+lp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">maximum =</span> T)
+<span class="kw">objective</span>(lp) &lt;-<span class="st"> </span>tmp$objective</code></pre></div>
 <p>When imposing constraints on the portfolio choice vector <span class="math inline">\(x\)</span> using the Sharpe objective, one must keep in mind that <span class="math inline">\(x^* = y^* / \kappa^*\)</span>, where <span class="math inline">\(y\)</span> and <span class="math inline">\(\kappa\)</span> are the values optimized. Hence, the constraint <span class="math inline">\(x_i \geq -1\)</span> must be transformed to: <span class="math display">\[ y_i/\kappa \geq -1 \Rightarrow y_i \geq -\kappa \Rightarrow y_i + \kappa \geq 0 \]</span>:</p>
-<pre class="r"><code>mat &lt;- cbind(diag(N),  1)
-shortsell_constraint &lt;- L_constraint(mat, dir = rep(&quot;&gt;=&quot;, N),
-                                     rhs = rep(0, N))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mat &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">diag</span>(N),  <span class="dv">1</span>)
+shortsell_constraint &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(mat, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&gt;=&quot;</span>, N),
+                                     <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, N))
 
-constraints(lp) &lt;- rbind(tmp$constraint,
-                         shortsell_constraint)</code></pre>
+<span class="kw">constraints</span>(lp) &lt;-<span class="st"> </span><span class="kw">rbind</span>(tmp$constraint,
+                         shortsell_constraint)</code></pre></div>
 <p>Moreover, the lower bounds for the auxiliary variables must be set to <code>-Inf</code>.</p>
-<pre class="r"><code>bounds(lp) &lt;- V_bound(li = seq_len(N +1), 
-                      lb = c(rep(-Inf, N), 0))</code></pre>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;quadprog&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bounds</span>(lp) &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="kw">seq_len</span>(N +<span class="dv">1</span>), 
+                      <span class="dt">lb =</span> <span class="kw">c</span>(<span class="kw">rep</span>(-<span class="ot">Inf</span>, N), <span class="dv">0</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;quadprog&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: -6.311826e+00</code></pre>
 <p>The optimal solution is given by <span class="math inline">\(x^* = y^* / \kappa^*\)</span>:</p>
-<pre class="r"><code>sol_sharpe &lt;- solution(sol)
-x_opt &lt;- round(sol_sharpe[1:30]/sol_sharpe[&quot;kappa_sharpe&quot;], 3)
-names(x_opt) &lt;-colnames(djia2018)
-x_opt</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sol_sharpe &lt;-<span class="st"> </span><span class="kw">solution</span>(sol)
+x_opt &lt;-<span class="st"> </span><span class="kw">round</span>(sol_sharpe[<span class="dv">1</span>:<span class="dv">30</span>]/sol_sharpe[<span class="st">&quot;kappa_sharpe&quot;</span>], <span class="dv">3</span>)
+<span class="kw">names</span>(x_opt) &lt;-<span class="kw">colnames</span>(djia2018)
+x_opt</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##        -0.970        -1.000         0.831        -0.037        -0.519 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1191,18 +1217,18 @@ x_opt</code></pre>
 </div>
 <div id="omegaex1" class="section level2">
 <h2>Example 11: Maximize Omega</h2>
-<pre class="r"><code>tmp &lt;- omega_objective(djia2018)
-lp  &lt;- OP(objective  =  tmp$objective,
-          constraints = tmp$constraint,
-          maximum = T)</code></pre>
-<pre class="r"><code>(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">omega_objective</span>(djia2018)
+lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective  =</span>  tmp$objective,
+          <span class="dt">constraints =</span> tmp$constraint,
+          <span class="dt">maximum =</span> T)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 4.407022e-03</code></pre>
 <p>The optimal solution is given by <span class="math inline">\(x^* = y^* / z^*\)</span>.</p>
-<pre class="r"><code>sol_omega &lt;- solution(sol)
-x_opt &lt;- round(sol_omega[1:30]/sol_omega[&quot;z_omega&quot;], 3)
-names(x_opt) &lt;-colnames(djia2018)
-x_opt</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sol_omega &lt;-<span class="st"> </span><span class="kw">solution</span>(sol)
+x_opt &lt;-<span class="st"> </span><span class="kw">round</span>(sol_omega[<span class="dv">1</span>:<span class="dv">30</span>]/sol_omega[<span class="st">&quot;z_omega&quot;</span>], <span class="dv">3</span>)
+<span class="kw">names</span>(x_opt) &lt;-<span class="kw">colnames</span>(djia2018)
+x_opt</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1226,21 +1252,21 @@ s.t.&amp; \mathrm{CVaR}(x, 0.95) \leq 0.02 \\
              &amp; \sum_{i=1}^N \vert x_i - x_{0i} \vert \leq 0.5
 \end{eqnarray*}\]</span>
 <p>Given that the constraints have more (auxiliary) variables than the objective, first the constraints are defined:</p>
-<pre class="r"><code>lp &lt;- OP(maximum = T)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">maximum =</span> T)
 
-constraints(lp) &lt;- rbind(
-  budget_constraint(djia2018),
-  group_constraint(djia2018, index = c(2, 10, 20), dir = &quot;&lt;=&quot;, rhs = 0.5),
-  turnover_constraint(djia2018, dir = &quot;&lt;=&quot;, rhs = 0.5),
-  cvar_constraint(djia2018, alpha = 0.95, rhs = 0.02),
-  use.names = TRUE)</code></pre>
+<span class="kw">constraints</span>(lp) &lt;-<span class="st"> </span><span class="kw">rbind</span>(
+  <span class="kw">budget_constraint</span>(djia2018),
+  <span class="kw">group_constraint</span>(djia2018, <span class="dt">index =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">10</span>, <span class="dv">20</span>), <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="fl">0.5</span>),
+  <span class="kw">turnover_constraint</span>(djia2018, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="fl">0.5</span>),
+  <span class="kw">cvar_constraint</span>(djia2018, <span class="dt">alpha =</span> <span class="fl">0.95</span>, <span class="dt">rhs =</span> <span class="fl">0.02</span>),
+  <span class="dt">use.names =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p>Next, the vector of the linear objective is filled with zeros to match the dimension of the constraints:</p>
-<pre class="r"><code>obj &lt;- c(terms(reward_objective(djia2018)$objective)$L)
-objective(lp) &lt;- c(obj, double(ncol(constraints(lp)) - length(obj)))
-(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obj &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">terms</span>(<span class="kw">reward_objective</span>(djia2018)$objective)$L)
+<span class="kw">objective</span>(lp) &lt;-<span class="st"> </span><span class="kw">c</span>(obj, <span class="kw">double</span>(<span class="kw">ncol</span>(<span class="kw">constraints</span>(lp)) -<span class="st"> </span><span class="kw">length</span>(obj)))
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 8.153523e-04</code></pre>
-<pre class="r"><code>solution(sol)[1:30]</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)[<span class="dv">1</span>:<span class="dv">30</span>]</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##    0.03333333    0.03333333    0.03333333    0.03333333    0.03333333 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
@@ -1262,31 +1288,31 @@ s.t.&amp;&amp; x^{\top}Qx \leq 0.1 \\
              &amp;&amp;\sum_{i=1}^N x_i =1\\
              &amp;&amp; x_i \geq 0
 \end{eqnarray*}\]</span>
-<pre class="r"><code>p &lt;- OP(maximum = T)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">maximum =</span> T)
 
-constraints(p) &lt;- rbind(
-  markowitz_constraint(djia2018, dir = &quot;&lt;=&quot;, rhs = 0.5^2),
-  budget_constraint(djia2018),
-  use.names = TRUE)
+<span class="kw">constraints</span>(p) &lt;-<span class="st"> </span><span class="kw">rbind</span>(
+  <span class="kw">markowitz_constraint</span>(djia2018, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="fl">0.5</span>^<span class="dv">2</span>),
+  <span class="kw">budget_constraint</span>(djia2018),
+  <span class="dt">use.names =</span> <span class="ot">TRUE</span>)
 
-objective(p) &lt;- reward_objective(djia2018)$objective </code></pre>
+<span class="kw">objective</span>(p) &lt;-<span class="st"> </span><span class="kw">reward_objective</span>(djia2018)$objective </code></pre></div>
 <p>When using the alabama solver starting values need to be chosen. A good strategy is to use several starting values and compare the results.</p>
-<pre class="r"><code>mstart &lt;- lapply(1:10, function(x) runif(length(objective(p))))
-solus &lt;- lapply(mstart, function(s) ROI_solve(p, solver = &quot;alabama&quot;, start = s))
-best_solution &lt;- which.max(sapply(solus, solution, type = &quot;objval&quot;))  
-round(solution(solus[[best_solution]]), 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mstart &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span>:<span class="dv">10</span>, function(x) <span class="kw">runif</span>(<span class="kw">length</span>(<span class="kw">objective</span>(p))))
+solus &lt;-<span class="st"> </span><span class="kw">lapply</span>(mstart, function(s) <span class="kw">ROI_solve</span>(p, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> s))
+best_solution &lt;-<span class="st"> </span><span class="kw">which.max</span>(<span class="kw">sapply</span>(solus, solution, <span class="dt">type =</span> <span class="st">&quot;objval&quot;</span>))  
+<span class="kw">round</span>(<span class="kw">solution</span>(solus[[best_solution]]), <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
-##             0             0             0             0             0 
+##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
-##             0             0             0             0             0 
+##         0.000         0.000         0.000         0.304         0.000 
 ##   GS.Adjusted   HD.Adjusted  IBM.Adjusted INTC.Adjusted  JNJ.Adjusted 
-##             1             0             0             0             0 
+##         0.696         0.000         0.000         0.000         0.000 
 ##  JPM.Adjusted  MCD.Adjusted  MRK.Adjusted MSFT.Adjusted  NKE.Adjusted 
-##             0             0             0             0             0 
+##         0.000         0.000         0.000         0.000         0.000 
 ##  PFE.Adjusted   PG.Adjusted  TRV.Adjusted  UNH.Adjusted  UTX.Adjusted 
-##             0             0             0             0             0 
+##         0.000         0.000         0.000         0.000         0.000 
 ##   VZ.Adjusted    V.Adjusted  WMT.Adjusted  WBA.Adjusted  DIS.Adjusted 
-##             0             0             0             0             0</code></pre>
+##         0.000         0.000         0.000         0.000         0.000</code></pre>
 </div>
 <div id="cvarex2" class="section level2">
 <h2>Example 14: Minimize 99% CVaR wrt cardinality constraints</h2>
@@ -1298,25 +1324,25 @@ s.t.&amp;&amp;z_s \geq - r_s^\top x - \gamma,\\
 &amp;&amp; x_i - u_i \leq 0.
 \end{eqnarray*}\]</span>
 <p>where <span class="math inline">\(u\in \mathbb{R}^N\)</span>are binary auxiliary variables.</p>
-<pre class="r"><code>tmp &lt;- cvar_objective(djia2018, 0.99)
-lp &lt;- OP()
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span><span class="kw">cvar_objective</span>(djia2018, <span class="fl">0.99</span>)
+lp &lt;-<span class="st"> </span><span class="kw">OP</span>()
 
-constraints(lp) &lt;- rbind(
+<span class="kw">constraints</span>(lp) &lt;-<span class="st"> </span><span class="kw">rbind</span>(
   tmp$constraint,
-  budget_constraint(djia2018),
-  cardinality_constraint(djia2018, dir = &quot;&lt;=&quot;, rhs = 6),
-  use.names = TRUE)</code></pre>
+  <span class="kw">budget_constraint</span>(djia2018),
+  <span class="kw">cardinality_constraint</span>(djia2018, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">6</span>),
+  <span class="dt">use.names =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Variable types for z_card_aux must be set to binary.</code></pre>
-<pre class="r"><code>obj &lt;-c((tmp$objective)$L)
-objective(lp) &lt;- c(obj, double(NCOL(constraints(lp)) - length(obj)))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obj &lt;-<span class="kw">c</span>((tmp$objective)$L)
+<span class="kw">objective</span>(lp) &lt;-<span class="st"> </span><span class="kw">c</span>(obj, <span class="kw">double</span>(<span class="kw">NCOL</span>(<span class="kw">constraints</span>(lp)) -<span class="st"> </span><span class="kw">length</span>(obj)))
 
-types(lp) &lt;- rep(&quot;C&quot;,  NCOL(constraints(lp) ))
-types(lp)[grep(&quot;z_card_aux&quot;, constraints(lp)$names)] &lt;- &quot;B&quot;
+<span class="kw">types</span>(lp) &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;C&quot;</span>,  <span class="kw">NCOL</span>(<span class="kw">constraints</span>(lp) ))
+<span class="kw">types</span>(lp)[<span class="kw">grep</span>(<span class="st">&quot;z_card_aux&quot;</span>, <span class="kw">constraints</span>(lp)$names)] &lt;-<span class="st"> &quot;B&quot;</span>
 
-(sol &lt;- ROI_solve(lp, solver = &quot;glpk&quot;))</code></pre>
+(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
 <pre><code>## Optimal solution found.
 ## The objective value is: 1.225243e-02</code></pre>
-<pre class="r"><code>round(solution(sol)[1:30], 3)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">solution</span>(sol)[<span class="dv">1</span>:<span class="dv">30</span>], <span class="dv">3</span>)</code></pre></div>
 <pre><code>##  MMM.Adjusted  AXP.Adjusted AAPL.Adjusted   BA.Adjusted  CAT.Adjusted 
 ##         0.000         0.000         0.000         0.000         0.000 
 ##  CVX.Adjusted CSCO.Adjusted   KO.Adjusted DWDP.Adjusted  XOM.Adjusted 
