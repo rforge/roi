@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Least absolute deviation (LAD) problem</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+<li>
+  <a href="news.html">What's new?</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Least absolute deviation (LAD) problem</h1>
+
+</div>
+
+
+The <a href="https://en.wikipedia.org/wiki/Least_absolute_deviations">least absolute deviation (LAD)</a> — also known as <span class="math inline">\(L_1\)</span> regression — is a statistical optimization technique attempting to find a function <span class="math inline">\(f(x_i)\)</span> which closely approximates a data set of the points (<span class="math inline">\(x_i\)</span>, <span class="math inline">\(y_i\)</span>) with <span class="math inline">\(i = 1, \ldots{}, n\)</span>. It minimizes the sum of absolute errors between points generated by the function (<span class="math inline">\(\hat{y}_i\)</span>) and the corresponding data points.
+<span class="math display">\[\begin{eqnarray*}
+  \text{minimize} ~~ \sum_i^n | y_i - \hat{y}_i |
+\end{eqnarray*}\]</span>
+<p>As such can be classified as a non-linear optimization problem.</p>
+<p>However, following, e.g., <a href="#BD2013">Brooks and Dula (2013)</a> the objective function can be expressed as</p>
+<p><span class="math display">\[
+\begin{eqnarray*}
+  \underset{{\beta_0,\mathbf{\beta},\mathbf{e}^+,\mathbf{e}^-}}{\text{minimize}}
+  ~~ \sum_{i=1}^n e_i^+ + e_i^- ~~~~~~~~~~~~~~~~~
+  \nonumber
+  \\
+  \text{subject to} ~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~
+  \nonumber
+  \\
+  \beta_0 + \mathbf{\beta}^\top \mathbf{x}_i + e_i^+ - e_i^- = 0 ~~~~~~ i = 1,\ldots{},n
+  \nonumber
+  \\
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \beta_j = -1 ~~~~~~~~~~~~~~~~~~~~~
+  \nonumber
+  \\
+  ~~~~~~~~~~~~~~~~~~~~~~~ e_i^+, e_i^- \geq 0 ~~~~~ i = 1,\ldots{},n
+\end{eqnarray*}
+\]</span> given a set of points <span class="math inline">\(\mathbf{x}_i \in \mathbb{R}^m\)</span>, <span class="math inline">\(i = 1,\ldots{},n\)</span> and the <span class="math inline">\(j^{th}\)</span> column representing the dependent variable <span class="math inline">\(y\)</span>. In comparison to the original formulation we differentiate between positive and negative deviations/errors (<span class="math inline">\(e_i^+\)</span> and <span class="math inline">\(e_i^-\)</span>, respectively) to get to the linear programming problem shown above.</p>
+<p></br></p>
+<div id="lp-implementation" class="section level2">
+<h2>LP Implementation</h2>
+<p>The linear programming formulation of the <span class="math inline">\(L_1\)</span> regression problem as shown above can be constructed using <strong>ROI</strong> methods via the following R function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">create_L1_problem &lt;-<span class="st"> </span>function(x, j) {
+  m &lt;-<span class="st"> </span><span class="kw">ncol</span>(x) +<span class="st"> </span>1L
+  n &lt;-<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span><span class="kw">nrow</span>(x)
+  beta &lt;-<span class="st"> </span><span class="kw">double</span>(m +<span class="st"> </span>n)
+  beta[j +<span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">1</span>
+  <span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">0</span>, m), <span class="kw">rep</span>(<span class="dv">1</span>, n))),
+    <span class="dt">constraints =</span> <span class="kw">rbind</span>(
+      <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">cbind</span>(<span class="dv">1</span>, x, <span class="kw">diag</span>(<span class="kw">nrow</span>(x)), -<span class="kw">diag</span>(<span class="kw">nrow</span>(x))),
+        <span class="dt">dir =</span> <span class="kw">eq</span>(<span class="kw">nrow</span>(x)), <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="kw">nrow</span>(x))),
+      <span class="kw">L_constraint</span>(<span class="dt">L =</span> beta, <span class="dt">dir =</span> <span class="st">&quot;==&quot;</span>, <span class="dt">rhs =</span> -<span class="dv">1</span>)),
+    <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="kw">seq_len</span>(m), <span class="dt">lb =</span> <span class="kw">rep</span>(-<span class="ot">Inf</span>, m),
+      <span class="dt">nobj =</span> <span class="kw">length</span>(beta)))
+}</code></pre></div>
+<p>With <strong>ROI</strong> one can solve e.g., Brownlee’s stack loss plant data example from the <strong>stats</strong> package using the above OP and the solver GLPK as follows.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setenv</span>(<span class="dt">ROI_LOAD_PLUGINS =</span> <span class="ot">FALSE</span>)
+<span class="kw">library</span>(ROI)
+<span class="kw">library</span>(ROI.plugin.glpk)
+
+<span class="kw">data</span>(stackloss)
+l1p &lt;-<span class="st"> </span><span class="kw">create_L1_problem</span>(<span class="kw">as.matrix</span>(stackloss), <span class="dv">4</span>)
+L1_res &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(l1p, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>)</code></pre></div>
+<p>The first value corresponds to the intercept and the others to the model coefficients.</p>
+</div>
+<div id="comparison" class="section level2">
+<h2>Comparison</h2>
+<p>For comparison purposes we solve the same problem with <strong>R</strong> package <a href="https://cran.r-project.org/package=quantreg"><strong>quantreg</strong></a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;quantreg&quot;</span>)
+fm &lt;-<span class="st"> </span><span class="kw">rq</span>(stack.loss ~<span class="st"> </span>stack.x, <span class="fl">0.5</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n &lt;-<span class="st"> </span><span class="kw">ncol</span>(stackloss)
+<span class="kw">cbind</span>(<span class="dt">ROI =</span> <span class="kw">head</span>(<span class="kw">solution</span>(L1_res), n),
+      <span class="dt">quantreg =</span> <span class="kw">coef</span>(fm))</code></pre></div>
+<pre><code>##                            ROI     quantreg
+## (Intercept)       -39.68985507 -39.68985507
+## stack.xAir.Flow     0.83188406   0.83188406
+## stack.xWater.Temp   0.57391304   0.57391304
+## stack.xAcid.Conc.  -0.06086957  -0.06086957</code></pre>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li>Brooks JP, Dula JH (2013). The L1-norm best-fit hyperplane NA</li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
