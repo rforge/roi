@@ -447,7 +447,7 @@ rbind_stm_by_names <- function(a, b, a_names, b_names) {
     a$dimnames <- NULL
     b$dimnames <- NULL
     b$ncol <- ncol(a)
-    b$j <- m[match(b$j, seq_len(ncol(a)))]
+    b$j <- m[match(b$j, seq_len(ncol(b)))]
     rbind(a, b)
 }
 
