@@ -1,0 +1,9 @@
+Package: ROI.plugin.cplexapi
+Version: 0.1-0
+Title: 'cplexAPI' Plugin for the 'R' Optimization Infrastructure 
+Authors@R: person("Florian", "Schwendinger", role = c("aut", "cre"), email = "FlorianSchwendinger@gmx.at")
+Description: Enhances the 'R' Optimization Infrastructure ('ROI') package
+         with the 'CPLEX' solver.
+Imports: methods, slam, ROI (>= 0.2-5), cplexAPI
+License: GPL-3
+URL: http://R-Forge.R-project.org/projects/roi
