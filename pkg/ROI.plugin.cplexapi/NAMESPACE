@@ -7,3 +7,6 @@ importFrom("stats", "terms", "aggregate", "setNames")
 importFrom("methods", "getPackageName")
 importFrom("methods", "getFunction")
 importFrom("Matrix", "sparseMatrix")
+
+export("cplex_read_op")
+export("cplex_solve_lp")

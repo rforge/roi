@@ -20,7 +20,7 @@ cplexSolve <- function(env, prob) {
     c(solutionCPLEX(env, prob), info=list(solnInfoCPLEX(env, prob)))
 }
 
-cplexapi_solve_lp <- function(file) {
+cplex_solve_lp <- function(file) {
     solver <- "cplexapi"
     env <- openEnvCPLEX()
     prob <- initProbCPLEX(env)
@@ -131,10 +131,11 @@ cplex_to_roi <- function(env, prob) {
 
 ## NOTE: cplexAPI writes directly to stout therefore we can not capture the error 
 ##       messages
-ROI_read_lp <- function(fname) {
+cplex_read_op <- function(fname, ftype = c("LP", "MPS", "SAV")) {
+    ftype <- match.arg(ftype)
     env <- openEnvCPLEX(ptrtype = "cplex_env")
     prob <- initProbCPLEX(env, pname = "CPLEX_PROB", ptrtype = "cplex_prob")
-    readCopyProbCPLEX(env, prob, fname, ftype = NULL)
+    readCopyProbCPLEX(env, prob, fname, ftype = ftype)
 
     roi_op <- cplex_to_roi(env, prob)
 
