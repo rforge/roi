@@ -47,11 +47,11 @@ cplex_solve_lp <- function(file, time_limit = Inf) {
     delProbCPLEX(env, prob)
     closeEnvCPLEX(env)
     
-    status <- tryCatch(ROI:::canonicalize_status(sol$status$code, solver), error = function(e) as.integer(NA))
+    status_code <- if ( is.null(sol$status$code) ) sol$lpstat else sol$status$code
+    status <- tryCatch(ROI:::canonicalize_status(status_code, solver), error = function(e) as.integer(NA))
     structure(list(solution = sol$x, objval = sol$objval, status = status, message = sol), 
         meta = list(solver = solver), class = c(sprintf("%s_solution", solver), "OP_solution"))
 }
-
 
 
 cplex_to_Q_constraint <- function(x, nobj) {

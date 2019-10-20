@@ -172,6 +172,9 @@ solve_LP <- function(x, control = list()) {
     }
 
     # writeProbCPLEX(env, prob, fname = "tmp.lp")
+    if ( isTRUE(is.finite(control$time_limit)) ) {
+        setDblParmCPLEX(env, CPXPARAM_TimeLimit, control$time_limit)
+    }
 
     sol <- cplex_solve(env, prob, method)
     # str(sol)
@@ -250,6 +253,10 @@ solve_QP <- function(x, control = list()) {
     
     #writeProbCPLEX(env, prob, fname = "tmp.lp")
     method <- select_method(x, control)
+
+    if ( isTRUE(is.finite(control$time_limit)) ) {
+        setDblParmCPLEX(env, CPXPARAM_TimeLimit, control$time_limit)
+    }
 
     sol <- cplex_solve(env, prob, method)
     # str(sol)
