@@ -1,30 +1,46 @@
 
 cplexSolve <- function(env, prob) {
-    status <- lpoptCPLEX(env, prob)
+    capture.output(status <- lpoptCPLEX(env, prob))
+
+    if ( status != 0 )
+        capture.output(status <- mipoptCPLEX(env, prob))
+
+    if ( status != 0 )
+        capture.output(status <- qpoptCPLEX(env, prob))
+
+    if ( status != 0 )
+        capture.output(status <- baroptCPLEX(env, prob))
     
     if ( status != 0 )
-        status <- dualoptCPLEX(env, prob)
+        capture.output(status <- dualoptCPLEX(env, prob))
 
     if ( status != 0 )
-        status <- mipoptCPLEX(env, prob)
+        capture.output(status <- hybnetoptCPLEX(env, prob, 1L))
+    
+    if ( status != 0 )
+        capture.output(status <- hybbaroptCPLEX(env, prob, 0L))
 
     if ( status != 0 )
-        status <- qpoptCPLEX(env, prob)
+        capture.output(status <- primoptCPLEX(env, prob))
 
     if ( status != 0 )
-        status <- hybbaroptCPLEX(env, prob, 0L)
+        capture.output(status <- siftoptCPLEX(env, prob))
 
     if ( status != 0 )
-        status <- primoptCPLEX(env, prob)
+        capture.output(status <- feasOptCPLEX(env, prob))
 
-    c(solutionCPLEX(env, prob), info=list(solnInfoCPLEX(env, prob)))
+    c(solutionCPLEX(env, prob), info = list(solnInfoCPLEX(env, prob)))
 }
 
-cplex_solve_lp <- function(file) {
+cplex_solve_lp <- function(file, time_limit = Inf) {
     solver <- "cplexapi"
     env <- openEnvCPLEX()
     prob <- initProbCPLEX(env)
     readCopyProbCPLEX(env, prob, fname = file)
+
+    if ( is.finite(time_limit) ) {
+        setDblParmCPLEX(env, CPXPARAM_TimeLimit, time_limit)
+    }
 
     sol <- cplexSolve(env, prob)
     # str(sol)
