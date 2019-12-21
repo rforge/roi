@@ -1,5 +1,5 @@
 Package: ROI.plugin.lpsolve
-Version: 0.3-2
+Version: 0.3-3
 Title: 'lp_solve' Plugin for the 'R' Optimization Infrastructure
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
