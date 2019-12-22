@@ -14,6 +14,8 @@
 \examples{
 
 require("ROI")
+require("ROI.plugin.osqp")
+
 A <- cbind(c(-4, -3, 0), 
            c( 2,  1, 0), 
            c( 0, -2, 1))
