@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -26,43 +27,91 @@
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -99,9 +148,7 @@ h6 {
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -115,7 +162,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -125,6 +171,9 @@ img {
 }
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
@@ -140,7 +189,6 @@ body {
   padding-top: 69px;
   margin-top: -69px;
 }
-
 .section h2 {
   padding-top: 69px;
   margin-top: -69px;
@@ -160,6 +208,43 @@ body {
 .section h6 {
   padding-top: 69px;
   margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
 }
 </style>
 
@@ -181,922 +266,18 @@ $(document).ready(function () {
 });
 </script>
 
-
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-</script>
-
-<!-- code folding -->
-
-
-
-
-<script>
-$(document).ready(function ()  {
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-  padding-left: 25px;
-  text-indent: 0;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
-
-
-<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li>
-  <a href="index.html">ROI</a>
-</li>
-<li>
-  <a href="installation.html">Installation</a>
-</li>
-<li>
-  <a href="introduction.html">Introduction</a>
-</li>
-<li>
-  <a href="use_cases.html">Use Cases</a>
-</li>
-<li>
-  <a href="mixed.html">Mixed topics</a>
-</li>
-<li>
-  <a href="faq.html">FAQ</a>
-</li>
-<li>
-  <a href="news.html">What's new?</a>
-</li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div><!--/.container -->
-</div><!--/.navbar -->
-
-<div class="fluid-row" id="header">
-
-
-
-<h1 class="title toc-ignore">Modeling with <strong>ROI</strong></h1>
-
-</div>
-
-
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.setenv</span>(<span class="dt">ROI_LOAD_PLUGINS =</span> <span class="st">&quot;FALSE&quot;</span>)
-<span class="kw">library</span>(ROI)
-<span class="kw">library</span>(ROI.plugin.glpk)
-<span class="kw">library</span>(ROI.plugin.qpoases)
-<span class="kw">library</span>(ROI.plugin.ecos)
-<span class="kw">library</span>(ROI.plugin.scs)
-<span class="kw">library</span>(ROI.plugin.alabama)
-<span class="kw">library</span>(ROI.plugin.lpsolve)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ROI.plugin.gurobi)</code></pre></div>
-<div id="constructors" class="section level1">
-<h1>Constructors</h1>
-<div id="optimization-problem" class="section level2">
-<h2>Optimization Problem</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(OP)</code></pre></div>
-<pre><code>## function (objective, constraints, types, bounds, maximum = FALSE)</code></pre>
-</div>
-<div id="objective" class="section level2">
-<h2>Objective</h2>
-<div id="linear-objective" class="section level3">
-<h3>Linear objective</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(L_objective)</code></pre></div>
-<pre><code>## function (L, names = NULL)</code></pre>
-<p><span class="math display">\[1 x + 2 y + 3 z\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lo &lt;-<span class="st"> </span><span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>))</code></pre></div>
-</div>
-<div id="quadratic-objective" class="section level3">
-<h3>Quadratic objective</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(Q_objective)</code></pre></div>
-<pre><code>## function (Q, L = NULL, names = NULL)</code></pre>
-<p><span class="math display">\[\frac{1}{2} (x_1^2 + x_2^2 + x_3^2) + 1 x_1 + 2x_2 + 3x_3\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qo &lt;-<span class="st"> </span><span class="kw">Q_objective</span>(<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x_1&quot;</span>, <span class="st">&quot;x_2&quot;</span>, <span class="st">&quot;x_3&quot;</span>))</code></pre></div>
-</div>
-<div id="functional-objective" class="section level3">
-<h3>Functional objective}</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(F_objective)</code></pre></div>
-<pre><code>## function (F, n, G = NULL, H = NULL, names = NULL)</code></pre>
-<p><span class="math display">\[x_1^2 + x_2^2\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fo &lt;-<span class="st"> </span><span class="kw">F_objective</span>(<span class="dt">F =</span> function(x) <span class="kw">sum</span>(x^<span class="dv">2</span>), <span class="dt">n =</span> <span class="dv">2</span>, 
-                  <span class="dt">G =</span> function(x) <span class="dv">2</span>*x, <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x_1&quot;</span>, <span class="st">&quot;x_2&quot;</span>))</code></pre></div>
-</div>
-</div>
-<div id="constraints" class="section level2">
-<h2>Constraints</h2>
-<div id="linear-constraints" class="section level3">
-<h3>Linear constraints</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(L_constraint)</code></pre></div>
-<pre><code>## function (L, dir, rhs, names = NULL)</code></pre>
-<p><span class="math display">\[
-\nonumber
-\begin{array}{rrrrrrr}
-3 x &amp; + &amp; 4 y &amp; + &amp; 1 z &amp; \leq &amp; 90 \\
-1 x &amp; + &amp; 0 y &amp; + &amp; 2 z &amp; \geq &amp; 5  \\
-1 x &amp; + &amp; 1 y &amp; + &amp; 0 z &amp;   =  &amp; 2
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lc &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)),
-                   <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>, <span class="st">&quot;==&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">90</span>, <span class="dv">5</span>, <span class="dv">2</span>),
-                   <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>))</code></pre></div>
-</div>
-<div id="quadratic-constraints" class="section level3">
-<h3>Quadratic constraints</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(Q_constraint)</code></pre></div>
-<pre><code>## function (Q, L, dir, rhs, names = NULL)</code></pre>
-<p><span class="math display">\[\frac{1}{2} (x^2 + y^2) + 1x + 2y \leq 3\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qc1 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">diag</span>(<span class="dv">2</span>), <span class="dt">L =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, 
-                    <span class="dt">rhs =</span> <span class="dv">3</span>, <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</code></pre></div>
-<p><span class="math display">\[
-\begin{array}
-x^2 + y^2 + 3x + 1y &amp; \leq &amp; 3 \nonumber \\
-x + y &amp; \leq &amp; 4 \nonumber \\
-\frac{1}{2} (3x^2 + 3y^2 + 2xy) + 2x + 5y &amp; \leq &amp; 9 \nonumber
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qc2 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">list</span>(<span class="kw">diag</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="ot">NULL</span>, <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>), <span class="dv">2</span>)), 
-                    <span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">5</span>)),
-                    <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>),
-                    <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">9</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</code></pre></div>
-</div>
-<div id="functional-constraints" class="section level3">
-<h3>Functional constraints</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(F_constraint)</code></pre></div>
-<pre><code>## function (F, dir, rhs, J = NULL, names = NULL)</code></pre>
-<p><span class="math display">\[
-\begin{array}
-x^2 &amp; \leq &amp; 2 \nonumber \\
-y^2 &amp; \leq &amp; 4 \nonumber
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fc1 &lt;-<span class="st"> </span><span class="kw">F_constraint</span>(<span class="dt">F =</span> function(x) x^<span class="dv">2</span>, <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>),
-                    <span class="dt">J =</span> function(x) <span class="kw">diag</span>(<span class="dt">x =</span> <span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">2</span>) *<span class="st"> </span>x,
-                    <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</code></pre></div>
-<p>or equivalently</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fc2 &lt;-<span class="st"> </span><span class="kw">F_constraint</span>(<span class="dt">F =</span> <span class="kw">list</span>(function(x) x[<span class="dv">1</span>]^<span class="dv">2</span>, function(x) x[<span class="dv">2</span>]^<span class="dv">2</span>), 
-                    <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">4</span>),
-                    <span class="dt">J =</span> <span class="kw">list</span>(function(x) <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>) *<span class="st"> </span>x), 
-                             function(x) <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>) *<span class="st"> </span>x)),
-                    <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))
-
-## <span class="al">TODO</span>: create an example
-## x &lt;- OP(L_objective(c(1, 1)), fc1, maximum=TRUE)
-## x &lt;- OP(L_objective(c(1, 1)), fc2, maximum=TRUE)
-## solution(ROI_solve(x, start=c(0, 1), solver=&quot;alabama&quot;))</code></pre></div>
-</div>
-</div>
-<div id="bounds" class="section level2">
-<h2>Bounds</h2>
-<div id="variable-bounds" class="section level3">
-<h3>Variable bounds</h3>
-<p>By default the variable bounds are set to <span class="math inline">\(0 \leq x_i \leq \infty \text{ for all } i = 1, ..., n.\)</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(V_bound)</code></pre></div>
-<pre><code>## function (li, ui, lb, ub, nobj, ld = 0, ud = Inf, names = NULL)</code></pre>
-<p><span class="math display">\[ -3 \leq x_1 \leq 3, \ -\infty \leq x_2 \leq 7, \ -9 \leq x_3 \leq \infty \]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vb &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">1</span>:<span class="dv">3</span>, <span class="dt">ui =</span> <span class="dv">1</span>:<span class="dv">3</span>, <span class="dt">lb =</span> <span class="kw">c</span>(-<span class="dv">3</span>, -<span class="ot">Inf</span>, -<span class="dv">9</span>), <span class="dt">ub =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">7</span>, <span class="ot">Inf</span>))</code></pre></div>
-</div>
-</div>
-</div>
-<div id="basic-examples" class="section level1">
-<h1>Basic examples</h1>
-<div id="linear-programming-lp" class="section level2">
-<h2>Linear programming (LP)</h2>
-<div id="example-1" class="section level3">
-<h3>Example 1</h3>
-<p><span class="math display">\[
-\begin{array}{rrrrr}
-\text{minimize}
-&amp; 7 x_1 &amp; + &amp; 8 x_2 \\
-\text{subject to}
-&amp; 3 x_1 &amp; + &amp; 4 x_2 &amp;  =   9 \\
-&amp; 2 x_1 &amp; + &amp; 1 x_2 &amp; \geq 3
-\end{array}
-\]</span></p>
-<p><span class="math display">\[ -100 \leq x_1, x_2, \leq 100\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp  &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">7</span>, <span class="dv">8</span>), <span class="dt">names=</span><span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)),
-          <span class="dt">constraints =</span> <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">4</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)), 
-                                     <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;==&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">9</span>, <span class="dv">3</span>)),
-          <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">1</span>:<span class="dv">2</span>, <span class="dt">ui =</span> <span class="dv">1</span>:<span class="dv">2</span>, 
-                           <span class="dt">lb =</span> <span class="kw">c</span>(-<span class="dv">100</span>, -<span class="dv">100</span>), <span class="dt">ub =</span> <span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">100</span>)))
-<span class="kw">ROI_applicable_solvers</span>(lp)</code></pre></div>
-<pre><code>## [1] &quot;glpk&quot;    &quot;qpoases&quot; &quot;ecos&quot;    &quot;scs&quot;     &quot;alabama&quot; &quot;lpsolve&quot; &quot;gurobi&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 1.860000e+01</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##   x   y 
-## 0.6 1.8</code></pre>
-<p>The solution can be accessed via the function , where</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##   x   y 
-## 0.6 1.8</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol, <span class="dt">type =</span> <span class="st">&quot;primal&quot;</span>)</code></pre></div>
-<pre><code>##   x   y 
-## 0.6 1.8</code></pre>
-<p>gives the primal solution,</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol, <span class="dt">type =</span> <span class="st">&quot;dual&quot;</span>)</code></pre></div>
-<pre><code>## [1] 0 0</code></pre>
-<p>the dual solution,</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol, <span class="dt">type =</span> <span class="st">&quot;msg&quot;</span>)</code></pre></div>
-<pre><code>## $optimum
-## [1] 18.6
-## 
-## $solution
-## [1] 0.6 1.8
-## 
-## $status
-## [1] 5
-## 
-## $solution_dual
-## [1] 0 0
-## 
-## $auxiliary
-## $auxiliary$primal
-## [1] 9 3
-## 
-## $auxiliary$dual
-## [1] 1.8 0.8
-## 
-## 
-## $sensitivity_report
-## [1] NA</code></pre>
-<p>the original message returned from the solver.</p>
-</div>
-<div id="example-2" class="section level3">
-<h3><strong>Example 2</strong></h3>
-<p><span class="math display">\[\begin{array}{rrrrrrr}
-\text{maximize}
-&amp; 7 x_1 &amp; + &amp; 3 x_2 &amp; + &amp; 1 x_3 &amp; \\
-\text{subject to}
-&amp; 6 x_1 &amp; + &amp; 4 x_2 &amp; + &amp; 5 x_3 &amp; \leq 60 \\
-&amp; 8 x_1 &amp; + &amp;   x_2 &amp; + &amp; 2 x_3 &amp; \leq 80 \\
-&amp; 9 x_1 &amp; + &amp; 1 x_2 &amp; + &amp; 7 x_3 &amp; \leq 70 
-\end{array}
-\]</span> <span class="math display">\[x_1, x_2, x_3 \geq 0\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">7</span>, <span class="dv">1</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
-         <span class="dt">constraints =</span> <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">5</span>), <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">9</span>, <span class="dv">1</span>, <span class="dv">7</span>)),
-                                    <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>),
-                                    <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">60</span>, <span class="dv">80</span>, <span class="dv">70</span>)),
-         <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(lp))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 5.533333e+01</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##        x        y        z 
-## 7.333333 4.000000 0.000000</code></pre>
-</div>
-</div>
-<div id="mixed-integer-linear-programming-milp" class="section level2">
-<h2>Mixed integer linear programming (MILP)</h2>
-<p><span class="math display">\[\begin{array}{rrrrrrr}
-\text{maximize}
-&amp; 7 x_1 &amp; + &amp; 3 x_2 &amp; + &amp; 1 x_3 &amp; \\
-\text{subject to}
-&amp; 6 x_1 &amp; + &amp; 4 x_2 &amp; + &amp; 5 x_3 &amp; \leq 60 \\
-&amp; 8 x_1 &amp; + &amp;   x_2 &amp; + &amp; 2 x_3 &amp; \leq 80 \\
-&amp; 9 x_1 &amp; + &amp; 1 x_2 &amp; + &amp; 7 x_3 &amp; \leq 70 
-\end{array}
-\]</span> <span class="math display">\[x_1, x_3 \in \mathbb{Z}_{\geq 0}\]</span> <span class="math display">\[x_2 \geq 0\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">5</span>), <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">9</span>, <span class="dv">1</span>, <span class="dv">7</span>))
-milp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">7</span>, <span class="dv">1</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
-           <span class="dt">constraints =</span> <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">5</span>), <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">9</span>, <span class="dv">1</span>, <span class="dv">7</span>)),
-                                      <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>, <span class="st">&quot;&lt;=&quot;</span>),
-                                      <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">60</span>, <span class="dv">80</span>, <span class="dv">70</span>)),
-           <span class="dt">types =</span> <span class="kw">c</span>(<span class="st">&quot;I&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;I&quot;</span>), 
-           <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(milp))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 5.350000e+01</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##   x   y   z 
-## 7.0 4.5 0.0</code></pre>
-</div>
-<div id="quadratic-programming" class="section level2">
-<h2>Quadratic programming</h2>
-<div id="quadratic-objective-with-linear-constraints-qp" class="section level3">
-<h3>Quadratic objective with linear constraints (QP)</h3>
-<p><span class="math display">\[
-\begin{array}
-\text{minimize}   &amp; &amp; x_1 &amp; + &amp; 2x_2 &amp; + &amp; 3x_3 &amp;  +   &amp; \frac{1}{2} (x_1^2 + x_2^2 + x_3^2)  \\
-\text{subject to} &amp; &amp; x_1 &amp; + &amp;  x_2 &amp;   &amp;      &amp; \geq &amp; 1 \nonumber \\
-                  &amp; &amp;     &amp;   &amp;  x_2 &amp; + &amp;  x_3 &amp; \geq &amp; 2 \nonumber \\
-                  &amp; &amp; x_1 &amp;   &amp;      &amp; + &amp;  x_3 &amp; \geq &amp; 3 \nonumber \\
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">Q_objective</span>(<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
-         <span class="kw">L_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)), 
-                      <span class="dt">dir =</span> <span class="kw">c</span>(<span class="st">&quot;&gt;=&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>, <span class="st">&quot;&gt;=&quot;</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)))
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(qp, <span class="dt">solver =</span> <span class="st">&quot;qpoases&quot;</span>))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 9.333333e+00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##         x         y         z 
-## 1.3333333 0.3333333 1.6666667</code></pre>
-</div>
-<div id="quadratic-objective-with-quadratic-constraints-qcqp" class="section level3">
-<h3>Quadratic objective with quadratic constraints (QCQP)</h3>
-<p><span class="math display">\[
-\text{maximize} \ \ 90 x_1 + 110 x_2 + 160 x_3 - \frac{1}{2} (x_1^2 + x_2^2 + x_3^2)
-\]</span> <span class="math display">\[
-\begin{array}{rrrrr}
-\text{subject to} &amp; x_1^2 + x_2^2 + 4 x_3     &amp; \leq &amp; 4 &amp; \\
-                  &amp; x_2^2 + x_3^2 + x_1 + x_3 &amp; \leq &amp; 3 &amp; \\
-                  &amp; x_1^2 + x_3^2 + 2 x_1 x_3 &amp; \leq &amp; 2 &amp; \\
-                  &amp; x_1, x_2, x_3 \geq 0      &amp;      &amp;   &amp;
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qcqp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">Q_objective</span>(-<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">90</span>, <span class="dv">110</span>, <span class="dv">160</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
-           <span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">list</span>(<span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
-                                 <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>)),
-                                 <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>))),
-                        <span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">4</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
-                        <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="dv">3</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)),
-           <span class="dt">maximum =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(qcqp, <span class="dt">solver =</span> <span class="st">&quot;gurobi&quot;</span>))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.836219e+02</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##         x         y         z 
-## 1.0606575 1.2086302 0.3535547</code></pre>
-<p>or equivalently</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qc1 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
-                    <span class="dt">L =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">4</span>), <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">4</span>)
-qc2 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>)),
-                    <span class="dt">L =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">3</span>)
-qc3 &lt;-<span class="st"> </span><span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>)),
-                    <span class="dt">L =</span> <span class="ot">NULL</span>, <span class="dt">dir =</span> <span class="st">&quot;&lt;=&quot;</span>, <span class="dt">rhs =</span> <span class="dv">2</span>)
-qcqp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">Q_objective</span>(-<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">90</span>, <span class="dv">110</span>, <span class="dv">160</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)),
-           <span class="kw">c</span>(qc1, qc2, qc3), <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
-
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(qcqp, <span class="dt">solver =</span> <span class="st">&quot;gurobi&quot;</span>))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.836219e+02</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##         x         y         z 
-## 1.0606575 1.2086302 0.3535547</code></pre>
-<p>Check how tight the bounds are.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sapply</span>(<span class="kw">as.function</span>(<span class="kw">constraints</span>(qcqp)), function(F) <span class="kw">F</span>(<span class="kw">solution</span>(sol)))</code></pre></div>
-<pre><code>## [1] 4.000000 3.000000 1.999996</code></pre>
-</div>
-</div>
-<div id="conic-programming-cp" class="section level2">
-<h2>Conic programming (CP)</h2>
-<div id="second-order-cone-programming-socp" class="section level3">
-<h3>Second-order cone programming (SOCP)</h3>
-<p><span class="math display">\[\text{maximize } \ \ x + y\]</span> <span class="math display">\[\text{subject to } \ \ \sqrt{x^2 + y^2} \leq \sqrt{2}\]</span> <span class="math display">\[x, y \geq 0\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">socp1 &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>)),
-            <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(-<span class="dv">1</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, -<span class="dv">1</span>)),
-                                       <span class="dt">cones =</span> <span class="kw">K_soc</span>(<span class="dv">3</span>), 
-                                       <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="kw">sqrt</span>(<span class="dv">2</span>), <span class="dv">0</span>, <span class="dv">0</span>)),
-            <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(socp1))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.000000e+00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>## x y 
-## 1 1</code></pre>
-</div>
-<div id="positive-semidefinite-programming-sdp" class="section level3">
-<h3>Positive semidefinite programming (SDP)</h3>
-<p><span class="math display">\[
-\begin{array}{rl}
-\text{minimize}   &amp; x_1 + x_2 - x_3 \\
-\text{subject to} &amp;
-x_1
-\begin{pmatrix}
-10 &amp; 3 \\
-3  &amp; 10
-\end{pmatrix}
-+
-x_2
-\begin{pmatrix}
-6  &amp; -4 \\
--4 &amp; 10
-\end{pmatrix}
-+
-x_3
-\begin{pmatrix}
-8  &amp;  1 \\
-1  &amp;  6
-\end{pmatrix}
-\preceq
-\begin{pmatrix}
- 16  &amp; -13 \\
--13  &amp;  60
-\end{pmatrix}
-\\
-&amp; x_1, x_2, x_3 \geq 0
-\nonumber
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A1 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">10</span>))
-A2 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">6</span>, -<span class="dv">4</span>), <span class="kw">c</span>(-<span class="dv">4</span>, <span class="dv">10</span>))
-A3 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">6</span>))
-A4 &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">16</span>, -<span class="dv">13</span>), <span class="kw">c</span>(-<span class="dv">13</span>, <span class="dv">60</span>))
-psd &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, -<span class="dv">1</span>)),
-          <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="dt">L =</span> <span class="kw">vech</span>(A1, A2, A3), 
-                                     <span class="dt">cones =</span> <span class="kw">K_psd</span>(<span class="dv">3</span>),
-                                     <span class="dt">rhs =</span> <span class="kw">vech</span>(A4)))
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(psd))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: -1.486461e+00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>## [1] -1.937019e-08 -5.371359e-08  1.486461e+00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">as.matrix</span>(<span class="kw">solution</span>(sol, <span class="st">&quot;psd&quot;</span>)[[<span class="dv">1</span>]])</code></pre></div>
-<pre><code>##            [,1]        [,2]
-## [1,] 0.11050022 0.031337481
-## [2,] 0.03133748 0.008887201</code></pre>
-<p>The following example taken from the <a href="http://cvxopt.org/userguide/coneprog.html#semidefinite-programming">CVXOPT homepage</a>.</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-\text{minimize}   &amp; x_1 - x_2 + x_3 \\
-\text{subject to} &amp;
-x_1 \
-\begin{pmatrix}
- -7 &amp; -11 \\
--11 &amp;   3
-\end{pmatrix}
-+ x_2 \
-\begin{pmatrix}
-  7 &amp; -18 \\
--18 &amp;   8
-\end{pmatrix}
-+ x_3 \
-\begin{pmatrix}
- -2 &amp;  -8 \\
- -8 &amp;   1
-\end{pmatrix}
-\ \preceq \
-\begin{pmatrix}
- 33 &amp;  -9 \\
- -9 &amp;  26
-\end{pmatrix} 
-\ \\
-&amp;
-x_1 \
-\begin{pmatrix}
--21 &amp; -11 &amp;   0 \\
--11 &amp;  10 &amp;   8 \\
-  0 &amp;   8 &amp;   5
-\end{pmatrix}
-+ x_2 \
-\begin{pmatrix}
-  0 &amp;  10 &amp;  16 \\
- 10 &amp; -10 &amp; -10 \\
- 16 &amp; -10 &amp;   3
-\end{pmatrix}
-+ x_3 \
-\begin{pmatrix}
- -5 &amp;   2 &amp; -17 \\
-  2 &amp;  -6 &amp;   8 \\
--17 &amp;   8 &amp;   6
-\end{pmatrix}
-\ \preceq \
-\begin{pmatrix}
- 14 &amp;   9 &amp;  40 \\
-  9 &amp;  91 &amp;  10 \\
- 40 &amp;  10 &amp;  15
-\end{pmatrix}
-\ \\
-&amp; x_1, x_2, x_3 \in \mathbb{R}
-\end{array}
-\nonumber
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">obj &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, -<span class="dv">1</span>, <span class="dv">1</span>)
-A1 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(-<span class="dv">7</span>, -<span class="dv">11</span>, -<span class="dv">11</span>,  <span class="dv">3</span>), <span class="dv">2</span>)
-A2 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>( <span class="dv">7</span>, -<span class="dv">18</span>, -<span class="dv">18</span>,  <span class="dv">8</span>), <span class="dv">2</span>)
-A3 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(-<span class="dv">2</span>,  -<span class="dv">8</span>,  -<span class="dv">8</span>,  <span class="dv">1</span>), <span class="dv">2</span>)
-A4 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">33</span>,  -<span class="dv">9</span>,  -<span class="dv">9</span>, <span class="dv">26</span>), <span class="dv">2</span>)
-B1 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(-<span class="dv">21</span>, -<span class="dv">11</span>,  <span class="dv">0</span>, -<span class="dv">11</span>,  <span class="dv">10</span>,   <span class="dv">8</span>,  <span class="dv">0</span>,    <span class="dv">8</span>, <span class="dv">5</span>), <span class="dv">3</span>)
-B2 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(  <span class="dv">0</span>,  <span class="dv">10</span>,  <span class="dv">16</span>, <span class="dv">10</span>, -<span class="dv">10</span>, -<span class="dv">10</span>,  <span class="dv">16</span>, -<span class="dv">10</span>, <span class="dv">3</span>), <span class="dv">3</span>)
-B3 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>( -<span class="dv">5</span>,   <span class="dv">2</span>, -<span class="dv">17</span>,  <span class="dv">2</span>,  -<span class="dv">6</span>,   <span class="dv">8</span>, -<span class="dv">17</span>,   <span class="dv">8</span>, <span class="dv">6</span>), <span class="dv">3</span>)
-B4 &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>( <span class="dv">14</span>,   <span class="dv">9</span>,  <span class="dv">40</span>,  <span class="dv">9</span>,  <span class="dv">91</span>,  <span class="dv">10</span>,  <span class="dv">40</span>,  <span class="dv">10</span>,<span class="dv">15</span>), <span class="dv">3</span>)
-rhs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">vech</span>(A4), <span class="kw">vech</span>(B4))
-
-psd &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> obj,
-          <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">vech</span>(A1, A2, A3), <span class="kw">vech</span>(B1, B2, B3)), 
-                                     <span class="dt">cones =</span> <span class="kw">K_psd</span>(<span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">6</span>)), <span class="dt">rhs =</span> rhs),
-          <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li=</span><span class="dv">1</span>:<span class="dv">3</span>, <span class="dt">lb=</span><span class="kw">rep</span>(-<span class="ot">Inf</span>, <span class="dv">3</span>)))
-
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(psd, <span class="dt">solver =</span> <span class="st">&quot;scs&quot;</span>))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: -3.153545e+00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>## [1] -0.3677513  1.8983332 -0.8874604</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">lapply</span>(<span class="kw">solution</span>(sol, <span class="dt">type=</span><span class="st">&quot;psd&quot;</span>), as.matrix)</code></pre></div>
-<pre><code>## $`5`
-##              [,1]         [,2]
-## [1,]  0.003961386 -0.004339146
-## [2,] -0.004339146  0.004752929
-## 
-## $`6`
-##              [,1]          [,2]         [,3]
-## [1,]  0.055803080 -0.0024106686  0.024214084
-## [2,] -0.002410669  0.0001041398 -0.001046038
-## [3,]  0.024214084 -0.0010460378  0.010506980</code></pre>
-</div>
-<div id="exponential-cone" class="section level3">
-<h3>Exponential cone</h3>
-<p><span class="math display">\[
-\begin{array}
-\mathcal{K}_{exp} &amp;=&amp;
-            \{(x, y, z) | y  &gt; 0, y e^{\frac{x}{y}} \leq z \} \cup
-            \{(x, 0, z) | x \leq 0, z \geq 0\} \\
-\mathcal{K}_{exp}^* &amp;=&amp;
-            \{(u, v, w) | u &lt; 0, -ue^\frac{v}{u} \leq ew\} \cup
-            \{(0, v, w) | v \geq 0, w \geq 0\}
-\end{array}
-\]</span></p>
-<div id="primal-exponential-cone" class="section level4">
-<h4>Primal exponential cone</h4>
-<p><span class="math display">\[
-\begin{array}
-\text{maximize}   &amp; x + y + z \\
-\text{subject to} &amp; y   e^{\frac{x}{y}} \leq z \\
-&amp; x \geq 0, y &gt; 0, z \in [0, e]
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">expp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>)),
-           <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">diag</span>(-<span class="dv">1</span>, <span class="dv">3</span>), <span class="dt">cones =</span> <span class="kw">K_expp</span>(<span class="dv">1</span>), 
-                                      <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)),
-           <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">2</span>, <span class="dt">lb =</span> <span class="fl">1e-12</span>, <span class="dt">ui =</span> <span class="dv">3</span>, <span class="dt">ub =</span> <span class="kw">exp</span>(<span class="dv">1</span>)),
-           <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(expp, <span class="dt">tol=</span><span class="fl">1e-8</span>, <span class="dt">solver=</span><span class="st">&quot;scs&quot;</span>))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 5.436564e+00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>## [1] 2.614608e-08 2.718282e+00 2.718282e+00</code></pre>
-</div>
-<div id="dual-exponential-cone" class="section level4">
-<h4>Dual exponential cone</h4>
-<p><span class="math display">\[
-\begin{array}
-\text{minimize}   &amp; u + v + w \\
-\text{subject to} &amp; -u e^{\frac{v}{u}} \leq ew \\
-&amp; u \in [-1, 0], y, z \geq 0
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">expd &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;u&quot;</span>, <span class="st">&quot;v&quot;</span>, <span class="st">&quot;w&quot;</span>)),
-           <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">diag</span>(<span class="dt">x=</span>-<span class="dv">1</span>, <span class="dv">3</span>), <span class="dt">cones =</span> <span class="kw">K_expd</span>(<span class="dv">1</span>), 
-                                      <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)), 
-           <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">1</span>, <span class="dt">lb =</span> -<span class="dv">1</span>, <span class="dt">ui =</span> <span class="dv">1</span>, <span class="dt">ub =</span> <span class="dv">0</span>, <span class="dt">nobj =</span> 3L))
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(expd))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: -6.321204e-01</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##             u             v             w 
-## -9.999999e-01  3.483107e-07  3.678791e-01</code></pre>
-</div>
-</div>
-<div id="power-cone" class="section level3">
-<h3>Power cone</h3>
-<p><span class="math display">\[
-\begin{array}
-\mathcal{K}_{pwr}^\alpha &amp;=&amp; 
-                \{(x, y, z) | x^\alpha y^{1-\alpha} \geq |z|, x, y \geq 0\},
-                \text{ where } \alpha \in [0, 1] \\
-\left(\mathcal{K}_{pwr}^\alpha\right)^* &amp;=&amp;
-                \left\{(u, v, w) | \left(\frac{u}{a}\right)^\alpha \left(\frac{v}{1-a}\right)^{(1-a)} 
-                \geq |w|, u \geq 0, v \geq 0 \right\} 
-\end{array}
-\]</span></p>
-<div id="primal-power-cone" class="section level4">
-<h4>Primal power cone</h4>
-<p><span class="math display">\[
-\begin{array}
-\text{minimize}   &amp; x + y \\
-\text{subject to} &amp; \sqrt{x} * \sqrt{y} \geq z \\
-&amp; x, y \geq 0, z = 4
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">powp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)), 
-           <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">diag</span>(-<span class="dv">1</span>, <span class="dv">3</span>), <span class="dt">cones =</span> <span class="kw">K_powp</span>(<span class="fl">0.5</span>), <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)),
-           <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">3</span>, <span class="dt">ui =</span> <span class="dv">3</span>, <span class="dt">lb =</span> <span class="dv">4</span>, <span class="dt">ub =</span> <span class="dv">4</span>))
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(powp))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 7.999993e+00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##        x        y        z 
-## 3.999996 3.999996 4.000000</code></pre>
-</div>
-<div id="dual-power-cone" class="section level4">
-<h4>Dual power cone</h4>
-<p><span class="math display">\[
-\begin{array}
-\text{minimize}   &amp; u + v \\
-\text{subject to} &amp; \sqrt{2 u} * \sqrt{2 v} \geq 4 \\
-&amp; u, v \geq 0, z = 4
-\end{array}
-\]</span></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">powd &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">L_objective</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="dt">names =</span> <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)), 
-           <span class="dt">constraints =</span> <span class="kw">C_constraint</span>(<span class="kw">diag</span>(-<span class="dv">1</span>, <span class="dv">3</span>), <span class="dt">cones =</span> <span class="kw">K_powd</span>(<span class="fl">0.5</span>), <span class="dt">rhs =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>)),
-           <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">li =</span> <span class="dv">3</span>, <span class="dt">ui =</span> <span class="dv">3</span>, <span class="dt">lb =</span> <span class="dv">4</span>, <span class="dt">ub =</span> <span class="dv">4</span>))
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(powd))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 4.000001e+00</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##        x        y        z 
-## 2.000001 2.000001 4.000000</code></pre>
-</div>
-</div>
-</div>
-<div id="nonlinear-programming" class="section level2">
-<h2>Nonlinear Programming</h2>
-<p>The quadratic problem from above can also be solved by a general purpose solver.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(qcqp, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="dv">3</span>)))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.836219e+02</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##         x         y         z 
-## 1.0606602 1.2086300 0.3535534</code></pre>
-<p>or equivalently</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f &lt;-<span class="st"> </span>function(x) {
-    <span class="dv">90</span> *<span class="st"> </span>x[<span class="dv">1</span>] +<span class="st"> </span><span class="dv">110</span> *<span class="st"> </span>x[<span class="dv">2</span>] +<span class="st"> </span><span class="dv">160</span> *<span class="st"> </span>x[<span class="dv">3</span>] -<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>(x[<span class="dv">1</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">2</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">3</span>]^<span class="dv">2</span>)
-}
-g &lt;-<span class="st"> </span>function(x) {
-    <span class="kw">c</span>((x[<span class="dv">1</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">2</span>]^<span class="dv">2</span> +<span class="st"> </span><span class="dv">4</span> *<span class="st"> </span>x[<span class="dv">3</span>]),
-      (x[<span class="dv">2</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">3</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">1</span>] +<span class="st"> </span>x[<span class="dv">3</span>]),
-      (x[<span class="dv">1</span>]^<span class="dv">2</span> +<span class="st"> </span>x[<span class="dv">3</span>]^<span class="dv">2</span> +<span class="st"> </span><span class="dv">2</span> *<span class="st"> </span>x[<span class="dv">1</span>] *<span class="st"> </span>x[<span class="dv">3</span>]))
-}
-nlp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">F_objective</span>(f, <span class="dt">n=</span><span class="dv">3</span>), 
-          <span class="kw">F_constraint</span>(g, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="dv">3</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)),
-          <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(nlp, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="dv">3</span>)))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.836219e+02</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>## [1] 1.0606602 1.2086300 0.3535534</code></pre>
-<p>or equivalently</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nlp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">Q_objective</span>(-<span class="kw">diag</span>(<span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">90</span>, <span class="dv">110</span>, <span class="dv">160</span>), <span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>, <span class="st">&quot;z&quot;</span>)), 
-          <span class="kw">F_constraint</span>(g, <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="dv">3</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)),
-          <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(nlp, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="dv">3</span>)))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.836219e+02</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>##         x         y         z 
-## 1.0606602 1.2086300 0.3535534</code></pre>
-<p>or equivalently</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nlp &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">F_objective</span>(f, <span class="dt">n=</span><span class="dv">3</span>), 
-          <span class="kw">Q_constraint</span>(<span class="dt">Q =</span> <span class="kw">list</span>(<span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
-                                <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>)),
-                                <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>))),
-                       <span class="dt">L =</span> <span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">4</span>), <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)),
-                       <span class="dt">dir =</span> <span class="kw">rep</span>(<span class="st">&quot;&lt;=&quot;</span>, <span class="dv">3</span>), <span class="dt">rhs =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>)),
-          <span class="dt">maximum =</span> <span class="ot">TRUE</span>)
-(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(nlp, <span class="dt">solver =</span> <span class="st">&quot;alabama&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="dv">3</span>)))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.836219e+02</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">solution</span>(sol)</code></pre></div>
-<pre><code>## [1] 1.0606602 1.2086300 0.3535534</code></pre>
-</div>
-</div>
-<div id="read-writing-optimization-problems" class="section level1">
-<h1>Read / Writing optimization problems</h1>
-<p>Optimization problems are commonly stored and shared in specialized plain text files. For LP and MIP the file formats <code>'mps'</code>, <code>'lp'</code>, <code>'sif'</code> and <code>'freemps'</code> are commonly used.</p>
-<div id="read-lp-milp" class="section level2">
-<h2>Read LP / MILP</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ROI_registered_reader</span>()</code></pre></div>
-<pre><code>##         type  solver
-## 1  mps_fixed    glpk
-## 2   mps_free    glpk
-## 3   lp_cplex    glpk
-## 4   mathprog    glpk
-## 5 lp_lpsolve lpsolve
-## 6  mps_fixed lpsolve
-## 7   mps_free lpsolve</code></pre>
-<p>To read the capri example from the netlib connection the following code can be used.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmpfile &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
-con &lt;-<span class="st"> </span><span class="kw">gzcon</span>(<span class="kw">url</span>(<span class="st">&quot;http://www.zib.de/koch/perplex/data/netlib/mps/capri.mps.gz&quot;</span>))
-<span class="kw">writeLines</span>(<span class="kw">readLines</span>(con), tmpfile)
-<span class="kw">close</span>(con)
-(capri &lt;-<span class="st"> </span><span class="kw">ROI_read</span>(tmpfile, <span class="dt">type=</span><span class="st">&quot;mps_fixed&quot;</span>, <span class="st">&quot;lpsolve&quot;</span>))</code></pre></div>
-<pre><code>## ROI Optimization Problem:
-## 
-## Minimize a linear objective function of length 353 with
-## - 353 continuous objective variables,
-## 
-## subject to
-## - 271 constraints of type linear.
-## - 30 lower and 147 upper non-standard variable bounds.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(capri))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: 2.690013e+03</code></pre>
-</div>
-<div id="write-lp-milp" class="section level2">
-<h2>Write LP / MILP</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ROI_registered_writer</span>()</code></pre></div>
-<pre><code>##         type  solver
-## 1  mps_fixed    glpk
-## 2   mps_free    glpk
-## 3   lp_cplex    glpk
-## 4 lp_lpsolve lpsolve
-## 5  mps_fixed lpsolve
-## 6   mps_free lpsolve</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmpfile &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
-<span class="kw">ROI_write</span>(milp, tmpfile, <span class="dt">type =</span> <span class="st">&quot;lp_lpsolve&quot;</span>)
-<span class="kw">cat</span>(<span class="kw">readLines</span>(tmpfile), <span class="dt">sep=</span><span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</code></pre></div>
-<pre><code>## /* Objective function */
-## max: +7 C1 +C2 +3 C3;
-## 
-## /* Constraints */
-## +6 C1 +4 C2 +5 C3 &lt;= 60;
-## +8 C1 +2 C3 &lt;= 80;
-## +9 C1 +C2 +7 C3 &lt;= 70;
-## 
-## /* Integer definitions */
-## int C1,C3;</code></pre>
-</div>
-</div>
-<div id="test-collections" class="section level1">
-<h1>Test collections</h1>
-<div id="netlib-lp" class="section level2">
-<h2>NETLIB-LP</h2>
-<p>The software repository <code>NETLIB</code> contains among many other software also a linear programming test collection.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;ROI.models.netlib&quot;</span>)
-<span class="kw">netlib</span>()</code></pre></div>
-<pre><code>##  [1] &quot;adlittle&quot; &quot;afiro&quot;    &quot;agg&quot;      &quot;agg2&quot;     &quot;agg3&quot;     &quot;bandm&quot;   
-##  [7] &quot;beaconfd&quot; &quot;blend&quot;    &quot;bnl1&quot;     &quot;bnl2&quot;     &quot;boeing1&quot;  &quot;boeing2&quot; 
-## [13] &quot;bore3d&quot;   &quot;brandy&quot;   &quot;capri&quot;    &quot;cycle&quot;    &quot;czprob&quot;   &quot;d2q06c&quot;  
-## [19] &quot;d6cube&quot;   &quot;degen2&quot;   &quot;degen3&quot;   &quot;dfl001&quot;   &quot;e226&quot;     &quot;etamacro&quot;
-## [25] &quot;fffff800&quot; &quot;finnis&quot;   &quot;fit1d&quot;    &quot;fit1p&quot;    &quot;fit2d&quot;    &quot;fit2p&quot;   
-## [31] &quot;forplan&quot;  &quot;ganges&quot;   &quot;gfrd.pnc&quot; &quot;greenbea&quot; &quot;greenbeb&quot; &quot;grow15&quot;  
-## [37] &quot;grow22&quot;   &quot;grow7&quot;    &quot;israel&quot;   &quot;kb2&quot;      &quot;lotfi&quot;    &quot;maros.r7&quot;
-## [43] &quot;maros&quot;    &quot;modszk1&quot;  &quot;nesm&quot;     &quot;perold&quot;   &quot;pilot.ja&quot; &quot;pilot&quot;   
-## [49] &quot;pilot.we&quot; &quot;pilot4&quot;   &quot;pilot87&quot;  &quot;pilotnov&quot; &quot;recipe&quot;   &quot;sc105&quot;   
-## [55] &quot;sc205&quot;    &quot;sc50a&quot;    &quot;sc50b&quot;    &quot;scagr25&quot;  &quot;scagr7&quot;   &quot;scfxm1&quot;  
-## [61] &quot;scfxm2&quot;   &quot;scfxm3&quot;   &quot;scorpion&quot; &quot;scrs8&quot;    &quot;scsd1&quot;    &quot;scsd6&quot;   
-## [67] &quot;scsd8&quot;    &quot;sctap1&quot;   &quot;sctap2&quot;   &quot;sctap3&quot;   &quot;seba&quot;     &quot;share1b&quot; 
-## [73] &quot;share2b&quot;  &quot;shell&quot;    &quot;ship04l&quot;  &quot;ship04s&quot;  &quot;ship08l&quot;  &quot;ship08s&quot; 
-## [79] &quot;ship12l&quot;  &quot;ship12s&quot;  &quot;sierra&quot;   &quot;stair&quot;    &quot;standata&quot; &quot;standmps&quot;
-## [85] &quot;stocfor1&quot; &quot;stocfor2&quot; &quot;stocfor3&quot; &quot;truss&quot;    &quot;tuff&quot;     &quot;vtp.base&quot;
-## [91] &quot;wood1p&quot;   &quot;woodw&quot;    &quot;x25fv47&quot;  &quot;x80bau3b&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">problem_name &lt;-<span class="st"> &quot;boeing1&quot;</span>
-<span class="kw">netlib</span>(<span class="st">&quot;metainfo&quot;</span>)[problem_name, -(<span class="dv">2</span>:<span class="dv">5</span>)]</code></pre></div>
-<pre><code>##            name br optimal_value
-## boeing1 BOEING1 BR     -335.2136</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(model &lt;-<span class="st"> </span><span class="kw">netlib</span>(problem_name))</code></pre></div>
-<pre><code>## ROI Optimization Problem:
-## 
-## Minimize a linear objective function of length 384 with
-## - 384 continuous objective variables,
-## 
-## subject to
-## - 440 constraints of type linear.
-## - 6 lower and 156 upper non-standard variable bounds.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(x &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(model))</code></pre></div>
-<pre><code>## Optimal solution found.
-## The objective value is: -3.352136e+02</code></pre>
-</div>
-<div id="milp" class="section level2">
-<h2>MILP</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;ROI.models.miplib&quot;</span>)
-<span class="kw">miplib</span>(<span class="st">&quot;air04&quot;</span>)</code></pre></div>
-<pre><code>## ROI Optimization Problem:
-## 
-## Minimize a linear objective function of length 8904 with
-## - 8904 binary objective variables,
-## 
-## subject to
-## - 823 constraints of type linear.
-## - 0 lower and 8904 upper non-standard variable bounds.</code></pre>
-</div>
-</div>
-<div id="options" class="section level1">
-<h1>Options</h1>
-</div>
-
-
-
-</div>
-</div>
-
-</div>
-
-<script>
-
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-
-</body>
-</html>
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "
