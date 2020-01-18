@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -280,4 +279,577 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs > li.active:before {
-  content: "
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+<li>
+  <a href="news.html">What's new?</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Sudoku</h1>
+
+</div>
+
+
+<p>It is well known that the number-placement puzzle <a href="https://en.wikipedia.org/wiki/Sudoku">Sudoku</a> can be formulated as a binary optimization problem. The following optimization problem formulation is from <a href="#BARTLETT">Bartlett et al. (2008)</a>.</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+    \underset{x}{\text{minimize}} &amp; \mathbb{0}^\top x \\
+    \text{subject to}                          &amp; x_{ijk} \in \{0, 1\} \\
+ \text{only one k in each column:}             &amp; \sum_{i=1}^9 x_{ijk} = 1, ~~~~ j = 1:9,~ k = 1:9 \\
+ \text{only one k in each row:}                &amp; \sum_{j=1}^9 x_{ijk} = 1, ~~~~ i = 1:9,~ k = 1:9 \\
+ \text{only one k in each block:}              &amp; \sum_{j = 3 (q - 1) + 1}^{3 q} \sum_{i = 3(p - 1) + 1}^{3 p} x_{ijk} = 1, ~~~~ k = 1:9,~ p = 1:3,~ q = 1:3 \\
+ \text{exactly one number for each position:}  &amp; \sum_{k=1}^9 x_{ijk} = 1, ~~~~ i = 1:9,~ j = 1:9 \\
+ \text{stating values are fixed:}              &amp; x_{ijk} = 1 ~~~ \forall (i, j, k) \\
+\end{array}
+\]</span></p>
+<p>In <strong>R</strong> the packages <a href="https://CRAN.R-project.org/package=sudoku"><strong>sudoku</strong></a> and <a href="https://CRAN.R-project.org/package=sudokuAlt"><strong>sudokuAlt</strong></a> can be used to generate and solve Sudoku puzzles.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(sudokuAlt)</a>
+<a class="sourceLine" id="cb1-2" title="2">sudoku_puzzle &lt;-<span class="st"> </span><span class="kw">makeGame</span>()</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">plot</span>(sudoku_puzzle)</a></code></pre></div>
+<p><img src="use_case_sudoku_files/figure-html/load_sudoku_pkg-1.png" width="672" /></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(slam)</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw">library</span>(ROI)</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw">library</span>(ROI.plugin.msbinlp)</a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="kw">library</span>(ROI.plugin.glpk)</a></code></pre></div>
+<div id="auxiliary-functions" class="section level2">
+<h2>Auxiliary functions</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">as.matrix.sudoku &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">matrix</span>(<span class="kw">as.numeric</span>(x), <span class="dv">9</span>, <span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2"></a>
+<a class="sourceLine" id="cb3-3" title="3">to_col_index &lt;-<span class="st"> </span><span class="cf">function</span>(i, j, v) {</a>
+<a class="sourceLine" id="cb3-4" title="4">    (v <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">81</span> <span class="op">+</span><span class="st"> </span>(i <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">9</span> <span class="op">+</span><span class="st"> </span>j</a>
+<a class="sourceLine" id="cb3-5" title="5">}</a>
+<a class="sourceLine" id="cb3-6" title="6"></a>
+<a class="sourceLine" id="cb3-7" title="7">index_to_triplet &lt;-<span class="st"> </span><span class="cf">function</span>(idx) {</a>
+<a class="sourceLine" id="cb3-8" title="8">    .index_to_triplet &lt;-<span class="st"> </span><span class="cf">function</span>(idx) {</a>
+<a class="sourceLine" id="cb3-9" title="9">        v &lt;-<span class="st"> </span>(idx <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%/%</span><span class="st"> </span><span class="dv">81</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-10" title="10">        idx &lt;-<span class="st"> </span>idx <span class="op">-</span><span class="st"> </span>(v <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">81</span></a>
+<a class="sourceLine" id="cb3-11" title="11">        i &lt;-<span class="st"> </span>(idx <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)<span class="op">%/%</span><span class="st"> </span><span class="dv">9</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-12" title="12">        idx &lt;-<span class="st"> </span>idx <span class="op">-</span><span class="st"> </span>(i <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb3-13" title="13">        <span class="kw">c</span>(<span class="dt">i =</span> i, <span class="dt">j =</span> idx, <span class="dt">v =</span> v)</a>
+<a class="sourceLine" id="cb3-14" title="14">    }</a>
+<a class="sourceLine" id="cb3-15" title="15">    <span class="kw">t</span>(<span class="kw">sapply</span>(idx, .index_to_triplet))</a>
+<a class="sourceLine" id="cb3-16" title="16">}</a>
+<a class="sourceLine" id="cb3-17" title="17"></a>
+<a class="sourceLine" id="cb3-18" title="18">solve_sudoku &lt;-<span class="st"> </span><span class="cf">function</span>(M, solver, <span class="dt">solve =</span> <span class="ot">TRUE</span>, ...) {</a>
+<a class="sourceLine" id="cb3-19" title="19">    stm &lt;-<span class="st"> </span>simple_triplet_matrix</a>
+<a class="sourceLine" id="cb3-20" title="20">    seq9_<span class="dv">9</span> &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb3-21" title="21">    seq9_9e &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">each =</span> <span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb3-22" title="22">    seq81_9e &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq_len</span>(<span class="dv">81</span>), <span class="dt">each =</span> <span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb3-23" title="23">    ones729 &lt;-<span class="st"> </span><span class="kw">rep.int</span>(<span class="dv">1</span>, <span class="dv">9</span><span class="op">^</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb3-24" title="24">    M &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(M)</a>
+<a class="sourceLine" id="cb3-25" title="25">    M[<span class="kw">is.na</span>(M)] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb3-26" title="26">    M &lt;-<span class="st"> </span><span class="kw">as.simple_triplet_matrix</span>(M)</a>
+<a class="sourceLine" id="cb3-27" title="27">    <span class="co">## setup OP</span></a>
+<a class="sourceLine" id="cb3-28" title="28">    op &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">double</span>(<span class="dv">9</span><span class="op">^</span><span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb3-29" title="29">    <span class="co">## basic setting (fixed coefficients)</span></a>
+<a class="sourceLine" id="cb3-30" title="30">    j &lt;-<span class="st"> </span><span class="kw">mapply</span>(to_col_index, M<span class="op">$</span>i, M<span class="op">$</span>j, M<span class="op">$</span>v)</a>
+<a class="sourceLine" id="cb3-31" title="31">    nfv &lt;-<span class="st"> </span><span class="kw">length</span>(M<span class="op">$</span>i) <span class="co">## number of fixed variables</span></a>
+<a class="sourceLine" id="cb3-32" title="32">    A0 &lt;-<span class="st"> </span><span class="kw">stm</span>(<span class="dt">i =</span> <span class="kw">seq_len</span>(nfv), <span class="dt">j =</span> j, <span class="dt">v =</span> <span class="kw">rep.int</span>(<span class="dv">1</span>, nfv), <span class="dt">ncol =</span> <span class="dv">9</span><span class="op">^</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb3-33" title="33">    LC0 &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(A0, <span class="kw">eq</span>(nfv), <span class="kw">rep.int</span>(<span class="dv">1</span>, nfv))</a>
+<a class="sourceLine" id="cb3-34" title="34">    <span class="co">## sum_{i=1:n} x_ijk = 1,  j = 1:n, k = 1:n</span></a>
+<a class="sourceLine" id="cb3-35" title="35">    only_one_k_in_each_column &lt;-<span class="st"> </span><span class="cf">function</span>(j, k) {</a>
+<a class="sourceLine" id="cb3-36" title="36">        <span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="cf">function</span>(i) <span class="kw">to_col_index</span>(i, j, k))</a>
+<a class="sourceLine" id="cb3-37" title="37">    }</a>
+<a class="sourceLine" id="cb3-38" title="38">    j &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">mapply</span>(only_one_k_in_each_column, seq9_9e, seq9_<span class="dv">9</span>, <span class="dt">SIMPLIFY =</span> <span class="ot">FALSE</span>))</a>
+<a class="sourceLine" id="cb3-39" title="39">    A1 &lt;-<span class="st"> </span><span class="kw">stm</span>(<span class="dt">i =</span> seq81_9e, <span class="dt">j =</span> j, <span class="dt">v =</span> ones729, <span class="dt">nrow =</span> <span class="dv">81</span>, <span class="dt">ncol =</span> <span class="dv">9</span><span class="op">^</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb3-40" title="40">    <span class="co">## sum_{j=1:n} x_ijk = 1</span></a>
+<a class="sourceLine" id="cb3-41" title="41">    only_one_k_in_each_row &lt;-<span class="st"> </span><span class="cf">function</span>(i, k) {</a>
+<a class="sourceLine" id="cb3-42" title="42">        <span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="cf">function</span>(j) <span class="kw">to_col_index</span>(i, j, k))</a>
+<a class="sourceLine" id="cb3-43" title="43">    }</a>
+<a class="sourceLine" id="cb3-44" title="44">    j &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">mapply</span>(only_one_k_in_each_row, seq9_9e, seq9_<span class="dv">9</span>, <span class="dt">SIMPLIFY =</span> <span class="ot">FALSE</span>))</a>
+<a class="sourceLine" id="cb3-45" title="45">    A2 &lt;-<span class="st"> </span><span class="kw">stm</span>(<span class="dt">i =</span> seq81_9e, <span class="dt">j =</span> j, <span class="dt">v =</span> ones729, <span class="dt">nrow =</span> <span class="dv">81</span>, <span class="dt">ncol =</span> <span class="dv">9</span><span class="op">^</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb3-46" title="46">    only_one_k_in_each_submatrix &lt;-<span class="st"> </span><span class="cf">function</span>(blocki, blockj, k) { </a>
+<a class="sourceLine" id="cb3-47" title="47">        i &lt;-<span class="st"> </span>(blocki <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">3</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb3-48" title="48">        j &lt;-<span class="st"> </span>(blockj <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">3</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb3-49" title="49">        coo &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">i =</span> i, <span class="dt">j =</span> j, <span class="dt">v =</span> k)</a>
+<a class="sourceLine" id="cb3-50" title="50">        <span class="kw">mapply</span>(to_col_index, <span class="dt">i =</span> coo<span class="op">$</span>i, <span class="dt">j =</span> coo<span class="op">$</span>j, <span class="dt">v =</span> coo<span class="op">$</span>v)</a>
+<a class="sourceLine" id="cb3-51" title="51">    }</a>
+<a class="sourceLine" id="cb3-52" title="52">    coo &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">i =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">j =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">k =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb3-53" title="53">    j &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">mapply</span>(only_one_k_in_each_submatrix, </a>
+<a class="sourceLine" id="cb3-54" title="54">                       <span class="dt">blocki =</span> coo<span class="op">$</span>i, <span class="dt">blockj =</span> coo<span class="op">$</span>j, <span class="dt">k  =</span> coo<span class="op">$</span>k, <span class="dt">SIMPLIFY =</span> <span class="ot">FALSE</span>))</a>
+<a class="sourceLine" id="cb3-55" title="55">    A3 &lt;-<span class="st"> </span><span class="kw">stm</span>(<span class="dt">i =</span> seq81_9e, <span class="dt">j =</span> j, <span class="dt">v =</span> ones729, <span class="dt">ncol =</span> <span class="dv">9</span><span class="op">^</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb3-56" title="56">    <span class="co">## at every position in the matrix must be one value</span></a>
+<a class="sourceLine" id="cb3-57" title="57">    fill_matrix &lt;-<span class="st"> </span><span class="cf">function</span>(i, j) {</a>
+<a class="sourceLine" id="cb3-58" title="58">        <span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="cf">function</span>(k) <span class="kw">to_col_index</span>(i, j, k))</a>
+<a class="sourceLine" id="cb3-59" title="59">    }</a>
+<a class="sourceLine" id="cb3-60" title="60">    j &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">mapply</span>(fill_matrix, <span class="dt">i =</span> seq9_9e, <span class="dt">j =</span> seq9_<span class="dv">9</span>, <span class="dt">SIMPLIFY =</span> <span class="ot">FALSE</span>))</a>
+<a class="sourceLine" id="cb3-61" title="61">    A4 &lt;-<span class="st"> </span><span class="kw">stm</span>(<span class="dt">i =</span> seq81_9e, <span class="dt">j =</span> j, <span class="dt">v =</span> ones729, <span class="dt">ncol =</span> <span class="dv">9</span><span class="op">^</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb3-62" title="62">    A &lt;-<span class="st"> </span><span class="kw">rbind</span>(A1, A2, A3, A4)</a>
+<a class="sourceLine" id="cb3-63" title="63">    LC1 &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(A, <span class="kw">eq</span>(<span class="kw">nrow</span>(A)), <span class="kw">rep.int</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(A)))</a>
+<a class="sourceLine" id="cb3-64" title="64">    <span class="kw">constraints</span>(op) &lt;-<span class="st"> </span><span class="kw">rbind</span>(LC0, LC1)</a>
+<a class="sourceLine" id="cb3-65" title="65">    <span class="kw">types</span>(op) &lt;-<span class="st"> </span><span class="kw">rep.int</span>(<span class="st">&quot;B&quot;</span>, <span class="dv">9</span><span class="op">^</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb3-66" title="66">    <span class="cf">if</span> (<span class="op">!</span>solve) <span class="kw">return</span>(op)</a>
+<a class="sourceLine" id="cb3-67" title="67">    s &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op, <span class="dt">solver =</span> solver, ...)</a>
+<a class="sourceLine" id="cb3-68" title="68">    sol &lt;-<span class="st"> </span><span class="kw">solution</span>(s)</a>
+<a class="sourceLine" id="cb3-69" title="69">    to_sudoku_solution &lt;-<span class="st"> </span><span class="cf">function</span>(sol) {</a>
+<a class="sourceLine" id="cb3-70" title="70">        coo &lt;-<span class="st"> </span><span class="kw">index_to_triplet</span>(<span class="kw">which</span>(<span class="kw">as.logical</span>(sol)))</a>
+<a class="sourceLine" id="cb3-71" title="71">        sudoku_solution &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">stm</span>(coo[,<span class="dv">1</span>], coo[,<span class="dv">2</span>], coo[,<span class="dv">3</span>]), <span class="dt">nrow =</span> <span class="dv">9</span>, <span class="dt">ncol =</span> <span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb3-72" title="72">        <span class="kw">structure</span>(sudoku_solution, <span class="dt">class =</span> <span class="kw">c</span>(<span class="st">&quot;sudoku&quot;</span>, <span class="st">&quot;matrix&quot;</span>))</a>
+<a class="sourceLine" id="cb3-73" title="73">    }</a>
+<a class="sourceLine" id="cb3-74" title="74">    </a>
+<a class="sourceLine" id="cb3-75" title="75">    <span class="cf">if</span> ( <span class="kw">any</span>(<span class="kw">lengths</span>(sol) <span class="op">&gt;</span><span class="st"> </span>1L) <span class="op">&amp;</span><span class="st"> </span><span class="kw">length</span>(sol) <span class="op">&gt;</span><span class="st"> </span>1L ) {</a>
+<a class="sourceLine" id="cb3-76" title="76">        <span class="kw">lapply</span>(<span class="kw">solution</span>(s), to_sudoku_solution)</a>
+<a class="sourceLine" id="cb3-77" title="77">    } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb3-78" title="78">        <span class="cf">if</span> ( <span class="kw">length</span>(sol) <span class="op">==</span><span class="st"> </span>1L ) {</a>
+<a class="sourceLine" id="cb3-79" title="79">            <span class="kw">to_sudoku_solution</span>(sol[[1L]])</a>
+<a class="sourceLine" id="cb3-80" title="80">        } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb3-81" title="81">            <span class="kw">to_sudoku_solution</span>(sol)</a>
+<a class="sourceLine" id="cb3-82" title="82">        }</a>
+<a class="sourceLine" id="cb3-83" title="83">    }</a>
+<a class="sourceLine" id="cb3-84" title="84">}</a>
+<a class="sourceLine" id="cb3-85" title="85"></a>
+<a class="sourceLine" id="cb3-86" title="86">sudoku_is_valid_solution &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb3-87" title="87">    .sudoku_is_valid_solution &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb3-88" title="88">        <span class="kw">stopifnot</span>(<span class="kw">inherits</span>(x, <span class="st">&quot;sudoku&quot;</span>))</a>
+<a class="sourceLine" id="cb3-89" title="89">        seq19 &lt;-<span class="st"> </span><span class="kw">seq_len</span>(<span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb3-90" title="90">        <span class="cf">for</span> (i <span class="cf">in</span> seq19) {</a>
+<a class="sourceLine" id="cb3-91" title="91">            <span class="cf">if</span> ( <span class="kw">any</span>(<span class="kw">sort</span>(<span class="kw">as.vector</span>(x[i, ])) <span class="op">!=</span><span class="st"> </span>seq19) ) <span class="kw">return</span>(<span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb3-92" title="92">            <span class="cf">if</span> ( <span class="kw">any</span>(<span class="kw">sort</span>(<span class="kw">as.vector</span>(x[, i])) <span class="op">!=</span><span class="st"> </span>seq19) ) <span class="kw">return</span>(<span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb3-93" title="93">        }</a>
+<a class="sourceLine" id="cb3-94" title="94">        <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) {</a>
+<a class="sourceLine" id="cb3-95" title="95">            <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) {</a>
+<a class="sourceLine" id="cb3-96" title="96">                block &lt;-<span class="st"> </span>x[(i<span class="dv">-1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">3</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, (j<span class="dv">-1</span>) <span class="op">*</span><span class="st"> </span><span class="dv">3</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]</a>
+<a class="sourceLine" id="cb3-97" title="97">                <span class="cf">if</span> ( <span class="kw">any</span>(<span class="kw">sort</span>(<span class="kw">as.vector</span>(block)) <span class="op">!=</span><span class="st"> </span>seq19) ) <span class="kw">return</span>(<span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb3-98" title="98">            }</a>
+<a class="sourceLine" id="cb3-99" title="99">        }</a>
+<a class="sourceLine" id="cb3-100" title="100">        <span class="kw">return</span>(<span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-101" title="101">    }</a>
+<a class="sourceLine" id="cb3-102" title="102">    <span class="cf">if</span> ( <span class="kw">is.list</span>(x) ) {</a>
+<a class="sourceLine" id="cb3-103" title="103">        <span class="kw">sapply</span>(x, .sudoku_is_valid_solution)</a>
+<a class="sourceLine" id="cb3-104" title="104">    } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb3-105" title="105">        <span class="kw">.sudoku_is_valid_solution</span>(x)</a>
+<a class="sourceLine" id="cb3-106" title="106">    }</a>
+<a class="sourceLine" id="cb3-107" title="107">}</a></code></pre></div>
+</div>
+<div id="solve-sudoku" class="section level2">
+<h2>Solve Sudoku</h2>
+<p>We now solve the previously defined Sudoku.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">sudoku_solution &lt;-<span class="st"> </span><span class="kw">solve_sudoku</span>(sudoku_puzzle, <span class="dt">solver =</span> <span class="st">&quot;glpk&quot;</span>)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">sudoku_is_valid_solution</span>(sudoku_solution)</a></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">plot</span>(sudoku_solution)</a></code></pre></div>
+<p><img src="use_case_sudoku_files/figure-html/solve_sudoku-1.png" width="672" /></p>
+<p>Furthermore it is easy to check if there exist multiple solutions to the Sudoku. Here we only want to obtain up to <code>10</code> solution to obtain all set the maximum number of solutions to infinity (<code>nsol_max = Inf</code>).</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">sudoku_solution &lt;-<span class="st"> </span><span class="kw">solve_sudoku</span>(sudoku_puzzle, <span class="dt">solver =</span> <span class="st">&quot;msbinlp&quot;</span>, <span class="dt">nsol_max =</span> 10L)</a>
+<a class="sourceLine" id="cb7-2" title="2">sudoku_solution</a></code></pre></div>
+<pre><code>## [[1]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 4 | 2 9 5 | 1 3 7 |
+##  | 9 7 1 | 4 3 8 | 6 5 2 |
+##  | 2 5 3 | 7 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 1 2 6 | 3 4 9 | 5 7 8 |
+##  | 7 4 5 | 8 6 1 | 3 2 9 |
+##  | 3 9 8 | 5 2 7 | 4 1 6 |
+##  + - - - + - - - + - - - +
+##  | 4 1 7 | 9 5 2 | 8 6 3 |
+##  | 6 3 2 | 1 8 4 | 7 9 5 |
+##  | 5 8 9 | 6 7 3 | 2 4 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[2]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 9 | 2 4 5 | 1 3 7 |
+##  | 7 4 1 | 8 3 9 | 6 5 2 |
+##  | 2 5 3 | 7 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 4 9 6 | 1 2 3 | 5 7 8 |
+##  | 5 2 7 | 4 9 8 | 3 1 6 |
+##  | 3 1 8 | 5 6 7 | 4 2 9 |
+##  + - - - + - - - + - - - +
+##  | 1 7 4 | 6 5 2 | 8 9 3 |
+##  | 6 3 2 | 9 8 1 | 7 4 5 |
+##  | 9 8 5 | 3 7 4 | 2 6 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[3]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 9 | 2 4 5 | 1 3 7 |
+##  | 4 7 1 | 8 9 3 | 6 5 2 |
+##  | 2 5 3 | 7 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 7 1 6 | 4 3 8 | 5 2 9 |
+##  | 5 2 4 | 1 6 9 | 3 7 8 |
+##  | 3 9 8 | 5 2 7 | 4 1 6 |
+##  + - - - + - - - + - - - +
+##  | 1 4 7 | 6 5 2 | 8 9 3 |
+##  | 6 3 2 | 9 8 1 | 7 4 5 |
+##  | 9 8 5 | 3 7 4 | 2 6 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[4]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 4 | 2 9 5 | 1 3 7 |
+##  | 9 1 3 | 7 4 8 | 6 5 2 |
+##  | 2 5 7 | 3 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 5 9 6 | 1 2 4 | 3 7 8 |
+##  | 7 4 1 | 8 3 9 | 5 2 6 |
+##  | 3 2 8 | 5 6 7 | 4 1 9 |
+##  + - - - + - - - + - - - +
+##  | 1 7 9 | 6 5 2 | 8 4 3 |
+##  | 6 3 2 | 4 8 1 | 7 9 5 |
+##  | 4 8 5 | 9 7 3 | 2 6 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[5]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 4 | 2 5 9 | 1 3 7 |
+##  | 9 1 3 | 4 7 8 | 5 6 2 |
+##  | 2 5 7 | 3 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 1 4 6 | 8 9 2 | 7 5 3 |
+##  | 5 7 9 | 1 3 4 | 8 2 6 |
+##  | 3 2 8 | 5 6 7 | 4 1 9 |
+##  + - - - + - - - + - - - +
+##  | 4 3 1 | 9 2 5 | 6 7 8 |
+##  | 6 9 2 | 7 8 1 | 3 4 5 |
+##  | 7 8 5 | 6 4 3 | 2 9 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[6]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 4 | 2 5 9 | 1 3 7 |
+##  | 1 3 9 | 8 7 4 | 6 5 2 |
+##  | 2 5 7 | 3 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 5 9 6 | 1 4 8 | 7 2 3 |
+##  | 4 7 1 | 6 3 2 | 5 9 8 |
+##  | 3 2 8 | 5 9 7 | 4 1 6 |
+##  + - - - + - - - + - - - +
+##  | 7 1 3 | 4 2 5 | 8 6 9 |
+##  | 6 4 2 | 9 8 1 | 3 7 5 |
+##  | 9 8 5 | 7 6 3 | 2 4 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[7]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 4 | 2 5 9 | 1 3 7 |
+##  | 1 9 7 | 8 3 4 | 6 5 2 |
+##  | 2 5 3 | 7 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 4 1 6 | 3 9 2 | 5 7 8 |
+##  | 5 7 9 | 1 4 8 | 3 2 6 |
+##  | 3 2 8 | 5 6 7 | 4 1 9 |
+##  + - - - + - - - + - - - +
+##  | 7 4 1 | 6 2 5 | 8 9 3 |
+##  | 6 3 2 | 9 8 1 | 7 4 5 |
+##  | 9 8 5 | 4 7 3 | 2 6 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[8]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 1 | 9 2 4 | 5 3 7 |
+##  | 9 3 4 | 8 7 5 | 6 1 2 |
+##  | 2 5 7 | 3 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 7 4 6 | 2 3 1 | 8 5 9 |
+##  | 5 2 9 | 6 4 8 | 1 7 3 |
+##  | 3 1 8 | 5 9 7 | 4 2 6 |
+##  + - - - + - - - + - - - +
+##  | 1 9 3 | 4 5 2 | 7 6 8 |
+##  | 6 7 2 | 1 8 9 | 3 4 5 |
+##  | 4 8 5 | 7 6 3 | 2 9 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[9]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 1 | 9 2 4 | 5 3 7 |
+##  | 9 7 4 | 8 5 3 | 6 1 2 |
+##  | 2 5 3 | 7 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 5 1 6 | 4 9 8 | 7 2 3 |
+##  | 4 9 7 | 2 3 1 | 8 5 6 |
+##  | 3 2 8 | 5 6 7 | 1 4 9 |
+##  + - - - + - - - + - - - +
+##  | 1 4 5 | 6 7 2 | 3 9 8 |
+##  | 6 3 2 | 1 8 9 | 4 7 5 |
+##  | 7 8 9 | 3 4 5 | 2 6 1 |
+##  + - - - + - - - + - - - +
+## 
+## [[10]]
+##                           
+##  + - - - + - - - + - - - +
+##  | 8 6 1 | 2 9 4 | 5 3 7 |
+##  | 4 3 9 | 7 5 8 | 6 1 2 |
+##  | 2 5 7 | 3 1 6 | 9 8 4 |
+##  + - - - + - - - + - - - +
+##  | 1 7 6 | 9 2 3 | 4 5 8 |
+##  | 5 2 4 | 8 6 1 | 7 9 3 |
+##  | 3 9 8 | 5 4 7 | 1 2 6 |
+##  + - - - + - - - + - - - +
+##  | 7 1 5 | 6 3 2 | 8 4 9 |
+##  | 6 4 2 | 1 8 9 | 3 7 5 |
+##  | 9 8 3 | 4 7 5 | 2 6 1 |
+##  + - - - + - - - + - - - +</code></pre>
+<div id="solve-a-sudoku-from-httpwww.sudoku.org.ukdailysudoku.asp" class="section level3">
+<h3>Solve a Sudoku from <code>http://www.sudoku.org.uk/DailySudoku.asp</code></h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">sudoku_puzzle &lt;-<span class="st"> </span><span class="kw">fetchUKGame</span>()</a></code></pre></div>
+<p>Look if this Sudoku has a unique solution.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">sudoku_solution &lt;-<span class="st"> </span><span class="kw">solve_sudoku</span>(sudoku_puzzle, <span class="dt">solver =</span> <span class="st">&quot;msbinlp&quot;</span>, <span class="dt">nsol_max =</span> 2L)</a>
+<a class="sourceLine" id="cb10-2" title="2">has_unique_solution &lt;-<span class="st"> </span><span class="kw">inherits</span>(sudoku_solution, <span class="st">&quot;sudoku&quot;</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3">has_unique_solution</a></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li>Bartlett, A., Chartier, T. P., Langville, A. N., &amp; Rankin, T. D. (2008). An integer programming model for the Sudoku problem. Journal of Online Mathematics and its Applications, 8(1). <code>URL</code> <a href="https://www.semanticscholar.org/paper/An-Integer-Programming-Model-for-the-Sudoku-Problem-Bartlett-Chartier/127ccaf7ebde0c47b36ae78cd1e2233b6061a57f" class="uri">https://www.semanticscholar.org/paper/An-Integer-Programming-Model-for-the-Sudoku-Problem-Bartlett-Chartier/127ccaf7ebde0c47b36ae78cd1e2233b6061a57f</a> <a name = "BARTLETT"></a></li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

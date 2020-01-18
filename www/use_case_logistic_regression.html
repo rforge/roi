@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -280,4 +279,340 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs > li.active:before {
-  content: "
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+<li>
+  <a href="news.html">What's new?</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Logistic regression</h1>
+
+</div>
+
+
+<p>The <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic model</a> (or logit model) belongs to the <a href="https://en.wikipedia.org/wiki/Generalized_linear_model">generalized linear models</a> family (GLM). It is widely used in regression analysis to model a binary dependent variable.</p>
+<p>Since GLMs are commonly used <strong>R</strong> has already built-in functionality to estimate GLMs. Specifically the <code>glm</code> function from the <strong>stats</strong> package, with a binomial family and logit link can be used to estimate a logistic model.</p>
+<p>The following logistic regression example is from <a href="#HSAUR">Brian S. Everitt and Torsten Hothorn (2017)</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">options</span>(<span class="dt">width =</span> <span class="dv">10000</span>)</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(HSAUR)</a></code></pre></div>
+<pre><code>## Loading required package: tools</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">m &lt;-<span class="st"> </span><span class="kw">glm</span>(ESR <span class="op">~</span><span class="st"> </span>fibrinogen, <span class="dt">data =</span> plasma, <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>))</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">coef</span>(m)</a></code></pre></div>
+<pre><code>## (Intercept)  fibrinogen 
+##   -6.845075    1.827081</code></pre>
+<p>Making use of maximum likelihood estimation the logistic regression model can also be estimated in <strong>ROI</strong>. Here either a conic solver or a general purpose solver can be used. The conic solvers have the advantages that they are designed to find the global optimum and are (typically) faster.</p>
+<div id="log-likelihood" class="section level1">
+<h1>Log-likelihood</h1>
+<p>The log-likelihood <span class="math display">\[
+\underset{\beta}{\text{maximize}} 
+      \sum_{i = 1}^n ~ y_i ~ \log \left(\frac{\exp(X_{i*} \beta)}{1 + \exp(X_{i*} \beta)} \right) 
+    + \sum_{i = 1}^n ~ (1 - y_i) ~ \log \left(1 - \frac{\exp(X_{i*} \beta)}{1 + \exp(X_{i*} \beta)} \right)
+\]</span> can be simplified to <span class="math display">\[
+    \underset{\beta}{\text{maximize}} ~
+      \sum_{i = 1}^n y_i ~ X_{i*} \beta - \sum_{i = 1}^n \log(1 + \exp(X_{i*} \beta)).
+\]</span></p>
+</div>
+<div id="estimation" class="section level1">
+<h1>Estimation</h1>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">Sys.setenv</span>(<span class="dt">ROI_LOAD_PLUGINS =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw">library</span>(ROI)</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">library</span>(ROI.plugin.optimx)</a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="kw">library</span>(ROI.plugin.ecos)</a>
+<a class="sourceLine" id="cb5-5" title="5">X &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">Intercept =</span> <span class="dv">1</span>, <span class="dt">fibrinogen =</span> plasma<span class="op">$</span>fibrinogen)</a>
+<a class="sourceLine" id="cb5-6" title="6">y &lt;-<span class="st"> </span><span class="kw">as.integer</span>(plasma<span class="op">$</span>ESR) <span class="op">-</span><span class="st"> </span>1L</a></code></pre></div>
+</div>
+<div id="general-purpose-solver" class="section level1">
+<h1>General purpose solver</h1>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">mle &lt;-<span class="st"> </span><span class="cf">function</span>(beta) {</a>
+<a class="sourceLine" id="cb6-2" title="2">    <span class="kw">drop</span>(y <span class="op">%*%</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>beta <span class="op">-</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">log</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(X <span class="op">%*%</span><span class="st"> </span>beta))))</a>
+<a class="sourceLine" id="cb6-3" title="3">}</a>
+<a class="sourceLine" id="cb6-4" title="4"></a>
+<a class="sourceLine" id="cb6-5" title="5">op_gps &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">F_objective</span>(mle, <span class="dt">n =</span>  <span class="kw">ncol</span>(X)), <span class="dt">maximum =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb6-6" title="6">    <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">ld =</span> <span class="op">-</span><span class="ot">Inf</span>, <span class="dt">nobj =</span> <span class="kw">ncol</span>(X)))</a>
+<a class="sourceLine" id="cb6-7" title="7">s1 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op_gps, <span class="st">&quot;optimx&quot;</span>, <span class="dt">start =</span> <span class="kw">double</span>(<span class="kw">ncol</span>(X)))</a></code></pre></div>
+<pre><code>## Maximizing -- use negfn and neggr</code></pre>
+<pre><code>## Warning in max(logpar): no non-missing arguments to max; returning -Inf</code></pre>
+<pre><code>## Warning in min(logpar): no non-missing arguments to min; returning Inf</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">solution</span>(s1)</a></code></pre></div>
+<pre><code>## [1] -6.845075  1.827081</code></pre>
+</div>
+<div id="conic-solver" class="section level1">
+<h1>Conic solver</h1>
+<p>For conic optimization we need to build the matrices necessary to express the objective function.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">library</span>(slam)</a>
+<a class="sourceLine" id="cb12-2" title="2">logistic_regression &lt;-<span class="st"> </span><span class="cf">function</span>(y, X, <span class="dt">solver =</span> <span class="st">&quot;ecos&quot;</span>, ...) {</a>
+<a class="sourceLine" id="cb12-3" title="3">  stm &lt;-<span class="st"> </span>simple_triplet_matrix</a>
+<a class="sourceLine" id="cb12-4" title="4">  stzm &lt;-<span class="st"> </span>simple_triplet_zero_matrix</a>
+<a class="sourceLine" id="cb12-5" title="5">  <span class="kw">stopifnot</span>(<span class="kw">is.vector</span>(y), <span class="kw">length</span>(y) <span class="op">==</span><span class="st"> </span><span class="kw">nrow</span>(X))</a>
+<a class="sourceLine" id="cb12-6" title="6">  m &lt;-<span class="st"> </span><span class="kw">nrow</span>(X); n &lt;-<span class="st"> </span><span class="kw">ncol</span>(X)</a>
+<a class="sourceLine" id="cb12-7" title="7">  i &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">seq_len</span>(m) <span class="op">-</span><span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb12-8" title="8">  op &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="kw">c</span>(<span class="op">-</span>(y <span class="op">%*%</span><span class="st"> </span>X), <span class="kw">rep.int</span>(<span class="dv">1</span>, m), <span class="kw">double</span>(m)), <span class="dt">maximum =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb12-9" title="9">  C11 &lt;-<span class="st"> </span><span class="kw">stm</span>(<span class="kw">rep</span>(i, n), <span class="kw">rep</span>(<span class="kw">seq_len</span>(n), <span class="dt">each =</span> m), <span class="op">-</span><span class="kw">drop</span>(X), <span class="dv">3</span> <span class="op">*</span><span class="st"> </span>m, n)</a>
+<a class="sourceLine" id="cb12-10" title="10">  C12 &lt;-<span class="st"> </span><span class="kw">stm</span>(i, <span class="kw">seq_len</span>(m), <span class="kw">rep.int</span>(<span class="dv">1</span>, m), <span class="dv">3</span> <span class="op">*</span><span class="st"> </span>m, m)</a>
+<a class="sourceLine" id="cb12-11" title="11">  C13 &lt;-<span class="st"> </span><span class="kw">stm</span>(i <span class="op">+</span><span class="st"> </span><span class="dv">2</span>, <span class="kw">seq_len</span>(m), <span class="kw">rep.int</span>(<span class="op">-</span><span class="dv">1</span>, m), <span class="dv">3</span> <span class="op">*</span><span class="st"> </span>m, m)</a>
+<a class="sourceLine" id="cb12-12" title="12">  C1 &lt;-<span class="st"> </span><span class="kw">cbind</span>(C11, C12, C13)</a>
+<a class="sourceLine" id="cb12-13" title="13">  C2 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">stzm</span>(<span class="dv">3</span> <span class="op">*</span><span class="st"> </span>m, n), C12, <span class="op">-</span>C13)</a>
+<a class="sourceLine" id="cb12-14" title="14">  C &lt;-<span class="st"> </span><span class="kw">rbind</span>(C1, C2)</a>
+<a class="sourceLine" id="cb12-15" title="15">  cones &lt;-<span class="st"> </span><span class="kw">K_expp</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>m)</a>
+<a class="sourceLine" id="cb12-16" title="16">  rhs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>), m), <span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>), m))</a>
+<a class="sourceLine" id="cb12-17" title="17">  <span class="kw">constraints</span>(op) &lt;-<span class="st"> </span><span class="kw">C_constraint</span>(C, cones, rhs)</a>
+<a class="sourceLine" id="cb12-18" title="18">  <span class="kw">bounds</span>(op) &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">ld =</span> <span class="op">-</span><span class="ot">Inf</span>, <span class="dt">nobj =</span> <span class="kw">ncol</span>(C))</a>
+<a class="sourceLine" id="cb12-19" title="19">  <span class="kw">ROI_solve</span>(op, <span class="dt">solver =</span> solver, ...)</a>
+<a class="sourceLine" id="cb12-20" title="20">}</a>
+<a class="sourceLine" id="cb12-21" title="21"></a>
+<a class="sourceLine" id="cb12-22" title="22">s2 &lt;-<span class="st"> </span><span class="kw">logistic_regression</span>(y, X)</a>
+<a class="sourceLine" id="cb12-23" title="23"><span class="kw">head</span>(<span class="kw">solution</span>(s2), <span class="kw">ncol</span>(X))</a></code></pre></div>
+<pre><code>## [1] -6.845075  1.827081</code></pre>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li>Brian S. Everitt and Torsten Hothorn (2017). HSAUR: A Handbook of Statistical Analyses Using R (1st Edition). R package version 1.3-9. URL: <a href="https://CRAN.R-project.org/package=HSAUR"><code>https://CRAN.R-project.org/package=HSAUR</code></a> <a name = "HSAUR"></a></li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

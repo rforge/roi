@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -280,4 +279,305 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs > li.active:before {
-  content: "e
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+<li>
+  <a href="news.html">What's new?</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Ordinary least squares (OLS)</h1>
+
+</div>
+
+
+<p>The recommended way to do OLS in <code>R</code> is to use the <code>lm</code> function. The following example can be found in <a href="#Dobson1990">Dobson</a> (1990) dand the <a href="https://stat.ethz.ch/R-manual/R-devel/library/stats/html/lm.html">manual-page of lm</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">ctl &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">4.17</span>,<span class="fl">5.58</span>,<span class="fl">5.18</span>,<span class="fl">6.11</span>,<span class="fl">4.50</span>,<span class="fl">4.61</span>,<span class="fl">5.17</span>,<span class="fl">4.53</span>,<span class="fl">5.33</span>,<span class="fl">5.14</span>)</a>
+<a class="sourceLine" id="cb1-2" title="2">trt &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">4.81</span>,<span class="fl">4.17</span>,<span class="fl">4.41</span>,<span class="fl">3.59</span>,<span class="fl">5.87</span>,<span class="fl">3.83</span>,<span class="fl">6.03</span>,<span class="fl">4.89</span>,<span class="fl">4.32</span>,<span class="fl">4.69</span>)</a>
+<a class="sourceLine" id="cb1-3" title="3">group &lt;-<span class="st"> </span><span class="kw">gl</span>(<span class="dv">2</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;Ctl&quot;</span>,<span class="st">&quot;Trt&quot;</span>))</a>
+<a class="sourceLine" id="cb1-4" title="4">weight &lt;-<span class="st"> </span><span class="kw">c</span>(ctl, trt)</a>
+<a class="sourceLine" id="cb1-5" title="5">lm.D9 &lt;-<span class="st"> </span><span class="kw">lm</span>(weight <span class="op">~</span><span class="st"> </span>group)</a>
+<a class="sourceLine" id="cb1-6" title="6">lm.D9</a></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = weight ~ group)
+## 
+## Coefficients:
+## (Intercept)     groupTrt  
+##       5.032       -0.371</code></pre>
+<p>This shows how <strong>ROI</strong> could be used to solve the ordinary least squares problem. It is well know that OLS solves the following optimization problem. <span class="math display">\[\underset{\beta}{\text{minimize}} ~ || y - X \beta ||_2^2\]</span> Therefore we can easily solve this quadratic optimization problem by making use of <strong>ROI</strong>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">Sys.setenv</span>(<span class="dt">ROI_LOAD_PLUGINS =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="kw">suppressMessages</span>(<span class="kw">library</span>(ROI))</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="kw">library</span>(ROI.plugin.qpoases)</a>
+<a class="sourceLine" id="cb3-4" title="4"></a>
+<a class="sourceLine" id="cb3-5" title="5">X &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(lm.D9)</a>
+<a class="sourceLine" id="cb3-6" title="6">y &lt;-<span class="st"> </span>weight</a>
+<a class="sourceLine" id="cb3-7" title="7"></a>
+<a class="sourceLine" id="cb3-8" title="8">Q &lt;-<span class="st">  </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">t</span>(X) <span class="op">%*%</span><span class="st"> </span>X</a>
+<a class="sourceLine" id="cb3-9" title="9">L &lt;-<span class="st"> </span><span class="dv">-2</span> <span class="op">*</span><span class="st"> </span><span class="kw">t</span>(y) <span class="op">%*%</span><span class="st"> </span>X</a>
+<a class="sourceLine" id="cb3-10" title="10">op &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">Q_objective</span>(<span class="dt">Q =</span> Q, <span class="dt">L =</span> L),</a>
+<a class="sourceLine" id="cb3-11" title="11">         <span class="dt">bounds =</span> <span class="kw">V_bound</span>(<span class="dt">ld =</span> <span class="op">-</span><span class="ot">Inf</span>, <span class="dt">nobj =</span> <span class="kw">ncol</span>(X)))</a>
+<a class="sourceLine" id="cb3-12" title="12">(sol &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op))</a></code></pre></div>
+<pre><code>## Optimal solution found.
+## The objective value is: -4.704595e+02</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">(beta &lt;-<span class="st"> </span><span class="kw">solution</span>(sol))</a></code></pre></div>
+<pre><code>## [1]  5.032 -0.371</code></pre>
+<!--
+# Least absolute deviations (LAD)
+TODO
+
+# Best subset selection
+
+# Ridge regression
+-->
+<div id="references" class="section level1">
+<h1>References</h1>
+<ul>
+<li>Annette Dobson (1990). An Introduction to Generalized Linear Models. <a name = "Dobson1990"></a></li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

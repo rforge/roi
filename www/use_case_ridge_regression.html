@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -280,4 +279,323 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs > li.active:before {
-  content: "
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R Optimization Infrastructure</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">ROI</a>
+</li>
+<li>
+  <a href="installation.html">Installation</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="use_cases.html">Use Cases</a>
+</li>
+<li>
+  <a href="mixed.html">Mixed topics</a>
+</li>
+<li>
+  <a href="faq.html">FAQ</a>
+</li>
+<li>
+  <a href="news.html">What's new?</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Ridge regression</h1>
+
+</div>
+
+
+<p><a href="https://en.wikipedia.org/wiki/Tikhonov_regularization">Ridge regression (also known as Tikhonov regularization)</a> shrinks the regression coefficients by adding a quadratic penalty term to the optimization problem. <span class="math display">\[
+\underset{\beta}{\text{minimize}} ~~ \frac{1}{2} || y - X \beta ||_2^2 +  \lambda ||\beta||_2^2
+\]</span> with <span class="math inline">\(X \in \mathbb{R}^{m \times n}\)</span>, <span class="math inline">\(y \in \mathbb{R}^{m}\)</span>, <span class="math inline">\(\beta \in \mathbb{R}^n\)</span> and <span class="math inline">\(0 &lt; \lambda \in \mathbb{R}\)</span>.</p>
+<p>It is well known that <span class="math inline">\(\beta\)</span> can be estimated by the following formula. <span class="math display">\[
+\hat{\beta} = (X^\top X + \lambda I)^{-1} X^\top y
+\]</span> here <span class="math inline">\(I \in R^{n, n}\)</span> refers to the identity matrix.</p>
+<p>The optimization problem can be rewritten into a quadratic optimization problem <span class="math display">\[
+\begin{array}{rl}
+\underset{(\beta, \gamma)}{\text{minimize}} &amp;
+    \frac{1}{2} \gamma^\top \gamma + \lambda \beta^\top \beta \\
+\text{subject to} &amp; 
+    y - X \beta = \gamma
+\end{array}
+\]</span> with <span class="math inline">\(\gamma \in \mathbb{R}^n\)</span>.</p>
+<p></br> In <strong>R</strong> the packages <a href="https://cran.r-project.org/package=glmnet"><strong>glmnet</strong></a> and <a href="https://cran.r-project.org/package=MASS"><strong>MASS</strong></a> provide functionality for ridge regression.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">y &lt;-<span class="st"> </span>longley[,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb1-2" title="2">x &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(longley[,<span class="op">-</span><span class="dv">1</span>])</a></code></pre></div>
+<div id="estimation" class="section level2">
+<h2>Estimation</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(slam)</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw">Sys.setenv</span>(<span class="dt">ROI_LOAD_PLUGINS =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="kw">library</span>(ROI)</a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="kw">library</span>(ROI.plugin.qpoases)</a>
+<a class="sourceLine" id="cb2-5" title="5"></a>
+<a class="sourceLine" id="cb2-6" title="6">dbind &lt;-<span class="st"> </span><span class="cf">function</span>(...) {</a>
+<a class="sourceLine" id="cb2-7" title="7">    .dbind &lt;-<span class="st"> </span><span class="cf">function</span>(x, y) {</a>
+<a class="sourceLine" id="cb2-8" title="8">        A &lt;-<span class="st"> </span><span class="kw">simple_triplet_zero_matrix</span>(<span class="kw">NROW</span>(x), <span class="kw">NCOL</span>(y))</a>
+<a class="sourceLine" id="cb2-9" title="9">        B &lt;-<span class="st"> </span><span class="kw">simple_triplet_zero_matrix</span>(<span class="kw">NROW</span>(y), <span class="kw">NCOL</span>(x))</a>
+<a class="sourceLine" id="cb2-10" title="10">        <span class="kw">rbind</span>(<span class="kw">cbind</span>(x, A), <span class="kw">cbind</span>(B, y))</a>
+<a class="sourceLine" id="cb2-11" title="11">    }</a>
+<a class="sourceLine" id="cb2-12" title="12">    <span class="kw">Reduce</span>(.dbind, <span class="kw">list</span>(...))</a>
+<a class="sourceLine" id="cb2-13" title="13">}</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">qp_ridge &lt;-<span class="st"> </span><span class="cf">function</span>(x, y, lambda) {</a>
+<a class="sourceLine" id="cb3-2" title="2">    stdm &lt;-<span class="st"> </span>simple_triplet_diag_matrix</a>
+<a class="sourceLine" id="cb3-3" title="3">    m &lt;-<span class="st"> </span><span class="kw">NROW</span>(x); n &lt;-<span class="st"> </span><span class="kw">NCOL</span>(x)</a>
+<a class="sourceLine" id="cb3-4" title="4">    Q0 &lt;-<span class="st"> </span><span class="kw">dbind</span>(<span class="kw">stdm</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>lambda, n), <span class="kw">stdm</span>(<span class="dv">1</span>, m))</a>
+<a class="sourceLine" id="cb3-5" title="5">    a0 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">b =</span> <span class="kw">double</span>(n), <span class="dt">g =</span> <span class="kw">double</span>(m))</a>
+<a class="sourceLine" id="cb3-6" title="6">    op &lt;-<span class="st"> </span><span class="kw">OP</span>(<span class="dt">objective =</span> <span class="kw">Q_objective</span>(<span class="dt">Q =</span> Q0, <span class="dt">L =</span> a0))</a>
+<a class="sourceLine" id="cb3-7" title="7">    A1 &lt;-<span class="st"> </span><span class="kw">cbind</span>(x, <span class="kw">stdm</span>(<span class="dv">1</span>, m))</a>
+<a class="sourceLine" id="cb3-8" title="8">    <span class="kw">constraints</span>(op) &lt;-<span class="st"> </span><span class="kw">L_constraint</span>(A1, <span class="kw">eq</span>(m), y)</a>
+<a class="sourceLine" id="cb3-9" title="9">    <span class="kw">bounds</span>(op) &lt;-<span class="st"> </span><span class="kw">V_bound</span>(<span class="dt">ld =</span> <span class="op">-</span><span class="ot">Inf</span>, <span class="dt">nobj =</span> <span class="kw">ncol</span>(Q0))</a>
+<a class="sourceLine" id="cb3-10" title="10">    op</a>
+<a class="sourceLine" id="cb3-11" title="11">}</a>
+<a class="sourceLine" id="cb3-12" title="12"></a>
+<a class="sourceLine" id="cb3-13" title="13">op &lt;-<span class="st"> </span><span class="kw">qp_ridge</span>(x, y, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb3-14" title="14">(qp0 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op, <span class="st">&quot;qpoases&quot;</span>))</a></code></pre></div>
+<pre><code>## Optimal solution found.
+## The objective value is: 6.616251e+00</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">cbind</span>(<span class="kw">round</span>(<span class="kw">coef</span>(<span class="kw">lm.fit</span>(x, y)), <span class="dv">3</span>), <span class="kw">round</span>(<span class="kw">head</span>(<span class="kw">solution</span>(qp0), <span class="kw">ncol</span>(x)), <span class="dv">3</span>))</a></code></pre></div>
+<pre><code>##                [,1]   [,2]
+## GNP           0.217  0.217
+## Unemployed    0.021  0.021
+## Armed.Forces  0.004  0.004
+## Population   -1.700 -1.700
+## Year          0.117  0.117
+## Employed     -0.311 -0.311</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">op &lt;-<span class="st"> </span><span class="kw">qp_ridge</span>(x, y, <span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb7-2" title="2">(qp1 &lt;-<span class="st"> </span><span class="kw">ROI_solve</span>(op, <span class="st">&quot;qpoases&quot;</span>))</a></code></pre></div>
+<pre><code>## Optimal solution found.
+## The objective value is: 1.087148e+01</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">head</span>(<span class="kw">solution</span>(qp1), <span class="kw">NCOL</span>(x))</a></code></pre></div>
+<pre><code>## [1]  0.11039939  0.01231982  0.01120254 -0.24179694  0.03957795  0.04689382</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
