@@ -3,15 +3,15 @@
 ##  bound
 ##  =====
 ##' @title bound
-##' @description \pkg{ROI} distinguishes between 2 different 
-##'   types of bounds: 
+##' @description \pkg{ROI} distinguishes between 2 different
+##'   types of bounds:
 ##'   \itemize{
-##'   	\item No Bounds \code{NO_bound} 
+##'   	\item No Bounds \code{NO_bound}
 ##'   	\item Variable Bounds \code{\link{V_bound}} (inherits from \code{"bound"})
 ##'   }
 ##' @param x object to be tested
 ##' @param \ldots arguments (inheriting from bound) to be combined
-##' @details \pkg{ROI} provides the method \code{\link{V_bound}} 
+##' @details \pkg{ROI} provides the method \code{\link{V_bound}}
 ##'   as constructor for variable bounds.
 ##'   \code{NO_bound} is not explicitly implemented but represented by \code{NULL}.
 ##' @name bound (Constructors)
@@ -26,10 +26,10 @@ valid_bound <- function(x) x %in% names(available_bound_classes())
 
 ## A utility function to combine values of type V_bound
 c_V_bound <- function(...) {
-    xb <- list(...) 
+    xb <- list(...)
     structure( list(lower = list(ind = unlist(lapply(xb, function(x) x$lower$ind)),
                                  val = unlist(lapply(xb, function(x) x$lower$val))),
-                    upper = list(ind = unlist(lapply(xb, function(x) x$upper$ind)), 
+                    upper = list(ind = unlist(lapply(xb, function(x) x$upper$ind)),
                                  val = unlist(lapply(xb, function(x) x$upper$val))),
                     nobj = as.integer(max(sapply(xb, "[[", "nobj")))),
               class = c("V_bound", "bound") )
@@ -46,7 +46,7 @@ c_2_bounds <- function(x, y) {
     z$nobj <- if (nobj < 0L) NULL else nobj
 
     return(z)
-}   
+}
 
 ##' @rdname ROI_bound
 ##' @export
@@ -62,8 +62,8 @@ is.bound <- function(x) inherits(x, "bound")
 ##  ================
 ##' @title Check for default bounds
 ##' @description tests if the given object is an variable bound
-##'              which represents default values only 
-##'              (i.e., all lower bounds are \code{0} 
+##'              which represents default values only
+##'              (i.e., all lower bounds are \code{0}
 ##'              and all upper bounds as \code{Inf}).
 ##' @param x object to be tested
 ##' @return a logical of length one indicating wether default bounds are given
@@ -129,7 +129,6 @@ str.V_bound <- function(object, ...) {
 ##' @param ud a numeric giving upper default bound.
 ##' @param names a character vector giving the names of the bounds.
 ##' @param x object to be coerced or tested.
-##' @param \ldots objects to be combined.
 ##' @return An S3 object of class \code{"V_bound"} containing lower and
 ##' upper bounds of the objective variables.
 ##' @examples
@@ -160,7 +159,7 @@ V_bound <- function( li, ui, lb, ub, nobj, ld = 0, ud = Inf, names = NULL) {
     }
     if ( is.null(ui) ) {
         if ( !length(ub) ) {
-            ui <- integer()    
+            ui <- integer()
         } else {
             if ( length(ub) == nobj ) {
                 ui <- seq_len(nobj)
@@ -174,7 +173,7 @@ V_bound <- function( li, ui, lb, ub, nobj, ld = 0, ud = Inf, names = NULL) {
     ui <- as.integer(ui)
     lb <- as.double(lb)
     ub <- as.double(ub)
-    
+
     if ( ld != 0 ) {
         i <- li
         tmp <- lb
@@ -256,7 +255,7 @@ as.V_bound.NULL <- function( x )
 ##' @noRd
 ##' @export
 as.V_bound.list <- function(x) {
-    stopifnot(any(c("lower", "upper", "nobj") %in% names(x)), 
+    stopifnot(any(c("lower", "upper", "nobj") %in% names(x)),
               all(names(x) %in% c("lower", "upper", "nobj", "names")))
 
     vb <- V_bound(nobj = max(0, x$nobj, len_vb(x$lower), len_vb(x$upper)))
@@ -302,12 +301,12 @@ as.data.frame.V_bound <- function(x, ...) {
     n_of_variables <- length(x)
     to_dense <- function(sparse, n, default_value = 0) {
         dense <- rep(default_value, n)
-        if ( !is.null(sparse$ind) ) 
+        if ( !is.null(sparse$ind) )
             dense[sparse$ind]  <- sparse$val
         dense
     }
-    d <- data.frame(lower = to_dense(x$lower, n_of_variables), 
-                    upper = to_dense(x$upper, n_of_variables, Inf), 
+    d <- data.frame(lower = to_dense(x$lower, n_of_variables),
+                    upper = to_dense(x$upper, n_of_variables, Inf),
                     stringsAsFactors = FALSE)
     d
 }
@@ -332,10 +331,10 @@ print.V_bound <- function(x, ...){
 ##  @title Extract Objective Variable Bounds
 
 ##' @title Bounds - Accessor and Mutator Functions
-##' @description The \link{bounds} of a given optimization problem (\link{OP}) 
+##' @description The \link{bounds} of a given optimization problem (\link{OP})
 ##'   can be accessed or mutated via the method \code{'bounds'}.
 ##' @param x an object of type \code{'OP'} used to select the method.
-##' @param value  an object derived from \code{'bound'} 
+##' @param value  an object derived from \code{'bound'}
 ##'   (\code{'\link{V_bound}'}) or \code{NULL}.
 ##' @return the extracted bounds object on get and the altered \code{'\link{OP}'}
 ##'   object on set.
@@ -361,7 +360,7 @@ bounds <- function( x ) UseMethod("bounds")
 
 ##  Extract bounds from ROI objects of class \code{"OP"} and return
 ##  them.
-## 
+##
 ##  @title Extract Objective Variable Bounds
 ##  @param x an object of class \code{"OP"}.
 ##  @return an object of class \code{"V_bound"}.
@@ -375,7 +374,7 @@ bounds.OP <- function( x ) x$bounds
 
 ##  Replaces the (variable) bounds in R objects (typically ROI
 ##  objects of class \code{"OP"}).
-## 
+##
 ##  Currently, there is no default method. Bounds in ROI objects of
 ##  class \code{"OP"} given by the argument \code{x} are replaced with
 ##  \code{value}, either being an object of class \code{"V_bound"} or
