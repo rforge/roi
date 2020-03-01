@@ -4,8 +4,12 @@
 \alias{solution}
 \title{Extract Solution}
 \usage{
-solution(x, type = c("primal", "dual", "aux", "psd", "msg", "objval",
-  "status", "status_code"), force = FALSE, ...)
+solution(
+  x,
+  type = c("primal", "dual", "aux", "psd", "msg", "objval", "status", "status_code"),
+  force = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{an object of type \code{'OP_solution'} or \code{'OP_solution_set'}.}

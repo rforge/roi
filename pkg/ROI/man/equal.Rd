@@ -16,7 +16,7 @@
 \usage{
 equal(x, y, ...)
 
-\method{equal}{NULL}(x, y, ...)
+\method{equal}{`NULL`}(x, y, ...)
 
 \method{equal}{logical}(x, y, ...)
 

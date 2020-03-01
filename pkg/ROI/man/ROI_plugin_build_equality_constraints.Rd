@@ -32,14 +32,15 @@ There are two types of equality constraints commonly used in \R
 This function only intended for plugin authors.
 }
 \seealso{
-Other plugin functions: \code{\link{ROI_plugin_add_status_code_to_db}},
-  \code{\link{ROI_plugin_build_inequality_constraints}},
-  \code{\link{ROI_plugin_canonicalize_solution}},
-  \code{\link{ROI_plugin_get_solver_name}},
-  \code{\link{ROI_plugin_make_signature}},
-  \code{\link{ROI_plugin_register_solver_control}},
-  \code{\link{ROI_plugin_register_solver_method}},
-  \code{\link{ROI_plugin_solution_prim}},
-  \code{\link{ROI_registered_solver_control}}
+Other plugin functions: 
+\code{\link{ROI_plugin_add_status_code_to_db}()},
+\code{\link{ROI_plugin_build_inequality_constraints}()},
+\code{\link{ROI_plugin_canonicalize_solution}()},
+\code{\link{ROI_plugin_get_solver_name}()},
+\code{\link{ROI_plugin_make_signature}()},
+\code{\link{ROI_plugin_register_solver_control}()},
+\code{\link{ROI_plugin_register_solver_method}()},
+\code{\link{ROI_plugin_solution_prim}()},
+\code{\link{ROI_registered_solver_control}()}
 }
 \concept{plugin functions}

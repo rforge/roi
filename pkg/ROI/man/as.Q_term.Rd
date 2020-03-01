@@ -19,7 +19,7 @@ as.Q_term(x, ...)
 
 \method{as.Q_term}{simple_triplet_matrix}(x, ...)
 
-\method{as.Q_term}{NULL}(x, ...)
+\method{as.Q_term}{`NULL`}(x, ...)
 }
 \arguments{
 \item{x}{an R object.}

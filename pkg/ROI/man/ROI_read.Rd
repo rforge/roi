@@ -27,9 +27,10 @@ Reads an optimization problem from various file formats and
              returns an optimization problem of class \code{"OP"}.
 }
 \seealso{
-Other input output: \code{\link{ROI_plugin_register_reader_writer}},
-  \code{\link{ROI_registered_reader}},
-  \code{\link{ROI_registered_writer}},
-  \code{\link{ROI_write}}
+Other input output: 
+\code{\link{ROI_plugin_register_reader_writer}},
+\code{\link{ROI_registered_reader}()},
+\code{\link{ROI_registered_writer}()},
+\code{\link{ROI_write}()}
 }
 \concept{input output}

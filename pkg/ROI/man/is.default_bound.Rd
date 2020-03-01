@@ -14,7 +14,7 @@ a logical of length one indicating wether default bounds are given
 }
 \description{
 tests if the given object is an variable bound
-             which represents default values only 
-             (i.e., all lower bounds are \code{0} 
+             which represents default values only
+             (i.e., all lower bounds are \code{0}
              and all upper bounds as \code{Inf}).
 }

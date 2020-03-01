@@ -25,9 +25,10 @@ is to be written.}
 Write an optimization problem to file.
 }
 \seealso{
-Other input output: \code{\link{ROI_plugin_register_reader_writer}},
-  \code{\link{ROI_read}},
-  \code{\link{ROI_registered_reader}},
-  \code{\link{ROI_registered_writer}}
+Other input output: 
+\code{\link{ROI_plugin_register_reader_writer}},
+\code{\link{ROI_read}()},
+\code{\link{ROI_registered_reader}()},
+\code{\link{ROI_registered_writer}()}
 }
 \concept{input output}

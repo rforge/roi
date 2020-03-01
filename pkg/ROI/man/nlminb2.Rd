@@ -4,8 +4,17 @@
 \alias{nlminb2}
 \title{Nonlinear programming with nonlinear constraints.}
 \usage{
-nlminb2(start, objective, eqFun = NULL, leqFun = NULL, lower = -Inf,
-  upper = Inf, gradient = NULL, hessian = NULL, control = list())
+nlminb2(
+  start,
+  objective,
+  eqFun = NULL,
+  leqFun = NULL,
+  lower = -Inf,
+  upper = Inf,
+  gradient = NULL,
+  hessian = NULL,
+  control = list()
+)
 }
 \arguments{
 \item{start}{numeric vector of start values.}

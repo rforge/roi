@@ -19,7 +19,7 @@ is.F_constraint(x)
 
 as.F_constraint(x, ...)
 
-\method{as.F_constraint}{NULL}(x, ...)
+\method{as.F_constraint}{`NULL`}(x, ...)
 
 \method{as.F_constraint}{NO_constraint}(x, ...)
 

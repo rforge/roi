@@ -32,8 +32,6 @@ is.V_bound(x)
 \item{names}{a character vector giving the names of the bounds.}
 
 \item{x}{object to be coerced or tested.}
-
-\item{\ldots}{objects to be combined.}
 }
 \value{
 An S3 object of class \code{"V_bound"} containing lower and

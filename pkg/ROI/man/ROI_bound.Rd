@@ -16,15 +16,15 @@ is.bound(x)
 \item{\ldots}{arguments (inheriting from bound) to be combined}
 }
 \description{
-\pkg{ROI} distinguishes between 2 different 
-  types of bounds: 
+\pkg{ROI} distinguishes between 2 different
+  types of bounds:
   \itemize{
-  	\item No Bounds \code{NO_bound} 
+  	\item No Bounds \code{NO_bound}
   	\item Variable Bounds \code{\link{V_bound}} (inherits from \code{"bound"})
   }
 }
 \details{
-\pkg{ROI} provides the method \code{\link{V_bound}} 
+\pkg{ROI} provides the method \code{\link{V_bound}}
   as constructor for variable bounds.
   \code{NO_bound} is not explicitly implemented but represented by \code{NULL}.
 }

@@ -18,9 +18,10 @@ op <- OP(1:2)
 ROI_registered_writer(OP_signature(op))
 }
 \seealso{
-Other input output: \code{\link{ROI_plugin_register_reader_writer}},
-  \code{\link{ROI_read}},
-  \code{\link{ROI_registered_reader}},
-  \code{\link{ROI_write}}
+Other input output: 
+\code{\link{ROI_plugin_register_reader_writer}},
+\code{\link{ROI_read}()},
+\code{\link{ROI_registered_reader}()},
+\code{\link{ROI_write}()}
 }
 \concept{input output}

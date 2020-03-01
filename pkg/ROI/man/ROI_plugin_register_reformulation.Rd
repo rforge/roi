@@ -4,8 +4,15 @@
 \alias{ROI_plugin_register_reformulation}
 \title{Register Reformulation Method}
 \usage{
-ROI_plugin_register_reformulation(from, to, method_name, method,
-  description = "", cite = "", author = "")
+ROI_plugin_register_reformulation(
+  from,
+  to,
+  method_name,
+  method,
+  description = "",
+  cite = "",
+  author = ""
+)
 }
 \arguments{
 \item{from}{a data.frame with the supported signatures.}
@@ -32,7 +39,8 @@ Register a new reformulation method to be used with
        \code{\link{ROI_reformulate}}.
 }
 \seealso{
-Other reformulate functions: \code{\link{ROI_reformulate}},
-  \code{\link{ROI_registered_reformulations}}
+Other reformulate functions: 
+\code{\link{ROI_reformulate}()},
+\code{\link{ROI_registered_reformulations}()}
 }
 \concept{reformulate functions}

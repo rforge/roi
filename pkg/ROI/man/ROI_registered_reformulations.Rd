@@ -17,7 +17,8 @@ Retrieve meta information about the registered reformulations.
 ROI_registered_reformulations()
 }
 \seealso{
-Other reformulate functions: \code{\link{ROI_plugin_register_reformulation}},
-  \code{\link{ROI_reformulate}}
+Other reformulate functions: 
+\code{\link{ROI_plugin_register_reformulation}()},
+\code{\link{ROI_reformulate}()}
 }
 \concept{reformulate functions}

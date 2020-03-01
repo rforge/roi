@@ -4,8 +4,7 @@
 \alias{ROI_available_solvers}
 \title{Available Solvers}
 \usage{
-ROI_available_solvers(x = NULL,
-  method = getOption("download.file.method"))
+ROI_available_solvers(x = NULL, method = getOption("download.file.method"))
 }
 \arguments{
 \item{x}{an object used to select a method. It can be either

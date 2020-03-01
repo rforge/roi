@@ -16,7 +16,7 @@ bounds(x) <- value
 \arguments{
 \item{x}{an object of type \code{'OP'} used to select the method.}
 
-\item{value}{an object derived from \code{'bound'} 
+\item{value}{an object derived from \code{'bound'}
 (\code{'\link{V_bound}'}) or \code{NULL}.}
 }
 \value{
@@ -24,7 +24,7 @@ the extracted bounds object on get and the altered \code{'\link{OP}'}
   object on set.
 }
 \description{
-The \link{bounds} of a given optimization problem (\link{OP}) 
+The \link{bounds} of a given optimization problem (\link{OP})
   can be accessed or mutated via the method \code{'bounds'}.
 }
 \examples{
