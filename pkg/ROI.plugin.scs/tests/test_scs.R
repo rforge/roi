@@ -309,5 +309,7 @@ if ( !any("scs" %in% names(ROI_registered_solvers())) ) {
     local({test_cp_06("scs")})
     local({test_cp_07("scs")})
     local({test_cp_08("scs")})
-    local({test_cp_09("scs")})
+    if ( ! grepl("SunOS", Sys.info()["sysname"]) ) {
+        local({test_cp_09("scs")})
+    }
 }

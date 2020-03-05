@@ -1,9 +1,6 @@
 ## ROI plugin: SCS
 ## based on scs interface
 
-as_dgCMatrix <- function( x, ... ) 
-    Matrix::sparseMatrix(i=x$i, j=x$j, x=x$v, dims=c(x$nrow, x$ncol))
-
 cone_dims <- function(x, ctype) {
     wcol <- which(colnames(x) == ctype)
     if ( length(wcol) == 0 ) return(NULL)
@@ -249,7 +246,7 @@ scs_cones <-  c("zero" = 1L, "nonneg" = 2L, "soc" = 3L, "psd" = 4L,
                 "expp" = 5L, "expd" = 6L, "powp" = 7L, "powd" = 8L)
 
 
-solve_OP <- function(x, control=list()) {
+solve_OP <- function(x, control = list()) {
 
     constr <- as.C_constraint(constraints(x))
 
