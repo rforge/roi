@@ -191,6 +191,7 @@ rbind.constraint <- function(..., use.names=FALSE, recursive=FALSE) {
     if (recursive) {
         constraints <- flatten_constraints(constraints, "", "rbind.constraint")
     }
+
     is_constraint <- sapply(constraints, inherits, what="constraint")
     if ( !all(is_constraint) ) {
         sc <- as.character(sys.call())[which(!is_constraint) + 1L]
@@ -198,7 +199,12 @@ rbind.constraint <- function(..., use.names=FALSE, recursive=FALSE) {
                        paste(sc, collapse=", "))
         error("TYPE_MISMATCH", msg, domain = "rbind.constraint", call=sys.call())
     }
-    constraint_types <- sapply(constraints, function(x) class(x)[1])
+
+    constraint_type <- function(x) {
+        class(x)[class(x) %in% available_constraint_classes()][1]
+    }
+    constraint_types <- sapply(constraints, constraint_type)
+
     if ( length( constraints ) == 1L ) return( constraints[[1L]] )
     if ( "F_constraint" %in% constraint_types ) {
         return( rbind_F_constraint(constraints) )
@@ -209,7 +215,8 @@ rbind.constraint <- function(..., use.names=FALSE, recursive=FALSE) {
     } else if ( "L_constraint" %in% constraint_types ) {
         return( rbind_L_constraint(constraints, use.names=use.names) )
     }
-    return( rbind_NO_constraint(constraints) )
+
+    return(rbind_NO_constraint(constraints))
 }
 
 ##' @rdname ROI_constraint
