@@ -1,8 +1,9 @@
 Package: ROI.tests
-Version: 0.0-2
+Version: 0.0-3
 Title: ROI-Tests
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
-Description: This package provides testing capabilities for the ROI package.
+Description: This package provides testing capabilities for the 'ROI' package.
 Imports: methods, stats, ROI (>= 0.3-0)
 License: GPL-3
+RoxygenNote: 6.0.0

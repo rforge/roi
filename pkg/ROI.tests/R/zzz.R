@@ -33,4 +33,7 @@
     register_test(mksig("F", "F", "C", "V", "X", FALSE), "NLP-04", test_nlp_04)
     register_test(mksig("F", "X", "C", "V", "X", FALSE), "NLP-05", test_nlp_05)
     register_test(mksig("F", "X", "C", "V", "X", FALSE), "NLP-06", test_nlp_06)
+
+
+    ROI_options("constraint_eps", 1e-8)
 }

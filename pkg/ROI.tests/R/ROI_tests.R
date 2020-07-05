@@ -1,4 +1,8 @@
 
+#' @import "ROI"
+#' @importFrom "methods" "getPackageName" "getFunction"
+#' @importFrom "stats" "terms"
+
 TESTS <- new.env(parent=emptyenv(), size=200)
 SOLVER_TESTS <- new.env(parent=emptyenv(), size=200)
 
@@ -78,13 +82,20 @@ register_solver_test <- function(signature, name, fun) {
     new_solver_test(name, list(signature=signature, test=fun))
 }
 
+#' @param signature a object of class \code{"ROI\_signature"}
+#' @param name a character string giving the name of the test.
+#' @param fun the test function to be registered.
+#' @export
 register_test <- function(signature, name, fun) {
     new_test(name, list(signature=signature, test=fun))
 }
 
+#' @param solver a character giving the name of the solver.
+#' @export 
 test_solver <- function(solver) {
     tests <- lapply(TESTS, "[[", "signature")
-    b <- sapply(tests, function(x) solver %in% unname(names(ROI:::get_solver_methods(x))))
+    roi_get_solver_methods <- getNamespace("ROI")$get_solver_methods
+    b <- sapply(tests, function(x) solver %in% unname(names(roi_get_solver_methods(x))))
     applicable_tests <- names(b)[b]
     for (test in applicable_tests) {
         cat(green(test), ":", sep = "")
