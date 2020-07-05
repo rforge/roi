@@ -1,5 +1,5 @@
 
-setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
+setwd("/home/f/work/Optimization/ROI/ROI_R-Forge/www/db")
 
 source("create_solver_db_functions.R")
 
@@ -32,6 +32,8 @@ if (FALSE) {
     solvers <- readRDS("SOLVERS.rds")
     solvers[3, "Signature"]
     class(solvers[3, "Signature"])
+
+    solvers$Repo
 
     colnames(solver_db_rforge)
     solver_db_rforge$Package

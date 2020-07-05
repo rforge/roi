@@ -1,4 +1,4 @@
-setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
+setwd("/home/f/work/Optimization/ROI/ROI_R-Forge/www/db")
 
 solver_db_cran <- readRDS(file = "SOLVERS_CRAN.rds")
 solver_db_rforge <- readRDS(file = "SOLVERS_R-Forge.rds")

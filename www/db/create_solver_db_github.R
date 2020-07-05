@@ -1,5 +1,5 @@
 
-setwd("/home/florian/work/Optimization/ROI/ROI_R-Forge/www/db")
+setwd("/home/f/work/Optimization/ROI/ROI_R-Forge/www/db")
 
 source("create_solver_db_functions.R")
 
