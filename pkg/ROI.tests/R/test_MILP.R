@@ -61,7 +61,7 @@ test_milp_02 <- function(solver) {
 
     opt <- ROI_solve(x, solver = solver, 
                      control = solver_control(solver, sol))
-    check("MILP-02@01", all(A %*% opt$solution - b <=  < ROI_options("constraint_eps")))
+    check("MILP-02@01", all(A %*% opt$solution - b <= ROI_options("constraint_eps")))
     check("MILP-01@02", correct_types(x, solution(opt)))
     check("MILP-01@03", check_bounds(x, solution(opt)))
     check("MILP-02@04", equal(opt$solution , sol, tol=1e-01))
