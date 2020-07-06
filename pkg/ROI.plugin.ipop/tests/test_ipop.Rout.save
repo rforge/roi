@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2016-05-20 r70654) -- "Unsuffered Consequences"
-Copyright (C) 2016 The R Foundation for Statistical Computing
+R version 4.0.2 (2020-06-22) -- "Taking Off Again"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -19,12 +19,14 @@ Type 'q()' to quit R.
 
 > ## ROI test suite
 > 
+> 
 > ## Configuration
 > suppressPackageStartupMessages( require("ROI") )
 > ## solver to check
 > solver <- "ipop"
 > ## load and register plug-in
 > require( sprintf("ROI.plugin.%s", solver), character.only = TRUE )
+Loading required package: ROI.plugin.ipop
 > 
 > ## Example 5:
 > ## Another QP (this is qpex1.c in the CPLEX examples)
@@ -98,4 +100,4 @@ Slot "dual":
 Slot "how":
 [1] "converged"
 
-> 
+>

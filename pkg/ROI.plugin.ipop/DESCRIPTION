@@ -1,5 +1,5 @@
 Package: ROI.plugin.ipop
-Version: 0.3-0
+Version: 0.3-1
 Title: ROI Plug-in {ipop}
 Authors@R: c( person("Florian", "Schwendinger", role = "ctb"),
               person("Stefan", "Theussl", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"),
