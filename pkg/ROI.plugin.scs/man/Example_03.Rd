@@ -25,9 +25,9 @@ subject to
 }
 
 \references{
-\code{[CVXOPT]}  Andersen, Martin S and Dahl, Joachim and Vandenberghe, Lieven (2016)
-  CVXOPT: A Python package for convex optimization, version 1.1.8,
-  \url{http://cvxopt.org/}
+Andersen, Martin S and Dahl, Joachim and Vandenberghe, Lieven (2016)
+CVXOPT: A Python package for convex optimization, version 1.1.8,
+\url{http://cvxopt.org/}
 }
 
 \examples{
