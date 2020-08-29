@@ -178,6 +178,23 @@ cat(as.list(model_call)$xmlstring)
 @
 
 
+\subsection{Asynchronous execution}
+In some situations it can be advantageous to do the calculations asynchronous.
+For example you have a rather big optimization problem and otherwise your
+connection would run into a time out. Asynchronous execution can be easily performed
+by setting the parameter \code{wait} to \code{FALSE}.
+
+<<asynchronous_example, cache = TRUE>>=
+neos_job <- ROI_solve(x, solver = "neos", method = "scip", wait = FALSE)
+str(neos_job)
+## Make R wait till the job finishes!
+while (neos_job$status() != "Done") Sys.sleep(2)
+## Obtain the solution from the server and transform it into the typical
+## ROI solution object.
+(s <- neos_job$solution())
+solution(s)
+@
+
 \section{Use cases}
 \subsection{A seemingly simple optimization problem}
 \subsubsection{Introduction}

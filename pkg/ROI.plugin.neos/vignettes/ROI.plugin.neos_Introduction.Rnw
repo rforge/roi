@@ -100,8 +100,8 @@ by a chosen solver. More information can be found at
 
 \subsection{Solvers}
 \begin{center}
-% latex table generated in R 3.4.0 by xtable 1.8-2 package
-% Fri Jun  8 00:19:22 2018
+% latex table generated in R 3.5.0 by xtable 1.8-3 package
+% Sat Feb 16 14:32:43 2019
 \begin{table}[ht]
 \centering
 \begin{tabular}{rllllll}
@@ -155,7 +155,7 @@ are installed.
 \end{alltt}
 
 
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# }}
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# ROI: R Optimization Infrastructure}}
 
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# Registered solver plugins: nlminb.}}
 
@@ -492,6 +492,51 @@ inspected by setting the argument \verb+dry_run+ to \code{TRUE}.
 \end{knitrout}
 
 
+\subsection{Asynchronous execution}
+In some situations it can be advantageous to do the calculations asynchronous.
+For example you have a rather big optimization problem and otherwise your
+connection would run into a time out. Asynchronous can be easily performed
+by setting the parameter \code{wait} to \code{FALSE}.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.957, 0.953, 0.937}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{neos_job} \hlkwb{<-} \hlkwd{ROI_solve}\hlstd{(x,} \hlkwc{solver} \hlstd{=} \hlstr{"neos"}\hlstd{,} \hlkwc{method} \hlstd{=} \hlstr{"scip"}\hlstd{,} \hlkwc{wait} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+\hlkwd{str}\hlstd{(neos_job)}
+\end{alltt}
+\begin{verbatim}
+## List of 8
+##  $ job_number        : int 6571509
+##  $ password          : chr "vbGPJahp"
+##  $ status            :function ()  
+##  $ info              :function ()  
+##  $ final_results     :function ()  
+##  $ output_file       :function (file_name)  
+##  $ objective_function:function (x)  
+##  - attr(*, "class")= chr "'function' 'L_objective' 'Q_objective' 'objective'"
+##  $ solution          :function ()  
+##  - attr(*, "class")= chr "neos_job"
+\end{verbatim}
+\begin{alltt}
+\hlcom{## Make R wait till the job finishes!}
+\hlkwa{while} \hlstd{(neos_job}\hlopt{$}\hlkwd{status}\hlstd{()} \hlopt{!=} \hlstr{"Done"}\hlstd{)} \hlkwd{Sys.sleep}\hlstd{(}\hlnum{2}\hlstd{)}
+\hlcom{## Obtain the solution from the server and transform it into the typical}
+\hlcom{## ROI solution object.}
+\hlstd{(s} \hlkwb{<-} \hlstd{neos_job}\hlopt{$}\hlkwd{solution}\hlstd{())}
+\end{alltt}
+\begin{verbatim}
+## Optimal solution found.
+## The objective value is: 2.675000e+01
+\end{verbatim}
+\begin{alltt}
+\hlkwd{solution}\hlstd{(s)}
+\end{alltt}
+\begin{verbatim}
+## [1] 5.00 2.75 3.00
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 \section{Use cases}
 \subsection{A seemingly simple optimization problem}
 \subsubsection{Introduction}
@@ -700,6 +745,27 @@ in \pkg{ROI} and can directly send it off to the NEOS server as shown below.
 \end{kframe}
 \end{knitrout}
 
+%% To solve this problem with \pkg{ROI} we have several options
+%% 
+%% \pkg{ROI.plugin.alabama}
+%% <<ex1a_alabama>>=
+%% library(ROI.plugin.alabama)
+%% p <- o
+%% constraints(p) <- as.F_constraint(constraints(o))
+%% do_solve <- function(x) {
+%%     ROI_solve(p, solver = "alabama", start = runif(4, 0, 100))
+%% }
+%% sols <- lapply(1:100, do_solve)
+%% i <- which.max(sapply(sols, solution, type = "objval"))
+%% (s1 <- sols[[i]])
+%% solution(s1)
+%% @
+%% 
+%%     \item \pkg{ROI.plugin.qpoases}
+%% <<ex1a_qpoases>>=
+%% (s2 <- ROI_solve(o, solver = "qpoases", enableDriftCorrection = 1L))
+%% solution(s2)
+%% @
 
 On the NEOS server there exist several options to solve non-convex
 quadratic problems. In this example we make use of the BARON solver.

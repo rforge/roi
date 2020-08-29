@@ -1,7 +1,7 @@
 
 if ( FALSE ) {
     q("no")
-    Rdevel
+    R
 }
 
 writeLines(c("", paste(" Test date:", Sys.time()), ""))
@@ -47,7 +47,8 @@ test_lp_01 <- function(solver) {
             bounds = V_bound(ui = seq_len(3), ub = c(1000, Inf, 1000), nobj = 3),
             maximum = TRUE)
 
-    opt <- ROI_solve(x, solver = "neos", method = "scip")
+    control <- list(method = "scip")
+    opt <- ROI_solve(x, solver = "neos", control)
     check("LP-01@01", equal(opt$solution, c(0, 20/3, 50/3), tol=1e-4))
     check("LP-01@02", equal(opt$objval, 230/3, tol=1e-4))
 
