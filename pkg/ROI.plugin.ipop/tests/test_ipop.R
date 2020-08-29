@@ -1,5 +1,5 @@
 ## ROI test suite
-
+Sys.setenv("ROI_LOAD_PLUGINS" = FALSE)
 
 ## Configuration
 suppressPackageStartupMessages( require("ROI") )
@@ -30,6 +30,9 @@ solution( res )
 solution( res, "dual" )
 solution( res, "msg" )
 
+stopifnot(equal(solution(res), c(0.1391149, 0.5984655, 0.8983957)))
+
+
 ## Example 10: QP
 ## Solve the portfolio optimization problem
 
@@ -49,3 +52,5 @@ res <- ROI_solve(ex10_qp, solver = solver)
 round( solution(res), 3 )
 solution( res, "dual" )
 solution( res, "msg" )
+
+stopifnot(equal(solution(res, "objval"), 0.0009326635))
