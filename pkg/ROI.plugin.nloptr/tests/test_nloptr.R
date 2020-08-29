@@ -1,5 +1,6 @@
 stopifnot(require(nloptr))
 
+Sys.setenv(ROI_LOAD_PLUGINS = FALSE)
 
 library(ROI)
 library(ROI.plugin.nloptr)
@@ -232,14 +233,8 @@ if ( !any(grepl("nloptr", names(ROI_registered_solvers()))) ) {
     cat("OK\n"); cat("Test 02: ")
     local({test_nlp_02("nloptr.cobyla")})
     cat("OK\n"); cat("Test 03: ")
-    local({test_nlp_03("nloptr.isres")})
+    local({test_nlp_03("nloptr.auglag")})
     cat("OK\n"); cat("Test 04: ")
     local({test_nlp_04("nloptr.slsqp")})
-    cat("OK\n"); cat("Test 05: ")
-    local({test_nlp_05("nloptr.tnewton")})
-    cat("OK\n"); cat("Test 06: ")
-    local({test_nlp_06("nloptr.bobyqa")})
-    cat("OK\n"); cat("Test 07: ")
-    local({test_nlp_07("nloptr.mma")})
-    cat("OK\n")
 }
+
