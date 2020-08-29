@@ -1,5 +1,5 @@
 Package: ROI.plugin.msbinlp
-Version: 0.3-0
+Version: 1.0-0
 Title: 'Multi-Solution' Binary Linear Problem Plug-in for the 'R' Optimization Interface
 Authors@R: c( person("Kurt", "Hornik", role = c("aut")),
               person("David", "Meyer", role = c("aut")),
@@ -12,4 +12,4 @@ Description: Enhances the 'R' Optimization Infrastructure ('ROI') package
 Imports: stats, methods, utils, slam, ROI (>= 0.3-0)
 Suggests: ROI.plugin.glpk
 License: GPL-3
-URL: http://R-Forge.R-project.org/projects/roi
+URL: http://roi.r-forge.r-project.org/, https://r-forge.r-project.org/projects/roi/
