@@ -1,11 +1,11 @@
 Package: ROI.plugin.optimx
-Version: 0.3-1
+Version: 1.0-0
 Title: 'optimx' Plug-in for the 'R' Optimization Infrastructure 
 Author: Florian Schwendinger [aut, cre]
 Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
 Description: Enhances the R Optimization Infrastructure ('ROI') package
         with the 'optimx' package.
-Imports: methods, stats, utils, ROI (>= 0.3-0), optimx 
-Depends: BB, ucminf, minqa, dfoptim, lbfgsb3, lbfgs, subplex
+Imports: methods, stats, utils, ROI (>= 0.3-2), optimx 
+Suggests: BB, ucminf, minqa, dfoptim, lbfgsb3c, lbfgs, subplex
 License: GPL-3
-URL: http://R-Forge.R-project.org/projects/roi
+URL: http://roi.r-forge.r-project.org/, https://r-forge.r-project.org/projects/roi/
