@@ -63,6 +63,9 @@ new_OP <- function() {
 ##'                        rhs = c(-8,2,0)) )
 ##' QP
 ##' @author Stefan Theussl
+##' @references Theussl S, Schwendinger F, Hornik K (2020). 
+##'     'ROI: An Extensible R Optimization Infrastructure.' Journal of Statistical Software_,
+##'     *94*(15), 1-64. doi: 10.18637/jss.v094.i15 (URL: https://doi.org/10.18637/jss.v094.i15).
 ##' @export
 OP <- function( objective, constraints, types, bounds, maximum = FALSE ) {
     x <- new_OP()
