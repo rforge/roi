@@ -2,8 +2,7 @@
 \title{Hock-Schittkowski-Collection Problem 16}
 
 \description{
-The following example solves problem 16 from the Hock-Schittkowski-Collection 
-(\url{http://www.ai7.uni-bayreuth.de/test_problem_coll.pdf}).
+The following example solves problem 16 from the Hock-Schittkowski-Collection.
 \deqn{minimize \ f(x) = 100 (x_2 - x_1^2)^2 + (1 - x_1)^2}
 \deqn{subject \ to: \ \ x_1 + x_2^2 \geq 0 \ \ \ x_1^2 + x_2 \geq 0}
 \deqn{-2 \geq x_1 \geq 0.5 \ \ \ x_2 \geq 1}

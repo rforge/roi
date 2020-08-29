@@ -2,8 +2,7 @@
 \title{Hock-Schittkowski-Collection Problem 36}
 
 \description{
-The following example solves exmaple 36 from the Hock - Schittkowski 
-models (\url{http://apmonitor.com/wiki/index.php/Apps/HockSchittkowski}).
+The following example solves exmaple 36 from the Hock-Schittkowski-Collection.
 \deqn{minimize \ -x_1 x_2 x_3}
 \deqn{subject \ to: \ x_1 + 2 x_2 + x_3 \leq 72}
 \deqn{0 \leq x_1 \leq 20, \ 0 \leq x_2 \leq 11, \ 0 \leq x_3 \leq 42}
