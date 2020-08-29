@@ -31,8 +31,9 @@ to_dense_vector <- function(x, len) {
 
 sanitize_control <- function(control) {
     cont <- ecos.control()
-    key <- names(control)[names(control) %in% names(cont)]
-    cont[key] <- control[key]
+    m <- match(names(control),  tolower(names(cont)))
+    k <- which(!is.na(m))
+    cont[m[k]] <- control[k]
     if ( is.numeric(cont$VERBOSE) & (length(cont$VERBOSE) == 1) ) {
         cont$VERBOSE <- if ( is.finite(cont$VERBOSE) ) as.integer(cont$VERBOSE) else 0L
     } else {
@@ -74,7 +75,6 @@ calc_dims <- function(cones, dims) {
     dims$e <- length(unique(cones$id[cones$cone == ecos_cones['expp']]))
     dims
 }
-
 
 ## BASIC SOLVER METHOD
 ## attach(getNamespace("ROI.plugin.ecos")); control <- list(); library(slam) ## for debugging
