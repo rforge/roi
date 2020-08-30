@@ -14,4 +14,4 @@ Imports: methods, registry (>= 0.5), slam, utils
 Suggests: numDeriv
 License: GPL-3
 URL: http://roi.r-forge.r-project.org/, https://r-forge.r-project.org/projects/roi/
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1

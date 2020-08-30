@@ -4,10 +4,12 @@
 \name{US30}
 \alias{US30}
 \title{Monthly return data for 30 of the largest US stocks}
-\format{A matrix with 30 columns
-(representing stocks) and 180 rows (months).}
+\format{
+A matrix with 30 columns
+(representing stocks) and 180 rows (months).
+}
 \source{
-\url{https://www.quandl.com/data/WIKI}
+\url{https://www.quandl.com}
 }
 \description{
 This dataset contains the historical monthly returns of 30 of the

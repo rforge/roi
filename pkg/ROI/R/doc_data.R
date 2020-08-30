@@ -15,6 +15,6 @@
 ##' @keywords datasets
 ##' @format A matrix with 30 columns
 ##' (representing stocks) and 180 rows (months).
-##' @source \url{https://www.quandl.com/databases/WIKIP/data}
+##' @source \url{https://www.quandl.com}
 ##' @name US30
 NULL
