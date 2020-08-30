@@ -8,18 +8,22 @@
 \title{Download the 'MIPLIB 2010' Test Problem Set}
 \usage{
 
-  miplib_download_all(url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz",
-  folder = system.file("roi_op", package = "ROI.models.miplib"),
-  method = NULL, quiet = TRUE)
+  miplib_download_all(
+    url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz",
+    folder = system.file("roi_op", package = "ROI.models.miplib"),
+    method = NULL, quiet = TRUE, force = FALSE, cleanup = TRUE)
 
 
-  miplib_download_benchmark(url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-benchmark.tgz",
-  folder = system.file("roi_op", package = "ROI.models.miplib"),
-  method = NULL, quiet = TRUE)
+  miplib_download_benchmark(
+    url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-benchmark.tgz",
+    folder = system.file("roi_op", package = "ROI.models.miplib"),
+    method = NULL, quiet = TRUE, force = FALSE, cleanup = TRUE)
 
 
-  miplib_download_metainfo(url = "http://miplib2010.zib.de/download/miplib2010_all.solu",
-  folder = system.file("roi_op", package = "ROI.models.miplib"))
+  miplib_download_metainfo(
+    url = "http://miplib2010.zib.de/download/miplib2010_all.solu",
+    folder = system.file("roi_op", package = "ROI.models.miplib"),
+    force = FALSE)
 }
 \arguments{
 \item{url}{a character giving the url to \code{MIPLIB 2010}.}
@@ -31,12 +35,20 @@
 files, for more information see \code{\link{download.file}}.}
 
 \item{quiet}{a logical giving if status status messages should be suppressed.}
+
+\item{force}{a logical if \code{TRUE} (default is \code{FALSE}) the download is forced, 
+regardless if the metainfo was downloaded previously.}
+
+\item{cleanup}{a logical if \code{TRUE} (default is \code{TRUE}) the downloaded
+temporary files are deleted after the download an conversion is completed.}
 }
 \description{
 The \code{MIPLIB 2010} test problem set is downloaded and
     transformed from the \code{MPS} format into the \pkg{ROI} format.
     The results are stored as \code{'.rds'} files at the location provided 
     via the parameter \code{folder}.
+
+miplib_download_metinfo()
 }
 \details{
 \itemize{

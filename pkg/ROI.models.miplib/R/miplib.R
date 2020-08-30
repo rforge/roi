@@ -24,7 +24,7 @@ as.OP.MILP <- function(x){
 
 as.OP.NULL <- function(x) NULL
 
-download_library <- function(url, path, method = NULL, quiet = TRUE) {
+download_library <- function(url, path, method = NULL, quiet = TRUE, force = FALSE) {
     if ( !quiet )
         cat("\n download MIPLIB\n\n")
     if ( is.null(method) ) {
@@ -35,16 +35,23 @@ download_library <- function(url, path, method = NULL, quiet = TRUE) {
     }
     destfile <- file.path(path, tail(unlist(strsplit(url, "/", fixed=TRUE), TRUE, FALSE), 1))
     ## exdir <- gsub(".tgz", "", destfile)
-    download.file(url, destfile, method = method, quiet = quiet)
+    if ( !file.exists(destfile) | force ) {
+        download.file(url, destfile, method = method, quiet = quiet)
+    }
     if ( file.exists(destfile) ) {
-        exdir <- untar(tarfile = destfile, list = TRUE, exdir = path)
-        exdir <- tail(names(sort(table(dirname(grep("instances", exdir, value = TRUE))))), 1)
-        untar(tarfile = destfile, exdir = path)
-        file.remove(destfile)
+        ## Files contained in the tgz-file.
+        tgz_files <- untar(tarfile = destfile, list = TRUE, exdir = path)
+        miplib_files <- grep("instances", tgz_files, value = TRUE)
+        exdir <- tail(names(sort(table(dirname(miplib_files)))), 1)
+        miplib_folder <- normalizePath(file.path(path, exdir))
+        if ( !dir.exists(miplib_folder) | force ) {
+            untar(tarfile = destfile, exdir = path)
+        }
     } else {
         stop("download error")
     }
-    return( normalizePath(file.path(path, exdir)) )
+    downloaded <- c(miplib_folder = miplib_folder, destfile = destfile)
+    return(downloaded)
 }
 
 untar_all <- function(path, quiet=TRUE) {
@@ -63,9 +70,8 @@ untar_all <- function(path, quiet=TRUE) {
 }
 
 build_miplib <- function(in_path, out_path, quiet = TRUE) {
-    files <- dir(in_path, pattern = ".mps$")
-    stopifnot( length(files) >  0 )
-    fps <- file.path(in_path, files)
+    fps <- dir(in_path, pattern = ".mps$", full.names = TRUE)
+    stopifnot( length(fps) >  0 )
     n <- length(fps)
     if ( !quiet ) {
         cat("\n convert mps to ROI:\n\n")
@@ -73,8 +79,12 @@ build_miplib <- function(in_path, out_path, quiet = TRUE) {
     }
     for (i in seq_len(n)) {
         op <- tryCatch(as.OP(Rglpk::Rglpk_read_file(fps[i], type="MPS_free")), error=function(e) NULL)
-        if ( is.null(op) ) next()
-        op_name <- sprintf("%s/%s.rds", out_path, make.names(gsub(".mps$", "", files[i])))
+        if ( is.null(op) ) {            
+            warning(sprintf("could not convert '%s' to OP", basename(fps[i])))
+            next()
+        }
+        op_name <- make.names(gsub(".mps$", "", basename(fps[i])))
+        op_name <- sprintf("%s/%s.rds", out_path, op_name)
         saveRDS(op, file = op_name)
         if ( !quiet ) setTxtProgressBar(pb, i)
     }
@@ -82,66 +92,76 @@ build_miplib <- function(in_path, out_path, quiet = TRUE) {
     NULL
 }
 
-miplib_download <- function(url, folder, method = NULL, quiet = TRUE) {
+miplib_download <- function(url, folder, method = NULL, quiet = TRUE, force = FALSE, cleanup = TRUE) {
     stopifnot( dir.exists(folder) )
     folder <- normalizePath(folder)
-    miplib_folder <- download_library(url, folder, method, quiet)
-    untar_all(miplib_folder, quiet = quiet)
-    build_miplib(in_path = miplib_folder, out_path = folder, quiet)
-    unlink(miplib_folder, recursive=TRUE)    
+    downloaded <- download_library(url, folder, method, quiet, force)
+    untar_all(downloaded["miplib_folder"], quiet = quiet)
+    build_miplib(in_path = downloaded["miplib_folder"], out_path = folder, quiet)
+    if ( cleanup ) {
+        cleanup_files <- dir(folder, include.dirs = TRUE, full.names = TRUE)
+        cleanup_files <- grep("\\.rds$", cleanup_files, value = TRUE, invert = TRUE)
+        for (delme in cleanup_files) {
+            unlink(delme, recursive = TRUE)
+        }
+    }
 }
 
-##  -----------------------------------------------------------
-##  miplib_download_all
-##  ===================
-##' @title Download the 'MIPLIB 2010' Test Problem Set
-##' @description
-##'     The \code{MIPLIB 2010} test problem set is downloaded and
-##'     transformed from the \code{MPS} format into the \pkg{ROI} format.
-##'     The results are stored as \code{'.rds'} files at the location provided 
-##'     via the parameter \code{folder}.
-##' @param url a character giving the url to \code{MIPLIB 2010}.
-##' @param folder an optional character giving the location where the
-##'     \code{MIPLIB 2010} test problem set should be downloaded to.
-##' @param method a character giving the method to be used for downloading
-##'     files, for more information see \code{\link{download.file}}.
-##' @param quiet a logical giving if status status messages should be suppressed.
-##' 
-##' @details
-##'     \itemize{
-##'         \item{\code{miplib_download_all} download all MIPLIB-2010 instances (arround 1.3 GB).}
-##' 
-##'         \item{\code{miplib_download_benchmark} download the MIPLIB-2010 benchmark instances (arround 94 MB).}
-##'
-##'         \item{\code{miplib_download_metinfo} download the available meta information.}
-##'      }
-##' @examples
-##' \dontrun{
-##'
-##' ## download all MIPLIB-2010 instances (arround 1.3 GB)
-##' miplib_download_all()
-##' ## or
-##' miplib_download_all(folder = "data/miplib")
-##' 
-##' ## download MIPLIB-2010 benchmark instances (arround 94 MB)
-##' miplib_download_benchmark()
-##' ## or 
-##' miplib_download_benchmark(folder = "data/miplib")
-##'
-##' ## download meta information
-##' miplib_download_metinfo()
-##' }
-##' @name miplib_download
-##' @rdname miplib_download
-##' @export
-##  -----------------------------------------------------------
-##  old: http://miplib.zib.de/download/miplib2010-complete.tgz
-##  http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz
-miplib_download_all <- 
-    function(url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz",
-             folder = system.file("roi_op", package = "ROI.models.miplib"),
-             method = NULL, quiet=TRUE) {
-    miplib_download(url, folder, method, quiet)
+#  -----------------------------------------------------------
+#  miplib_download_all
+#  ===================
+#' @title Download the 'MIPLIB 2010' Test Problem Set
+#' @description
+#'     The \code{MIPLIB 2010} test problem set is downloaded and
+#'     transformed from the \code{MPS} format into the \pkg{ROI} format.
+#'     The results are stored as \code{'.rds'} files at the location provided 
+#'     via the parameter \code{folder}.
+#' @param url a character giving the url to \code{MIPLIB 2010}.
+#' @param folder an optional character giving the location where the
+#'     \code{MIPLIB 2010} test problem set should be downloaded to.
+#' @param method a character giving the method to be used for downloading
+#'     files, for more information see \code{\link{download.file}}.
+#' @param quiet a logical giving if status status messages should be suppressed.
+#' @param force a logical if \code{TRUE} (default is \code{FALSE}) the download is forced, 
+#'     regardless if the metainfo was downloaded previously.
+#' @param cleanup a logical if \code{TRUE} (default is \code{TRUE}) the downloaded
+#'     temporary files are deleted after the download an conversion is completed.
+#' 
+#' @details
+#'     \itemize{
+#'         \item{\code{miplib_download_all} download all MIPLIB-2010 instances (arround 1.3 GB).}
+#' 
+#'         \item{\code{miplib_download_benchmark} download the MIPLIB-2010 benchmark instances (arround 94 MB).}
+#'
+#'         \item{\code{miplib_download_metinfo} download the available meta information.}
+#'      }
+#' @examples
+#' \dontrun{
+#'
+#' ## download all MIPLIB-2010 instances (arround 1.3 GB)
+#' miplib_download_all()
+#' ## or
+#' miplib_download_all(folder = "data/miplib")
+#' 
+#' ## download MIPLIB-2010 benchmark instances (arround 94 MB)
+#' miplib_download_benchmark()
+#' ## or 
+#' miplib_download_benchmark(folder = "data/miplib")
+#'
+#' ## download meta information
+#' miplib_download_metinfo()
+#' }
+#' @name miplib_download
+#' @rdname miplib_download
+#' @export
+#  -----------------------------------------------------------
+#  old: http://miplib.zib.de/download/miplib2010-complete.tgz
+#  http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz
+miplib_download_all <- function(
+    url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-complete.tgz",
+    folder = system.file("roi_op", package = "ROI.models.miplib"),
+    method = NULL, quiet = TRUE, force = FALSE, cleanup = TRUE) {
+    miplib_download(url, folder, method, quiet, force, cleanup)
 }
 
 ##  -----------------------------------------------------------
@@ -155,45 +175,53 @@ miplib_download_all <-
 miplib_download_benchmark <- 
     function(url = "http://miplib2010.zib.de/download/miplib2010-1.1.3-benchmark.tgz",
              folder = system.file("roi_op", package = "ROI.models.miplib"),
-             method = NULL, quiet=TRUE) {
-    miplib_download(url, folder, method, quiet)
+             method = NULL, quiet = TRUE, force = FALSE, cleanup = TRUE) {
+    miplib_download(url, folder, method, quiet, force, cleanup)
 }
 
 ##  -----------------------------------------------------------
 ##  miplib_download_metainfo
 ##  ========================
-##  @title Download the 'MIPLIB 2010' Test Problem Set
-##  @description
-##      The meta information from the \code{MIPLIB 2010} test problem 
-##      set is downloaded and transformed into an \code{data.frame}.
-##  @param url a character giving the url to the meta information.
-##  @param folder an optional character giving the location where the
-##      metainfo should be downloaded to.
-##  
-##  @examples
-##  \dontrun{
-## 
-##  miplib_download_metinfo()
-## 
-##  }
+##'  @title Download the 'MIPLIB 2010' Test Problem Set
+##'  @description
+##'      The meta information from the \code{MIPLIB 2010} test problem 
+##'      set is downloaded and transformed into an \code{data.frame}.
+##'  @param url a character giving the url to the meta information.
+##'  @param folder an optional character giving the location where the
+##'      metainfo should be downloaded to.
+##'  @param force a logical if \code{TRUE} the download is forced, regardless
+##'      if the metainfo was downloaded previously.
+##'  
+##'  @examples
+##'  \dontrun{
+##' 
+##'  miplib_download_metinfo()
+##' 
+##'  }
 ##' @name miplib_download
 ##' @rdname miplib_download
 ##' @export
 ##  -----------------------------------------------------------
 ##  old: http://miplib.zib.de/download/miplib2010_all.solu
 ##  http://miplib2010.zib.de/download/miplib2010_all.solu
-miplib_download_metainfo <- function(url = "http://miplib2010.zib.de/download/miplib2010_all.solu",
-                                     folder = system.file("roi_op", package = "ROI.models.miplib")) {
+miplib_download_metainfo <- function(
+    url = "http://miplib2010.zib.de/download/miplib2010_all.solu",
+    folder = system.file("roi_op", package = "ROI.models.miplib"),
+    force = FALSE) {
 
-    x <- strsplit(readLines(url), "\\s+")
-    nam <- make.names(sapply(x, "[[", 2))
-    metainfo <- data.frame(name = nam, stringsAsFactors = FALSE, row.names = nam)
-    metainfo$optimal_value <- as.numeric(sapply(x, "[", 3))
-    metainfo$status <- sapply(x, "[[", 1)
-    if ( is.null(folder) )
+    file <- if (is.null(folder)) "" else file.path(folder, "metainfo.rds")
+    if ( file.exists(file) & !force ) {
+        return(readRDS(file))
+    } else {
+        x <- strsplit(readLines(url), "\\s+")
+        nam <- make.names(sapply(x, "[[", 2))
+        metainfo <- data.frame(name = nam, stringsAsFactors = FALSE, row.names = nam)
+        metainfo$optimal_value <- as.numeric(sapply(x, "[", 3))
+        metainfo$status <- sapply(x, "[[", 1)
+        if ( !is.null(folder) )
+            saveRDS(metainfo, file)
         return( metainfo )
-    file <- file.path(folder, "metainfo.rds")
-    saveRDS(metainfo, file)
+    }
 }
 
 ##  -----------------------------------------------------------
