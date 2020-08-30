@@ -1,7 +1,7 @@
 Package: ROI.plugin.ipop
 Version: 1.0-0
 Title: 'ipop' Plug-in for the 'R' Optimization Interface
-Authors@R: c( person("Florian", "Schwendinger", role = c("aut", "cre"), email = "Stefan.Theussl@R-Project.org"),
+Authors@R: c( person("Florian", "Schwendinger", role = c("aut", "cre"), email = "FlorianSchwendinger@gmx.at"),
               person("Stefan", "Theussl", role = "aut"),
               person("Diethelm", "Wuertz", role = "ctb") )
 Description: Enhances the 'R' Optimization Infrastructure ('ROI') package 
