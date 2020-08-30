@@ -33,8 +33,8 @@ netlib(x=c("all", "metainfo", "adlittle", "afiro", "agg", "agg2",
 \details{
   Netlib is a software repository, which amongst many other software for
   scientific computing contains a collection of linear programming 
-  problems. For more information about the Netlib-LP collection see
-  \code{[NETLIB-LP]}.
+  problems. The column \code{optimal\_value} contains the 
+  results published in \code{Koch (2004)}.
 }
 \examples{
 \dontrun{
@@ -52,7 +52,7 @@ netlib(x=c("all", "metainfo", "adlittle", "afiro", "agg", "agg2",
   ## solve a problem
   sol <- ROI_solve(netlib("afiro"))
   sol
-  sol$objval - as.numeric(netlib("metainfo")["afiro", "optimal_value"])
+  sol$objval - as.numeric(netlib("metainfo")["afiro", "final_results"])
 }
 }
 \references{
